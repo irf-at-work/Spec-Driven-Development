@@ -1,7 +1,7 @@
 
 # Broker Insurance Constitution
 
-**Version:** 1.0.0 | **Ratified:** 2026-10-28 | **Last amended:** 2026-10-28
+**Version:** 1.0.1 | **Ratified:** 2026-10-28 | **Last amended:** 2026-10-28
 **Based on template:** v1.1.0
 
 > This constitution sets the non-negotiable rules for this project. Every
@@ -143,9 +143,9 @@ every change.*
 ### B2 — Technology constraints
 
 - Backend: .Net 10 (C#)
-- Frontend: Angular
-- Database: Oracle
-- Testing: Playwright for end-to-end tests
+- Frontend: Angular 21
+- Database: Oracle 19c
+- Testing: Playwright for end-to-end tests, and XUnit for API tests 
 - Hosting: Local machine only
 - Secrets: Operating system credential store or environment variables; never in code or the database 
 
@@ -179,7 +179,7 @@ without duplicating models.
 
 ## B8 — Technical Constraints
 
-- The application consists of a .NET 10 API, an Angular 22 UI, and an Oracle database.
+- The application consists of a .NET 10 API, an Angular 21 UI, and an Oracle database.
 - Use `Oracle.EntityFrameworkCore` with Database-First: do not edit scaffolded files or use EF migrations.
 - Database changes SHOULD be made to the tables and then scaffolded. 
 - Extend scaffolded entities with partial classes. 
@@ -238,6 +238,7 @@ the authority.
 
 ### C4 — Amendment log
 
-| Version | Date       | Change                                    | Reason |
-| ------- | ---------- | ----------------------------------------- | ------ |
-| 1.0.0   | 2026-10-28 | Initial ratification from template v1.1.0 | —      |
+| Version | Date       | Change                                              | Reason |
+| ------- | ---------- | ----------------------------------------------------| ------ |
+| 1.0.0   | 2026-10-28 | Initial ratification from template v1.1.0           | —      |
+| 1.0.1   | 2026-10-28 | Angular and Oracle Version updated  (Manual change) | —      |
