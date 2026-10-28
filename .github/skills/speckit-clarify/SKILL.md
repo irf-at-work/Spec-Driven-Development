@@ -6,7 +6,7 @@ metadata:
   author: "github-spec-kit"
   source: "templates/commands/clarify.md"
 ---
-
+test
 
 ## User Input
 
