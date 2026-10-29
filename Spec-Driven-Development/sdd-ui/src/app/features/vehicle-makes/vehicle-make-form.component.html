@@ -1,0 +1,106 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>{{ heading }}</h1>
+      @if (mode === 'view') {
+        <p class="subtitle">Review the details, or switch on Edit to change them.</p>
+      } @else {
+        <p class="subtitle">Fields marked * are required.</p>
+      }
+    </div>
+
+    @if (mode === 'view') {
+      <mat-slide-toggle
+        [checked]="editing()"
+        [disabled]="loading() || saving()"
+        (change)="onEditToggle($event)"
+      >
+        Edit
+      </mat-slide-toggle>
+    }
+  </header>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading the vehicle make" />
+  }
+
+  <form class="card" novalidate [formGroup]="form" (ngSubmit)="save()">
+    <div class="grid">
+      <app-limited-text-field
+        class="code"
+        label="Make Code"
+        patternMessage="Make Code can contain only letters, digits and hyphens."
+        [control]="form.controls.makeCode"
+        [maxLength]="limits.makeCode"
+        [uppercase]="true"
+      />
+      <app-limited-text-field
+        class="name"
+        label="Make Name"
+        [control]="form.controls.makeName"
+        [maxLength]="limits.makeName"
+      />
+      <app-limited-text-field
+        class="short"
+        label="Short Name"
+        [control]="form.controls.shortName"
+        [maxLength]="limits.shortName"
+      />
+    </div>
+
+    <mat-expansion-panel
+      class="additional"
+      [expanded]="additionalOpen()"
+      (opened)="additionalOpen.set(true)"
+      (closed)="additionalOpen.set(false)"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title>Additional Information</mat-panel-title>
+        <mat-panel-description>Remarks and Arabic names (all optional)</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="grid">
+        <app-limited-text-field
+          class="full"
+          label="Remarks"
+          [control]="form.controls.remarks"
+          [maxLength]="limits.remarks"
+          [multiline]="true"
+          [showCounter]="true"
+        />
+        <app-limited-text-field
+          class="half"
+          label="Arabic Make Name"
+          [control]="form.controls.arabicMakeName"
+          [maxLength]="limits.arabicMakeName"
+          [rtl]="true"
+        />
+        <app-limited-text-field
+          class="half"
+          label="Arabic Short Name"
+          [control]="form.controls.arabicShortName"
+          [maxLength]="limits.arabicShortName"
+          [rtl]="true"
+        />
+        <app-limited-text-field
+          class="full"
+          label="Arabic Remarks"
+          [control]="form.controls.arabicRemarks"
+          [maxLength]="limits.arabicRemarks"
+          [multiline]="true"
+          [rtl]="true"
+          [showCounter]="true"
+        />
+      </div>
+    </mat-expansion-panel>
+
+    <div class="actions">
+      <button matButton type="button" (click)="back()">Back to list</button>
+      @if (editing()) {
+        <button matButton="filled" type="submit" [disabled]="saving() || loading()">
+          {{ mode === 'create' ? 'Save vehicle make' : 'Save changes' }}
+        </button>
+      }
+    </div>
+  </form>
+</section>

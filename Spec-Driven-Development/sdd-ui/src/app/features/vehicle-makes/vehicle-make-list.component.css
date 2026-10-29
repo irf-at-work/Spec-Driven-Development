@@ -1,0 +1,71 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--sdd-text);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--sdd-muted);
+}
+
+.toolbar {
+  margin-bottom: 16px;
+}
+
+.search {
+  width: min(420px, 100%);
+}
+
+.table-card {
+  background: var(--sdd-surface);
+  border: 1px solid var(--sdd-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.actions-column {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.delete-action {
+  --mat-button-text-label-text-color: #b3261e;
+}
+
+.state {
+  margin: 0;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--sdd-muted);
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    flex-direction: column;
+  }
+}

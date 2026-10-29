@@ -1,0 +1,24 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 24px;
+  background: var(--sdd-header-bg);
+  color: var(--sdd-header-text);
+}
+
+.brand {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.section {
+  font-size: 0.9rem;
+  opacity: 0.75;
+}

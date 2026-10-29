@@ -35,9 +35,9 @@ Request `CreateVehicleMakeRequest`:
 
 Behavior: validate and normalize English fields and Make Code on the server; preserve Arabic strings exactly. Set created/changed username to `admin`.
 
-- `201 Created`: created `VehicleMakeDto` and resource location.
-- Invalid request: `400 Bad Request` with ProblemDetails.
-- Duplicate Make Code: `409 Conflict` with a clear duplicate-code ProblemDetails response; do not save.
+- `200 OK`: the created `VehicleMakeDto`. This is `200` rather than `201 Created` on purpose: the return type can only describe a `200` response (no response attributes are allowed), and the generated Angular client treats any other success code as a failure. The saved record is in the body, so no separate resource location is needed.
+- Invalid request: `400 Bad Request` with ProblemDetails (validation errors keyed by camelCase field name, e.g. `makeCode`).
+- Duplicate Make Code: `409 Conflict` with ProblemDetails; the `makeCode` error reads "This make code already exists." Nothing is saved.
 
 ## Update
 

@@ -1,1 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global look: a plain light theme with a restrained blue accent. Components read these variables. */
+:root {
+  --sdd-bg: #f4f6f9;
+  --sdd-surface: #ffffff;
+  --sdd-border: #d9dfe7;
+  --sdd-text: #1f2933;
+  --sdd-muted: #5b6776;
+  --sdd-accent: #1d4e89;
+  --sdd-header-bg: #14304f;
+  --sdd-header-text: #ffffff;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--sdd-bg);
+  color: var(--sdd-text);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
