@@ -1,8 +1,9 @@
 
 # Broker Insurance Constitution
 
-**Version:** 1.0.1 | **Ratified:** 2026-10-28 | **Last amended:** 2026-10-28
+**Version:** 1.1.0 | **Ratified:** 2026-10-28 | **Last amended:** 2026-10-28
 **Based on template:** v1.1.0
+**Owner:** Irfan | **Engineering lead:** Rijin
 
 > This constitution sets the non-negotiable rules for this project. Every
 > specification, plan, task list and line of code must comply with it.
@@ -106,6 +107,7 @@ every change.*
   contain secrets or unnecessary personal data.
 - The system SHOULD make its own health visible (is it running, what is it
   doing, what has failed).
+- Logging MUST use the project's standard logger (Serilog, see B2).
 
 ### Article 9 — Human control
 
@@ -142,50 +144,68 @@ every change.*
 
 ### B2 — Technology constraints
 
-- Backend: .Net 10 (C#)
+- Backend: .NET 10 (C#)
 - Frontend: Angular 21
 - Database: Oracle 19c
-- Testing: Playwright for end-to-end tests, and XUnit for API tests 
-- Hosting: Local machine only
-- Secrets: Operating system credential store or environment variables; never in code or the database 
+- Logging: Serilog, configured through `appsettings.json`, writing to the
+  console and to rolling daily files.
+- Backend unit tests: xUnit.
+- End-to-end tests: Playwright for .NET with xUnit (`Microsoft.Playwright.Xunit`).
+- Frontend unit tests: Vitest (the Angular 21 default).
+- Hosting: Local machine only.
+- Secrets: Operating system credential store or environment variables.
 
 ### B3 — Domain rules
 
-- British/Indian English in all text users read.
-- Dates and times in Gulf Standard Time (GST), shown as DD-MMM-YYYY.
-- Money in AED
+- All text users read MUST be in British English (en-GB).
+- Dates and times are stored in UTC and displayed in Gulf Standard Time
+  (GST, UTC+4) as DD-MMM-YYYY.
+- Money is in AED, shown to 2 decimal places.
+- Money MUST use `decimal` in C# and `NUMBER(p,s)` in Oracle, with the
+  currency explicit.
 
 
-### B4 — Approved Dependencies and Safe Data
+### B4 — Approved Dependencies
 - Always ask for confirmation before adding, updating, or removing a frontend or backend package or library. 
 - A proposal MUST explain its purpose, why the standard library or existing dependencies are insufficient, and its license. 
-- Never commit secrets; use user-secrets or environment variables.
-- Money MUST use `decimal` in C# and `NUMBER(p,s)` in Oracle, with the currency explicit.
+- Pre-approved, pinned to specific versions (Article 7), and needing no
+  further confirmation:
+  - Backend: Oracle.EntityFrameworkCore, Serilog (ASP.NET Core, Console and
+    File sinks), xUnit, Microsoft.Playwright.Xunit
+  - Frontend: Angular Material,OpenAPI Generator,
+    Vitest
+- Any other package needs confirmation under the rule above.
 
 ### B5 — Tested, Reliable Changes
-- New behavior MUST have unit tests. A task is complete only when the build and all tests
-pass. Backend asynchronous operations MUST accept and propagate `CancellationToken`.
+- New behaviour MUST have xUnit unit tests, and each user story MUST have a
+  Playwright end-to-end test covering its acceptance criteria.
+- A task is complete only when the build and all tests pass.
+- Backend asynchronous operations MUST accept and propagate `CancellationToken`.
+- Automated tests MAY change data only in a dedicated test schema or
+  database, never in development data (see C3).
 
 ### B6 — Consistent, Secure API
-- Use controllers, DTOs, and authorization by default.
+- Use controllers, DTOs by default.
 - Every non-success response MUST use `ProblemDetails`; exceptions
 MUST be handled globally, with no stack traces returned to clients.
+- Authentication is out of scope (B9), so endpoints are anonymous for the
+  MVP. Keep the controller structure ready so `[Authorize]` can be added
+  later without redesign.
 
 ### B7 — Typed, Generated Angular UI
 - The OpenAPI specification is the source of truth: generate the Angular API client and
 never hand-write or edit it. 
+- The client is generated with OpenAPI Generator t, and regenerated whenever the API changes.
 - Keep strict typing and templates enabled; do not use `any`, non-null assertions, or casts to silence the compiler. Use generated API types
 without duplicating models.
 
-## B8 — Technical Constraints
+### B8 — Technical Constraints
 
-- The application consists of a .NET 10 API, an Angular 21 UI, and an Oracle database.
 - Use `Oracle.EntityFrameworkCore` with Database-First: do not edit scaffolded files or use EF migrations.
 - Database changes SHOULD be made to the tables and then scaffolded. 
 - Extend scaffolded entities with partial classes. 
 - Ask for confirmation before any database change, including DDL and inserts, updates, or
 deletes.
-
 - Listing endpoints MUST return the shared `PaginatedResult<T>` with `items`, `page`,
 `pageSize`, and `totalCount`; the default page size is 10.
 - Declare API response shapes through return types. 
@@ -204,7 +224,18 @@ the authority.
 
 ### B9 — Out of scope
 
-- Authentication does not need to be handled
+- Authentication and user accounts do not need to be handled in the MVP.
+
+### B10 — Team workflow
+
+- Each master page has its own spec, plan, task list and Git branch. The
+  owner for each is recorded in its spec, not here.
+- Shared pieces (`PaginatedResult<T>`, the global error interceptor, the
+  global exception handler, the layout and navigation, the migration runner)
+  MUST be built first, once, and reused. Nobody duplicates them.
+- One named person owns database scripts and scaffolding, so scripts are not
+  numbered or scaffolded in conflict.
+- Branches are merged into main only when all tests pass (Article 10).
 
 ---
 
@@ -232,13 +263,13 @@ the authority.
 - A project may depart from a Part A rule only by writing the exception
   here, with the reason and the date. Unwritten exceptions do not exist.
 
-| Date | Article | Exception | Reason |
-| ---- | ------- | --------- | ------ |
-|      |         |           |        |
+| Date       | Article        | Exception                                                                                                   | Reason                                                            |
+| ---------- | -------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 2026-10-28 | Article 9 / B8 | Automated tests may insert, update and delete data without prompting, but only in the dedicated test schema | End-to-end tests cannot run if every change needs a manual prompt |
 
 ### C4 — Amendment log
 
-| Version | Date       | Change                                              | Reason |
-| ------- | ---------- | ----------------------------------------------------| ------ |
-| 1.0.0   | 2026-10-28 | Initial ratification from template v1.1.0           | —      |
-| 1.0.1   | 2026-10-28 | Angular and Oracle Version updated  (Manual change) | —      |
+| Version | Date       | Change                                                                                                                                                                                | Reason                                              |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1.0.0   | 2026-10-28 | Initial ratification from template v1.1.0                                                                                                                                             | —                                                   |
+| 1.1.0   | 2026-10-28 | Added Serilog, xUnit/Playwright/Vitest testing stack, Angular 21, SQL-script migration runner with confirmation, pre-approved dependencies, team workflow (B10); clarified B3, B6, B9 | Team requirements and conflicts found during review |
