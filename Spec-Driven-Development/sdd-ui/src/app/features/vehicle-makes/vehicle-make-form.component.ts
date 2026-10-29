@@ -51,6 +51,7 @@ interface FormValues {
   arabicMakeName: string;
   arabicShortName: string;
   arabicRemarks: string;
+  active: boolean;
 }
 
 /**
@@ -77,7 +78,8 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly editToggle = viewChild(MatSlideToggle);
+  // Named in the template, because the Active switch is also a slide toggle.
+  private readonly editToggle = viewChild('editSwitch', { read: MatSlideToggle });
 
   protected readonly mode: 'create' | 'view' =
     inject(ActivatedRoute).snapshot.data['mode'] === 'view' ? 'view' : 'create';
@@ -123,6 +125,8 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       nonNullable: true,
       validators: [Validators.maxLength(LIMITS.arabicRemarks)],
     }),
+    // On by default for a new make; turning it off retires the make without deleting it (FR-027).
+    active: new FormControl(true, { nonNullable: true }),
   });
 
   // What was last saved or loaded, so turning Edit off can put the form back exactly as it was.
@@ -197,6 +201,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       arabicMakeName: value.arabicMakeName,
       arabicShortName: value.arabicShortName,
       arabicRemarks: value.arabicRemarks,
+      active: value.active,
     };
 
     this.saving.set(true);
@@ -256,6 +261,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       arabicMakeName: make.arabicMakeName ?? '',
       arabicShortName: make.arabicShortName ?? '',
       arabicRemarks: make.arabicRemarks ?? '',
+      active: make.active !== false,
     };
 
     this.form.reset(values);

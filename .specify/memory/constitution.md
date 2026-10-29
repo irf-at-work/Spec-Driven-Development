@@ -234,7 +234,7 @@ the authority.
 
 | Date | Article | Exception | Reason |
 | ---- | ------- | --------- | ------ |
-|      |         |           |        |
+| 2026-10-29 | B8 (listing endpoints MUST be paged) | The single read-only `GET /api/vehicle-model-options` lookup returns the nine fixed `STD_LIST_ITEM` dropdown lists in one unpaged response (feature 001, FR-021). | The lists are small, fixed lookups that fill dropdowns; paging them would add nine requests and paging controls with no benefit. Owner-approved in the feature 001 clarifications of 29-Oct-2026 (Q: "Should model-field dropdown choices be paged?" A: No). |
 
 ### C4 — Amendment log
 

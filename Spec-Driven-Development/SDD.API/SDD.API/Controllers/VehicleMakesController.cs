@@ -58,12 +58,7 @@ public class VehicleMakesController(
         var created = await vehicleMakes.CreateAsync(values, cancellationToken);
         if (created is null)
         {
-            return ValidationProblem(new ValidationProblemDetails(
-                new Dictionary<string, string[]> { ["makeCode"] = ["This make code already exists."] })
-            {
-                Status = StatusCodes.Status409Conflict,
-                Title = "Make code already exists"
-            });
+            return ConflictProblem("Make code already exists", "This make code already exists.");
         }
 
         return created;
@@ -95,8 +90,17 @@ public class VehicleMakesController(
     [HttpDelete("{makeCode}")]
     public async Task<IActionResult> Delete(string makeCode, CancellationToken cancellationToken)
     {
-        var removed = await vehicleMakes.DeleteAsync(makeCode, cancellationToken);
-        if (!removed)
+        var outcome = await vehicleMakes.DeleteAsync(makeCode, cancellationToken);
+
+        if (outcome == VehicleMakeDeleteOutcome.HasModels)
+        {
+            // Keyed by makeCode so the screen can show this plain-English sentence without ever showing raw server text.
+            return ConflictProblem(
+                "Vehicle make still has models",
+                "This make still has models. Delete its models first, then delete the make.");
+        }
+
+        if (outcome == VehicleMakeDeleteOutcome.NotFound)
         {
             return NotFoundProblem();
         }
@@ -112,6 +116,14 @@ public class VehicleMakesController(
             action,
             makeCode,
             string.Join(", ", errors.Keys));
+
+    private ActionResult ConflictProblem(string title, string makeCodeMessage) =>
+        ValidationProblem(new ValidationProblemDetails(
+            new Dictionary<string, string[]> { ["makeCode"] = [makeCodeMessage] })
+        {
+            Status = StatusCodes.Status409Conflict,
+            Title = title
+        });
 
     private ObjectResult NotFoundProblem() =>
         Problem(

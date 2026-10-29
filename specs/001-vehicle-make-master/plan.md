@@ -6,17 +6,17 @@
 
 ## Summary
 
-Build a trusted vehicle-make master list for insurance brokers. Brokers can find, add, view, edit, and permanently delete makes, with Make Code as the immutable unique key, data normalized and validated when saved, and all list filtering and sorting applied before pagination. In plain English, the Angular page sends typed requests to the .NET API; the API validates and normalizes entries, then reads or writes the approved Oracle master table. The API publishes its OpenAPI description and the UI client is generated from that description.
+Complete the vehicle-make master workflow and add inline vehicle-model maintenance. Brokers can browse, add, view, edit, deactivate/reactivate, and permanently delete makes and models; make and model codes are immutable unique keys in their respective scopes. In plain English, the Angular page sends typed requests to the .NET API; the API validates and normalizes entries, then reads or writes the approved Oracle tables. Models belong to one make, and their nine optional coded fields use fixed lookup lists. Search, sorting, and paging for makes, and paging for models, are applied on the server. The API publishes its OpenAPI description and the UI client is generated from that description.
 
 ## Technical Context
 
 **Language/Version**: C# / .NET 10; Angular 22 / TypeScript 6.0 (as already declared in the UI project; constitution v1.0.2 aligned to match)
 
-**Primary Dependencies**: Existing ASP.NET Core OpenAPI 10.0.14 and Prettier 3.8.1; proposed Oracle.EntityFrameworkCore 10.23.26400, Angular Material/CDK 22.2.5 (MIT), Angular ESLint schematics 22.6.0 (MIT), NSwag.MSBuild 14.7.1 for generated TypeScript API client, API test host, XUnit, and Playwright; package additions/updates require owner approval. Use the .NET SDK's built-in `dotnet format` for C# formatting.
+**Primary Dependencies**: Existing ASP.NET Core OpenAPI 10.0.14, Oracle.EntityFrameworkCore 10.23.26400, NSwag.MSBuild 14.7.1, Angular Material/CDK 22.2.5, Angular ESLint, Prettier, XUnit v3, ASP.NET Core test host, and Playwright Test 1.64.1. No additional package is currently proposed for the model workflow. Any future package change still requires owner approval under constitution B4. Use the .NET SDK's built-in `dotnet format` for C# formatting.
 
-**Storage**: Oracle 19c, Database-First; existing database schema and connection are not present in the repository. No migrations; do not make DDL or data changes without owner approval.
+**Storage**: Oracle 19c, Database-First. The repository has an existing scaffold for `BRM_VEH_MAKE`; the `BRM_VEH_MODEL` and `STD_LIST_ITEM` mappings and their live constraints must be verified before use. No migrations; do not make DDL or data changes without owner approval.
 
-**Testing**: XUnit API/unit tests and Playwright end-to-end tests, neither test project nor Playwright setup is present yet. Proposed packages and versions are listed in research.md and require approval.
+**Testing**: An XUnit API test project and Angular tests exist; Playwright Test is installed, but feature end-to-end coverage and its complete local-run setup remain implementation work. Test every make/model acceptance flow at the API boundary and in the browser.
 
 **Target Platform**: Local machine; .NET 10 API, Angular browser UI, Oracle 19c database
 
@@ -24,9 +24,9 @@ Build a trusted vehicle-make master list for insurance brokers. Brokers can find
 
 **Performance Goals**: No latency or throughput target is specified. Queries must filter and sort the full matching record set in the database, then return a page of 10 records.
 
-**Constraints**: Search Make Code, Make Name, and Short Name; allow-list those sortable fields; default to Make Code ascending. Enforce all validation on save. Return the shared `PaginatedResult<T>`; non-success API responses use `ProblemDetails`. Generated API types only; no hand-authored duplicate models. Hard delete requires confirmation. No authentication or permission checks in this feature.
+**Constraints**: Search Make Code, Make Name, and Short Name; allow-list those sortable fields; default to Make Code ascending. Return shared `PaginatedResult<T>` for makes and models, with a page size of 10. Enforce validation on save. Use `ProblemDetails` for failures and generated API types only. Confirm permanent deletion; refuse make deletion while models remain. Keep lookup options unpaged only after the owner-approved constitution C3 exception is recorded. Authentication is out of scope under B9.
 
-**Scale/Scope**: One master-data workflow; 10 rows per page; no specified record-count or concurrent-user target. This phase implements vehicle-make CRUD only.
+**Scale/Scope**: One master-data workflow with make CRUD and inline model CRUD; make/model lists are limited to 10 rows per page. Lookup options are small and returned in one unpaged response. No record-count, latency, throughput, or concurrent-user target is specified.
 
 ## Constitution Check
 
@@ -42,10 +42,11 @@ Build a trusted vehicle-make master list for insurance brokers. Brokers can find
 - [x] Formatter and linter gates are planned for C# and Angular/TypeScript, with Prettier used for formatting and Angular ESLint for linting.
 - [x] Timestamped success/failure logging, secret/privacy exclusions, and a technical decision record are covered by implementation tasks.
 - [x] **Framework version resolved.** Constitution amended to v1.0.2 (Angular 22), matching `sdd-ui/package.json` (Angular 22.2, TypeScript 6.0). No downgrade is needed.
-- [ ] **Implementation gate: package approval.** Oracle provider, Angular Material/CDK, Angular ESLint, OpenAPI client generation, API test host, XUnit, and Playwright dependencies are not all present. Purpose, alternatives, and license details are in `research.md`; obtain owner approval before adding/updating packages.
-- [ ] **Implementation gate: Oracle change approval and access.** Confirm access to the intended Oracle 19c schema and approve any required DDL before scaffolding. The owner has described table `BRM_VEH_make` (primary key `VMAK_CODE`); constraints, column defaults and character-versus-byte length semantics must still be confirmed against the live schema. Do not create or alter tables without approval.
+- [x] **Package scope.** The current manifests contain the packages needed by this design; no package change is proposed. Any later package addition, update, or removal requires owner confirmation under B4.
+- [ ] **Implementation gate: Oracle schema and access.** Confirm access to the intended Oracle 19c schema and verify make/model keys, the non-cascading model foreign key, list-item keys/data, defaults, audit behavior, and character-versus-byte length semantics. Do not scaffold new tables, run DDL, or mutate data without explicit owner approval.
+- [ ] **Implementation gate: constitution C3 exception.** Before implementation, record the owner-approved exception for the single unpaged model-options lookup under C3, as required by the spec and constitution.
 
-**Gate result**: The design follows the constitution, but implementation is not authorized until the two unchecked gates are resolved. No packages, database schema, or database data were changed during planning.
+**Gate result**: The design is complete and the unpaged lookup has explicit owner approval in the spec. Implementation remains blocked until the schema/access checks and the formal C3 exception entry are complete; no database changes were made during this planning update.
 
 ## Project Structure
 
@@ -66,19 +67,21 @@ specs/001-vehicle-make-master/
 Spec-Driven-Development/
 ├── SDD.API/SDD.API/
 │   ├── Controllers/VehicleMakesController.cs
-│   ├── DTOs/VehicleMake*.cs
-│   ├── Contracts/PaginatedResult<T>.cs    # shared list response required by constitution
-│   ├── Services/VehicleMakeService.cs
-│   └── [database-first context and entities generated after schema approval]
-├── SDD.API/SDD.API.Tests/                # new, after package approval
-├── sdd-ui/src/app/                       # list, detail/form, and routing
-├── sdd-ui/src/app/generated/             # generated API client; never hand-edit
-└── tests/vehicle-make-e2e/               # new Playwright tests, after approval
+│   ├── Controllers/VehicleModelsController.cs       # nested routes under a make
+│   ├── Controllers/VehicleModelOptionsController.cs
+│   ├── DTOs/VehicleMake*.cs and VehicleModel*.cs
+│   ├── Contracts/PaginatedResult<T>.cs
+│   ├── Services/VehicleMakeService.cs and VehicleModelService.cs
+│   └── Data/Scaffolded/                             # database-first entities; generated files stay untouched
+├── SDD.API/SDD.API.Tests/                           # existing XUnit project; extend with make/model coverage
+├── sdd-ui/src/app/features/vehicle-makes/           # existing list/form; add inline model list/editor
+├── sdd-ui/src/app/generated/                        # generated API client; never hand-edit
+└── tests/vehicle-make-e2e/                          # Playwright acceptance coverage
 
 docs/decisions/vehicle-make-master.md     # significant technical decisions
 ```
 
-**Structure Decision**: Extend the existing two-project web application. Keep HTTP concerns in one controller, validation/query/normalization in one feature service, and persistence in the database-first context. Use request/response DTOs and the generated Angular client. Do not introduce a repository layer unless implementation proves one is necessary. Test projects and a single root test runner are new and should be added only after package approval.
+**Structure Decision**: Extend the existing API/UI projects and their test infrastructure. Use nested model routes so the make key comes from the route, keep model CRUD separate from unsaved make edits, and expose lookup options through one fixed, read-only endpoint. Use DTOs and the generated Angular client. Keep persistence in the database-first context and do not add a repository layer without demonstrated need.
 
 ## Complexity Tracking
 
@@ -86,8 +89,8 @@ docs/decisions/vehicle-make-master.md     # significant technical decisions
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| None | No justified constitution exception is proposed. | Not applicable. |
+| B8 requires listings to be paged; the nine small model lookup lists are unpaged (spec-approved exception; C3 entry is a pre-implementation gate). | FR-021 requires dropdown choices from fixed list types. One small read-only response avoids nine requests and paging controls for lookup selections. | Paging each lookup would add UI and API complexity without a specified large lookup volume; the owner chose the unpaged behavior. |
 
 ## Post-Design Constitution Check
 
-The Phase 1 model and contract preserve database-first scaffolding, API response typing, shared pagination, ProblemDetails errors, generated Angular types, user-confirmed hard deletion, automated tests, formatting/lint checks, timestamped error/action logging, and decision documentation. The package approval, Oracle provider/license and schema access, and any required DDL approval gates remain open. The authorization-scope conflict identified in analysis is intentionally unchanged and excluded from this remediation at the user's direction.
+The Phase 1 model and contract preserve database-first scaffolding, typed API responses, shared pagination for make/model browsing lists, `ProblemDetails`, generated Angular types, confirmed hard deletes, validation, automated tests, formatting/lint checks, timestamped logging, and decision documentation. The unpaged options lookup is an owner-approved exception but must be formally recorded under C3 before implementation. Oracle schema/access verification and any required DDL approval remain implementation gates. Authentication remains out of scope under B9.

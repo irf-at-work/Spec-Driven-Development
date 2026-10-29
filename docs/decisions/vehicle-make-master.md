@@ -42,3 +42,27 @@
 **Alternatives considered**: Native controls only, manual testing only, or separate undocumented test commands.
 
 **Rationale**: Angular Material, Angular 22, XUnit, and Playwright are project constraints; automated acceptance coverage and a single test command are constitution requirements. Package additions require owner approval. Prettier is already present; Angular ESLint is a proposed MIT-licensed addition, and `dotnet format`/analyzer checks are provided by the .NET SDK.
+
+## Retire Records with an Active Flag, Not a Separate Action
+
+**Decision**: Every make (and later every model) has an Active setting stored as `Y` or `N` in `VMAK_ACTIVE_YN` / `VMOD_ACTIVE_YN`. A new record is Active by default; a row with no flag counts as Active. An update request that does not mention `active` leaves the status unchanged. Inactive records stay in the list and can be opened.
+
+**Alternatives considered**: Leave the column to a database default (the earlier design), or hide inactive rows with a filter.
+
+**Rationale**: Owner decision of 29-Oct-2026 (spec FR-027 to FR-029). Writing the flag explicitly means the page no longer depends on an unverified database default or trigger, so the earlier "database-supplied" override in the hand-written part of the data context was removed.
+
+## Refuse Make Deletion While Models Exist
+
+**Decision**: Before deleting a make, the API counts its models and answers `409` with a plain-English message keyed `makeCode` when any exist. A concurrent Oracle `ORA-02292` (child record found) maps to the same answer. Until `BRM_VEH_MODEL` is scaffolded (tasks T002 and T007), the count uses one parameterised read-only query; replace it with a normal query on the scaffolded entity afterwards.
+
+**Alternatives considered**: Rely on the database foreign key alone, or cascade-delete the models.
+
+**Rationale**: Spec FR-026. The foreign key alone would give a raw database error, and a cascade would silently remove child data if the live schema turns out to cascade, which is still to be verified.
+
+## Unpaged Model-Options Lookup (Constitution C3 Exception)
+
+**Decision**: `GET /api/vehicle-model-options` returns the nine fixed dropdown lists in one unpaged response. The exception to B8 is recorded in constitution C3 (29-Oct-2026).
+
+**Alternatives considered**: Nine separate endpoints, caller-chosen list types, or paged options.
+
+**Rationale**: Small fixed lookups; the owner chose the unpaged behaviour in the spec clarifications.

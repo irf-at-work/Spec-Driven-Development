@@ -13,14 +13,14 @@ All routes are relative to `/api/vehicle-makes`. JSON names use camelCase. All n
 - `sortBy`: optional `makeCode`, `makeName`, or `shortName`; default `makeCode`.
 - `sortDirection`: optional `asc` or `desc`; default `asc`.
 - Page size is fixed at 10 for this workflow. Search and sorting apply to all records before pagination.
-- `200 OK`: shared `PaginatedResult<VehicleMakeListItemDto>` with `items`, `page`, `pageSize`, and `totalCount`. Each item contains `makeCode`, `makeName`, and `shortName`.
+- `200 OK`: shared `PaginatedResult<VehicleMakeListItemDto>` with `items`, `page`, `pageSize`, and `totalCount`. Each item contains `makeCode`, `makeName`, `shortName`, and `active`.
 - Invalid page or sort values: `400 Bad Request` with ProblemDetails.
 
 ## Get by Make Code
 
 `GET /api/vehicle-makes/{makeCode}`
 
-- `200 OK`: `VehicleMakeDto` with Make Code, English fields, optional Arabic fields, and audit usernames.
+- `200 OK`: `VehicleMakeDto` with Make Code, English fields, optional Arabic fields, Active status, and audit usernames.
 - No match: `404 Not Found` with ProblemDetails.
 
 ## Create
@@ -32,6 +32,7 @@ Request `CreateVehicleMakeRequest`:
 - Required `makeCode` (1-12 characters; letters, digits, and hyphens only).
 - Required `makeName` (1-100 characters) and `shortName` (1-30 characters).
 - Optional `remarks` (up to 2000 characters), `arabicMakeName` (up to 100), `arabicShortName` (up to 30), and `arabicRemarks` (up to 2000).
+- `active`: optional boolean; defaults to `true` when omitted on create. Stored as `Y` or `N`.
 
 Behavior: validate and normalize English fields and Make Code on the server; preserve Arabic strings exactly. Set created/changed username to `admin`.
 
@@ -43,7 +44,7 @@ Behavior: validate and normalize English fields and Make Code on the server; pre
 
 `PUT /api/vehicle-makes/{makeCode}`
 
-Request `UpdateVehicleMakeRequest` contains the editable English fields, Remarks, and optional Arabic fields. It does not contain Make Code; code is immutable.
+Request `UpdateVehicleMakeRequest` contains the editable English fields, Remarks, optional Arabic fields, and `active`. It does not contain Make Code; code is immutable.
 
 - `200 OK`: updated `VehicleMakeDto`; stamp last-changed username `admin`.
 - Invalid request: `400 Bad Request` with ProblemDetails; do not update.
@@ -56,6 +57,32 @@ Request `UpdateVehicleMakeRequest` contains the editable English fields, Remarks
 - The client asks the user to confirm the permanent, irreversible action before making this request.
 - `204 No Content`: record permanently removed.
 - No match: `404 Not Found` with ProblemDetails.
+- If one or more vehicle models belong to the make: `409 Conflict` with ProblemDetails explaining that the user must delete the models first. No data is removed.
+
+## Vehicle Models
+
+Models live under their make. The Make Code always comes from the route; it is never accepted in a request body, so a model cannot be moved to another make. All routes are relative to `/api/vehicle-makes/{makeCode}/models`. The shapes follow the same rules as above: return-type declared, camelCase, `ProblemDetails` for every failure, `200 OK` for create.
+
+| Action | Route | Success | Failures |
+|---|---|---|---|
+| List | `GET ?page={page}` | `200` `PaginatedResult<VehicleModelDto>` (page size 10, ordered by `modelCode` ascending; no search or sort) | `400` bad page, `404` make not found |
+| Create | `POST` with `CreateVehicleModelRequest` | `200` created `VehicleModelDto` | `400` validation (keyed by field), `404` make not found, `409` code already exists for this make |
+| Update | `PUT /{modelCode}` with `UpdateVehicleModelRequest` (no model code in the body) | `200` updated `VehicleModelDto` | `400`, `404` |
+| Delete | `DELETE /{modelCode}` | `204` | `404` |
+
+`VehicleModelDto` carries the make code, model code, English and Arabic name / short name / remarks, every optional detail from the data model, Active status, and audit usernames. Numbers are numbers (`value` is a decimal), not strings. The nine dropdown fields carry the item's code only; the screen shows the matching description from the dropdown options below. Create accepts an optional boolean `active` that defaults to `true`; update includes `active`. The database stores this flag as `Y` or `N`.
+
+Validation and normalisation use the same server rules as makes (code format and capitals, English text normalisation, Arabic text untouched, maximum lengths). The create-model request validates `modelCode`; the update request does not. Each dropdown code that is newly selected must be an active item of its own list type, otherwise `400` with the error keyed by that field (for example `fuelType`). An empty value is allowed. On update, an existing inactive selection may be kept unchanged; the UI should show it as the current value without offering it as a new choice.
+
+### Dropdown options
+
+`GET /api/vehicle-model-options`
+
+- `200 OK`: `VehicleModelOptionsDto`, one call that returns all nine lists, so the screen does not make nine requests. Each list is an array of `{ code, description }` containing the active `STD_LIST_ITEM` rows of one list type, ordered by description: `variants` (`VEH_VARIANT`), `types` (`VEH_TYPE`), `bodyTypes` (`VEH_BODY_TYPE`), `fuelTypes` (`VEH_FUEL_TYPE`), `cylinders` (`VEH_CYLINDER`), `doors` (`VEH_DOORS`), `drivingTypes` (`VEH_DRIVING_TYPE`), `bodyColours` (`VEH_BODY_COLOR`) and `categories` (`VEH_CATEGORY`).
+- Read-only. The list types are fixed in the server, never taken from the request.
+- Not paged: this is the owner-approved lookup exception in the spec. Record the exception under constitution C3 before implementation.
+
+Model create/update/delete endpoints are independent of unsaved make changes. Deleting a make with models returns the `409` response described above. Verify that the Oracle make-model foreign key does not cascade deletes; the API must pre-check for models and map a concurrent foreign-key conflict to the same `409 ProblemDetails` response.
 
 ## Error Shape
 

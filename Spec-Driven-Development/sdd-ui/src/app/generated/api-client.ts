@@ -384,6 +384,7 @@ export interface CreateVehicleMakeRequest {
     arabicMakeName: string | null;
     arabicShortName: string | null;
     arabicRemarks: string | null;
+    active?: boolean | null;
 
     [key: string]: any;
 }
@@ -404,6 +405,7 @@ export interface UpdateVehicleMakeRequest {
     arabicMakeName: string | null;
     arabicShortName: string | null;
     arabicRemarks: string | null;
+    active?: boolean | null;
 
     [key: string]: any;
 }
@@ -416,6 +418,7 @@ export interface VehicleMakeDto {
     arabicMakeName: string | null;
     arabicShortName: string | null;
     arabicRemarks: string | null;
+    active: boolean;
     createdBy: string | null;
     lastChangedBy: string | null;
 
@@ -426,6 +429,7 @@ export interface VehicleMakeListItemDto {
     makeCode: string;
     makeName: string;
     shortName: string;
+    active: boolean;
 
     [key: string]: any;
 }

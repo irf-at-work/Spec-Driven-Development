@@ -11,7 +11,8 @@ public sealed record VehicleMakeValues(
     string? Remarks,
     string? ArabicMakeName,
     string? ArabicShortName,
-    string? ArabicRemarks);
+    string? ArabicRemarks,
+    bool? Active = null);
 
 /// <summary>
 /// The single home of the Vehicle Make text rules (FR-004 to FR-008, FR-015): cleaning up what the user typed,
@@ -35,7 +36,8 @@ public static class VehicleMakeInputRules
             NormaliseOptionalEnglishText(request.Remarks),
             KeepArabicExactly(request.ArabicMakeName),
             KeepArabicExactly(request.ArabicShortName),
-            KeepArabicExactly(request.ArabicRemarks));
+            KeepArabicExactly(request.ArabicRemarks),
+            request.Active);
 
     // The code comes from the web address, not the request body, because it can never be changed.
     public static VehicleMakeValues Normalise(string makeCode, UpdateVehicleMakeRequest request) =>
@@ -46,7 +48,8 @@ public static class VehicleMakeInputRules
             NormaliseOptionalEnglishText(request.Remarks),
             KeepArabicExactly(request.ArabicMakeName),
             KeepArabicExactly(request.ArabicShortName),
-            KeepArabicExactly(request.ArabicRemarks));
+            KeepArabicExactly(request.ArabicRemarks),
+            request.Active);
 
     public static string NormaliseMakeCode(string? makeCode) =>
         (makeCode ?? string.Empty).Trim().ToUpperInvariant();

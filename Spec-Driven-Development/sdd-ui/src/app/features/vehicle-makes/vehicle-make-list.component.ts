@@ -19,6 +19,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs';
+import { isApiProblemError } from '../../core/api-problem';
 import { VehicleMakeListItemDto, VehicleMakesClient } from '../../generated/api-client';
 import { openConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog.component';
 
@@ -50,7 +51,7 @@ export class VehicleMakeListComponent {
 
   // The page size is fixed by the API (constitution B8); the paginator only displays it.
   protected readonly pageSize = 10;
-  protected readonly columns = ['makeCode', 'makeName', 'shortName', 'actions'];
+  protected readonly columns = ['makeCode', 'makeName', 'shortName', 'status', 'actions'];
 
   protected readonly searchControl = new FormControl('', { nonNullable: true });
 
@@ -150,8 +151,17 @@ export class VehicleMakeListComponent {
           }
           this.load();
         },
-        // The interceptor has explained the problem (for example, someone else deleted it first); refresh the list.
-        error: () => this.load(),
+        // The interceptor has explained most problems (for example, someone else deleted it first). A make that still
+        // has models is refused with a sentence written by the API, so it is shown here, then the list is refreshed.
+        error: (error: unknown) => {
+          if (isApiProblemError(error) && error.problem.status === 409) {
+            const message = error.problem.fieldErrors['makeCode']?.[0];
+            if (message) {
+              this.snackBar.open(message, 'Close', { duration: MESSAGE_DURATION_MS });
+            }
+          }
+          this.load();
+        },
       });
   }
 }

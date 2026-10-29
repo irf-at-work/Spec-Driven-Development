@@ -76,10 +76,11 @@ public class VehicleMakeApiTests(OracleApiFactory factory)
         string makeName = "Test Make",
         string shortName = "Test",
         string? remarks = null,
-        string? arabicMakeName = null) =>
+        string? arabicMakeName = null,
+        bool? active = null) =>
         client.PostAsJsonAsync(
             Url,
-            new { makeCode, makeName, shortName, remarks, arabicMakeName },
+            new { makeCode, makeName, shortName, remarks, arabicMakeName, active },
             Cancellation);
 
     private static async Task<T> Read<T>(HttpResponseMessage response)
@@ -360,5 +361,71 @@ public class VehicleMakeApiTests(OracleApiFactory factory)
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
         Assert.DoesNotContain(" at SDD.API", body);
+    }
+
+    [Fact]
+    public async Task A_new_make_is_active_unless_it_is_created_switched_off()
+    {
+        var defaultCode = NewCode();
+        var offCode = NewCode();
+
+        var byDefault = await Read<VehicleMakeDto>(await Create(defaultCode));
+        var switchedOff = await Read<VehicleMakeDto>(await Create(offCode, active: false));
+
+        Assert.True(byDefault.Active);
+        Assert.False(switchedOff.Active);
+        var stored = await Read<VehicleMakeDto>(await client.GetAsync($"{Url}/{offCode}", Cancellation));
+        Assert.False(stored.Active);
+    }
+
+    [Fact]
+    public async Task Turning_active_off_and_on_again_retires_and_restores_a_make_without_deleting_it()
+    {
+        var code = NewCode();
+        await Create(code, "Keep Me", "Keep");
+
+        var off = await client.PutAsJsonAsync(
+            $"{Url}/{code}",
+            new { makeName = "Keep Me", shortName = "Keep", active = false },
+            Cancellation);
+        var stillReadable = await client.GetAsync($"{Url}/{code}", Cancellation);
+        var on = await client.PutAsJsonAsync(
+            $"{Url}/{code}",
+            new { makeName = "Keep Me", shortName = "Keep", active = true },
+            Cancellation);
+
+        Assert.False((await Read<VehicleMakeDto>(off)).Active);
+        Assert.Equal(HttpStatusCode.OK, stillReadable.StatusCode);
+        Assert.False((await Read<VehicleMakeDto>(stillReadable)).Active);
+        Assert.True((await Read<VehicleMakeDto>(on)).Active);
+    }
+
+    [Fact]
+    public async Task An_update_that_does_not_mention_active_leaves_the_status_unchanged()
+    {
+        var code = NewCode();
+        await Create(code, active: false);
+
+        var response = await client.PutAsJsonAsync(
+            $"{Url}/{code}",
+            new { makeName = "Renamed", shortName = "Ren" },
+            Cancellation);
+
+        Assert.False((await Read<VehicleMakeDto>(response)).Active);
+    }
+
+    [Fact]
+    public async Task Inactive_makes_stay_in_the_list_and_show_their_status()
+    {
+        var runId = Guid.NewGuid().ToString("N")[..8].ToUpperInvariant();
+        factory.Track($"ZT{runId}01");
+        factory.Track($"ZT{runId}02");
+        await Create($"ZT{runId}01", "Make 01", "M01", active: true);
+        await Create($"ZT{runId}02", "Make 02", "M02", active: false);
+
+        var result = await Read<PaginatedResult<VehicleMakeListItemDto>>(
+            await client.GetAsync($"{Url}?search={runId}", Cancellation));
+
+        Assert.Equal(new[] { true, false }, result.Items.Select(item => item.Active));
     }
 }

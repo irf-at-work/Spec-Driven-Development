@@ -11,6 +11,7 @@
 
     @if (mode === 'view') {
       <mat-slide-toggle
+        #editSwitch
         [checked]="editing()"
         [disabled]="loading() || saving()"
         (change)="onEditToggle($event)"
@@ -46,6 +47,7 @@
         [control]="form.controls.shortName"
         [maxLength]="limits.shortName"
       />
+      <mat-slide-toggle class="active" [formControl]="form.controls.active">Active</mat-slide-toggle>
     </div>
 
     <mat-expansion-panel
