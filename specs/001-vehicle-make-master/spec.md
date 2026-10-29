@@ -16,6 +16,7 @@
 - Q: What should the list use for its initial sort order? → A: Make Code.
 - Q: Should the Arabic Make Name, Short Name, and Remarks use the same maximum lengths as their English counterparts? → A: Yes; 100, 30, and 2000 characters respectively.
 - Q: Should Arabic fields preserve all spacing exactly, or should leading or repeated spaces be normalized? → A: Preserve Arabic text exactly, including all spacing.
+- Q: Which user story owns the add and delete journeys so each story can be independently tested? → A: Add belongs to User Story 2; permanent delete belongs to User Story 4. User Story 1 covers list browsing, search, sorting, paging, and read-only Open.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -25,7 +26,7 @@ As an insurance broker, I want one searchable, sortable list of vehicle makes so
 
 **Why this priority**: The list is the primary way brokers use and verify the master data.
 
-**Independent Test**: Create enough vehicle makes to span multiple pages, then search, sort, and navigate the list and verify the matching results and row actions.
+**Independent Test**: Create enough vehicle makes to span multiple pages, then search, sort, and navigate the list and open a make read-only.
 
 **Acceptance Scenarios**:
 
@@ -33,8 +34,6 @@ As an insurance broker, I want one searchable, sortable list of vehicle makes so
 2. **Given** matching makes exist on different pages, **When** the user searches, **Then** matching results are found across all records, not only the current page.
 3. **Given** makes exist on different pages, **When** the user sorts by a column, **Then** the ordering applies across all records, not only the current page.
 4. **Given** the list shows a vehicle make, **When** the user selects Open, **Then** that make opens in read-only view.
-5. **Given** the list shows a vehicle make, **When** the user selects Delete, **Then** the user is asked to confirm permanent deletion before the record is removed.
-6. **Given** the list is open, **When** the user selects the add action, **Then** the user can begin entering a new vehicle make.
 
 ### User Story 2 - Add a vehicle make (Priority: P1)
 
@@ -47,14 +46,15 @@ As an insurance broker, I want to add a vehicle make with consistent English and
 **Acceptance Scenarios**:
 
 1. **Given** the add form is open, **When** the user enters a Make Name and Short Name within their limits and saves, **Then** the make is saved and appears in the list.
-2. **Given** the user leaves Make Code blank, **When** they save, **Then** the user is told that Make Code is required and the make is not saved.
-3. **Given** the user enters a Make Code, **When** they save, **Then** the code may contain only letters, digits, or hyphens, is no longer than 12 characters, and is saved in capitals.
-4. **Given** the user enters an English name or short name, **When** they save, **Then** each word starts with a capital letter, words entered entirely in capitals retain their casing, and extra spaces are removed.
-5. **Given** the user opens Additional Information, **When** they enter Remarks or Arabic name, short name, or remarks, **Then** each value is optional, respects its field limit, and Arabic text is displayed right to left without being altered.
-6. **Given** the entered Make Code already exists, **When** the user saves, **Then** the user is told that the code already exists and no record is saved.
-7. **Given** a required field is empty or a value is invalid, **When** the user attempts to save, **Then** the field is identified and the record is not saved.
-8. **Given** a field reaches its maximum length, **When** the user enters text, **Then** a message states the maximum character count and the value cannot exceed that limit.
-9. **Given** a make is successfully created, **When** its record is saved, **Then** it is stamped with user `admin`.
+2. **Given** the list is open, **When** the user selects the add action, **Then** the add form opens.
+3. **Given** the user leaves Make Code blank, **When** they save, **Then** the user is told that Make Code is required and the make is not saved.
+4. **Given** the user enters a Make Code, **When** they save, **Then** the code may contain only letters, digits, or hyphens, is no longer than 12 characters, and is saved in capitals.
+5. **Given** the user enters an English name or short name, **When** they save, **Then** each word starts with a capital letter, words entered entirely in capitals retain their casing, and extra spaces are removed.
+6. **Given** the user opens Additional Information, **When** they enter Remarks or Arabic name, short name, or remarks, **Then** each value is optional, respects its field limit, and Arabic text is displayed right to left without being altered.
+7. **Given** the entered Make Code already exists, **When** the user saves, **Then** the user is told that the code already exists and no record is saved.
+8. **Given** a required field is empty or a value is invalid, **When** the user attempts to save, **Then** the field is identified and the record is not saved.
+9. **Given** a field reaches its maximum length, **When** the user enters text, **Then** a message states the maximum character count and the value cannot exceed that limit.
+10. **Given** a make is successfully created, **When** its record is saved, **Then** it is stamped with user `admin`.
 
 ### User Story 3 - Open and edit a vehicle make (Priority: P1)
 
