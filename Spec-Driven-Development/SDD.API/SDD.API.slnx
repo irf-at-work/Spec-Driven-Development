@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="SDD.API.E2E.Tests/SDD.API.E2E.Tests.csproj" />
+  <Project Path="SDD.API.Tests/SDD.API.Tests.csproj" />
   <Project Path="SDD.API/SDD.API.csproj" />
 </Solution>

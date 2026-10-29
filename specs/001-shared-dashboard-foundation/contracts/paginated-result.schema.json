@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PaginatedResult",
+  "description": "Shared response shape for a page of typed records. The items element schema is supplied by each API response.",
+  "type": "object",
+  "required": ["items", "page", "pageSize", "totalCount"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {}
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "One-based page number."
+    },
+    "pageSize": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 10
+    },
+    "totalCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of matching records before pagination."
+    }
+  },
+  "examples": [
+    {
+      "items": ["Example record"],
+      "page": 1,
+      "pageSize": 10,
+      "totalCount": 1
+    },
+    {
+      "items": [],
+      "page": 4,
+      "pageSize": 10,
+      "totalCount": 23
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,25 @@
+<div class="dashboard-shell">
+  <header class="dashboard-header">
+    <mat-toolbar class="dashboard-toolbar">
+      <a class="brand" routerLink="/" aria-label="Broker Portal home">Broker Portal</a>
+      <span class="toolbar-spacer"></span>
+      <button
+        class="masters-trigger"
+        mat-button
+        [matMenuTriggerFor]="mastersMenu"
+        aria-label="Masters"
+      >
+        Masters
+        <span class="dropdown-indicator" aria-hidden="true"></span>
+      </button>
+      <mat-menu #mastersMenu="matMenu" aria-label="Masters">
+        <a mat-menu-item routerLink="company-master">Company Master</a>
+        <a mat-menu-item routerLink="listing-master">Listing Master</a>
+      </mat-menu>
+    </mat-toolbar>
+  </header>
+
+  <main class="dashboard-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,1 +1,135 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+
+:root {
+  color-scheme: light;
+  --color-primary-900: #123d66;
+  --color-primary-700: #1b5b8d;
+  --color-primary-600: #2577b7;
+  --color-primary-100: #eaf3fb;
+  --color-surface: #fff;
+  --color-page: #f3f7fb;
+  --color-text: #17324d;
+  --color-muted: #526b82;
+  --color-border: #c8d8e7;
+  --color-focus: #2476b5;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-text);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.75rem;
+  color: var(--color-primary-900);
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  line-height: 1.2;
+}
+
+h2 {
+  margin-bottom: 0.5rem;
+  color: var(--color-primary-900);
+  font-size: 1.25rem;
+}
+
+.shared-presentation-example {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-surface);
+  box-shadow: 0 0.5rem 1.5rem rgb(20 54 88 / 6%);
+}
+
+.shared-field {
+  display: grid;
+  width: min(100%, 28rem);
+  gap: 0.4rem;
+  color: var(--color-primary-900);
+  font-size: 0.925rem;
+  font-weight: 600;
+}
+
+.shared-input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 400;
+}
+
+.shared-input:focus-visible {
+  border-color: var(--color-focus);
+  outline: 3px solid rgb(36 118 181 / 24%);
+  outline-offset: 1px;
+}
+
+.shared-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+}
+
+.shared-table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.shared-table caption {
+  padding: 0.85rem 1rem;
+  color: var(--color-primary-900);
+  font-weight: 700;
+  text-align: left;
+}
+
+.shared-table th,
+.shared-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.shared-table th {
+  background: var(--color-primary-100);
+  color: var(--color-primary-900);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.shared-table tbody tr:last-child td {
+  border-bottom: 0;
+}
