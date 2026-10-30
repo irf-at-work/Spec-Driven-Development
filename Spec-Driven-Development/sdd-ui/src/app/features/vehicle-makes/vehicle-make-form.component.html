@@ -20,14 +20,29 @@
     </div>
 
     @if (mode === 'view') {
-      <mat-slide-toggle
+      <!-- <mat-slide-toggle
         #editSwitch
         [checked]="editing()"
         [disabled]="loading() || saving()"
         (change)="onEditToggle($event)"
       >
         Edit
-      </mat-slide-toggle>
+      </mat-slide-toggle> -->
+      <span style="display: flex; gap: 15px;">
+        <app-icon-button
+  action="edit"
+  tooltip="Edit details"
+  accessibleName="Edit vehicle make"
+  [disabled]="loading() || saving()"
+  (clicked)="onEditToggle(!editing())"
+/>
+      <app-icon-button
+        action="add"
+        tooltip="Add vehicle make"
+        accessibleName="Add vehicle make"
+        (clicked)="add()"
+      />
+      </span>
     }
   </header>
 

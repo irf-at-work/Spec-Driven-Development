@@ -246,7 +246,7 @@
         [disabled]="saving() || loading()"
         style="border-radius: 15px; padding: 15px;color: white; background-color: var(--mat-sys-on-primary-fixed-variant); border: 0; display: flex; justify-content: end; align-items: end;"
       >
-        {{ mode === 'create' ? 'Save vehicle make' : 'Save changes' }}
+        {{ mode() === 'create' ? 'Save vehicle make' : 'Save changes' }}
       </button>
 
     </div>

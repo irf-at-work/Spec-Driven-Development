@@ -19,7 +19,7 @@ export interface ColumnFilterChange {
   operator: string;
 }
 
-export type TextFilterOperator = 'startsWith' | 'endsWith' | 'contains' | 'equals' | 'notEquals';
+export type TextFilterOperator = 'startsWith' | 'endsWith' | 'contains' | 'equals' | 'notEquals' ;
 export type StatusFilterOperator = 'equals' | 'notEquals';
 
 @Component({
@@ -29,15 +29,6 @@ export type StatusFilterOperator = 'equals' | 'notEquals';
   template: `
     <div class="column-filter-container" [class.status-filter]="type() === 'status'">
       @if (type() === 'text') {
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="operator-select">
-          <mat-select [formControl]="operatorControl">
-            <mat-option value="contains">Contains</mat-option>
-            <mat-option value="startsWith">Starts with</mat-option>
-            <mat-option value="endsWith">Ends with</mat-option>
-            <mat-option value="equals">Equals</mat-option>
-            <mat-option value="notEquals">Not equal</mat-option>
-          </mat-select>
-        </mat-form-field>
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-input">
           <input
             matInput
@@ -47,18 +38,27 @@ export type StatusFilterOperator = 'equals' | 'notEquals';
             autocomplete="off"
           />
         </mat-form-field>
-      } @else {
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="operator-select">
           <mat-select [formControl]="operatorControl">
+            <mat-option value="contains">Contains</mat-option>
+            <mat-option value="startsWith">Starts with</mat-option>
+            <mat-option value="endsWith">Ends with</mat-option>
             <mat-option value="equals">Equals</mat-option>
             <mat-option value="notEquals">Not equal</mat-option>
           </mat-select>
         </mat-form-field>
+      } @else {
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="status-select">
           <mat-select [formControl]="statusControl">
             <mat-option value="">All</mat-option>
             <mat-option value="true">Active</mat-option>
             <mat-option value="false">Inactive</mat-option>
+          </mat-select>
+        </mat-form-field> 
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="operator-select">
+          <mat-select [formControl]="operatorControl">
+            <mat-option value="equals">Equals</mat-option>
+            <mat-option value="notEquals">Not equal</mat-option>
           </mat-select>
         </mat-form-field>
       }
@@ -66,26 +66,59 @@ export type StatusFilterOperator = 'equals' | 'notEquals';
   `,
   styles: `
     .column-filter-container {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 4px;
-      margin-bottom: 4px;
-      font-weight: normal;
-    }
-    .operator-select {
-      width: 105px;
-      font-size: 12px;
-    }
-    .filter-input, .status-select {
-      min-width: 110px;
-      flex: 1;
-      font-size: 13px;
-    }
-    :host ::ng-deep .mat-mdc-text-field-wrapper {
-      padding-left: 8px !important;
-      padding-right: 8px !important;
-    }
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0;
+  font-weight: normal;
+}
+
+
+.operator-select {
+  width: 105px;
+  font-size: 12px;
+}
+
+.filter-input,
+.status-select {
+  min-width: 90px;
+  flex: 1;
+  font-size: 13px;
+}
+
+/* Reduce the actual Material form-field height */
+:host ::ng-deep .mat-mdc-form-field-infix {
+  min-height: 15px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Remove excess space around the input */
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Shrink the input itself */
+:host ::ng-deep input.mat-mdc-input-element {
+  height: 15px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 15px !important;
+}
+
+/* Shrink the select trigger */
+:host ::ng-deep .mat-mdc-select-trigger {
+  height: 15px !important;
+  line-height: 15px !important;
+}
+
+/* Remove the reserved space for hints and errors */
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
   `,
 })
 export class ColumnFilterComponent {
@@ -96,23 +129,34 @@ export class ColumnFilterComponent {
 
   readonly filterChange = output<ColumnFilterChange>();
 
+
   protected readonly operatorControl = new FormControl<string>('contains', { nonNullable: true });
   protected readonly textControl = new FormControl<string>('', { nonNullable: true });
   protected readonly statusControl = new FormControl<string>('', { nonNullable: true });
 
   constructor() {
+    // Text input: debounce 400ms — fires after user stops typing
     this.textControl.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((val) => {
         this.emitChange(val, this.operatorControl.value);
       });
 
+    // "To" value for between: also debounced
+    this.statusControl.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        this.emitChange(val, this.operatorControl.value);
+      });
+
+    // Status select: fire immediately on any change (no debounce)
     this.statusControl.valueChanges
       .pipe(distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((val) => {
         this.emitChange(val, this.operatorControl.value);
       });
 
+    // Operator dropdown: fire immediately on change (no debounce)
     this.operatorControl.valueChanges
       .pipe(distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((op) => {

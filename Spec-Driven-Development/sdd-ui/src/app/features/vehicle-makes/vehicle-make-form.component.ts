@@ -158,9 +158,12 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   protected back(): void {
     void this.router.navigate(['/vehicle-makes']);
   }
+  protected add(): void {
+    void this.router.navigate(['/vehicle-makes/new']);
+  }
 
-  protected onEditToggle(change: MatSlideToggleChange): void {
-    if (change.checked) {
+  protected onEditToggle(checked: boolean): void {
+    if (checked) {
       this.editing.set(true);
       this.applyEditState();
       return;
@@ -180,12 +183,12 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
     }).then((discard) => {
       if (discard) {
         this.stopEditing();
-        return;
+        // return;
       }
-      const toggle = this.editToggle();
-      if (toggle) {
-        toggle.checked = true;
-      }
+      // const toggle = this.editToggle();
+      // if (toggle) {
+      //   toggle.checked = true;
+      // }
     });
   }
 
