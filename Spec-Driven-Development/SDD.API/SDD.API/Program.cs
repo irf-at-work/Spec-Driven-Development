@@ -54,6 +54,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
 builder.Services.AddDbContext<SddDbContext>(options => options.UseOracle(oracleConnectionString));
 builder.Services.AddScoped<VehicleMakeService>();
+builder.Services.AddScoped<VehicleModelService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy => policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod()));

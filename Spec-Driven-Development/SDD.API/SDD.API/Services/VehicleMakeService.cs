@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Oracle.ManagedDataAccess.Client;
 using SDD.API.Configuration;
 using SDD.API.Contracts;
 using SDD.API.Data.Scaffolded;
 using SDD.API.DTOs;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using SDD.API.Infrastructure;
 
 namespace SDD.API.Services;
 
@@ -23,15 +22,6 @@ public sealed class VehicleMakeService(
     TimeProvider clock,
     ILogger<VehicleMakeService> logger)
 {
-    // Oracle's error number for "unique constraint violated" (ORA-00001).
-    private const int OracleUniqueConstraintViolation = 1;
-
-    // Oracle's error number for "child record found", raised when a parent row is deleted while children still point to it (ORA-02292).
-    private const int OracleChildRecordFound = 2292;
-
-    // The United Arab Emirates uses Gulf Standard Time all year round: UTC plus four hours, no daylight saving (constitution B3).
-    private static readonly TimeSpan GulfStandardTimeOffset = TimeSpan.FromHours(4);
-
     public async Task<PaginatedResult<VehicleMakeListItemDto>> ListAsync(
         int page,
         string? search,
@@ -47,45 +37,19 @@ public sealed class VehicleMakeService(
         var skip = (int)Math.Min((long)(page - 1) * VehicleMakeListQuery.PageSize, int.MaxValue);
 
         // Inactive makes stay in the list (FR-029), so there is no filter on the flag, only a read of it.
-        //    Console.WriteLine(
-        //matching
-        //    .Skip(skip)
-        //    .Take(VehicleMakeListQuery.PageSize)
-        //    .Select(make => new VehicleMakeListItemDto(
-        //        make.VmakCode,
-        //        make.VmakName ?? string.Empty,
-        //        make.VmakShortName ?? string.Empty,
-        //        make.VmakActiveYn != VehicleMakeMapping.InactiveFlag))
-        //    .ToQueryString());
-        //    var items = await matching
-        //        .Skip(skip)
-        //        .Take(VehicleMakeListQuery.PageSize)
-        //        .Select(make => new VehicleMakeListItemDto(
-        //            make.VmakCode,
-        //            make.VmakName ?? string.Empty,
-        //            make.VmakShortName ?? string.Empty,
-        //            make.VmakActiveYn != VehicleMakeMapping.InactiveFlag))
-        //        .ToListAsync(cancellationToken);
         var rows = await matching
-    .Skip(skip)
-    .Take(VehicleMakeListQuery.PageSize)
-    .Select(make => new
-    {
-        make.VmakCode,
-        make.VmakName,
-        make.VmakShortName,
-        make.VmakActiveYn
-    })
-    .ToListAsync(cancellationToken);
+            .Skip(skip)
+            .Take(VehicleMakeListQuery.PageSize)
+            .Select(make => new { make.VmakCode, make.VmakName, make.VmakShortName, make.VmakActiveYn })
+            .ToListAsync(cancellationToken);
 
-        var items = rows.Select(make => new VehicleMakeListItemDto(
-            make.VmakCode,
-            make.VmakName ?? string.Empty,
-            make.VmakShortName ?? string.Empty,
-            make.VmakActiveYn != VehicleMakeMapping.InactiveFlag
-        )).ToList();
-
-
+        var items = rows
+            .Select(make => new VehicleMakeListItemDto(
+                make.VmakCode,
+                make.VmakName ?? string.Empty,
+                make.VmakShortName ?? string.Empty,
+                VehicleMakeMapping.IsActive(make.VmakActiveYn)))
+            .ToList();
 
         return new PaginatedResult<VehicleMakeListItemDto>(items, page, VehicleMakeListQuery.PageSize, totalCount);
     }
@@ -138,7 +102,7 @@ public sealed class VehicleMakeService(
         {
             await database.SaveChangesAsync(cancellationToken);
         }
-        catch (DbUpdateException exception) when (HasOracleError(exception, OracleUniqueConstraintViolation))
+        catch (DbUpdateException exception) when (OracleErrors.Has(exception, OracleErrors.UniqueConstraintViolation))
         {
             // Two people saved the same new code at the same moment: the database primary key let only one through.
             database.Entry(make).State = EntityState.Detached;
@@ -191,7 +155,9 @@ public sealed class VehicleMakeService(
     {
         var normalisedCode = VehicleMakeInputRules.NormaliseMakeCode(makeCode);
 
-        if (await HasModelsAsync(normalisedCode, cancellationToken))
+        var hasModels = await database.BrmVehModels
+            .CountAsync(model => model.VmodVmakCode == normalisedCode, cancellationToken) > 0;
+        if (hasModels)
         {
             logger.LogWarning("Delete refused (HasModels): vehicle make {MakeCode} still has models", normalisedCode);
             return VehicleMakeDeleteOutcome.HasModels;
@@ -204,7 +170,7 @@ public sealed class VehicleMakeService(
                 .Where(existing => existing.VmakCode == normalisedCode)
                 .ExecuteDeleteAsync(cancellationToken);
         }
-        catch (Exception exception) when (HasOracleError(exception, OracleChildRecordFound))
+        catch (Exception exception) when (OracleErrors.Has(exception, OracleErrors.ChildRecordFound))
         {
             // A model was added between the check above and the delete: the database foreign key stopped it.
             logger.LogWarning("Delete refused (HasModels): vehicle make {MakeCode} gained a model during the delete", normalisedCode);
@@ -221,39 +187,8 @@ public sealed class VehicleMakeService(
         return VehicleMakeDeleteOutcome.Deleted;
     }
 
-    // Interim: BRM_VEH_MODEL is not scaffolded into the data context yet (tasks T002 and T007), so the table is read with
-    // a parameterised count. Once it is scaffolded, replace this with a normal query on the model entity.
-    // The schema name comes from the data context's own model, never from the request.
-#pragma warning disable EF1002
-    private async Task<bool> HasModelsAsync(string makeCode, CancellationToken cancellationToken)
-    {
-        var schema = database.Model.GetDefaultSchema();
-        var table = schema is null ? "\"BRM_VEH_MODEL\"" : "\"" + schema + "\".\"BRM_VEH_MODEL\"";
-
-        var count = await database.Database
-            .SqlQueryRaw<int>("SELECT COUNT(*) AS \"Value\" FROM " + table + " WHERE \"VMOD_VMAK_CODE\" = {0}", makeCode)
-            .SingleAsync(cancellationToken);
-
-        return count > 0;
-    }
-#pragma warning restore EF1002
-
-    private DateTime GulfStandardTimeNow() =>
-        clock.GetUtcNow().UtcDateTime.Add(GulfStandardTimeOffset);
+    private DateTime GulfStandardTimeNow() => GulfStandardTime.Now(clock);
 
     private void LogDuplicate(string makeCode) =>
         logger.LogWarning("Create failed (DuplicateCode): vehicle make {MakeCode} already exists", makeCode);
-
-    private static bool HasOracleError(Exception exception, int oracleErrorNumber)
-    {
-        for (var current = exception; current is not null; current = current.InnerException)
-        {
-            if (current is OracleException oracleException && oracleException.Number == oracleErrorNumber)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

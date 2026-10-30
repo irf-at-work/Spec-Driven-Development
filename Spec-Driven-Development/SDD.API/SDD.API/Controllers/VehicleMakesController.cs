@@ -118,7 +118,7 @@ public class VehicleMakesController(
             string.Join(", ", errors.Keys));
 
     private ActionResult ConflictProblem(string title, string makeCodeMessage) =>
-        ValidationProblem(new ValidationProblemDetails(
+        Conflict(new ValidationProblemDetails(
             new Dictionary<string, string[]> { ["makeCode"] = [makeCodeMessage] })
         {
             Status = StatusCodes.Status409Conflict,

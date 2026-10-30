@@ -44,6 +44,27 @@ public sealed class OracleApiFactory : WebApplicationFactory<Program>, IAsyncLif
         using var client = CreateClient();
         foreach (var makeCode in createdCodes)
         {
+            // A make that still has models cannot be deleted, so its models are removed first.
+            while (true)
+            {
+                var modelsResponse = await client.GetAsync($"/api/vehicle-makes/{makeCode}/models?page=1");
+                if (!modelsResponse.IsSuccessStatusCode)
+                {
+                    break;
+                }
+
+                var models = await modelsResponse.Content.ReadFromJsonAsync<PaginatedResult<VehicleModelDto>>();
+                if (models is null || models.Items.Count == 0)
+                {
+                    break;
+                }
+
+                foreach (var model in models.Items)
+                {
+                    await client.DeleteAsync($"/api/vehicle-makes/{makeCode}/models/{model.ModelCode}");
+                }
+            }
+
             // Some tests delete their own make already, so a "not found" here is expected and ignored.
             await client.DeleteAsync($"/api/vehicle-makes/{makeCode}");
         }

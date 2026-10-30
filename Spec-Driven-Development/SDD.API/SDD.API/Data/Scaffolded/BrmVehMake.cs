@@ -28,4 +28,6 @@ public partial class BrmVehMake
     public string? VmakUpBy { get; set; }
 
     public DateTime? VmakUpDt { get; set; }
+
+    public virtual ICollection<BrmVehModel> BrmVehModels { get; set; } = new List<BrmVehModel>();
 }
