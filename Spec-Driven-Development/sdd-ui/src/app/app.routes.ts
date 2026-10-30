@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { CompanyMasterPage } from './pages/company-master/company-master-page';
 import { DashboardPage } from './pages/dashboard/dashboard-page';
 import { ListingMasterPage } from './pages/listing-master/listing-master-page';
 import { DashboardLayout } from './layout/dashboard-layout';
@@ -10,7 +9,30 @@ export const routes: Routes = [
     component: DashboardLayout,
     children: [
       { path: '', component: DashboardPage, pathMatch: 'full' },
-      { path: 'company-master', component: CompanyMasterPage },
+      {
+        path: 'company-master',
+        loadComponent: () =>
+          import('./pages/company-master/company-master-page').then(
+            (module) => module.CompanyMasterPage,
+          ),
+      },
+      {
+        path: 'company-master/new',
+        loadComponent: () =>
+          import('./pages/company-master/company-form').then((module) => module.CompanyForm),
+      },
+      {
+        path: 'company-master/:companyCode/edit',
+        loadComponent: () =>
+          import('./pages/company-master/company-form').then((module) => module.CompanyForm),
+      },
+      {
+        path: 'company-master/:companyCode',
+        loadComponent: () =>
+          import('./pages/company-master/company-details-page').then(
+            (module) => module.CompanyDetailsPage,
+          ),
+      },
       { path: 'listing-master', component: ListingMasterPage },
     ],
   },

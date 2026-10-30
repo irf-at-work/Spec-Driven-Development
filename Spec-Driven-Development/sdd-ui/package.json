@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "generate-api-client": "openapi-generator-cli generate -i ../SDD.API/SDD.API/openapi.json -g typescript-angular -o src/app/api/generated --additional-properties=ngVersion=21.0.0,providedInRoot=true,useSingleRequestParameter=true"
   },
   "private": true,
   "packageManager": "npm@11.19.1",
@@ -26,6 +27,7 @@
     "@angular/build": "21.2.25",
     "@angular/cli": "21.2.25",
     "@angular/compiler-cli": "21.2.25",
+    "@openapitools/openapi-generator-cli": "2.42.0",
     "jsdom": "^30.0.0",
     "prettier": "^3.8.1",
     "typescript": "5.9.3",

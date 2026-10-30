@@ -1,0 +1,103 @@
+using SDD.API.Services;
+using SDD.API.Contracts;
+
+namespace SDD.API.Tests.Services;
+
+public sealed class CompanyServiceReadTests
+{
+    [Fact]
+    public async Task Lists_companies_with_filters_stable_sorting_and_composed_addresses()
+    {
+        var repository = new FakeCompanyRepository();
+        repository.CompanyRows.AddRange(
+        [
+            new() { CompCode = "C03", CompName = "North", CompShortName = "North", CompAddr1 = "Bay", CompAddr3 = "Tower" },
+            new() { CompCode = "C02", CompName = "North", CompShortName = "North", CompAddr2 = "Harbour" },
+            new() { CompCode = "C01", CompName = "South", CompShortName = "South" },
+        ]);
+        var service = new CompanyService(repository);
+
+        var result = await service.ListAsync(new CompanyListQuery
+        {
+            CompanyName = "north",
+            SortBy = "companyName",
+            SortDirection = "asc",
+        }, CancellationToken.None);
+
+        Assert.Equal(2, result.TotalCount);
+        Assert.Equal(["C02", "C03"], result.Items.Select(company => company.CompanyCode));
+        Assert.Equal("Bay, Tower", result.Items[1].PrimaryAddress);
+        Assert.Equal(1, result.Page);
+        Assert.Equal(10, result.PageSize);
+    }
+
+    [Fact]
+    public async Task Filters_primary_address_and_date_fields_before_paging()
+    {
+        var repository = new FakeCompanyRepository();
+        repository.CompanyRows.AddRange(
+        [
+            new() { CompCode = "A01", CompName = "One", CompAddr1 = "Harbour", CompIncorpDt = new DateTime(2020, 3, 5, 15, 0, 0) },
+            new() { CompCode = "A02", CompName = "Two", CompAddr2 = "Harbour View", CompIncorpDt = new DateTime(2020, 3, 6) },
+        ]);
+        var service = new CompanyService(repository);
+
+        var result = await service.ListAsync(new CompanyListQuery
+        {
+            PrimaryAddress = "harbour",
+            IncorporationDate = new DateOnly(2020, 3, 5),
+            Page = 2,
+            PageSize = 1,
+        }, CancellationToken.None);
+
+        Assert.Equal(1, result.TotalCount);
+        Assert.Empty(result.Items);
+        Assert.Equal(2, result.Page);
+    }
+
+    [Fact]
+    public async Task Returns_empty_out_of_range_page_and_rejects_invalid_sort_fields()
+    {
+        var repository = new FakeCompanyRepository();
+        repository.CompanyRows.Add(new() { CompCode = "A01", CompName = "Company" });
+        var service = new CompanyService(repository);
+
+        var page = await service.ListAsync(new CompanyListQuery
+        {
+            Page = 3,
+            PageSize = 1,
+        }, CancellationToken.None);
+        var exception = await Assert.ThrowsAsync<CompanyValidationException>(
+            () => service.ListAsync(new CompanyListQuery { SortBy = "action" }, CancellationToken.None));
+
+        Assert.Empty(page.Items);
+        Assert.Equal(1, page.TotalCount);
+        Assert.Contains("sortBy", exception.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Returns_company_details_without_exposing_other_storage_fields()
+    {
+        var repository = new FakeCompanyRepository();
+        repository.CompanyRows.Add(new()
+        {
+            CompCode = "A01",
+            CompName = "Company",
+            CompAddr1 = "First",
+            CompAddr2 = " ",
+            CompAddr3 = "Third",
+            CompCrBy = "Admin",
+            CompCrDt = new DateTime(2026, 1, 2, 3, 4, 5, DateTimeKind.Utc),
+            CompRemarks = "private storage field",
+        });
+        var service = new CompanyService(repository);
+
+        var result = await service.GetAsync("A01", CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.Equal("First, Third", result.PrimaryAddress);
+        Assert.Equal("Admin", result.CreatedBy);
+        Assert.Equal(DateTimeKind.Utc, result.CreatedAt!.Value.Kind);
+        Assert.DoesNotContain("private storage field", System.Text.Json.JsonSerializer.Serialize(result));
+    }
+}

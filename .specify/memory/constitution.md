@@ -1,7 +1,7 @@
 
 # Broker Insurance Constitution
 
-**Version:** 1.1.0 | **Ratified:** 2026-10-28 | **Last amended:** 2026-10-28
+**Version:** 2.0.0 | **Ratified:** 2026-10-28 | **Last amended:** 2026-10-29
 **Based on template:** v1.1.0
 **Owner:** Irfan | **Engineering lead:** Rijin
 
@@ -159,7 +159,7 @@ every change.*
 
 - All text users read MUST be in British English (en-GB).
 - Dates and times are stored in UTC and displayed in Gulf Standard Time
-  (GST, UTC+4) as DD-MMM-YYYY.
+  (GST, UTC+4) as DD-MM-YYYY.
 - Money is in AED, shown to 2 decimal places.
 - Money MUST use `decimal` in C# and `NUMBER(p,s)` in Oracle, with the
   currency explicit.
@@ -185,12 +185,11 @@ every change.*
   database, never in development data (see C3).
 
 ### B6 — Consistent, Secure API
-- Use controllers, DTOs by default.
-- Every non-success response MUST use `ProblemDetails`; exceptions
-MUST be handled globally, with no stack traces returned to clients.
+- Use controllers, DTOs by default..
 - Authentication is out of scope (B9), so endpoints are anonymous for the
   MVP. Keep the controller structure ready so `[Authorize]` can be added
   later without redesign.
+-Use "Admin" as default for updated_by/created_by columns while updating/creating
 
 ### B7 — Typed, Generated Angular UI
 - The OpenAPI specification is the source of truth: generate the Angular API client and
@@ -218,7 +217,6 @@ deletes.
 - Use typed reactive forms, with client validation for user experience and the API as
 the authority. 
 - Angular Material is the primary UI library. 
-- Handle HTTP errors in one global interceptor; do not swallow errors or show raw server messages. 
 - Do not use `innerHTML` or `bypassSecurityTrust*`.
 
 
@@ -230,8 +228,7 @@ the authority.
 
 - Each master page has its own spec, plan, task list and Git branch. The
   owner for each is recorded in its spec, not here.
-- Shared pieces (`PaginatedResult<T>`, the global error interceptor, the
-  global exception handler, the layout and navigation, the migration runner)
+- Shared pieces (`PaginatedResult<T>`, the layout and navigation)
   MUST be built first, once, and reused. Nobody duplicates them.
 - One named person owns database scripts and scaffolding, so scripts are not
   numbered or scaffolded in conflict.
@@ -273,3 +270,4 @@ the authority.
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | 1.0.0   | 2026-10-28 | Initial ratification from template v1.1.0                                                                                                                                             | —                                                   |
 | 1.1.0   | 2026-10-28 | Added Serilog, xUnit/Playwright/Vitest testing stack, Angular 21, SQL-script migration runner with confirmation, pre-approved dependencies, team workflow (B10); clarified B3, B6, B9 | Team requirements and conflicts found during review |
+| 2.0.0   | 2026-10-29 | Removed mandatory global exception-handler and Angular HTTP-interceptor requirements from B6, B7, and B10; removed migration-runner requirement from B10 | Owner-approved removal of shared prerequisites |

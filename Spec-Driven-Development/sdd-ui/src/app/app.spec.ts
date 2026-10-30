@@ -36,9 +36,16 @@ describe('DashboardLayout', () => {
     expect(labels).toEqual(['Company Master', 'Listing Master']);
   });
 
-  it('defines only the dashboard and the two master destinations', () => {
+  it('defines dashboard, company CRUD and listing destinations', () => {
     const destinations = routes[0].children?.map((route) => route.path);
 
-    expect(destinations).toEqual(['', 'company-master', 'listing-master']);
+    expect(destinations).toEqual([
+      '',
+      'company-master',
+      'company-master/new',
+      'company-master/:companyCode/edit',
+      'company-master/:companyCode',
+      'listing-master',
+    ]);
   });
 });

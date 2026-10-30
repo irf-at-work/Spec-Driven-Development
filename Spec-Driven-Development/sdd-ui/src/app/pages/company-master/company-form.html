@@ -1,0 +1,168 @@
+<section aria-labelledby="company-form-title">
+  <a mat-button routerLink="/company-master" queryParamsHandling="preserve">
+    <mat-icon>arrow_back</mat-icon>
+    Back to companies
+  </a>
+  <h1 id="company-form-title">{{ editing() ? 'Edit company' : 'Add company' }}</h1>
+
+  @if (loading()) {
+    <p role="status">Loading company…</p>
+  } @else if (loadError(); as message) {
+    <p class="error-message" role="alert">{{ message }}</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      @if (error(); as saveError) {
+        <p class="error-message" role="alert">{{ saveError }}</p>
+      }
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Company code</mat-label>
+          <input matInput formControlName="companyCode" maxlength="12" required />
+          @if (fieldError('companyCode'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Company name</mat-label>
+          <input matInput formControlName="companyName" maxlength="100" required />
+          @if (fieldError('companyName'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Short name</mat-label>
+          <input matInput formControlName="shortName" maxlength="30" />
+          @if (fieldError('shortName'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Address 1</mat-label>
+          <input matInput formControlName="address1" maxlength="100" />
+          @if (fieldError('address1'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Address 2</mat-label>
+          <input matInput formControlName="address2" maxlength="100" />
+          @if (fieldError('address2'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Address 3</mat-label>
+          <input matInput formControlName="address3" maxlength="100" />
+          @if (fieldError('address3'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Incorporation date (DD-MM-YYYY)</mat-label>
+          <input
+            matInput
+            [matDatepicker]="incorporationPicker"
+            formControlName="incorporationDate"
+            placeholder="DD-MM-YYYY"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="incorporationPicker" />
+          <mat-datepicker #incorporationPicker />
+          @if (fieldError('incorporationDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Reference number</mat-label>
+          <input matInput formControlName="referenceNumber" maxlength="20" />
+          @if (fieldError('referenceNumber'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Licence issue date (DD-MM-YYYY)</mat-label>
+          <input
+            matInput
+            [matDatepicker]="licenceIssuePicker"
+            formControlName="licenceIssueDate"
+            placeholder="DD-MM-YYYY"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="licenceIssuePicker" />
+          <mat-datepicker #licenceIssuePicker />
+          @if (fieldError('licenceIssueDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Licence expiry date (DD-MM-YYYY)</mat-label>
+          <input
+            matInput
+            [matDatepicker]="licenceExpiryPicker"
+            formControlName="licenceExpiryDate"
+            placeholder="DD-MM-YYYY"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="licenceExpiryPicker" />
+          <mat-datepicker #licenceExpiryPicker />
+          @if (fieldError('licenceExpiryDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Company in charge</mat-label>
+          <input matInput formControlName="companyInCharge" maxlength="60" />
+          @if (fieldError('companyInCharge'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phone" maxlength="20" />
+          @if (fieldError('phone'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" maxlength="100" />
+          @if (fieldError('email'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Website</mat-label>
+          <input matInput formControlName="website" maxlength="100" />
+          @if (fieldError('website'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button
+          mat-button
+          type="button"
+          routerLink="/company-master"
+          queryParamsHandling="preserve"
+        >
+          Cancel
+        </button>
+        <button mat-flat-button type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save company' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

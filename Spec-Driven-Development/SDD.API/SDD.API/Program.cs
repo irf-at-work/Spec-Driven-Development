@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SDD.API.Data;
+using SDD.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
+    options.AddSchemaTransformer<Int32OpenApiSchemaTransformer>();
+});
+builder.Services.AddCors(options => options.AddPolicy(
+    "LocalAngular",
+    policy => policy
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod()));
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<CompanyService>();
+builder.Services.AddSingleton(TimeProvider.System);
 
 var brokerConnection = builder.Configuration.GetConnectionString("BrokerConnection");
 if (string.IsNullOrWhiteSpace(brokerConnection))
@@ -27,6 +41,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("LocalAngular");
 
 app.UseAuthorization();
 

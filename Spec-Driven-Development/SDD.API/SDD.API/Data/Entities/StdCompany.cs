@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SDD.API.Data.Entities;
+﻿namespace SDD.API.Data.Entities;
 
 public partial class StdCompany
 {
@@ -16,7 +13,7 @@ public partial class StdCompany
     public string? CompShortNameL2 { get; set; }
 
     public string? CompCtlAcntCode { get; set; }
-
+        
     public string? CompAddr1 { get; set; }
 
     public string? CompAddr2 { get; set; }

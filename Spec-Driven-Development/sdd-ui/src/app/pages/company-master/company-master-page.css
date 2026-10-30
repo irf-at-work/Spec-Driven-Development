@@ -1,0 +1,41 @@
+.page-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  min-width: 1500px;
+  width: 100%;
+}
+
+.filter-row th {
+  padding-top: 0.75rem;
+}
+
+.filter-row mat-form-field {
+  width: 100%;
+  min-width: 105px;
+}
+
+.company-row {
+  cursor: pointer;
+}
+
+.company-row:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
+.error-message {
+  color: var(--mat-sys-error, #b3261e);
+}
+
+.empty-state {
+  padding: 1rem;
+  text-align: center;
+}
