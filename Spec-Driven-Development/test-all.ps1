@@ -14,6 +14,9 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = $PSScriptRoot
 $apiSolution = Join-Path $projectRoot 'SDD.API\SDD.API.slnx'
 $apiProject = Join-Path $projectRoot 'SDD.API\SDD.API\SDD.API.csproj'
+$apiTestProject = Join-Path $projectRoot 'SDD.API\SDD.API.Tests\SDD.API.Tests.csproj'
+$apiTestOutput = 'obj\FeatureApiTests\'
+$apiTestAssembly = Join-Path $projectRoot 'SDD.API\SDD.API\obj\FeatureApiTests\SDD.API.dll'
 $uiFolder = Join-Path $projectRoot 'sdd-ui'
 $apiPort = 7246
 
@@ -55,7 +58,7 @@ function Wait-ForPort {
 
 Invoke-Step 'C# formatting' { dotnet format whitespace $apiSolution --verify-no-changes }
 Invoke-Step 'C# analyzers' { dotnet format analyzers $apiSolution --verify-no-changes }
-Invoke-Step 'API tests' { dotnet test $apiSolution }
+Invoke-Step 'API tests' { dotnet test --project $apiTestProject --property:OutputPath=$apiTestOutput }
 
 Push-Location $uiFolder
 try {
@@ -67,8 +70,8 @@ try {
     $env:ConnectionStrings__SddOracle = $env:SDD_TEST_ORACLE_CONNECTION
     $env:ASPNETCORE_ENVIRONMENT = 'Development'
     $api = Start-Process -FilePath 'dotnet' `
-        -ArgumentList @('run', '--project', $apiProject, '--no-launch-profile', '--urls', "https://localhost:$apiPort") `
-        -PassThru -WindowStyle Hidden
+        -ArgumentList @($apiTestAssembly, '--urls', "https://localhost:$apiPort") `
+        -PassThru -WindowStyle Hidden -WorkingDirectory (Split-Path $apiProject)
     try {
         Wait-ForPort -Port $apiPort
         Invoke-Step 'Browser tests (Playwright)' { npx playwright test }
