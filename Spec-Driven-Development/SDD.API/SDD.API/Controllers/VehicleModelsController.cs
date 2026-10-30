@@ -16,21 +16,46 @@ public class VehicleModelsController(
     public async Task<ActionResult<PaginatedResult<VehicleModelDto>>> List(
         string makeCode,
         int page = 1,
+        string? modelCode = null,
+        string? modelCodeOperator = null,
+        string? modelName = null,
+        string? modelNameOperator = null,
+        string? shortName = null,
+        string? shortNameOperator = null,
+        bool? active = null,
+        string? activeOperator = null,
         CancellationToken cancellationToken = default)
     {
-        var errors = VehicleMakeListQuery.Validate(page, sortBy: null, sortDirection: null);
+        var filters = new ColumnFilters(
+            new TextFilter(modelCode, modelCodeOperator),
+            new TextFilter(modelName, modelNameOperator),
+            new TextFilter(shortName, shortNameOperator),
+            new StatusFilter(active, activeOperator));
+
+        var errors = VehicleModelListQuery.Validate(page, filters);
         if (errors.Count > 0)
         {
             return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]>(errors)));
         }
 
-        var result = await vehicleModels.ListAsync(makeCode, page, cancellationToken);
+        var result = await vehicleModels.ListAsync(makeCode, page, filters, cancellationToken);
         if (result is null)
         {
             return MakeNotFoundProblem();
         }
 
         return result;
+    }
+
+    // Used by the model's own page to load one model by its key.
+    [HttpGet("{modelCode}")]
+    public async Task<ActionResult<VehicleModelDto>> Get(
+        string makeCode,
+        string modelCode,
+        CancellationToken cancellationToken)
+    {
+        var result = await vehicleModels.GetAsync(makeCode, modelCode, cancellationToken);
+        return ToResponse(result);
     }
 
     // Answers 200 with the saved model rather than 201 Created, for the same reason as makes (see VehicleMakesController).

@@ -245,9 +245,9 @@ public class VehicleMakeApiTests(OracleApiFactory factory)
     }
 
     [Fact]
-    public async Task Search_and_paging_find_every_make_across_pages_in_code_order()
+    public async Task Filtering_and_paging_find_every_make_across_pages_in_code_order()
     {
-        // Twelve makes sharing one run id, so a search for that id finds exactly them, split over two pages.
+        // Twelve makes sharing one run id, so a filter on that id finds exactly them, split over two pages.
         var runId = Guid.NewGuid().ToString("N")[..8].ToUpperInvariant();
         for (var number = 1; number <= 12; number++)
         {
@@ -256,11 +256,11 @@ public class VehicleMakeApiTests(OracleApiFactory factory)
         }
 
         var first = await Read<PaginatedResult<VehicleMakeListItemDto>>(
-            await client.GetAsync($"{Url}?page=1&search={runId.ToLowerInvariant()}", Cancellation));
+            await client.GetAsync($"{Url}?page=1&makeCode={runId.ToLowerInvariant()}", Cancellation));
         var second = await Read<PaginatedResult<VehicleMakeListItemDto>>(
-            await client.GetAsync($"{Url}?page=2&search={runId}", Cancellation));
+            await client.GetAsync($"{Url}?page=2&makeCode={runId}", Cancellation));
         var beyond = await Read<PaginatedResult<VehicleMakeListItemDto>>(
-            await client.GetAsync($"{Url}?page=3&search={runId}", Cancellation));
+            await client.GetAsync($"{Url}?page=3&makeCode={runId}", Cancellation));
 
         Assert.Equal(12, first.TotalCount);
         Assert.Equal(10, first.PageSize);
@@ -282,7 +282,7 @@ public class VehicleMakeApiTests(OracleApiFactory factory)
         }
 
         var result = await Read<PaginatedResult<VehicleMakeListItemDto>>(
-            await client.GetAsync($"{Url}?search={runId}&sortBy=makeName&sortDirection=desc", Cancellation));
+            await client.GetAsync($"{Url}?makeCode={runId}&sortBy=makeName&sortDirection=desc", Cancellation));
 
         Assert.Equal(new[] { "Make 03", "Make 02", "Make 01" }, result.Items.Select(item => item.MakeName));
     }
@@ -445,8 +445,137 @@ public class VehicleMakeApiTests(OracleApiFactory factory)
         await Create($"ZT{runId}02", "Make 02", "M02", active: false);
 
         var result = await Read<PaginatedResult<VehicleMakeListItemDto>>(
-            await client.GetAsync($"{Url}?search={runId}", Cancellation));
+            await client.GetAsync($"{Url}?makeCode={runId}", Cancellation));
 
         Assert.Equal(new[] { true, false }, result.Items.Select(item => item.Active));
+    }
+
+    // Creates makes ZT<run>01.. with the given (name, short name, active) and returns the run id that finds them all.
+    private async Task<string> MakesForFiltering(params (string Name, string Short, bool Active)[] makes)
+    {
+        var runId = Guid.NewGuid().ToString("N")[..8].ToUpperInvariant();
+        for (var index = 0; index < makes.Length; index++)
+        {
+            var code = factory.Track($"ZT{runId}{index + 1:00}");
+            await Create(code, makes[index].Name, makes[index].Short, active: makes[index].Active);
+        }
+
+        return runId;
+    }
+
+    private async Task<List<string>> FilteredCodes(string query)
+    {
+        var result = await Read<PaginatedResult<VehicleMakeListItemDto>>(
+            await client.GetAsync($"{Url}?{query}", Cancellation));
+        return result.Items.Select(item => item.MakeCode[^2..]).ToList();
+    }
+
+    [Theory]
+    [InlineData("startsWith", "toy", "01")]
+    [InlineData("endsWith", "MOTOR", "02")]
+    [InlineData("contains", "ond", "03")]
+    [InlineData("equals", "honda", "03")]
+    [InlineData("notEquals", "honda", "01,02")]
+    public async Task Every_operator_filters_the_name_column_ignoring_case(string op, string text, string expected)
+    {
+        var runId = await MakesForFiltering(
+            ("Toyota", "Toy", true),
+            ("Hyundai Motor", "Hyu", true),
+            ("Honda", "Hon", true));
+
+        var codes = await FilteredCodes($"makeCode={runId}&makeName={text}&makeNameOperator={op}");
+
+        Assert.Equal(expected.Split(','), codes);
+    }
+
+    [Fact]
+    public async Task Filters_on_several_columns_must_all_match_and_blank_filters_are_ignored()
+    {
+        var runId = await MakesForFiltering(
+            ("Toyota", "Toy", true),
+            ("Toyota Hilux", "Hil", false),
+            ("Honda", "Hon", true));
+
+        var both = await FilteredCodes($"makeCode={runId}&makeName=toyota&shortName=hil");
+        var withBlankFilter = await FilteredCodes($"makeCode={runId}&makeName=&makeNameOperator=equals");
+
+        Assert.Equal(new[] { "02" }, both);
+        Assert.Equal(new[] { "01", "02", "03" }, withBlankFilter);
+    }
+
+    [Fact]
+    public async Task The_status_filter_finds_active_or_inactive_makes_and_notEquals_reverses_it()
+    {
+        var runId = await MakesForFiltering(
+            ("One", "One", true),
+            ("Two", "Two", false),
+            ("Three", "Thr", true));
+
+        var active = await FilteredCodes($"makeCode={runId}&active=true");
+        var inactive = await FilteredCodes($"makeCode={runId}&active=false&activeOperator=equals");
+        var notInactive = await FilteredCodes($"makeCode={runId}&active=false&activeOperator=notEquals");
+
+        Assert.Equal(new[] { "01", "03" }, active);
+        Assert.Equal(new[] { "02" }, inactive);
+        Assert.Equal(new[] { "01", "03" }, notInactive);
+    }
+
+    [Fact]
+    public async Task Pattern_characters_are_matched_literally_never_as_wildcards()
+    {
+        var runId = await MakesForFiltering(
+            ("Plain Name", "Plain", true),
+            ("Half 50% Off", "Half", true),
+            ("Under_score", "Under", true));
+
+        var percent = await FilteredCodes($"makeCode={runId}&makeName={Uri.EscapeDataString("%")}");
+        var underscore = await FilteredCodes($"makeCode={runId}&makeName={Uri.EscapeDataString("_")}");
+        var wildcardShape = await FilteredCodes($"makeCode={runId}&makeName={Uri.EscapeDataString("P%e")}");
+
+        Assert.Equal(new[] { "02" }, percent);
+        Assert.Equal(new[] { "03" }, underscore);
+        Assert.Empty(wildcardShape);
+    }
+
+    [Fact]
+    public async Task Filters_apply_to_every_record_before_paging_not_just_the_page_shown()
+    {
+        var runId = Guid.NewGuid().ToString("N")[..8].ToUpperInvariant();
+        for (var number = 1; number <= 15; number++)
+        {
+            factory.Track($"ZT{runId}{number:00}");
+            await Create($"ZT{runId}{number:00}", number == 14 ? "Needle" : "Hay", $"S{number:00}");
+        }
+
+        var result = await Read<PaginatedResult<VehicleMakeListItemDto>>(
+            await client.GetAsync($"{Url}?makeCode={runId}&makeName=needle", Cancellation));
+
+        // The needle is the 14th make, which sits on page 2 of the unfiltered list.
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal($"ZT{runId}14", Assert.Single(result.Items).MakeCode);
+    }
+
+    [Fact]
+    public async Task The_old_search_parameter_no_longer_filters_anything()
+    {
+        var runId = await MakesForFiltering(("One", "One", true), ("Two", "Two", true));
+
+        var codes = await FilteredCodes($"makeCode={runId}&search=NOTHING-MATCHES-THIS");
+
+        Assert.Equal(new[] { "01", "02" }, codes);
+    }
+
+    [Theory]
+    [InlineData("makeCodeOperator=beginsWith", "makeCodeOperator")]
+    [InlineData("makeNameOperator=like", "makeNameOperator")]
+    [InlineData("shortNameOperator=%25", "shortNameOperator")]
+    [InlineData("activeOperator=startsWith", "activeOperator")]
+    public async Task An_operator_that_is_not_allowed_is_refused_with_the_parameter_named(string query, string field)
+    {
+        var response = await client.GetAsync($"{Url}?{query}", Cancellation);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+        Assert.False(string.IsNullOrEmpty(await FirstErrorFor(response, field)));
     }
 }

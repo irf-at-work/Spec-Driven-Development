@@ -14,18 +14,31 @@ public class VehicleMakesController(
     [HttpGet]
     public async Task<ActionResult<PaginatedResult<VehicleMakeListItemDto>>> List(
         int page = 1,
-        string? search = null,
+        string? makeCode = null,
+        string? makeCodeOperator = null,
+        string? makeName = null,
+        string? makeNameOperator = null,
+        string? shortName = null,
+        string? shortNameOperator = null,
+        bool? active = null,
+        string? activeOperator = null,
         string? sortBy = null,
         string? sortDirection = null,
         CancellationToken cancellationToken = default)
     {
-        var errors = VehicleMakeListQuery.Validate(page, sortBy, sortDirection);
+        var filters = new ColumnFilters(
+            new TextFilter(makeCode, makeCodeOperator),
+            new TextFilter(makeName, makeNameOperator),
+            new TextFilter(shortName, shortNameOperator),
+            new StatusFilter(active, activeOperator));
+
+        var errors = VehicleMakeListQuery.Validate(page, filters, sortBy, sortDirection);
         if (errors.Count > 0)
         {
             return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]>(errors)));
         }
 
-        return await vehicleMakes.ListAsync(page, search, sortBy, sortDirection, cancellationToken);
+        return await vehicleMakes.ListAsync(page, filters, sortBy, sortDirection, cancellationToken);
     }
 
     [HttpGet("{makeCode}")]

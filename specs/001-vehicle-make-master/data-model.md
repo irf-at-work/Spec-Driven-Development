@@ -2,7 +2,13 @@
 
 ## Scope
 
-Two logical entities are needed: Vehicle Make, and Vehicle Model, which belongs to a make (see below). The physical table for makes is Oracle `BRM_VEH_make`, as described by the owner on 29-Oct-2026 (see Physical Mapping below). Constraints, defaults and length semantics still need to be confirmed against the live schema. Do not issue DDL, seed data, or edit scaffolded files as part of this design.
+Two logical entities are needed: Vehicle Make, and Vehicle Model, which belongs to a make (see below). The physical table for makes is Oracle `BRM_VEH_make`, as described by the owner on 29-Oct-2026 (see Physical Mapping below). Do not issue DDL, seed data, or edit scaffolded files as part of this design.
+
+## Verification Gate Status
+
+The owner approved read-only inspection and the dedicated test-schema/fixture scope. Metadata was inspected using the configured Oracle session (`IIRIS_RD_DEVP`); no DDL or database-data changes were run. The make/model keys, non-cascading foreign key, list-item key, active-flag constraints, audit triggers, and declared column lengths were verified.
+
+The configured `STD_LIST_ITEM` table currently has no vehicle-model list types or fixtures. Its `LI_TYPE VARCHAR2(20 BYTE)` supports the proposed names; the owner confirmed the approved list types and fixtures will be loaded separately. No lookup data was changed. All inspected `VARCHAR2` fields use byte semantics, which cannot guarantee the specified character limits for Arabic text; owner-approved schema resolution is needed before full character-limit support can be claimed.
 
 ## Entity: Vehicle Make
 
@@ -23,10 +29,10 @@ Two logical entities are needed: Vehicle Make, and Vehicle Model, which belongs 
 
 - The API must reject null/empty Make Code and duplicate codes even if the UI has already validated them. The approved Oracle schema should enforce not-null and uniqueness as well; propose a schema change only if inspection finds that enforcement absent, and obtain owner approval before DDL.
 - **`VMAK_CODE` is the primary key** (owner-confirmed). It is `VARCHAR2(12) NOT NULL` and is entered by the user, not generated. A duplicate code is rejected by the API (409) and the database primary key is the final guard against two simultaneous saves; a unique-constraint violation from Oracle (ORA-00001) must map to the same duplicate-code response.
-- Confirm in the live schema that the primary-key constraint exists (query `user_constraints` for `BRM_VEH_MAKE`). Propose DDL only if it is absent, and obtain owner approval first.
+- Live metadata confirms `VMAK_CODE` is the primary key.
 - `VMAK_NAME` is nullable in the database, but the application requires it (and `VMAK_SHORT_NAME`). The API is the authority for required fields.
 - Scaffolded entities and context are generated from the database. Never edit scaffolded files directly; add any required extension behavior using partial classes.
-- Logical lengths are character limits from the spec. Verify Oracle column semantics (byte versus character length) against actual database definitions before mapping.
+- All make `VARCHAR2` columns use byte semantics (`CHAR_USED = B`); their byte lengths match the listed lengths, so multi-byte text can hit the database limit before reaching the specified character limit. Do not claim full character-limit support without owner-approved schema resolution.
 
 ### Physical Mapping: Oracle `BRM_VEH_make`
 
@@ -39,15 +45,15 @@ Two logical entities are needed: Vehicle Make, and Vehicle Model, which belongs 
 | Arabic Make Name | `VMAK_NAME_L2` | VARCHAR2(100) | Nullable | Optional |
 | Arabic Short Name | `VMAK_SHORT_NAME_L2` | VARCHAR2(30) | Nullable | Optional |
 | Arabic Remarks | `VMAK_REMARKS_L2` | VARCHAR2(2000) | Nullable | Optional |
-| Active | `VMAK_ACTIVE_YN` | VARCHAR2(1) | Nullable | `Y` when Active is on, `N` when off (soft delete). Owner decision 29-Oct-2026, replacing the earlier decision that this page would not touch it. The API always writes the value the user chose and treats a null on an older row as Active. To verify: whether the database supplies a default or a trigger, and whether a check constraint limits it to `Y` or `N`. |
+| Active | `VMAK_ACTIVE_YN` | VARCHAR2(1) | Nullable | `Y` when Active is on, `N` when off (soft delete). Owner decision 29-Oct-2026, replacing the earlier decision that this page would not touch it. The API always writes the value the user chose and treats a null on an older row as Active. Live scaffolding reports a `Y` default; no Y/N check constraint was found. |
 | Created By | `VMAK_CR_BY` | VARCHAR2(12) | Nullable | `admin` for now |
-| Created Date | `VMAK_CR_DT` | DATE | Nullable | Who sets it (application in GST, or database) is to be confirmed |
+| Created Date | `VMAK_CR_DT` | DATE | Nullable | No database trigger was found; the API must stamp it in GST. |
 | Last Changed By | `VMAK_UP_BY` | VARCHAR2(12) | Nullable | `admin` for now |
-| Last Changed Date | `VMAK_UP_DT` | DATE | Nullable | As above |
+| Last Changed Date | `VMAK_UP_DT` | DATE | Nullable | No database trigger was found; the API must stamp it in GST. |
 
 ## Entity: Vehicle Model (child of Vehicle Make)
 
-A Vehicle Model belongs to exactly one Vehicle Make and is maintained inline on that make's page (spec User Story 5). Physical table: Oracle `BRM_VEH_MODEL`, as described by the owner on 29-Oct-2026. The owner confirmed the composite primary key and make foreign key; defaults, triggers, the foreign-key delete rule, and byte-versus-character length semantics must still be verified against the live schema. Scaffolding this table into the data context needs owner approval first (constitution B8), and scaffolded files are never edited by hand.
+A Vehicle Model belongs to exactly one Vehicle Make and is maintained inline on that make's page (spec User Story 5). Physical table: Oracle `BRM_VEH_MODEL`, as described by the owner on 29-Oct-2026. The owner approved schema inspection and scaffolding (constitution B8); scaffolded files are generated from the database and never edited by hand.
 
 ### Rules
 
@@ -96,16 +102,18 @@ A Vehicle Model belongs to exactly one Vehicle Make and is maintained inline on 
 | Driving Type | `VMOD_DRIVING_TYPE` | VARCHAR2(12) | Nullable | Dropdown, list type `VEH_DRIVING_TYPE` |
 | Body Colour | `VMOD_BODY_COLOR` | VARCHAR2(12) | Nullable | Dropdown, list type `VEH_BODY_COLOR` |
 | Value (AED) | `VMOD_VALUE_LC` | NUMBER | Nullable | Decimal; local currency is AED |
-| Active | `VMOD_ACTIVE_YN` | VARCHAR2(1) | Nullable | `Y` when Active is on, `N` when off (soft delete), as for the make. A null on an older row is treated as Active. To verify the same default, trigger and check-constraint questions as for the make. |
+| Active | `VMOD_ACTIVE_YN` | VARCHAR2(1) | Nullable | `Y` when Active is on, `N` when off (soft delete), as for the make. A null on an older row is treated as Active. Live metadata shows no default or Y/N check constraint. |
 | Category | `VMOD_CATG_CODE` | VARCHAR2(12) | Nullable | Dropdown, list type `VEH_CATEGORY` |
 | Created By | `VMOD_CR_BY` | VARCHAR2(12) | Nullable | `admin` for now |
-| Created Date | `VMOD_CR_DT` | DATE | Nullable | Who sets it is to be confirmed, as for the make |
+| Created Date | `VMOD_CR_DT` | DATE | Nullable | No database trigger was found; the API must stamp it in GST. |
 | Last Changed By | `VMOD_UP_BY` | VARCHAR2(12) | Nullable | `admin` for now |
-| Last Changed Date | `VMOD_UP_DT` | DATE | Nullable | As above |
+| Last Changed Date | `VMOD_UP_DT` | DATE | Nullable | No database trigger was found; the API must stamp it in GST. |
+
+All model `VARCHAR2` columns use byte semantics. The database byte limits do not guarantee the stated character limits for multi-byte text.
 
 ### Dropdown list types (Oracle `STD_LIST_ITEM`)
 
-The nine dropdowns read the table `STD_LIST_ITEM`. Each is selected by its `LI_TYPE`. **The owner needs to load these `LI_TYPE` values with the data** (or tell me the names already in use, and I will change the spec to match). The type names are proposed and fit the 20-character `LI_TYPE` column.
+The nine dropdowns read the table `STD_LIST_ITEM`. Each is selected by its `LI_TYPE`. The names below were proposed before live verification. The configured table has `LI_TYPE VARCHAR2(20 BYTE)`, so the proposed names fit; the owner must still provide the actual list-type mappings and fixture data.
 
 | Model field | `LI_TYPE` to load | Example `LI_CODE` / `LI_DESC` the owner might add |
 |---|---|---|
@@ -119,11 +127,11 @@ The nine dropdowns read the table `STD_LIST_ITEM`. Each is selected by its `LI_T
 | Body Colour | `VEH_BODY_COLOR` | `WHITE` / White |
 | Category | `VEH_CATEGORY` | `PRIVATE` / Private |
 
-The examples are only illustrations of the shape of the data. Nothing is inserted by this feature (constitution B8: the owner approves and performs any data load).
+The examples are only illustrations of the shape of the data. Nothing is inserted by this feature (constitution B8: the owner approves and performs any data load). Live inspection found only `CALC_TYPE` (4 active items), `CHARGE_CAT` (2), `CHARGE_TYPE` (3), and `DISCOUNT_TYPE` (2); none of the nine vehicle types or their fixtures are present.
 
 | Logical field | Column | Oracle type | Null? | Use on this page |
 |---|---|---|---|---|
-| List type | `LI_TYPE` | VARCHAR2(20) | NOT NULL | Selects which dropdown the row belongs to (one of the nine types above) |
+| List type | `LI_TYPE` | VARCHAR2(20 BYTE) | NOT NULL | Selects which dropdown the row belongs to; proposed names fit. |
 | Item code | `LI_CODE` | VARCHAR2(12) | NOT NULL | The value stored in the model's column |
 | Description | `LI_DESC` | VARCHAR2(100) | Nullable | The text shown in the dropdown; ordering key |
 | Arabic description | `LI_DESC_L2` | VARCHAR2(100) | Nullable | Not used on this page |
@@ -131,16 +139,16 @@ The examples are only illustrations of the shape of the data. Nothing is inserte
 | Active flag | `LI_ACTIVE_YN` | VARCHAR2(1) | Nullable | Only `Y` items are offered for a new choice |
 | Audit columns | `LI_CR_BY`, `LI_CR_DT`, `LI_UP_BY`, `LI_UP_DT` | VARCHAR2 / DATE | Nullable | Not used; this page only reads the table |
 
-The API only reads `STD_LIST_ITEM`; it never writes it. Only the nine types above may be requested, so a caller cannot read other list types through this page. To confirm: that `LI_TYPE` plus `LI_CODE` is the primary key of the table, and whether a description is always filled in.
+The API only reads `STD_LIST_ITEM`; it never writes it. Only the nine approved types may be requested, so a caller cannot read other list types through this page. Live metadata confirms `(LI_TYPE, LI_CODE)` is the primary key; `LI_DESC` is nullable, and only rows with `LI_ACTIVE_YN = 'Y'` are offered.
 
 ### Schema Mapping Notes
 
-- The owner has confirmed the primary key (`VMOD_VMAK_CODE` plus `VMOD_CODE`) and the foreign key from `VMOD_VMAK_CODE` to the make. Spec FR-026 requires make deletion to be refused while models exist, so the foreign key must not cascade deletes. Before scaffolding, verify the constraint and delete rule in `user_constraints` and `user_cons_columns`. If the live schema cascades deletes or lacks the required relationship, stop and request owner-approved schema resolution; do not propose or run DDL without approval.
+- Live constraints confirm the model composite primary key `(VMOD_VMAK_CODE, VMOD_CODE)` and the enabled make foreign key with `DELETE_RULE = NO ACTION`.
 - The nine code-style model columns are not expected to have database foreign keys to `STD_LIST_ITEM` (its key is two columns). The API therefore checks every submitted code against the active items of the right list type.
 - The API must reject a null or empty Model Code and a duplicate code within the make, and map Oracle ORA-00001 (unique violation) to the same duplicate response as for makes.
 - The API checks for child models before deleting a make and returns an actionable `409 ProblemDetails` response when any exist. The non-cascading foreign key remains the final guard against a concurrent child insert; map Oracle ORA-02292 to the same conflict response, never to a raw database message.
 - A model whose make does not exist must be reported as not found; the API never accepts a Make Code from the request body.
-- Verify that the list types and English descriptions needed by the dropdowns exist in `STD_LIST_ITEM`. This feature reads the table only and must not insert or update lookup rows.
+- The required dropdown list types and fixtures are absent from the configured schema; see the verification blocker above. This feature reads the table only and must not insert or update lookup rows.
 
 ## Lifecycle
 

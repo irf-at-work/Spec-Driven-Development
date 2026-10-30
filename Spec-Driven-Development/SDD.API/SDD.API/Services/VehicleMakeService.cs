@@ -24,12 +24,12 @@ public sealed class VehicleMakeService(
 {
     public async Task<PaginatedResult<VehicleMakeListItemDto>> ListAsync(
         int page,
-        string? search,
+        ColumnFilters filters,
         string? sortBy,
         string? sortDirection,
         CancellationToken cancellationToken)
     {
-        var matching = VehicleMakeListQuery.Apply(database.BrmVehMakes.AsNoTracking(), search, sortBy, sortDirection);
+        var matching = VehicleMakeListQuery.Apply(database.BrmVehMakes.AsNoTracking(), filters, sortBy, sortDirection);
 
         var totalCount = await matching.CountAsync(cancellationToken);
 

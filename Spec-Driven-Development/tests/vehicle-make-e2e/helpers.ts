@@ -37,13 +37,18 @@ export async function removeMakeThroughApi(
   await request.delete(`${apiUrl}/api/vehicle-makes/${makeCode}`);
 }
 
+export async function filterByCode(page: Page, text: string): Promise<void> {
+  await page.getByPlaceholder("Code...").first().fill(text);
+}
+
+// Backwards-compatible alias for existing tests
 export async function searchFor(page: Page, text: string): Promise<void> {
-  await page.getByLabel("Search by code, name or short name").fill(text);
+  await filterByCode(page, text);
 }
 
 export async function openMake(page: Page, makeCode: string): Promise<void> {
   await page.goto("/vehicle-makes");
-  await searchFor(page, makeCode);
+  await filterByCode(page, makeCode);
   await page
     .getByRole("button", { name: `Open ${makeCode}`, exact: true })
     .click();

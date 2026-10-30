@@ -13,6 +13,7 @@ namespace SDD.API.Services;
 public enum VehicleModelOutcome
 {
     Saved,
+    Found,
     Deleted,
     MakeNotFound,
     ModelNotFound,
@@ -33,10 +34,11 @@ public sealed class VehicleModelService(
 {
     private sealed record ListItem(string Type, string Code, string Description);
 
-    /// <summary>The models of one make, 10 per page, by Model Code. Returns null when the make does not exist.</summary>
+    /// <summary>The models of one make that match the filters, 10 per page, by Model Code. Returns null when the make does not exist.</summary>
     public async Task<PaginatedResult<VehicleModelDto>?> ListAsync(
         string makeCode,
         int page,
+        ColumnFilters filters,
         CancellationToken cancellationToken)
     {
         var normalisedMakeCode = VehicleMakeInputRules.NormaliseMakeCode(makeCode);
@@ -45,18 +47,20 @@ public sealed class VehicleModelService(
             return null;
         }
 
-        var ofThisMake = database.BrmVehModels
-            .AsNoTracking()
-            .Where(model => model.VmodVmakCode == normalisedMakeCode);
+        // Filters apply to every model of the make before a page is cut out, then the models come back in code order.
+        var matching = VehicleModelListQuery.Apply(
+            database.BrmVehModels
+                .AsNoTracking()
+                .Where(model => model.VmodVmakCode == normalisedMakeCode),
+            filters);
 
-        var totalCount = await ofThisMake.CountAsync(cancellationToken);
+        var totalCount = await matching.CountAsync(cancellationToken);
 
         // Worked out in 64 bits so that a very large page number cannot overflow into a negative skip.
         var skip = (int)Math.Min((long)(page - 1) * VehicleMakeListQuery.PageSize, int.MaxValue);
 
-        // Inactive models stay in the list (FR-029), so there is no filter on the flag.
-        var rows = await ofThisMake
-            .OrderBy(model => model.VmodCode)
+        // Inactive models stay in the list (FR-029), so there is no filter on the flag unless the user chooses one.
+        var rows = await matching
             .Skip(skip)
             .Take(VehicleMakeListQuery.PageSize)
             .ToListAsync(cancellationToken);
@@ -66,6 +70,31 @@ public sealed class VehicleModelService(
             page,
             VehicleMakeListQuery.PageSize,
             totalCount);
+    }
+
+    /// <summary>One model by its make and model code, for the model's own page.</summary>
+    public async Task<VehicleModelResult> GetAsync(
+        string makeCode,
+        string modelCode,
+        CancellationToken cancellationToken)
+    {
+        var normalisedMakeCode = VehicleMakeInputRules.NormaliseMakeCode(makeCode);
+        var normalisedModelCode = VehicleMakeInputRules.NormaliseMakeCode(modelCode);
+
+        if (!await MakeExistsAsync(normalisedMakeCode, cancellationToken))
+        {
+            return new VehicleModelResult(VehicleModelOutcome.MakeNotFound);
+        }
+
+        var model = await database.BrmVehModels
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                existing => existing.VmodVmakCode == normalisedMakeCode && existing.VmodCode == normalisedModelCode,
+                cancellationToken);
+
+        return model is null
+            ? new VehicleModelResult(VehicleModelOutcome.ModelNotFound)
+            : new VehicleModelResult(VehicleModelOutcome.Found, VehicleModelMapping.ToDto(model));
     }
 
     public async Task<VehicleModelResult> CreateAsync(VehicleModelValues values, CancellationToken cancellationToken)

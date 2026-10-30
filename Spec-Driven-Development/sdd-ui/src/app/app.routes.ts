@@ -22,7 +22,6 @@ export const routes: Routes = [
       ),
   },
   {
-    // The make to show is passed in the navigation state, not the address, so the address bar stays clean.
     path: 'vehicle-makes/view',
     title: 'Vehicle make details',
     data: { mode: 'view' },
@@ -30,6 +29,24 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/vehicle-makes/vehicle-make-form.component').then(
         (module) => module.VehicleMakeFormComponent,
+      ),
+  },
+  {
+    path: 'vehicle-makes/:makeCode/models/new',
+    title: 'Add vehicle model',
+    canDeactivate: [unsavedChangesGuard],
+    loadComponent: () =>
+      import('./features/vehicle-makes/vehicle-model-form.component').then(
+        (module) => module.VehicleModelFormComponent,
+      ),
+  },
+  {
+    path: 'vehicle-makes/:makeCode/models/:modelCode/edit',
+    title: 'Edit vehicle model',
+    canDeactivate: [unsavedChangesGuard],
+    loadComponent: () =>
+      import('./features/vehicle-makes/vehicle-model-form.component').then(
+        (module) => module.VehicleModelFormComponent,
       ),
   },
   { path: '**', redirectTo: 'vehicle-makes' },

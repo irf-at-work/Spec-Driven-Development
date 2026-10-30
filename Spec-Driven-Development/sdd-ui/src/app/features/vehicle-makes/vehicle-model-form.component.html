@@ -1,0 +1,254 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>
+        <app-icon-button
+        action="back"
+        tooltip="Back to make"
+        accessibleName="Back to make"
+        (clicked)="back()"
+      />
+        {{ pageTitle() }}</h1>
+      <p class="subtitle">Enter the details for this vehicle model. Fields marked * are required.</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading model details" />
+  }
+
+  <form class="card" novalidate [formGroup]="form" (ngSubmit)="save()">
+    <div class="grid">
+      <app-limited-text-field
+        class="code"
+        label="Model Code"
+        patternMessage="Model Code can contain only letters, digits and hyphens."
+        [control]="form.controls.modelCode"
+        [maxLength]="limits.modelCode"
+        [uppercase]="true"
+      />
+      <app-limited-text-field
+        class="name"
+        label="Model Name"
+        [control]="form.controls.modelName"
+        [maxLength]="limits.modelName"
+      />
+      <app-limited-text-field
+        class="short"
+        label="Short Name"
+        [control]="form.controls.shortName"
+        [maxLength]="limits.shortName"
+      />
+      <mat-slide-toggle class="active" [formControl]="form.controls.active">
+        Active
+      </mat-slide-toggle>
+    </div>
+
+    <mat-expansion-panel class="additional">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Additional Information</mat-panel-title>
+        <mat-panel-description>Remarks and Arabic names (all optional)</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="grid">
+        <app-limited-text-field
+          class="full"
+          label="Remarks"
+          [control]="form.controls.remarks"
+          [maxLength]="limits.remarks"
+          [multiline]="true"
+          [showCounter]="true"
+        />
+        <app-limited-text-field
+          class="half"
+          label="Arabic Model Name"
+          [control]="form.controls.arabicModelName"
+          [maxLength]="limits.arabicModelName"
+          [rtl]="true"
+        />
+        <app-limited-text-field
+          class="half"
+          label="Arabic Short Name"
+          [control]="form.controls.arabicShortName"
+          [maxLength]="limits.arabicShortName"
+          [rtl]="true"
+        />
+        <app-limited-text-field
+          class="full"
+          label="Arabic Remarks"
+          [control]="form.controls.arabicRemarks"
+          [maxLength]="limits.arabicRemarks"
+          [multiline]="true"
+          [rtl]="true"
+          [showCounter]="true"
+        />
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel class="additional" [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Technical & Commercial Specifications</mat-panel-title>
+        <mat-panel-description>Optional details and standard classifications</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Variant</mat-label>
+          <mat-select [formControl]="form.controls.variant">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('variant'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Vehicle Type</mat-label>
+          <mat-select [formControl]="form.controls.vehicleType">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('vehicleType'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Body Type</mat-label>
+          <mat-select [formControl]="form.controls.bodyType">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('bodyType'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fuel Type</mat-label>
+          <mat-select [formControl]="form.controls.fuelType">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('fuelType'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cylinders</mat-label>
+          <mat-select [formControl]="form.controls.cylinders">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('cylinders'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Doors</mat-label>
+          <mat-select [formControl]="form.controls.doors">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('doors'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Driving Type</mat-label>
+          <mat-select [formControl]="form.controls.drivingType">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('drivingType'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Body Colour</mat-label>
+          <mat-select [formControl]="form.controls.bodyColour">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('bodyColour'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Category</mat-label>
+          <mat-select [formControl]="form.controls.category">
+            <mat-option value="">None</mat-option>
+            @for (opt of optionsFor('category'); track opt.code) {
+              <mat-option [value]="opt.code">{{ opt.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <app-limited-text-field
+          class="half"
+          label="Weight"
+          [control]="form.controls.weight"
+          [maxLength]="limits.weight"
+        />
+
+        <app-limited-text-field
+          class="half"
+          label="Load Capacity"
+          [control]="form.controls.loadCapacity"
+          [maxLength]="limits.loadCapacity"
+        />
+
+        <mat-form-field appearance="outline">
+          <mat-label>Engine Capacity (CC)</mat-label>
+          <input matInput type="number" min="0" [formControl]="form.controls.engineCapacity" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Make Year</mat-label>
+          <input matInput type="number" min="0" max="9999" [formControl]="form.controls.makeYear" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Seats</mat-label>
+          <input matInput type="number" min="0" max="999" [formControl]="form.controls.seats" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Passengers</mat-label>
+          <input matInput type="number" min="0" max="999" [formControl]="form.controls.passengers" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Drivers</mat-label>
+          <input matInput type="number" min="0" max="999" [formControl]="form.controls.drivers" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Value (AED)</mat-label>
+          <input matInput type="number" min="0" step="0.01" [formControl]="form.controls.value" />
+        </mat-form-field>
+      </div>
+    </mat-expansion-panel>
+
+    <div class="actions">
+      
+      <!-- <app-icon-button
+        action="save"
+        type="submit"
+        [tooltip]="mode() === 'create' ? 'Save vehicle model' : 'Save changes'"
+        [accessibleName]="mode() === 'create' ? 'Save vehicle model' : 'Save changes'"
+        [disabled]="saving() || loading()"
+      /> -->
+
+
+
+       <button
+        mat-flat-button
+        type="submit"
+        [disabled]="saving() || loading()"
+        style="border-radius: 15px; padding: 15px;color: white; background-color: var(--mat-sys-on-primary-fixed-variant); border: 0; display: flex; justify-content: end; align-items: end;"
+      >
+        {{ mode === 'create' ? 'Save vehicle make' : 'Save changes' }}
+      </button>
+
+    </div>
+  </form>
+</section>

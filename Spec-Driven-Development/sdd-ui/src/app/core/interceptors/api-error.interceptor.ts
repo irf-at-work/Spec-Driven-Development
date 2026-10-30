@@ -1,10 +1,8 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, from, switchMap, throwError } from 'rxjs';
 import { ApiProblem, ApiProblemError } from '../api-problem';
-
-const MESSAGE_DURATION_MS = 8000;
+import { NotificationService } from '../../shared/notifications/notification.service';
 
 /**
  * The one place where failed API calls are handled (constitution B8). It never shows what the server wrote.
@@ -13,7 +11,7 @@ const MESSAGE_DURATION_MS = 8000;
  * required.") are passed to the form, so they appear beside the field they belong to instead of in a pop-up.
  */
 export const apiErrorInterceptor: HttpInterceptorFn = (request, next) => {
-  const snackBar = inject(MatSnackBar);
+  const notifications = inject(NotificationService);
 
   return next(request).pipe(
     catchError((error: unknown) => {
@@ -24,9 +22,7 @@ export const apiErrorInterceptor: HttpInterceptorFn = (request, next) => {
       return from(readProblem(error)).pipe(
         switchMap((problem) => {
           if (!isShownBesideFields(problem)) {
-            snackBar.open(plainMessageFor(problem.status), 'Close', {
-              duration: MESSAGE_DURATION_MS,
-            });
+            notifications.error(plainMessageFor(problem.status));
           }
           return throwError(() => new ApiProblemError(problem));
         }),
@@ -48,55 +44,54 @@ function plainMessageFor(status: number): string {
     return 'Some values were not accepted. Please check what you entered and try again.';
   }
   if (status === 404) {
-    return 'That record could not be found. It may have been deleted. Go back to the list and try again.';
+    return 'The record could not be found. It may have been deleted by someone else.';
   }
-  if (status >= 500) {
-    return 'Something went wrong on the server. Please try again, and contact support if it keeps happening.';
+  if (status === 409) {
+    return 'This change conflicts with existing records. Please check the values and try again.';
   }
-  return 'The request could not be completed. Please try again.';
+  return 'A server error occurred. Please try again later.';
 }
 
-async function readProblem(error: HttpErrorResponse): Promise<ApiProblem> {
-  const body = await readBody(error.error);
-  return { status: error.status, fieldErrors: extractFieldErrors(body) };
-}
-
-// The generated client asks for the response as a Blob, so an error body can arrive as a Blob, a string or an object.
-async function readBody(body: unknown): Promise<unknown> {
-  try {
-    if (body instanceof Blob) {
-      return JSON.parse(await body.text());
+async function readProblem(response: HttpErrorResponse): Promise<ApiProblem> {
+  const status = response.status;
+  if (response.error instanceof Blob) {
+    try {
+      const text = await response.error.text();
+      const parsed = JSON.parse(text);
+      return parseProblem(status, parsed);
+    } catch {
+      return fallbackProblem(status);
     }
-    if (typeof body === 'string') {
-      return JSON.parse(body);
-    }
-    return body;
-  } catch {
-    return undefined;
   }
+
+  if (response.error && typeof response.error === 'object') {
+    return parseProblem(status, response.error);
+  }
+
+  return fallbackProblem(status);
 }
 
-function extractFieldErrors(body: unknown): Record<string, string[]> {
-  if (!isRecord(body)) {
-    return {};
-  }
-  const errors = body['errors'];
-  if (!isRecord(errors)) {
-    return {};
-  }
-
+function parseProblem(status: number, data: any): ApiProblem {
   const fieldErrors: Record<string, string[]> = {};
-  for (const [field, messages] of Object.entries(errors)) {
-    if (Array.isArray(messages)) {
-      const texts = messages.filter((message): message is string => typeof message === 'string');
-      if (texts.length > 0) {
-        fieldErrors[field] = texts;
+  if (data?.errors && typeof data.errors === 'object') {
+    for (const [key, value] of Object.entries(data.errors)) {
+      if (Array.isArray(value)) {
+        fieldErrors[key] = value.map(String);
+      } else if (value) {
+        fieldErrors[key] = [String(value)];
       }
     }
   }
-  return fieldErrors;
+
+  return {
+    status,
+    fieldErrors,
+  };
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+function fallbackProblem(status: number): ApiProblem {
+  return {
+    status,
+    fieldErrors: {},
+  };
 }

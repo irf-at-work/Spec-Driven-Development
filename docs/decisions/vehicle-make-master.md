@@ -1,6 +1,6 @@
 # Vehicle Make Master Decisions
 
-**Status**: Proposed; package and Oracle schema gates remain subject to owner approval.
+**Status**: Approved for implementation. Oracle schema facts were verified read-only in the approved test schema. Vehicle-model lookup fixtures remain owner-managed and are not currently loaded.
 **Date**: 29-Oct-2026
 
 ## Use the Existing ASP.NET Core OpenAPI Document
@@ -17,7 +17,15 @@
 
 **Alternatives considered**: Invent schema, handwrite persistence mappings, or use EF migrations.
 
-**Rationale**: The project constitution mandates Oracle Database-First and explicitly prohibits migrations and unapproved database changes. Physical table/key/audit mappings remain pending schema inspection.
+**Rationale**: The project constitution mandates Oracle Database-First and explicitly prohibits migrations and unapproved database changes. Read-only inspection verified `BRM_VEH_MAKE`, `BRM_VEH_MODEL`, `STD_LIST_ITEM`, their keys, the non-cascading model foreign key, audit columns, and field-length semantics; verified facts and the Arabic byte-length limitation are recorded in `specs/001-vehicle-make-master/data-model.md`.
+
+## Keep the Model Key Composite and Route-Owned
+
+**Decision**: A model is identified by `(VMOD_VMAK_CODE, VMOD_CODE)`. The make code comes only from the saved make's route, the model code is immutable after creation, and the Oracle foreign key prevents deleting a make while models remain (`DELETE_RULE = NO ACTION`).
+
+**Alternatives considered**: Use a generated model identifier, allow models to move between makes, or cascade-delete child rows.
+
+**Rationale**: The approved schema already defines the composite primary key and non-cascading foreign key. Keeping both keys in the nested API route matches the physical identity and prevents ambiguous cross-make updates or deletes.
 
 ## Apply Search and Sorting Before Pagination
 
@@ -29,7 +37,7 @@
 
 ## Normalize at the API Boundary
 
-**Decision**: Enforce Make Code uniqueness, requiredness, allowed characters, capitalization, and all field limits in the API. Normalize English text when saving and preserve Arabic characters and spacing exactly. Treat UI validation as user assistance, not as the authoritative check.
+**Decision**: Enforce make and model requiredness, key rules, allowed characters, uniqueness, capitalization, and field limits in the API. Normalize English text when saving and preserve Arabic characters and spacing exactly. Treat UI validation as user assistance, not as the authoritative check.
 
 **Alternatives considered**: Rely on Angular form validation alone.
 
@@ -45,24 +53,24 @@
 
 ## Retire Records with an Active Flag, Not a Separate Action
 
-**Decision**: Every make (and later every model) has an Active setting stored as `Y` or `N` in `VMAK_ACTIVE_YN` / `VMOD_ACTIVE_YN`. A new record is Active by default; a row with no flag counts as Active. An update request that does not mention `active` leaves the status unchanged. Inactive records stay in the list and can be opened.
+**Decision**: Makes and models have independent Active settings stored as `Y` or `N` in `VMAK_ACTIVE_YN` / `VMOD_ACTIVE_YN`. A new record is Active by default; a row with no flag counts as Active. An update request that does not mention `active` leaves the status unchanged. Inactive records stay in the list and can be opened.
 
 **Alternatives considered**: Leave the column to a database default (the earlier design), or hide inactive rows with a filter.
 
-**Rationale**: Owner decision of 29-Oct-2026 (spec FR-027 to FR-029). Writing the flag explicitly means the page no longer depends on an unverified database default or trigger, so the earlier "database-supplied" override in the hand-written part of the data context was removed.
+**Rationale**: Owner decision of 29-Oct-2026 (spec FR-027 to FR-029). The make schema has a `Y` default; the model schema does not. Writing the selected flag explicitly means the API does not depend on either default or on an audit trigger, and a model's status never changes with its make.
 
 ## Refuse Make Deletion While Models Exist
 
-**Decision**: Before deleting a make, the API counts its models and answers `409` with a plain-English message keyed `makeCode` when any exist. A concurrent Oracle `ORA-02292` (child record found) maps to the same answer. Until `BRM_VEH_MODEL` is scaffolded (tasks T002 and T007), the count uses one parameterised read-only query; replace it with a normal query on the scaffolded entity afterwards.
+**Decision**: Before deleting a make, the API counts its models and answers `409` with a plain-English message keyed `makeCode` when any exist. A concurrent Oracle `ORA-02292` (child record found) maps to the same answer. Models are permanently deleted individually; make deletion never cascades.
 
 **Alternatives considered**: Rely on the database foreign key alone, or cascade-delete the models.
 
-**Rationale**: Spec FR-026. The foreign key alone would give a raw database error, and a cascade would silently remove child data if the live schema turns out to cascade, which is still to be verified.
+**Rationale**: Spec FR-026. The verified foreign key is non-cascading (`NO ACTION`); the API returns a clear conflict instead of exposing a raw database error or silently deleting child data.
 
 ## Unpaged Model-Options Lookup (Constitution C3 Exception)
 
-**Decision**: `GET /api/vehicle-model-options` returns the nine fixed dropdown lists in one unpaged response. The exception to B8 is recorded in constitution C3 (29-Oct-2026).
+**Decision**: `GET /api/vehicle-model-options` returns the nine fixed dropdown lists in one unpaged response: `VEH_VARIANT`, `VEH_TYPE`, `VEH_BODY_TYPE`, `VEH_FUEL_TYPE`, `VEH_CYLINDER`, `VEH_DOORS`, `VEH_DRIVING_TYPE`, `VEH_BODY_COLOR`, and `VEH_CATEGORY`. Only active items are returned, ordered by English description and then code. The exception to B8 is recorded in constitution C3 (29-Oct-2026).
 
 **Alternatives considered**: Nine separate endpoints, caller-chosen list types, or paged options.
 
-**Rationale**: Small fixed lookups; the owner chose the unpaged behaviour in the spec clarifications.
+**Rationale**: Small fixed lookups; the owner chose the unpaged behaviour in the spec clarifications. The approved test schema currently has no vehicle-model list types or fixture rows. The owner will load them separately; this feature performs no writes to `STD_LIST_ITEM`.

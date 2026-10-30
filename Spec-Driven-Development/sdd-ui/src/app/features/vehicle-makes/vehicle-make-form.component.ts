@@ -15,15 +15,16 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProblem, isApiProblemError } from '../../core/api-problem';
 import { VehicleMakeDto, VehicleMakesClient } from '../../generated/api-client';
-import { openConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { NotificationService } from '../../shared/notifications/notification.service';
+import { IconButtonComponent } from '../../shared/icon-button/icon-button.component';
 import { LimitedTextFieldComponent } from '../../shared/limited-text-field/limited-text-field.component';
 import { HasUnsavedChanges } from '../../shared/unsaved-changes.guard';
 import { notBlank } from '../../shared/validators';
@@ -62,8 +63,9 @@ interface FormValues {
 @Component({
   selector: 'app-vehicle-make-form',
   imports: [
+    IconButtonComponent,
     ReactiveFormsModule,
-    MatButton,
+    
     MatExpansionModule,
     MatProgressBar,
     MatSlideToggle,
@@ -77,8 +79,8 @@ interface FormValues {
 export class VehicleMakeFormComponent implements HasUnsavedChanges {
   private readonly client = inject(VehicleMakesClient);
   private readonly router = inject(Router);
-  private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
+  
+  private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
   // Named in the template, because the Active switch is also a slide toggle.
   private readonly editToggle = viewChild('editSwitch', { read: MatSlideToggle });
@@ -169,25 +171,22 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       return;
     }
 
-    openConfirmDialog(this.dialog, {
+    void this.notifications.confirm({
       title: 'Discard your changes?',
-      message: 'You have changes that have not been saved. Turning editing off will discard them.',
-      confirmLabel: 'Discard changes',
-      cancelLabel: 'Keep editing',
-      destructive: true,
-    })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((discard) => {
-        if (discard) {
-          this.stopEditing();
-          return;
-        }
-        // The switch has already moved, so put it back to match the form, which is still being edited.
-        const toggle = this.editToggle();
-        if (toggle) {
-          toggle.checked = true;
-        }
-      });
+      text: 'You have changes that have not been saved. Turning editing off will discard them.',
+      confirmButtonText: 'Discard changes',
+      cancelButtonText: 'Keep editing',
+      isDanger: true,
+    }).then((discard) => {
+      if (discard) {
+        this.stopEditing();
+        return;
+      }
+      const toggle = this.editToggle();
+      if (toggle) {
+        toggle.checked = true;
+      }
+    });
   }
 
   protected save(): void {
@@ -218,7 +217,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
           next: () => {
             this.saving.set(false);
             this.form.markAsPristine();
-            this.snackBar.open('Vehicle make saved.', 'Close', { duration: MESSAGE_DURATION_MS });
+            this.notifications.success('Vehicle make saved.');
             this.back();
           },
           error: (error: unknown) => this.onSaveFailed(error),
@@ -236,7 +235,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
           this.showMake(updated);
           this.editing.set(keepEditingForModel);
           this.applyEditState();
-          this.snackBar.open('Vehicle make updated.', 'Close', { duration: MESSAGE_DURATION_MS });
+          this.notifications.success('Vehicle make updated.');
         },
         error: (error: unknown) => this.onSaveFailed(error),
       });
@@ -284,7 +283,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   }
 
   private stopEditing(): void {
-    this.modelList()?.discardForMakeEditOff();
+    // model editing is on separate pages
     if (this.savedValues) {
       this.form.reset(this.savedValues);
     }

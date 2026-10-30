@@ -6,15 +6,15 @@
         Find, add and maintain the vehicle makes used across insurance records.
       </p>
     </div>
-    <button matButton="filled" type="button" (click)="add()">Add vehicle make</button>
+    <div class="header-actions">
+      <app-icon-button
+        action="add"
+        tooltip="Add vehicle make"
+        accessibleName="Add vehicle make"
+        (clicked)="add()"
+      />
+    </div>
   </header>
-
-  <div class="toolbar">
-    <mat-form-field class="search" appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Search by code, name or short name</mat-label>
-      <input matInput type="search" autocomplete="off" [formControl]="searchControl" />
-    </mat-form-field>
-  </div>
 
   <div class="table-card">
     @if (loading()) {
@@ -37,46 +37,71 @@
           [matSortDirection]="sortDirection()"
           (matSortChange)="onSort($event)"
         >
+          <!-- Make Code Column with Filter -->
           <ng-container matColumnDef="makeCode">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Make Code</th>
+            <th mat-header-cell *matHeaderCellDef>
+              <div mat-sort-header>Make Code</div>
+              <app-column-filter
+                placeholder="Code..."
+                (filterChange)="onFilterChange('makeCode', $event)"
+              />
+            </th>
             <td mat-cell *matCellDef="let make">{{ make.makeCode }}</td>
           </ng-container>
 
+          <!-- Make Name Column with Filter -->
           <ng-container matColumnDef="makeName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Make Name</th>
+            <th mat-header-cell *matHeaderCellDef>
+              <div mat-sort-header>Make Name</div>
+              <app-column-filter
+                placeholder="Name..."
+                (filterChange)="onFilterChange('makeName', $event)"
+              />
+            </th>
             <td mat-cell *matCellDef="let make">{{ make.makeName }}</td>
           </ng-container>
 
+          <!-- Short Name Column with Filter -->
           <ng-container matColumnDef="shortName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Short Name</th>
+            <th mat-header-cell *matHeaderCellDef>
+              <div mat-sort-header>Short Name</div>
+              <app-column-filter
+                placeholder="Short name..."
+                (filterChange)="onFilterChange('shortName', $event)"
+              />
+            </th>
             <td mat-cell *matCellDef="let make">{{ make.shortName }}</td>
           </ng-container>
 
+          <!-- Status Column with Filter -->
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <th mat-header-cell *matHeaderCellDef>
+              <div>Status</div>
+              <app-column-filter
+                type="status"
+                (filterChange)="onFilterChange('status', $event)"
+              />
+            </th>
             <td mat-cell *matCellDef="let make">{{ make.active ? 'Active' : 'Inactive' }}</td>
           </ng-container>
 
+          <!-- Actions Column (no filter) -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="actions-column">Actions</th>
             <td mat-cell *matCellDef="let make" class="actions-column">
-              <button
-                matButton
-                type="button"
-                [attr.aria-label]="'Open ' + make.makeCode"
-                (click)="open(make)"
-              >
-                Open
-              </button>
-              <button
-                matButton
-                type="button"
-                class="delete-action"
-                [attr.aria-label]="'Delete ' + make.makeCode"
-                (click)="confirmDelete(make)"
-              >
-                Delete
-              </button>
+              <app-icon-button
+                action="open"
+                [tooltip]="'Open ' + make.makeCode"
+                [accessibleName]="'Open ' + make.makeCode"
+                (clicked)="open(make)"
+              />
+              <app-icon-button
+                action="delete"
+                [danger]="true"
+                [tooltip]="'Delete ' + make.makeCode"
+                [accessibleName]="'Delete ' + make.makeCode"
+                (clicked)="confirmDelete(make)"
+              />
             </td>
           </ng-container>
 

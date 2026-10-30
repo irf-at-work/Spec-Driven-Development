@@ -324,4 +324,171 @@ public class VehicleModelApiTests(OracleApiFactory factory)
 
         Assert.Equal(HttpStatusCode.NoContent, allowed.StatusCode);
     }
+
+    private static async Task<string> ProblemTitle(HttpResponseMessage response)
+    {
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(Cancellation));
+        return document.RootElement.GetProperty("title").GetString()!;
+    }
+
+    [Fact]
+    public async Task One_model_can_be_read_back_by_its_make_and_model_code_in_any_case()
+    {
+        var makeCode = await NewMake();
+        await CreateModel(
+            makeCode,
+            "GET1",
+            new { modelCode = "GET1", modelName = "Read Me", shortName = "Read", seats = 5, active = false });
+
+        var response = await client.GetAsync($"{MakesUrl}/{makeCode.ToLowerInvariant()}/models/get1", Cancellation);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var model = await Read<VehicleModelDto>(response);
+        Assert.Equal(makeCode, model.MakeCode);
+        Assert.Equal("GET1", model.ModelCode);
+        Assert.Equal("Read Me", model.ModelName);
+        Assert.Equal(5, model.Seats);
+        Assert.False(model.Active);
+        Assert.Equal("admin", model.CreatedBy);
+    }
+
+    [Fact]
+    public async Task Reading_one_model_reports_which_of_the_make_or_the_model_was_not_found()
+    {
+        var makeCode = await NewMake();
+
+        var noModel = await client.GetAsync($"{MakesUrl}/{makeCode}/models/NOPE", Cancellation);
+        var noMake = await client.GetAsync($"{MakesUrl}/ZTNOSUCHMAKE/models/NOPE", Cancellation);
+
+        Assert.Equal(HttpStatusCode.NotFound, noModel.StatusCode);
+        Assert.Equal("application/problem+json", noModel.Content.Headers.ContentType?.MediaType);
+        Assert.Equal("Vehicle model not found", await ProblemTitle(noModel));
+        Assert.Equal(HttpStatusCode.NotFound, noMake.StatusCode);
+        Assert.Equal("Vehicle make not found", await ProblemTitle(noMake));
+    }
+
+    [Fact]
+    public async Task A_model_is_not_found_under_a_different_make_than_its_own()
+    {
+        var firstMake = await NewMake();
+        var secondMake = await NewMake();
+        await CreateModel(firstMake, "MINE");
+
+        var response = await client.GetAsync($"{MakesUrl}/{secondMake}/models/MINE", Cancellation);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("Vehicle model not found", await ProblemTitle(response));
+    }
+
+    private async Task<string> MakeWithModels(params (string Code, string Name, string Short, bool Active)[] models)
+    {
+        var makeCode = await NewMake();
+        foreach (var (code, name, shortName, active) in models)
+        {
+            var response = await CreateModel(
+                makeCode,
+                code,
+                new { modelCode = code, modelName = name, shortName, active });
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        return makeCode;
+    }
+
+    private async Task<List<string>> FilteredModelCodes(string makeCode, string query)
+    {
+        var result = await Read<PaginatedResult<VehicleModelDto>>(
+            await client.GetAsync($"{MakesUrl}/{makeCode}/models?{query}", Cancellation));
+        return result.Items.Select(item => item.ModelCode).ToList();
+    }
+
+    [Theory]
+    [InlineData("modelNameOperator=startsWith&modelName=x5", "X5")]
+    [InlineData("modelNameOperator=endsWith&modelName=AVANT", "A4")]
+    [InlineData("modelName=state", "B2")]
+    [InlineData("modelNameOperator=equals&modelName=b2%20estate", "B2")]
+    [InlineData("modelNameOperator=notEquals&modelName=b2%20estate", "A4,X5")]
+    [InlineData("modelCodeOperator=startsWith&modelCode=a", "A4")]
+    [InlineData("shortNameOperator=equals&shortName=x5", "X5")]
+    public async Task The_model_columns_can_be_filtered_with_every_operator_ignoring_case(string query, string expected)
+    {
+        var makeCode = await MakeWithModels(
+            ("X5", "X5 Sport", "X5", true),
+            ("A4", "A4 Avant", "A4", true),
+            ("B2", "B2 Estate", "B2", true));
+
+        var codes = await FilteredModelCodes(makeCode, query);
+
+        Assert.Equal(expected.Split(','), codes);
+    }
+
+    [Fact]
+    public async Task The_model_status_filter_and_combined_filters_work_and_blank_filters_are_ignored()
+    {
+        var makeCode = await MakeWithModels(
+            ("X5", "Sport One", "S1", true),
+            ("A4", "Sport Two", "S2", false),
+            ("B2", "Estate", "E1", true));
+
+        var inactive = await FilteredModelCodes(makeCode, "active=false");
+        var notInactive = await FilteredModelCodes(makeCode, "active=false&activeOperator=notEquals");
+        var sportAndActive = await FilteredModelCodes(makeCode, "modelName=sport&active=true");
+        var blank = await FilteredModelCodes(makeCode, "modelName=&modelNameOperator=equals");
+
+        Assert.Equal(new[] { "A4" }, inactive);
+        Assert.Equal(new[] { "B2", "X5" }, notInactive);
+        Assert.Equal(new[] { "X5" }, sportAndActive);
+        Assert.Equal(new[] { "A4", "B2", "X5" }, blank);
+    }
+
+    [Fact]
+    public async Task Model_filters_see_only_this_makes_models_and_match_pattern_characters_literally()
+    {
+        var makeCode = await MakeWithModels(
+            ("P1", "Plain", "P", true),
+            ("P2", "Half 50% Off", "H", true));
+        await MakeWithModels(("P3", "Half 50% Off", "H", true));
+
+        var percent = await FilteredModelCodes(makeCode, $"modelName={Uri.EscapeDataString("%")}");
+        var wildcardShape = await FilteredModelCodes(makeCode, $"modelName={Uri.EscapeDataString("P%n")}");
+
+        Assert.Equal(new[] { "P2" }, percent);
+        Assert.Empty(wildcardShape);
+    }
+
+    [Fact]
+    public async Task Model_filters_apply_to_every_model_of_the_make_before_paging()
+    {
+        var makeCode = await NewMake();
+        for (var number = 1; number <= 15; number++)
+        {
+            await CreateModel(
+                makeCode,
+                $"M{number:00}",
+                new { modelCode = $"M{number:00}", modelName = number == 14 ? "Needle" : "Hay", shortName = "S" });
+        }
+
+        var result = await Read<PaginatedResult<VehicleModelDto>>(
+            await client.GetAsync($"{MakesUrl}/{makeCode}/models?modelName=needle", Cancellation));
+
+        // The needle is the 14th model, which sits on page 2 of the unfiltered list.
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal("M14", Assert.Single(result.Items).ModelCode);
+    }
+
+    [Theory]
+    [InlineData("modelCodeOperator=beginsWith", "modelCodeOperator")]
+    [InlineData("modelNameOperator=like", "modelNameOperator")]
+    [InlineData("shortNameOperator=nope", "shortNameOperator")]
+    [InlineData("activeOperator=contains", "activeOperator")]
+    public async Task A_model_filter_operator_that_is_not_allowed_is_refused_with_the_parameter_named(string query, string field)
+    {
+        var makeCode = await NewMake();
+
+        var response = await client.GetAsync($"{MakesUrl}/{makeCode}/models?{query}", Cancellation);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+        Assert.False(string.IsNullOrEmpty(await FirstErrorFor(response, field)));
+    }
 }

@@ -34,16 +34,28 @@ export class VehicleMakesClient {
      * @param sortDirection (optional) 
      * @return OK
      */
-    list(page: number | undefined, search: string | undefined, sortBy: string | undefined, sortDirection: string | undefined): Observable<PaginatedResultOfVehicleMakeListItemDto> {
+    list(page: number | undefined, makeCode?: string | undefined, makeCodeOperator?: string | undefined, makeName?: string | undefined, makeNameOperator?: string | undefined, shortName?: string | undefined, shortNameOperator?: string | undefined, active?: boolean | undefined, activeOperator?: string | undefined, sortBy?: string | undefined, sortDirection?: string | undefined): Observable<PaginatedResultOfVehicleMakeListItemDto> {
         let url_ = this.baseUrl + "/api/vehicle-makes?";
         if (page === null)
             throw new globalThis.Error("The parameter 'page' cannot be null.");
         else if (page !== undefined)
             url_ += "page=" + encodeURIComponent("" + page) + "&";
-        if (search === null)
-            throw new globalThis.Error("The parameter 'search' cannot be null.");
-        else if (search !== undefined)
-            url_ += "search=" + encodeURIComponent("" + search) + "&";
+        if (makeCode !== undefined && makeCode !== null)
+            url_ += "makeCode=" + encodeURIComponent("" + makeCode) + "&";
+        if (makeCodeOperator !== undefined && makeCodeOperator !== null)
+            url_ += "makeCodeOperator=" + encodeURIComponent("" + makeCodeOperator) + "&";
+        if (makeName !== undefined && makeName !== null)
+            url_ += "makeName=" + encodeURIComponent("" + makeName) + "&";
+        if (makeNameOperator !== undefined && makeNameOperator !== null)
+            url_ += "makeNameOperator=" + encodeURIComponent("" + makeNameOperator) + "&";
+        if (shortName !== undefined && shortName !== null)
+            url_ += "shortName=" + encodeURIComponent("" + shortName) + "&";
+        if (shortNameOperator !== undefined && shortNameOperator !== null)
+            url_ += "shortNameOperator=" + encodeURIComponent("" + shortNameOperator) + "&";
+        if (active !== undefined && active !== null)
+            url_ += "active=" + encodeURIComponent("" + active) + "&";
+        if (activeOperator !== undefined && activeOperator !== null)
+            url_ += "activeOperator=" + encodeURIComponent("" + activeOperator) + "&";
         if (sortBy === null)
             throw new globalThis.Error("The parameter 'sortBy' cannot be null.");
         else if (sortBy !== undefined)
@@ -380,6 +392,58 @@ export class VehicleModelOptionsClient {
     providedIn: 'root'
 })
 export class VehicleModelsClient {
+    get(makeCode: string, modelCode: string): Observable<VehicleModelDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models/{modelCode}";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        if (modelCode === undefined || modelCode === null)
+            throw new globalThis.Error("The parameter 'modelCode' must be defined.");
+        url_ = url_.replace("{modelCode}", encodeURIComponent("" + modelCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelDto>;
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<VehicleModelDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -393,7 +457,7 @@ export class VehicleModelsClient {
      * @param page (optional) 
      * @return OK
      */
-    list(makeCode: string, page: number | undefined): Observable<PaginatedResultOfVehicleModelDto> {
+    list(makeCode: string, page: number | undefined, modelCode?: string | undefined, modelCodeOperator?: string | undefined, modelName?: string | undefined, modelNameOperator?: string | undefined, shortName?: string | undefined, shortNameOperator?: string | undefined, active?: boolean | undefined, activeOperator?: string | undefined): Observable<PaginatedResultOfVehicleModelDto> {
         let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models?";
         if (makeCode === undefined || makeCode === null)
             throw new globalThis.Error("The parameter 'makeCode' must be defined.");
