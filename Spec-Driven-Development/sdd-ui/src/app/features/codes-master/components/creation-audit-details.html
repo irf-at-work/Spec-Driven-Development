@@ -1,0 +1,16 @@
+<span class="audit-control" (mouseenter)="open()" (mouseleave)="close()">
+  <button
+    type="button"
+    class="audit-button"
+    [attr.aria-label]="'Creation audit for ' + record().code"
+    [attr.aria-expanded]="isOpen()"
+    (focus)="open()"
+    (blur)="close()"
+    (click)="open()"
+  >
+    <span aria-hidden="true">i</span>
+  </button>
+  @if (isOpen()) {
+    <span class="audit-tooltip" role="tooltip">{{ details() }}</span>
+  }
+</span>

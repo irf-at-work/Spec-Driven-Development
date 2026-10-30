@@ -1,0 +1,259 @@
+openapi: 3.1.0
+info:
+  title: Codes Master API
+  version: 1.0.0
+  description: Contract for reading and managing existing Oracle STD_CODES records.
+servers:
+  - url: /api
+paths:
+  /codes:
+    get:
+      operationId: listCodes
+      summary: List Codes Master records
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        "200":
+          description: A page of code records.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResult"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    post:
+      operationId: createCode
+      summary: Create a Codes Master record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CodeWrite"
+      responses:
+        "201":
+          description: The record was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodeRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+  /codes/record:
+    get:
+      operationId: getCode
+      summary: Retrieve a code by its composite key
+      parameters:
+        - $ref: "#/components/parameters/Code"
+        - $ref: "#/components/parameters/CodeType"
+      responses:
+        "200":
+          description: The requested record.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodeRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    put:
+      operationId: updateCode
+      summary: Update a record without changing its composite key
+      parameters:
+        - $ref: "#/components/parameters/Code"
+        - $ref: "#/components/parameters/CodeType"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CodeWrite"
+      responses:
+        "200":
+          description: The updated record.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodeRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    delete:
+      operationId: deleteCode
+      summary: Delete a record identified by its composite key
+      parameters:
+        - $ref: "#/components/parameters/Code"
+        - $ref: "#/components/parameters/CodeType"
+      responses:
+        "204":
+          description: The record was deleted.
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+components:
+  parameters:
+    Code:
+      name: code
+      in: query
+      required: true
+      schema:
+        type: string
+      description: First part of the composite key; maximum 12 Oracle database-encoded bytes.
+    CodeType:
+      name: codeType
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Second part of the composite key; maximum 20 Oracle database-encoded bytes.
+  responses:
+    Problem:
+      description: A safe error response; no credential or raw diagnostic details.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+  schemas:
+    CodeWrite:
+      type: object
+      required:
+        - code
+        - codeType
+      properties:
+        code:
+          type: string
+          description: Maximum 12 bytes in the target Oracle database character set.
+        codeType:
+          type: string
+          description: Maximum 20 bytes in the target Oracle database character set.
+        codeDescription:
+          type: [string, "null"]
+          description: Maximum 100 bytes in the target Oracle database character set.
+        shortDescription:
+          type: [string, "null"]
+          description: Maximum 30 bytes in the target Oracle database character set.
+        longDescription:
+          type: [string, "null"]
+          description: Maximum 2000 bytes in the target Oracle database character set.
+        value1:
+          type: [string, "null"]
+          description: Maximum 100 bytes in the target Oracle database character set.
+        value2:
+          type: [string, "null"]
+          description: Maximum 100 bytes in the target Oracle database character set.
+        flex1:
+          type: [string, "null"]
+          description: Maximum 60 bytes in the target Oracle database character set.
+        flex2:
+          type: [string, "null"]
+          description: Maximum 2000 bytes in the target Oracle database character set.
+        descriptionInArabic:
+          type: [string, "null"]
+          description: Maximum 100 bytes in the target Oracle database character set.
+        shortDescriptionInArabic:
+          type: [string, "null"]
+          description: Maximum 30 bytes in the target Oracle database character set.
+        longDescriptionInArabic:
+          type: [string, "null"]
+          description: Maximum 2000 bytes in the target Oracle database character set.
+        activeYn:
+          type: [string, "null"]
+          description: Maximum 1 byte in the target Oracle database character set; allowed values are unspecified.
+      description: |
+        On update, the API matches the immutable code/codeType composite key
+        from the query parameters and rejects a body whose identity differs.
+        Company Code and audit fields are server/database controlled.
+    CodeRecord:
+      allOf:
+        - $ref: "#/components/schemas/CodeWrite"
+        - type: object
+          required:
+            - companyCode
+          properties:
+            companyCode:
+              type: string
+              readOnly: true
+              description: Derived directly from code; maximum 12 Oracle database-encoded bytes.
+            createdBy:
+              type: [string, "null"]
+              readOnly: true
+              description: Maximum 12 Oracle database-encoded bytes.
+            createdDate:
+              type: [string, "null"]
+              format: date-time
+              readOnly: true
+              description: Stored Oracle DATE calendar value; displayed as DD-MMM-YYYY without timezone conversion.
+    PaginatedResult:
+      type: object
+      required:
+        - items
+        - page
+        - pageSize
+        - totalCount
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CodeRecord"
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        totalCount:
+          type: integer
+          minimum: 0
+    ProblemDetails:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+          description: Safe, plain-English user guidance.
+        instance:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string

@@ -1,0 +1,14 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "Open code-edit-page.html",
+            "file": "c:\\Users\\ABSPC164\\Spec-Driven-Development\\Spec-Driven-Development\\sdd-ui\\src\\app\\features\\codes-master\\pages\\code-edit-page.html"
+        }
+    ]
+}

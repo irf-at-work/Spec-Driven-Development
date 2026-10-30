@@ -1,12 +1,21 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { masterNavigation } from './navigation/master-navigation';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [
+    MatButtonModule,
+    MatToolbarModule,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet,
+  ],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('sdd-ui');
+  protected readonly masterNavigation = masterNavigation;
 }

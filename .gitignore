@@ -520,3 +520,9 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 Spec-Driven-Development/sdd-ui/.angular/cache/*
+
+# Nested web-project build output and local secrets
+.env*
+**/dist/
+**/build/
+**/coverage/

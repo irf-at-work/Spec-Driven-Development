@@ -1,0 +1,46 @@
+<section class="form-page" aria-labelledby="edit-code-heading">
+  <header class="page-header">
+    <div>
+      <h1 id="edit-code-heading">Edit Codes Master</h1>
+      <p>Update the selected code details.</p>
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      form="codes-master-code-form"
+      [disabled]="isLoading() || isSubmitting() || !recordLoaded()"
+    >
+      Save
+    </button>
+  </header>
+
+  @if (isLoading()) {
+    <p role="status">Loading code details…</p>
+  } @else if (errorMessage() && !recordLoaded()) {
+    <p class="error-message" role="alert">{{ errorMessage() }}</p>
+  } @else {
+    @if (errorMessage()) {
+      <p class="error-message" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <app-code-form-fields
+      [form]="form"
+      [serverErrors]="serverErrors()"
+      [identityReadonly]="true"
+      (submitted)="save()"
+    >
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
+          Save
+        </button>
+        <button mat-button type="button" [disabled]="isSubmitting()" (click)="leavePage()">
+          Cancel
+        </button>
+        <button mat-button type="button" [disabled]="isSubmitting()" (click)="leavePage()">
+          Back
+        </button>
+      </div>
+    </app-code-form-fields>
+  }
+</section>

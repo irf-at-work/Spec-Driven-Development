@@ -1,0 +1,136 @@
+<form id="codes-master-code-form" [formGroup]="form()" (ngSubmit)="submitted.emit()" novalidate>
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Code</mat-label>
+      <input matInput formControlName="code" [readonly]="identityReadonly()" required />
+      @if (fieldError('code'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+      <mat-hint>Maximum 12 bytes</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Code Type</mat-label>
+      <input matInput formControlName="codeType" [readonly]="identityReadonly()" required />
+      @if (fieldError('codeType'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+      <mat-hint>Maximum 20 bytes</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Code Description</mat-label>
+      <input matInput formControlName="codeDescription" />
+      <mat-hint>Maximum 100 bytes</mat-hint>
+      @if (fieldError('codeDescription'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Short Description</mat-label>
+      <input matInput formControlName="shortDescription" />
+      <mat-hint>Maximum 30 bytes</mat-hint>
+      @if (fieldError('shortDescription'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="wide-field">
+      <mat-label>Long Description</mat-label>
+      <textarea matInput rows="3" formControlName="longDescription"></textarea>
+      <mat-hint>Maximum 2000 bytes</mat-hint>
+      @if (fieldError('longDescription'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Value 1</mat-label>
+      <input matInput formControlName="value1" />
+      <mat-hint>Maximum 100 bytes</mat-hint>
+      @if (fieldError('value1'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Value 2</mat-label>
+      <input matInput formControlName="value2" />
+      <mat-hint>Maximum 100 bytes</mat-hint>
+      @if (fieldError('value2'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Flex 1</mat-label>
+      <input matInput formControlName="flex1" />
+      <mat-hint>Maximum 60 bytes</mat-hint>
+      @if (fieldError('flex1'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="wide-field">
+      <mat-label>Flex 2</mat-label>
+      <textarea matInput rows="3" formControlName="flex2"></textarea>
+      <mat-hint>Maximum 2000 bytes</mat-hint>
+      @if (fieldError('flex2'); as error) {
+        <mat-error>{{ error }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <button
+    mat-button
+    type="button"
+    aria-controls="codes-master-more-fields"
+    [attr.aria-expanded]="moreExpanded()"
+    (click)="toggleMore()"
+  >
+    More
+  </button>
+
+  @if (moreExpanded()) {
+    <section id="codes-master-more-fields" class="form-grid more-fields" aria-label="More fields">
+      <mat-form-field appearance="outline">
+        <mat-label>Desc In Arabic</mat-label>
+        <input matInput formControlName="descriptionInArabic" />
+        <mat-hint>Maximum 100 bytes</mat-hint>
+        @if (fieldError('descriptionInArabic'); as error) {
+          <mat-error>{{ error }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Short Desc In Arabic</mat-label>
+        <input matInput formControlName="shortDescriptionInArabic" />
+        <mat-hint>Maximum 30 bytes</mat-hint>
+        @if (fieldError('shortDescriptionInArabic'); as error) {
+          <mat-error>{{ error }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="wide-field">
+        <mat-label>Long Description In Arabic</mat-label>
+        <textarea matInput rows="3" formControlName="longDescriptionInArabic"></textarea>
+        <mat-hint>Maximum 2000 bytes</mat-hint>
+        @if (fieldError('longDescriptionInArabic'); as error) {
+          <mat-error>{{ error }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Active Y/N</mat-label>
+        <input matInput formControlName="activeYn" />
+        <mat-hint>Maximum 1 byte</mat-hint>
+        @if (fieldError('activeYn'); as error) {
+          <mat-error>{{ error }}</mat-error>
+        }
+      </mat-form-field>
+    </section>
+  }
+
+  <ng-content />
+</form>

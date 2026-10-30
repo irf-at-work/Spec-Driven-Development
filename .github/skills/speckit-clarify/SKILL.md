@@ -7,6 +7,7 @@ metadata:
   source: "templates/commands/clarify.md"
 ---
 
+
 ## User Input
 
 ```text

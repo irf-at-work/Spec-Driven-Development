@@ -1,0 +1,39 @@
+.audit-control {
+  position: relative;
+  display: inline-flex;
+}
+
+.audit-button {
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid #5f6368;
+  border-radius: 50%;
+  background: #fff;
+  color: #202124;
+  cursor: pointer;
+  font: inherit;
+}
+
+.audit-button:focus-visible {
+  outline: 3px solid #0b57d0;
+  outline-offset: 2px;
+}
+
+.audit-tooltip {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: calc(100% + 0.5rem);
+  width: max-content;
+  max-width: 18rem;
+  padding: 0.65rem 0.8rem;
+  transform: translateX(-50%);
+  border-radius: 0.25rem;
+  background: #303134;
+  color: #fff;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: normal;
+}

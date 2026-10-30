@@ -1,0 +1,69 @@
+.codes-page {
+  max-width: 90rem;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.page-header p {
+  margin: 0.5rem 0 0;
+  color: #5f6368;
+}
+
+.state-message {
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #d5d9df;
+  border-radius: 0.5rem;
+}
+
+.error-message {
+  color: #8b1e1e;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  color: #174f2a;
+  background: #e8f5eb;
+  border-radius: 0.5rem;
+}
+
+.table-container {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #d5d9df;
+  border-radius: 0.5rem;
+}
+
+table {
+  width: 100%;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+mat-paginator {
+  margin-top: 0.75rem;
+  background: transparent;
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    align-items: center;
+  }
+}

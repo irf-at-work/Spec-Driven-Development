@@ -1,0 +1,96 @@
+<section class="codes-page" aria-labelledby="codes-heading">
+  <header class="page-header">
+    <div>
+      <h1 id="codes-heading">Codes Master</h1>
+      <p>Review and manage reference codes.</p>
+    </div>
+    <a mat-flat-button color="primary" routerLink="/codes/add">Add</a>
+  </header>
+
+  @if (successMessage()) {
+    <p class="success-message" role="status">
+      {{ successMessage() }}
+      <button mat-button type="button" (click)="feedbackService.clearSuccess()">Dismiss</button>
+    </p>
+  }
+
+  @if (deleteError()) {
+    <p class="error-message" role="alert">{{ deleteError() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p class="state-message" role="status">Loading codes…</p>
+  } @else if (hasError()) {
+    <div class="state-message error-message" role="alert">
+      <p>The codes could not be loaded. Please try again.</p>
+      <button mat-button type="button" (click)="loadPage(page())">Retry</button>
+    </div>
+  } @else if (records().length === 0) {
+    <p class="state-message" role="status">No codes are available.</p>
+  } @else {
+    <div class="table-container">
+      <table mat-table [dataSource]="records()" aria-label="Codes Master records">
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef>Code</th>
+          <td mat-cell *matCellDef="let record">{{ record.code }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Code Description</th>
+          <td mat-cell *matCellDef="let record">{{ record.codeDescription ?? '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let record">{{ record.codeType }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="value1">
+          <th mat-header-cell *matHeaderCellDef>Value 1</th>
+          <td mat-cell *matCellDef="let record">{{ record.value1 ?? '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="value2">
+          <th mat-header-cell *matHeaderCellDef>Value 2</th>
+          <td mat-cell *matCellDef="let record">{{ record.value2 ?? '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let record" class="actions-cell">
+            <app-creation-audit-details [record]="record" />
+            <a
+              mat-button
+              [routerLink]="['/codes/edit']"
+              [queryParams]="{ code: record.code, codeType: record.codeType }"
+            >
+              Edit
+            </a>
+            <button
+              mat-button
+              type="button"
+              [attr.aria-label]="'Delete ' + record.code + ' (' + record.codeType + ')'"
+              [disabled]="isDeleting()"
+              (click)="deleteRecord(record)"
+            >
+              Delete
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let record; columns: columns"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalCount()"
+      [pageIndex]="page() - 1"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[10]"
+      [disabled]="isLoading()"
+      aria-label="Codes Master pagination"
+      (page)="onPageChange($event)"
+    />
+  }
+</section>
