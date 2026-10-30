@@ -1,3 +1,17 @@
+// {
+//   "compilerOptions": {
+//     "target": "ES2022",
+//     "module": "ESNext",
+//     "moduleResolution": "bundler",
+//     "strict": true,
+//     "skipLibCheck": true,
+//     "types": ["node"],
+//     "paths": {
+//       "@playwright/test": ["../../sdd-ui/node_modules/@playwright/test"]
+//     }
+//   },
+//   "include": ["*.ts"]
+// }
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -5,7 +19,8 @@
     "moduleResolution": "bundler",
     "strict": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "types": ["node"],
+    "typeRoots": ["../../sdd-ui/node_modules/@types"],
     "paths": {
       "@playwright/test": ["../../sdd-ui/node_modules/@playwright/test"]
     }
