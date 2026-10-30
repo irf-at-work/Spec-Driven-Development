@@ -134,7 +134,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Phone</mat-label>
-          <input matInput formControlName="phone" maxlength="20" />
+          <input matInput formControlName="phone" inputmode="numeric" maxlength="10" />
           @if (fieldError('phone'); as message) {
             <mat-error>{{ message }}</mat-error>
           }
@@ -169,7 +169,7 @@
           Cancel
         </button>
         <button mat-flat-button type="submit" [disabled]="saving()">
-          {{ saving() ? 'Saving…' : 'Save company' }}
+          {{ saving() ? 'Saving…' : 'Save' }}
         </button>
       </div>
     </form>

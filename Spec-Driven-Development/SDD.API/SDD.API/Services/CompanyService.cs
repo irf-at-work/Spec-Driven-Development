@@ -144,6 +144,15 @@ public sealed class CompanyService(
         }
 
         var company = rows[0];
+        if (request.Phone != company.CompPhone)
+        {
+            ValidatePhoneChange(request.Phone);
+        }
+
+        if (request.CompanyName is not null)
+        {
+            company.CompName = request.CompanyName;
+        }
         company.CompShortName = request.ShortName;
         company.CompAddr1 = request.Address1;
         company.CompAddr2 = request.Address2;
@@ -401,6 +410,20 @@ public sealed class CompanyService(
             .GroupBy(item => item.member)
             .ToDictionary(group => group.Key, group => group.Select(item => item.error).ToArray());
         throw new CompanyValidationException(errors);
+    }
+
+    private static void ValidatePhoneChange(string? phone)
+    {
+        if (string.IsNullOrEmpty(phone) ||
+            phone.Length == 10 && phone.All(char.IsAsciiDigit))
+        {
+            return;
+        }
+
+        throw new CompanyValidationException(new Dictionary<string, string[]>
+        {
+            ["phone"] = ["Phone number must contain exactly 10 digits."],
+        });
     }
 
     private static OracleException? FindOracleException(Exception exception)

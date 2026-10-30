@@ -48,7 +48,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Expect(incorporationDate).ToHaveValueAsync(new Regex("^\\d{2}-\\d{2}-\\d{4}$"));
 
         await incorporationDate.FillAsync("09-01-2024");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save company" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/company-master/NEWCO$"));
 
         using var request = JsonDocument.Parse(createRequest);
@@ -57,9 +57,10 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
     }
 
     [Fact]
-    public async Task Duplicate_code_is_associated_with_its_field_and_edit_identity_is_immutable()
+    public async Task Duplicate_code_is_associated_with_its_field_and_company_name_can_be_edited_in_place()
     {
         var updateRequest = string.Empty;
+        var currentCompanyName = "North Insurance";
         await Page.RouteAsync("**/api/companies**", async route =>
         {
             if (await FulfillPreflightAsync(route))
@@ -75,11 +76,12 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
             else if (string.Equals(route.Request.Method, "PUT", StringComparison.OrdinalIgnoreCase))
             {
                 updateRequest = route.Request.PostData ?? string.Empty;
-                await FulfillJsonAsync(route, CompanyDetails("NORTH", "North Insurance"), 200);
+                currentCompanyName = "North Mutual";
+                await FulfillJsonAsync(route, CompanyDetails("NORTH", currentCompanyName), 200);
             }
             else if (path.EndsWith("/NORTH", StringComparison.OrdinalIgnoreCase))
             {
-                await FulfillJsonAsync(route, CompanyDetails("NORTH", "North Insurance"), 200);
+                await FulfillJsonAsync(route, CompanyDetails("NORTH", currentCompanyName), 200);
             }
             else
             {
@@ -90,24 +92,24 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/new").ToString());
         await Page.GetByLabel("Company code").FillAsync("NORTH");
         await Page.GetByLabel("Company name").FillAsync("North Insurance");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save company" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
         await Expect(Page.GetByText("This company code already exists.")).ToBeVisibleAsync();
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH/edit").ToString());
-        var companyCode = Page.GetByLabel("Company code");
         var companyName = Page.GetByLabel("Company name");
-        await Expect(companyCode).ToBeDisabledAsync();
-        await Expect(companyName).ToBeDisabledAsync();
-        await Expect(companyCode).ToHaveValueAsync("NORTH");
+        await Expect(companyName).ToBeEnabledAsync();
         await Expect(companyName).ToHaveValueAsync("North Insurance");
+        await Expect(Page.GetByText("NORTH", new() { Exact = true }).First).ToBeVisibleAsync();
+        await Expect(Page.Locator("[formControlName='companyCode']")).ToHaveCountAsync(0);
+        await companyName.FillAsync("North Mutual");
         await Page.GetByLabel("Short name").FillAsync("Updated North");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save company" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/company-master/NORTH$"));
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "North Insurance" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "North Mutual" })).ToBeVisibleAsync();
 
         using var request = JsonDocument.Parse(updateRequest);
         Assert.False(request.RootElement.TryGetProperty("companyCode", out _));
-        Assert.False(request.RootElement.TryGetProperty("companyName", out _));
+        Assert.Equal("North Mutual", request.RootElement.GetProperty("companyName").GetString());
         Assert.Equal("Updated North", request.RootElement.GetProperty("shortName").GetString());
     }
 

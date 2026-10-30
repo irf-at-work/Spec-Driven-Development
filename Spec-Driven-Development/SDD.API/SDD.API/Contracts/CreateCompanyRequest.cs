@@ -34,7 +34,7 @@ public sealed class CreateCompanyRequest
     [StringLength(60)]
     public string? CompanyInCharge { get; init; }
 
-    [StringLength(20)]
+    [StringLength(10), RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must contain exactly 10 digits.")]
     public string? Phone { get; init; }
 
     [StringLength(100)]

@@ -13,126 +13,311 @@
 
   @if (loading()) {
     <p role="status">Loading company details…</p>
-  } @else if (error(); as loadError) {
+  } @else if (loadError(); as loadError) {
     <p class="error-message" role="alert">{{ loadError }}</p>
   } @else if (company(); as item) {
-    <div class="details-panel">
+    <form class="details-panel" [formGroup]="form" (ngSubmit)="save()">
       <div class="details-heading">
-        <div>
+        <div class="company-title">
           <p>Company details</p>
-          <h1 id="company-details-title">{{ item.companyName }}</h1>
+          @if (editing()) {
+            <h1 id="company-details-title">
+              <input
+                class="heading-input"
+                aria-label="Company name"
+                formControlName="companyName"
+                maxlength="100"
+                required
+              />
+            </h1>
+            @if (fieldError('companyName'); as message) {
+              <span class="field-error">{{ message }}</span>
+            }
+          } @else {
+            <h1 id="company-details-title">{{ item.companyName }}</h1>
+          }
           <p>{{ item.companyCode }}</p>
         </div>
         <div class="details-actions">
-          <button
-            mat-icon-button
-            type="button"
-            [matTooltip]="historyText(item)"
-            [attr.aria-label]="historyText(item)"
-          >
-            <mat-icon aria-hidden="true">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M13 3a9 9 0 0 0-9 9H1l4 4 4-4H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"
-                />
-              </svg>
-            </mat-icon>
-          </button>
-          <a
-            mat-flat-button
-            [routerLink]="['/company-master', item.companyCode, 'edit']"
-            queryParamsHandling="preserve"
-          >
-            <mat-icon aria-hidden="true">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.42l-2.34-2.34a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
-                />
-              </svg>
-            </mat-icon>
-            Edit
-          </a>
-          <button mat-button type="button" [disabled]="deleting()" (click)="deleteCompany()">
-            {{ deleting() ? 'Deleting…' : 'Delete' }}
-          </button>
+          @if (editing()) {
+            <button mat-button type="button" [disabled]="saving()" (click)="cancelEditing()">
+              Cancel
+            </button>
+            <button mat-flat-button type="submit" [disabled]="saving()">
+              {{ saving() ? 'Saving…' : 'Save' }}
+            </button>
+          } @else {
+            <button
+              mat-icon-button
+              type="button"
+              [matTooltip]="historyText(item)"
+              [attr.aria-label]="historyText(item)"
+            >
+              <mat-icon aria-hidden="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M13 3a9 9 0 0 0-9 9H1l4 4 4-4H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"
+                  />
+                </svg>
+              </mat-icon>
+            </button>
+            <button mat-flat-button type="button" (click)="startEditing()">
+              <mat-icon aria-hidden="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.42l-2.34-2.34a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+                  />
+                </svg>
+              </mat-icon>
+              Edit
+            </button>
+            <button mat-button type="button" [disabled]="deleting()" (click)="deleteCompany()">
+              {{ deleting() ? 'Deleting…' : 'Delete' }}
+            </button>
+          }
         </div>
       </div>
+      @if (error(); as message) {
+        <p class="error-message" role="alert">{{ message }}</p>
+      }
       @if (deleteError(); as message) {
         <p class="error-message" role="alert">{{ message }}</p>
       }
 
-      <dl class="company-details">
-        <div>
-          <dt>Short name</dt>
-          <dd>{{ item.shortName }}</dd>
-        </div>
-        <div>
-          <dt>Primary address</dt>
-          <dd>{{ item.primaryAddress }}</dd>
-        </div>
-        <div>
-          <dt>Address 1</dt>
-          <dd>{{ item.address1 }}</dd>
-        </div>
-        <div>
-          <dt>Address 2</dt>
-          <dd>{{ item.address2 }}</dd>
-        </div>
-        <div>
-          <dt>Address 3</dt>
-          <dd>{{ item.address3 }}</dd>
-        </div>
-        <div>
-          <dt>Incorporation date</dt>
-          <dd>{{ formatDate(item.incorporationDate) }}</dd>
-        </div>
-        <div>
-          <dt>Reference number</dt>
-          <dd>{{ item.referenceNumber }}</dd>
-        </div>
-        <div>
-          <dt>Licence issue date</dt>
-          <dd>{{ formatDate(item.licenceIssueDate) }}</dd>
-        </div>
-        <div>
-          <dt>Licence expiry date</dt>
-          <dd>{{ formatDate(item.licenceExpiryDate) }}</dd>
-        </div>
-        <div>
-          <dt>Company in charge</dt>
-          <dd>{{ item.companyInCharge }}</dd>
-        </div>
-        <div>
-          <dt>Phone</dt>
-          <dd>{{ item.phone }}</dd>
-        </div>
-        <div>
-          <dt>Email</dt>
-          <dd>{{ item.email }}</dd>
-        </div>
-        <div>
-          <dt>Website</dt>
-          <dd>{{ item.website }}</dd>
-        </div>
-        <div>
-          <dt>Created by</dt>
-          <dd>{{ item.createdBy }}</dd>
-        </div>
-        <div>
-          <dt>Created date (GST)</dt>
-          <dd>{{ formatAuditDate(item.createdAt) }}</dd>
-        </div>
-        <div>
-          <dt>Last updated by</dt>
-          <dd>{{ item.lastUpdatedBy }}</dd>
-        </div>
-        <div>
-          <dt>Last updated date (GST)</dt>
-          <dd>{{ formatAuditDate(item.lastUpdatedAt) }}</dd>
-        </div>
-      </dl>
-    </div>
+      <section class="detail-section" aria-labelledby="company-identity-heading">
+        <h2 id="company-identity-heading">Company information</h2>
+        <dl class="company-details">
+          <div>
+            <dt>Company code</dt>
+            <dd>{{ item.companyCode }}</dd>
+          </div>
+          <div>
+            <dt>Short name</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input matInput formControlName="shortName" maxlength="30" aria-label="Short name" />
+                </mat-form-field>
+              } @else {
+                {{ item.shortName || '—' }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Company in charge</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    formControlName="companyInCharge"
+                    maxlength="60"
+                    aria-label="Company in charge"
+                  />
+                </mat-form-field>
+              } @else {
+                {{ item.companyInCharge || '—' }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Reference number</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    formControlName="referenceNumber"
+                    maxlength="20"
+                    aria-label="Reference number"
+                  />
+                </mat-form-field>
+              } @else {
+                {{ item.referenceNumber || '—' }}
+              }
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="detail-section" aria-labelledby="company-address-heading">
+        <h2 id="company-address-heading">Address</h2>
+        <dl class="company-details">
+          <div>
+            <dt>Primary address</dt>
+            <dd>{{ item.primaryAddress || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Address 1</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input matInput formControlName="address1" maxlength="100" aria-label="Address 1" />
+                </mat-form-field>
+              } @else {
+                {{ item.address1 || '—' }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Address 2</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input matInput formControlName="address2" maxlength="100" aria-label="Address 2" />
+                </mat-form-field>
+              } @else {
+                {{ item.address2 || '—' }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Address 3</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input matInput formControlName="address3" maxlength="100" aria-label="Address 3" />
+                </mat-form-field>
+              } @else {
+                {{ item.address3 || '—' }}
+              }
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="detail-section" aria-labelledby="company-licensing-heading">
+        <h2 id="company-licensing-heading">Licensing</h2>
+        <dl class="company-details">
+          <div>
+            <dt>Incorporation date</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    type="date"
+                    formControlName="incorporationDate"
+                    aria-label="Incorporation date"
+                  />
+                </mat-form-field>
+              } @else {
+                {{ formatDate(item.incorporationDate) || '—' }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Licence issue date</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    type="date"
+                    formControlName="licenceIssueDate"
+                    aria-label="Licence issue date"
+                  />
+                </mat-form-field>
+              } @else {
+                {{ formatDate(item.licenceIssueDate) || '—' }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Licence expiry date</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    type="date"
+                    formControlName="licenceExpiryDate"
+                    aria-label="Licence expiry date"
+                  />
+                </mat-form-field>
+              } @else {
+                {{ formatDate(item.licenceExpiryDate) || '—' }}
+              }
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="detail-section" aria-labelledby="company-contact-heading">
+        <h2 id="company-contact-heading">Contact</h2>
+        <dl class="company-details">
+          <div>
+            <dt>Phone</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    formControlName="phone"
+                    maxlength="10"
+                    inputmode="numeric"
+                    aria-label="Phone"
+                    aria-describedby="phone-error"
+                  />
+                  @if (fieldError('phone'); as message) {
+                    <mat-error id="phone-error">{{ message }}</mat-error>
+                  }
+                </mat-form-field>
+              } @else {
+                {{ item.phone || '—' }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input matInput formControlName="email" maxlength="100" aria-label="Email" />
+                </mat-form-field>
+              } @else {
+                {{ item.email || '—' }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Website</dt>
+            <dd>
+              @if (editing()) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input matInput formControlName="website" maxlength="100" aria-label="Website" />
+                </mat-form-field>
+              } @else {
+                {{ item.website || '—' }}
+              }
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="detail-section" aria-labelledby="company-audit-heading">
+        <h2 id="company-audit-heading">Audit history</h2>
+        <dl class="company-details">
+          <div>
+            <dt>Created by</dt>
+            <dd>{{ item.createdBy || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Created date (GST)</dt>
+            <dd>{{ formatAuditDate(item.createdAt) || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Last updated by</dt>
+            <dd>{{ item.lastUpdatedBy || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Last updated date (GST)</dt>
+            <dd>{{ formatAuditDate(item.lastUpdatedAt) || '—' }}</dd>
+          </div>
+        </dl>
+      </section>
+    </form>
   }
 </section>

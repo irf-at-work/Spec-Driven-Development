@@ -180,7 +180,10 @@ export class CompanyForm implements OnInit {
       nonNullable: true,
       validators: [Validators.maxLength(60)],
     }),
-    phone: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(20)] }),
+    phone: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.maxLength(10), Validators.pattern(/^\d{10}$/)],
+    }),
     email: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
     website: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
   });
@@ -248,6 +251,9 @@ export class CompanyForm implements OnInit {
     }
     if (control.hasError('maxlength')) {
       return `Maximum length is ${control.getError('maxlength').requiredLength} characters.`;
+    }
+    if (control.hasError('pattern')) {
+      return 'Enter a 10-digit phone number.';
     }
     if (control.hasError('matDatepickerParse')) {
       return 'Enter a valid date in DD-MM-YYYY format.';

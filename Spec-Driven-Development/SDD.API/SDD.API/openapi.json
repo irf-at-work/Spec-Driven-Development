@@ -582,8 +582,9 @@
             "nullable": true
           },
           "phone": {
-            "maxLength": 20,
+            "maxLength": 10,
             "minLength": 0,
+            "pattern": "^\\d{10}$",
             "type": "string",
             "nullable": true
           },
@@ -686,6 +687,12 @@
       "UpdateCompanyRequest": {
         "type": "object",
         "properties": {
+          "companyName": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string",
+            "nullable": true
+          },
           "shortName": {
             "maxLength": 30,
             "minLength": 0,

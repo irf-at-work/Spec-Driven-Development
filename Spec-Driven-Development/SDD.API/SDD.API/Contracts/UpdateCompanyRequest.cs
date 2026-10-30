@@ -4,6 +4,9 @@ namespace SDD.API.Contracts;
 
 public sealed class UpdateCompanyRequest
 {
+    [StringLength(100), MinLength(1)]
+    public string? CompanyName { get; init; }
+
     [StringLength(30)]
     public string? ShortName { get; init; }
 

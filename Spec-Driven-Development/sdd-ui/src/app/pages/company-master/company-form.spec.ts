@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter, Router } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
@@ -9,14 +9,6 @@ import { CompanyForm } from './company-form';
 
 @Component({ standalone: true, template: '<h1>Company listing</h1>' })
 class CompanyListStub {}
-
-@Component({
-  standalone: true,
-  template: '<h1>Company details: {{ companyCode }}</h1>',
-})
-class CompanyDetailsStub {
-  readonly companyCode = inject(ActivatedRoute).snapshot.paramMap.get('companyCode');
-}
 
 describe('CompanyForm', () => {
   const company = {
@@ -49,8 +41,6 @@ describe('CompanyForm', () => {
         provideRouter([
           { path: 'company-master', component: CompanyListStub },
           { path: 'company-master/new', component: CompanyForm },
-          { path: 'company-master/:companyCode/edit', component: CompanyForm },
-          { path: 'company-master/:companyCode', component: CompanyDetailsStub },
         ]),
         { provide: CompanyService, useValue: api },
       ],
@@ -88,7 +78,7 @@ describe('CompanyForm', () => {
     form.form.controls.address3.setValue('c'.repeat(101));
     form.form.controls.referenceNumber.setValue('r'.repeat(21));
     form.form.controls.companyInCharge.setValue('i'.repeat(61));
-    form.form.controls.phone.setValue('p'.repeat(21));
+    form.form.controls.phone.setValue('p'.repeat(11));
     form.form.controls.email.setValue('e'.repeat(101));
     form.form.controls.website.setValue('w'.repeat(101));
 
@@ -110,34 +100,21 @@ describe('CompanyForm', () => {
     }
   });
 
-  it('keeps company code and name immutable when editing', async () => {
-    const { api, harness } = await createForm();
-    const form = await harness.navigateByUrl('/company-master/NORTH/edit', CompanyForm);
-    await harness.fixture.whenStable();
-
-    expect(form.form.controls.companyCode.disabled).toBe(true);
-    expect(form.form.controls.companyName.disabled).toBe(true);
-    expect(api.apiCompaniesCompanyCodeGet).toHaveBeenCalledWith({ companyCode: 'NORTH' });
-    expect(form.form.controls.incorporationDate.value).toEqual(new Date(2020, 2, 5));
-  });
-
-  it('returns to the edited company details when edit is canceled', async () => {
+  it('accepts only an optional exact 10-digit phone number', async () => {
     const { harness } = await createForm();
-    await harness.navigateByUrl('/company-master/NORTH/edit?page=2', CompanyForm);
-    await harness.fixture.whenStable();
+    const form = await harness.navigateByUrl('/company-master/new', CompanyForm);
+    const phone = form.form.controls.phone;
 
-    const cancelButton = Array.from(
-      harness.routeNativeElement?.querySelectorAll('button') ?? [],
-    ).find((button) => button.textContent?.trim() === 'Cancel');
-    if (!cancelButton) {
-      throw new Error('Cancel button was not rendered.');
+    phone.setValue('1234567890');
+    expect(phone.valid).toBe(true);
+
+    for (const value of ['123456789', '12345678901', '12345abcde', '123-456-789']) {
+      phone.setValue(value);
+      expect(phone.invalid).toBe(true);
     }
 
-    cancelButton.click();
-    await harness.fixture.whenStable();
-
-    expect(harness.routeNativeElement?.textContent).toContain('Company details: NORTH');
-    expect(TestBed.inject(Router).url).toBe('/company-master/NORTH?page=2');
+    phone.setValue('');
+    expect(phone.valid).toBe(true);
   });
 
   it('returns to the company listing when creation is canceled', async () => {

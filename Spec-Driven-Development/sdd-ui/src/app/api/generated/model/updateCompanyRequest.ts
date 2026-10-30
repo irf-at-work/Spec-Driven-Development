@@ -10,6 +10,7 @@
 
 
 export interface UpdateCompanyRequest { 
+    companyName?: string | null;
     shortName?: string | null;
     address1?: string | null;
     address2?: string | null;
@@ -23,4 +24,3 @@ export interface UpdateCompanyRequest {
     email?: string | null;
     website?: string | null;
 }
-

@@ -5,17 +5,20 @@
 }
 
 .table-container {
+  --company-table-header-height: 3.5rem;
   height: max(10rem, calc(100dvh - 27.5rem));
   overflow: auto;
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   background: var(--color-surface);
+  isolation: isolate;
 }
 
 table {
   min-width: 1500px;
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 th,
@@ -29,14 +32,33 @@ th {
   font-weight: 700;
 }
 
+.column-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: var(--company-table-header-height);
+}
+
+.column-header-row th {
+  height: var(--company-table-header-height);
+}
+
 .filter-row th {
   background: var(--color-surface);
-  padding-top: 0.75rem;
+  padding: 0.45rem 0.5rem;
+}
+
+.filter-row {
+  position: sticky;
+  top: var(--company-table-header-height);
+  z-index: 2;
+  box-shadow: 0 0.35rem 0.55rem rgb(20 54 88 / 8%);
 }
 
 .filter-row mat-form-field {
   width: 100%;
-  min-width: 105px;
+  min-width: 120px;
+  font-size: 0.875rem;
 }
 
 .company-row {

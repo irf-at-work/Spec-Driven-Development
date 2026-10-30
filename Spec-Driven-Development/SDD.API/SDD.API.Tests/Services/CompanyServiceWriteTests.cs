@@ -94,21 +94,79 @@ public sealed class CompanyServiceWriteTests
         service = new CompanyService(repository, new FixedTimeProvider(latestTime));
         var updated = await service.UpdateAsync(
             "KEEP",
-            new UpdateCompanyRequest { ShortName = "Latest", Phone = "123" },
+            new UpdateCompanyRequest
+            {
+                CompanyName = "Updated name",
+                ShortName = "Latest",
+                Phone = "1234567890",
+            },
             CancellationToken.None);
 
         Assert.NotNull(updated);
         var row = Assert.Single(repository.CompanyRows);
-        Assert.Equal("Immutable name", row.CompName);
+        Assert.Equal("Updated name", row.CompName);
         Assert.Equal("KEEP", row.CompCode);
         Assert.Equal("Latest", row.CompShortName);
-        Assert.Equal("123", row.CompPhone);
+        Assert.Equal("1234567890", row.CompPhone);
         Assert.Equal("preserve", row.CompRemarks);
         Assert.Equal("localized", row.CompNameL2);
         Assert.Equal("Original", row.CompCrBy);
         Assert.Equal(latestTime.UtcDateTime, updated.LastUpdatedAt);
         Assert.Equal("Admin", row.CompUpBy);
         Assert.Equal(2, repository.SaveCount);
+    }
+
+    [Theory]
+    [InlineData("123")]
+    [InlineData("12345678901")]
+    [InlineData("12345abcde")]
+    [InlineData("123-456-789")]
+    public async Task Rejects_phone_numbers_that_are_not_exactly_ten_digits_on_create(string phone)
+    {
+        var service = new CompanyService(new FakeCompanyRepository());
+
+        var error = await Assert.ThrowsAsync<CompanyValidationException>(
+            () => service.CreateAsync(new CreateCompanyRequest
+            {
+                CompanyCode = "NEW",
+                CompanyName = "New Company",
+                Phone = phone,
+            }, CancellationToken.None));
+
+        Assert.Contains("phone", error.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Allows_unchanged_legacy_phone_and_rejects_invalid_phone_changes()
+    {
+        var repository = new FakeCompanyRepository();
+        repository.CompanyRows.Add(new StdCompany
+        {
+            CompCode = "LEGACY",
+            CompName = "Legacy Company",
+            CompPhone = "555-OLD",
+        });
+        var service = new CompanyService(repository);
+
+        var updated = await service.UpdateAsync(
+            "LEGACY",
+            new UpdateCompanyRequest { CompanyName = "Renamed Company", Phone = "555-OLD" },
+            CancellationToken.None);
+
+        Assert.NotNull(updated);
+        Assert.Equal("Renamed Company", updated.CompanyName);
+        Assert.Equal("555-OLD", updated.Phone);
+        Assert.Equal(1, repository.SaveCount);
+
+        var error = await Assert.ThrowsAsync<CompanyValidationException>(
+            () => service.UpdateAsync(
+                "LEGACY",
+                new UpdateCompanyRequest { Phone = "555-NEW" },
+                CancellationToken.None));
+
+        Assert.Contains("phone", error.Errors.Keys);
+        Assert.Equal("555-OLD", repository.CompanyRows[0].CompPhone);
+        Assert.Equal(1, repository.SaveCount);
     }
 
     private sealed class FixedTimeProvider(DateTimeOffset utcNow) : TimeProvider

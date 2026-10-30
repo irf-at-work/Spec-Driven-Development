@@ -16,6 +16,7 @@
     <p class="error-message" role="alert">{{ loadError }}</p>
   }
 
+
   <div class="table-container">
     <table
       mat-table
@@ -88,7 +89,7 @@
         <th mat-header-cell *matHeaderCellDef scope="col"></th>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="column-header-row"></tr>
       <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
       <tr
         mat-row

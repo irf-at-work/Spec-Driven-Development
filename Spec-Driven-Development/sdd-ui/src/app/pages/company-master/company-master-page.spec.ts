@@ -56,6 +56,10 @@ describe('CompanyMasterPage', () => {
     expect(page.querySelector('[aria-label*="Created by Admin"]')).not.toBeNull();
     expect(page.textContent).toContain('Licence expiry date');
     expect(page.textContent).toContain('Email');
+    expect(page.querySelector('.column-header-row')).not.toBeNull();
+    expect(page.querySelector('.filter-row')).not.toBeNull();
+    expect(getComputedStyle(page.querySelector('.column-header-row')!).position).toBe('sticky');
+    expect(getComputedStyle(page.querySelector('.filter-row')!).position).toBe('sticky');
     const icons = Array.from(
       page.querySelectorAll('a[mat-flat-button] mat-icon, button[mat-icon-button] mat-icon'),
     );

@@ -24,7 +24,10 @@ export const routes: Routes = [
       {
         path: 'company-master/:companyCode/edit',
         loadComponent: () =>
-          import('./pages/company-master/company-form').then((module) => module.CompanyForm),
+          import('./pages/company-master/company-details-page').then(
+            (module) => module.CompanyDetailsPage,
+          ),
+        data: { startInEditMode: true },
       },
       {
         path: 'company-master/:companyCode',
