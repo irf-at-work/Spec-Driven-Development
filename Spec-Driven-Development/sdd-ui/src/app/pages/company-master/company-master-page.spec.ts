@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
 import { CompanyMasterPage } from './company-master-page';
 
@@ -56,6 +56,50 @@ describe('CompanyMasterPage', () => {
     expect(page.querySelector('[aria-label*="Created by Admin"]')).not.toBeNull();
     expect(page.textContent).toContain('Licence expiry date');
     expect(page.textContent).toContain('Email');
+    const icons = Array.from(
+      page.querySelectorAll('a[mat-flat-button] mat-icon, button[mat-icon-button] mat-icon'),
+    );
+    expect(icons.length).toBeGreaterThan(0);
+    for (const icon of icons) {
+      expect(icon.querySelector('svg')).not.toBeNull();
+      expect(icon.textContent?.trim()).toBe('');
+    }
+  });
+
+  it('keeps the table and existing rows visible while a filter request is pending', async () => {
+    const pendingRequest = new Subject<typeof response>();
+    const api = {
+      apiCompaniesGet: vi.fn().mockReturnValueOnce(of(response)).mockReturnValue(pendingRequest),
+    };
+    const { harness } = await createPage(api);
+    const page = await harness.navigateByUrl('/company-master', CompanyMasterPage);
+    await harness.fixture.whenStable();
+
+    const filter = harness.routeNativeElement?.querySelector(
+      '[aria-label="Filter by company name"]',
+    );
+    if (!(filter instanceof HTMLInputElement)) {
+      throw new Error('Company name filter was not rendered as an input.');
+    }
+    filter.value = 'South';
+    filter.dispatchEvent(new Event('input', { bubbles: true }));
+    await harness.fixture.whenStable();
+
+    const table = harness.routeNativeElement?.querySelector('table[aria-label="Companies"]');
+    expect(page.loading()).toBe(true);
+    expect(table).not.toBeNull();
+    expect(table?.textContent).toContain('North Insurance');
+    expect(harness.routeNativeElement?.querySelector('[role="status"]')?.textContent).toContain(
+      'Loading companies',
+    );
+
+    pendingRequest.next({ items: [], page: 1, pageSize: 10, totalCount: 0 });
+    pendingRequest.complete();
+    await harness.fixture.whenStable();
+
+    expect(page.loading()).toBe(false);
+    expect(harness.routeNativeElement?.querySelector('table[aria-label="Companies"]')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelectorAll('.company-row')).toHaveLength(0);
   });
 
   it('restores query filters and pagination and updates them when a filter changes', async () => {
@@ -104,7 +148,10 @@ describe('CompanyMasterPage', () => {
     await harness.navigateByUrl('/company-master', CompanyMasterPage);
     await harness.fixture.whenStable();
 
-    expect(harness.routeNativeElement?.textContent).toContain('No companies found.');
+    const page = harness.routeNativeElement;
+    expect(page?.textContent).toContain('No companies found.');
+    expect(page?.querySelector('table[aria-label="Companies"]')).not.toBeNull();
+    expect(page?.querySelectorAll('.company-row')).toHaveLength(0);
   });
 
   it('shows a clear error instead of a successful empty state when the API fails', async () => {

@@ -5,7 +5,8 @@
 }
 
 .table-container {
-  overflow-x: auto;
+  height: 42rem;
+  overflow: auto;
 }
 
 table {

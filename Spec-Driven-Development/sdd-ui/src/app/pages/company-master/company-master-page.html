@@ -3,107 +3,119 @@
   <h1 id="company-master-title">Company Master</h1>
   <div class="page-actions">
     <a mat-flat-button routerLink="/company-master/new" queryParamsHandling="preserve">
-      <mat-icon>add</mat-icon>
+      <mat-icon aria-hidden="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        </svg>
+      </mat-icon>
       Add company
     </a>
   </div>
 
+  @if (loading()) {
+    <p role="status">Loading companies…</p>
+  }
+
   @if (error(); as loadError) {
     <p class="error-message" role="alert">{{ loadError }}</p>
-  } @else if (loading()) {
-    <p role="status">Loading companies…</p>
-  } @else {
-    <div class="table-container">
-      <table
-        mat-table
-        matSort
-        matSortDisableClear
-        [dataSource]="companies()"
-        [matSortActive]="queryState().sortBy ?? 'companyName'"
-        [matSortDirection]="queryState().sortDirection === 'desc' ? 'desc' : 'asc'"
-        (matSortChange)="setSort($event)"
-        aria-label="Companies"
-      >
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+  }
+
+  <div class="table-container">
+    <table
+      mat-table
+      matSort
+      matSortDisableClear
+      [dataSource]="companies()"
+      [matSortActive]="queryState().sortBy ?? 'companyName'"
+      [matSortDirection]="queryState().sortDirection === 'desc' ? 'desc' : 'asc'"
+      (matSortChange)="setSort($event)"
+      aria-label="Companies"
+    >
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+        <td mat-cell *matCellDef="let company">
+          <button
+            mat-icon-button
+            type="button"
+            [matTooltip]="historyText(company)"
+            [attr.aria-label]="historyText(company)"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <mat-icon aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M13 3a9 9 0 0 0-9 9H1l4 4 4-4H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"
+                />
+              </svg>
+            </mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      @for (filter of filters; track filter.key) {
+        <ng-container [matColumnDef]="filter.key">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">
+            {{ filter.label }}
+          </th>
           <td mat-cell *matCellDef="let company">
-            <button
-              mat-icon-button
-              type="button"
-              [matTooltip]="historyText(company)"
-              [attr.aria-label]="historyText(company)"
-              (click)="$event.stopPropagation()"
-              (keydown)="$event.stopPropagation()"
-            >
-              <mat-icon>history</mat-icon>
-            </button>
+            @if (
+              filter.key === 'incorporationDate' ||
+              filter.key === 'licenceIssueDate' ||
+              filter.key === 'licenceExpiryDate'
+            ) {
+              {{ formatDate(company[filter.key]) }}
+            } @else {
+              {{ company[filter.key] }}
+            }
           </td>
         </ng-container>
 
-        @for (filter of filters; track filter.key) {
-          <ng-container [matColumnDef]="filter.key">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">
-              {{ filter.label }}
-            </th>
-            <td mat-cell *matCellDef="let company">
-              @if (
-                filter.key === 'incorporationDate' ||
-                filter.key === 'licenceIssueDate' ||
-                filter.key === 'licenceExpiryDate'
-              ) {
-                {{ formatDate(company[filter.key]) }}
-              } @else {
-                {{ company[filter.key] }}
-              }
-            </td>
-          </ng-container>
-
-          <ng-container [matColumnDef]="'filter-' + filter.key">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>Filter by {{ filter.label.toLowerCase() }}</mat-label>
-                <input
-                  matInput
-                  [type]="filter.type ?? 'text'"
-                  [value]="filterValue(filter.key)"
-                  [attr.aria-label]="'Filter by ' + filter.label.toLowerCase()"
-                  (input)="setFilterFromEvent(filter.key, $event)"
-                />
-              </mat-form-field>
-            </th>
-          </ng-container>
-        }
-
-        <ng-container matColumnDef="filter-actions">
-          <th mat-header-cell *matHeaderCellDef scope="col"></th>
+        <ng-container [matColumnDef]="'filter-' + filter.key">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Filter by {{ filter.label.toLowerCase() }}</mat-label>
+              <input
+                matInput
+                [type]="filter.type ?? 'text'"
+                [value]="filterValue(filter.key)"
+                [attr.aria-label]="'Filter by ' + filter.label.toLowerCase()"
+                (input)="setFilterFromEvent(filter.key, $event)"
+              />
+            </mat-form-field>
+          </th>
         </ng-container>
+      }
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
-        <tr
-          mat-row
-          *matRowDef="let company; columns: displayedColumns"
-          class="company-row"
-          role="link"
-          tabindex="0"
-          (click)="openCompany(company.companyCode)"
-          (keydown.enter)="openCompany(company.companyCode)"
-          (keydown.space)="$event.preventDefault(); openCompany(company.companyCode)"
-        ></tr>
-      </table>
-    </div>
+      <ng-container matColumnDef="filter-actions">
+        <th mat-header-cell *matHeaderCellDef scope="col"></th>
+      </ng-container>
 
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
+      <tr
+        mat-row
+        *matRowDef="let company; columns: displayedColumns"
+        class="company-row"
+        role="link"
+        tabindex="0"
+        (click)="openCompany(company.companyCode)"
+        (keydown.enter)="openCompany(company.companyCode)"
+        (keydown.space)="$event.preventDefault(); openCompany(company.companyCode)"
+      ></tr>
+    </table>
     @if (companies().length === 0) {
       <p class="empty-state">No companies found.</p>
     }
+  </div>
 
-    <mat-paginator
-      aria-label="Company table pages"
-      [length]="totalCount()"
-      [pageIndex]="(queryState().page ?? 1) - 1"
-      [pageSize]="queryState().pageSize ?? 10"
-      [pageSizeOptions]="[10, 25, 50]"
-      (page)="setPage($event)"
-    />
-  }
+  <mat-paginator
+    aria-label="Company table pages"
+    [length]="totalCount()"
+    [pageIndex]="(queryState().page ?? 1) - 1"
+    [pageSize]="queryState().pageSize ?? 10"
+    [pageSizeOptions]="[10, 25, 50]"
+    (page)="setPage($event)"
+  />
 </section>

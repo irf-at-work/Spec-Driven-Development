@@ -147,7 +147,10 @@ export class CompanyMasterPage implements OnInit {
   }
 
   historyText(company: CompanyListItemDto): string {
-    return `Created by ${company.createdBy || 'Unknown'}; last updated by ${company.lastUpdatedBy || 'Unknown'}`;
+    let historyTooltip = `Created by ${company.createdBy || 'Unknown'}`;
+    if (!!company.lastUpdatedBy)
+      historyTooltip.concat(`last updated by ${company.lastUpdatedBy}`);
+    return historyTooltip;
   }
 
   private readQueryState(params: ParamMap): ApiCompaniesGetRequestParams {

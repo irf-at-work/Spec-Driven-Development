@@ -12,7 +12,7 @@
   --color-muted: #526b82;
   --color-border: #c8d8e7;
   --color-focus: #2476b5;
-  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: Inter, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
 }
 
 * {
@@ -28,7 +28,7 @@ body {
 body {
   background: var(--color-page);
   color: var(--color-text);
-  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: Inter, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
 }
 
