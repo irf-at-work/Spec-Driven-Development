@@ -27,6 +27,7 @@ import { openConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog.co
 import { LimitedTextFieldComponent } from '../../shared/limited-text-field/limited-text-field.component';
 import { HasUnsavedChanges } from '../../shared/unsaved-changes.guard';
 import { notBlank } from '../../shared/validators';
+import { VehicleModelListComponent } from './vehicle-model-list.component';
 
 const MESSAGE_DURATION_MS = 5000;
 
@@ -67,6 +68,7 @@ interface FormValues {
     MatProgressBar,
     MatSlideToggle,
     LimitedTextFieldComponent,
+    VehicleModelListComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './vehicle-make-form.component.html',
@@ -80,6 +82,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   private readonly destroyRef = inject(DestroyRef);
   // Named in the template, because the Active switch is also a slide toggle.
   private readonly editToggle = viewChild('editSwitch', { read: MatSlideToggle });
+  private readonly modelList = viewChild(VehicleModelListComponent);
 
   protected readonly mode: 'create' | 'view' =
     inject(ActivatedRoute).snapshot.data['mode'] === 'view' ? 'view' : 'create';
@@ -90,6 +93,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly additionalOpen = signal(false);
+  protected readonly currentMakeCode = signal('');
 
   protected readonly form = new FormGroup({
     makeCode: new FormControl('', {
@@ -146,7 +150,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   }
 
   hasUnsavedChanges(): boolean {
-    return this.form.dirty;
+    return this.form.dirty || (this.modelList()?.hasUnsavedChanges() ?? false);
   }
 
   protected back(): void {
@@ -160,7 +164,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       return;
     }
 
-    if (!this.form.dirty) {
+    if (!this.hasUnsavedChanges()) {
       this.stopEditing();
       return;
     }
@@ -228,8 +232,10 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       .subscribe({
         next: (updated) => {
           this.saving.set(false);
-          this.editing.set(false);
+          const keepEditingForModel = this.modelList()?.hasUnsavedChanges() ?? false;
           this.showMake(updated);
+          this.editing.set(keepEditingForModel);
+          this.applyEditState();
           this.snackBar.open('Vehicle make updated.', 'Close', { duration: MESSAGE_DURATION_MS });
         },
         error: (error: unknown) => this.onSaveFailed(error),
@@ -265,6 +271,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
     };
 
     this.form.reset(values);
+    this.currentMakeCode.set(values.makeCode);
     this.savedValues = values;
     // FR-011: the optional section opens by itself when it holds anything, so nothing is hidden from the user.
     this.additionalOpen.set(
@@ -277,6 +284,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   }
 
   private stopEditing(): void {
+    this.modelList()?.discardForMakeEditOff();
     if (this.savedValues) {
       this.form.reset(this.savedValues);
     }

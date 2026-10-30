@@ -29,7 +29,10 @@ describe('apiErrorInterceptor', () => {
 
   function outcomeOf(request: Observable<unknown>): Promise<unknown> {
     return new Promise((resolve) =>
-      request.subscribe({ next: () => resolve(undefined), error: (error: unknown) => resolve(error) }),
+      request.subscribe({
+        next: () => resolve(undefined),
+        error: (error: unknown) => resolve(error),
+      }),
     );
   }
 
@@ -43,10 +46,12 @@ describe('apiErrorInterceptor', () => {
 
   it('passes the API field messages to the form and shows no pop-up for a duplicate code', async () => {
     const outcome = outcomeOf(http.get('/x'));
-    controller.expectOne('/x').flush(
-      { errors: { makeCode: ['This make code already exists.'] } },
-      { status: 409, statusText: 'Conflict' },
-    );
+    controller
+      .expectOne('/x')
+      .flush(
+        { errors: { makeCode: ['This make code already exists.'] } },
+        { status: 409, statusText: 'Conflict' },
+      );
 
     const error = await expectProblem(outcome);
 
@@ -68,10 +73,12 @@ describe('apiErrorInterceptor', () => {
 
   it('shows a fixed plain message for a server fault and never the text the server sent', async () => {
     const outcome = outcomeOf(http.get('/x'));
-    controller.expectOne('/x').flush(
-      { detail: 'ORA-12345: secret database detail' },
-      { status: 500, statusText: 'Server Error' },
-    );
+    controller
+      .expectOne('/x')
+      .flush(
+        { detail: 'ORA-12345: secret database detail' },
+        { status: 500, statusText: 'Server Error' },
+      );
 
     const error = await expectProblem(outcome);
 

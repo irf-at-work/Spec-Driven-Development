@@ -315,6 +315,312 @@ export class VehicleMakesClient {
 @Injectable({
     providedIn: 'root'
 })
+export class VehicleModelOptionsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+    }
+
+    /**
+     * @return OK
+     */
+    get(): Observable<VehicleModelOptionsDto> {
+        let url_ = this.baseUrl + "/api/vehicle-model-options";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelOptionsDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelOptionsDto>;
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<VehicleModelOptionsDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelOptionsDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class VehicleModelsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+    }
+
+    /**
+     * @param page (optional) 
+     * @return OK
+     */
+    list(makeCode: string, page: number | undefined): Observable<PaginatedResultOfVehicleModelDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models?";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        if (page === null)
+            throw new globalThis.Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "page=" + encodeURIComponent("" + page) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PaginatedResultOfVehicleModelDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PaginatedResultOfVehicleModelDto>;
+        }));
+    }
+
+    protected processList(response: HttpResponseBase): Observable<PaginatedResultOfVehicleModelDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as PaginatedResultOfVehicleModelDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    create(makeCode: string, body: CreateVehicleModelRequest): Observable<VehicleModelDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelDto>;
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<VehicleModelDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    update(makeCode: string, modelCode: string, body: UpdateVehicleModelRequest): Observable<VehicleModelDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models/{modelCode}";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        if (modelCode === undefined || modelCode === null)
+            throw new globalThis.Error("The parameter 'modelCode' must be defined.");
+        url_ = url_.replace("{modelCode}", encodeURIComponent("" + modelCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelDto>;
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<VehicleModelDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    delete(makeCode: string, modelCode: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models/{modelCode}";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        if (modelCode === undefined || modelCode === null)
+            throw new globalThis.Error("The parameter 'modelCode' must be defined.");
+        url_ = url_.replace("{modelCode}", encodeURIComponent("" + modelCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
 export class WeatherForecastClient {
     private http: HttpClient;
     private baseUrl: string;
@@ -389,8 +695,54 @@ export interface CreateVehicleMakeRequest {
     [key: string]: any;
 }
 
+export interface CreateVehicleModelRequest {
+    modelCode: string | null;
+    modelName: string | null;
+    shortName: string | null;
+    remarks: string | null;
+    arabicModelName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    variant: string | null;
+    vehicleType: string | null;
+    weight: string | null;
+    loadCapacity: string | null;
+    bodyType: string | null;
+    fuelType: string | null;
+    engineCapacity: number | null;
+    cylinders: string | null;
+    seats: number | null;
+    passengers: number | null;
+    drivers: number | null;
+    doors: string | null;
+    makeYear: number | null;
+    drivingType: string | null;
+    bodyColour: string | null;
+    value: number | null;
+    category: string | null;
+    active?: boolean | null;
+
+    [key: string]: any;
+}
+
+export interface LookupOptionDto {
+    code: string;
+    description: string;
+
+    [key: string]: any;
+}
+
 export interface PaginatedResultOfVehicleMakeListItemDto {
     items: VehicleMakeListItemDto[];
+    page: number;
+    pageSize: number;
+    totalCount: number;
+
+    [key: string]: any;
+}
+
+export interface PaginatedResultOfVehicleModelDto {
+    items: VehicleModelDto[];
     page: number;
     pageSize: number;
     totalCount: number;
@@ -405,6 +757,35 @@ export interface UpdateVehicleMakeRequest {
     arabicMakeName: string | null;
     arabicShortName: string | null;
     arabicRemarks: string | null;
+    active?: boolean | null;
+
+    [key: string]: any;
+}
+
+export interface UpdateVehicleModelRequest {
+    modelName: string | null;
+    shortName: string | null;
+    remarks: string | null;
+    arabicModelName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    variant: string | null;
+    vehicleType: string | null;
+    weight: string | null;
+    loadCapacity: string | null;
+    bodyType: string | null;
+    fuelType: string | null;
+    engineCapacity: number | null;
+    cylinders: string | null;
+    seats: number | null;
+    passengers: number | null;
+    drivers: number | null;
+    doors: string | null;
+    makeYear: number | null;
+    drivingType: string | null;
+    bodyColour: string | null;
+    value: number | null;
+    category: string | null;
     active?: boolean | null;
 
     [key: string]: any;
@@ -430,6 +811,53 @@ export interface VehicleMakeListItemDto {
     makeName: string;
     shortName: string;
     active: boolean;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelDto {
+    makeCode: string;
+    modelCode: string;
+    modelName: string;
+    shortName: string;
+    remarks: string | null;
+    arabicModelName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    variant: string | null;
+    vehicleType: string | null;
+    weight: string | null;
+    loadCapacity: string | null;
+    bodyType: string | null;
+    fuelType: string | null;
+    engineCapacity: number | null;
+    cylinders: string | null;
+    seats: number | null;
+    passengers: number | null;
+    drivers: number | null;
+    doors: string | null;
+    makeYear: number | null;
+    drivingType: string | null;
+    bodyColour: string | null;
+    value: number | null;
+    category: string | null;
+    active: boolean;
+    createdBy: string | null;
+    lastChangedBy: string | null;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionsDto {
+    variants: LookupOptionDto[];
+    vehicleTypes: LookupOptionDto[];
+    bodyTypes: LookupOptionDto[];
+    fuelTypes: LookupOptionDto[];
+    cylinders: LookupOptionDto[];
+    doors: LookupOptionDto[];
+    drivingTypes: LookupOptionDto[];
+    bodyColours: LookupOptionDto[];
+    categories: LookupOptionDto[];
 
     [key: string]: any;
 }

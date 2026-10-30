@@ -24,7 +24,9 @@ export const apiErrorInterceptor: HttpInterceptorFn = (request, next) => {
       return from(readProblem(error)).pipe(
         switchMap((problem) => {
           if (!isShownBesideFields(problem)) {
-            snackBar.open(plainMessageFor(problem.status), 'Close', { duration: MESSAGE_DURATION_MS });
+            snackBar.open(plainMessageFor(problem.status), 'Close', {
+              duration: MESSAGE_DURATION_MS,
+            });
           }
           return throwError(() => new ApiProblemError(problem));
         }),

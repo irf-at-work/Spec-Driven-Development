@@ -2,7 +2,7 @@
   <header class="page-header">
     <div>
       <h1>{{ heading }}</h1>
-      @if (mode === 'view') {
+      @if (mode === 'view' && currentMakeCode()) {
         <p class="subtitle">Review the details, or switch on Edit to change them.</p>
       } @else {
         <p class="subtitle">Fields marked * are required.</p>
@@ -47,7 +47,9 @@
         [control]="form.controls.shortName"
         [maxLength]="limits.shortName"
       />
-      <mat-slide-toggle class="active" [formControl]="form.controls.active">Active</mat-slide-toggle>
+      <mat-slide-toggle class="active" [formControl]="form.controls.active"
+        >Active</mat-slide-toggle
+      >
     </div>
 
     <mat-expansion-panel
@@ -105,4 +107,8 @@
       }
     </div>
   </form>
+
+  @if (mode === 'view') {
+    <app-vehicle-model-list [makeCode]="currentMakeCode()" [makeEditable]="editing()" />
+  }
 </section>
