@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SDD.API.Data;
 using SDD.API.Services;
 
@@ -30,7 +31,8 @@ if (string.IsNullOrWhiteSpace(brokerConnection))
         "The BrokerConnection connection string is missing. Set ConnectionStrings__BrokerConnection in the local environment.");
 }
 
-builder.Services.AddDbContext<BrokerDataContext>(options => options.UseOracle(brokerConnection));
+builder.Services.AddDbContext<BrokerDataContext>(options => options.UseOracle(brokerConnection, o =>
+    o.UseOracleSQLCompatibility(OracleSQLCompatibility.DatabaseVersion19)));
 
 var app = builder.Build();
 

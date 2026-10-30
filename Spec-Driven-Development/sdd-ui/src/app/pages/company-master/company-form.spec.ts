@@ -1,10 +1,22 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
 import { CompanyForm } from './company-form';
+
+@Component({ standalone: true, template: '<h1>Company listing</h1>' })
+class CompanyListStub {}
+
+@Component({
+  standalone: true,
+  template: '<h1>Company details: {{ companyCode }}</h1>',
+})
+class CompanyDetailsStub {
+  readonly companyCode = inject(ActivatedRoute).snapshot.paramMap.get('companyCode');
+}
 
 describe('CompanyForm', () => {
   const company = {
@@ -35,8 +47,10 @@ describe('CompanyForm', () => {
       imports: [CompanyForm],
       providers: [
         provideRouter([
+          { path: 'company-master', component: CompanyListStub },
           { path: 'company-master/new', component: CompanyForm },
           { path: 'company-master/:companyCode/edit', component: CompanyForm },
+          { path: 'company-master/:companyCode', component: CompanyDetailsStub },
         ]),
         { provide: CompanyService, useValue: api },
       ],
@@ -105,6 +119,43 @@ describe('CompanyForm', () => {
     expect(form.form.controls.companyName.disabled).toBe(true);
     expect(api.apiCompaniesCompanyCodeGet).toHaveBeenCalledWith({ companyCode: 'NORTH' });
     expect(form.form.controls.incorporationDate.value).toEqual(new Date(2020, 2, 5));
+  });
+
+  it('returns to the edited company details when edit is canceled', async () => {
+    const { harness } = await createForm();
+    await harness.navigateByUrl('/company-master/NORTH/edit?page=2', CompanyForm);
+    await harness.fixture.whenStable();
+
+    const cancelButton = Array.from(
+      harness.routeNativeElement?.querySelectorAll('button') ?? [],
+    ).find((button) => button.textContent?.trim() === 'Cancel');
+    if (!cancelButton) {
+      throw new Error('Cancel button was not rendered.');
+    }
+
+    cancelButton.click();
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Company details: NORTH');
+    expect(TestBed.inject(Router).url).toBe('/company-master/NORTH?page=2');
+  });
+
+  it('returns to the company listing when creation is canceled', async () => {
+    const { harness } = await createForm();
+    await harness.navigateByUrl('/company-master/new', CompanyForm);
+    await harness.fixture.whenStable();
+
+    const cancelButton = Array.from(
+      harness.routeNativeElement?.querySelectorAll('button') ?? [],
+    ).find((button) => button.textContent?.trim() === 'Cancel');
+    if (!cancelButton) {
+      throw new Error('Cancel button was not rendered.');
+    }
+
+    cancelButton.click();
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Company listing');
   });
 
   it('parses typed DD-MM-YYYY dates and serializes them as date-only values', async () => {

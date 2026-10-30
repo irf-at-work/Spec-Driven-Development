@@ -12,10 +12,6 @@
     </a>
   </div>
 
-  @if (loading()) {
-    <p role="status">Loading companies…</p>
-  }
-
   @if (error(); as loadError) {
     <p class="error-message" role="alert">{{ loadError }}</p>
   }

@@ -5,16 +5,32 @@
 }
 
 .table-container {
-  height: 42rem;
+  height: max(10rem, calc(100dvh - 27.5rem));
   overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
 }
 
 table {
   min-width: 1500px;
   width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  background: var(--color-primary-100);
+  color: var(--color-primary-900);
+  font-weight: 700;
 }
 
 .filter-row th {
+  background: var(--color-surface);
   padding-top: 0.75rem;
 }
 
@@ -25,6 +41,18 @@ table {
 
 .company-row {
   cursor: pointer;
+}
+
+.company-row:nth-child(even) {
+  background: rgb(234 243 251 / 45%);
+}
+
+.company-row:not(:last-child) .mat-mdc-cell {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.company-row:hover {
+  background: var(--color-primary-100);
 }
 
 .company-row:focus-visible {

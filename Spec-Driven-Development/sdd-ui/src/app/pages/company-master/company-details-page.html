@@ -16,121 +16,123 @@
   } @else if (error(); as loadError) {
     <p class="error-message" role="alert">{{ loadError }}</p>
   } @else if (company(); as item) {
-    <div class="details-heading">
-      <div>
-        <p>Company details</p>
-        <h1 id="company-details-title">{{ item.companyName }}</h1>
-        <p>{{ item.companyCode }}</p>
+    <div class="details-panel">
+      <div class="details-heading">
+        <div>
+          <p>Company details</p>
+          <h1 id="company-details-title">{{ item.companyName }}</h1>
+          <p>{{ item.companyCode }}</p>
+        </div>
+        <div class="details-actions">
+          <button
+            mat-icon-button
+            type="button"
+            [matTooltip]="historyText(item)"
+            [attr.aria-label]="historyText(item)"
+          >
+            <mat-icon aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M13 3a9 9 0 0 0-9 9H1l4 4 4-4H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"
+                />
+              </svg>
+            </mat-icon>
+          </button>
+          <a
+            mat-flat-button
+            [routerLink]="['/company-master', item.companyCode, 'edit']"
+            queryParamsHandling="preserve"
+          >
+            <mat-icon aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.42l-2.34-2.34a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+                />
+              </svg>
+            </mat-icon>
+            Edit
+          </a>
+          <button mat-button type="button" [disabled]="deleting()" (click)="deleteCompany()">
+            {{ deleting() ? 'Deleting…' : 'Delete' }}
+          </button>
+        </div>
       </div>
-      <div class="details-actions">
-        <button
-          mat-icon-button
-          type="button"
-          [matTooltip]="historyText(item)"
-          [attr.aria-label]="historyText(item)"
-        >
-          <mat-icon aria-hidden="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M13 3a9 9 0 0 0-9 9H1l4 4 4-4H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"
-              />
-            </svg>
-          </mat-icon>
-        </button>
-        <a
-          mat-flat-button
-          [routerLink]="['/company-master', item.companyCode, 'edit']"
-          queryParamsHandling="preserve"
-        >
-          <mat-icon aria-hidden="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.42l-2.34-2.34a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
-              />
-            </svg>
-          </mat-icon>
-          Edit
-        </a>
-        <button mat-button type="button" [disabled]="deleting()" (click)="deleteCompany()">
-          {{ deleting() ? 'Deleting…' : 'Delete' }}
-        </button>
-      </div>
-    </div>
-    @if (deleteError(); as message) {
-      <p class="error-message" role="alert">{{ message }}</p>
-    }
+      @if (deleteError(); as message) {
+        <p class="error-message" role="alert">{{ message }}</p>
+      }
 
-    <dl class="company-details">
-      <div>
-        <dt>Short name</dt>
-        <dd>{{ item.shortName }}</dd>
-      </div>
-      <div>
-        <dt>Primary address</dt>
-        <dd>{{ item.primaryAddress }}</dd>
-      </div>
-      <div>
-        <dt>Address 1</dt>
-        <dd>{{ item.address1 }}</dd>
-      </div>
-      <div>
-        <dt>Address 2</dt>
-        <dd>{{ item.address2 }}</dd>
-      </div>
-      <div>
-        <dt>Address 3</dt>
-        <dd>{{ item.address3 }}</dd>
-      </div>
-      <div>
-        <dt>Incorporation date</dt>
-        <dd>{{ formatDate(item.incorporationDate) }}</dd>
-      </div>
-      <div>
-        <dt>Reference number</dt>
-        <dd>{{ item.referenceNumber }}</dd>
-      </div>
-      <div>
-        <dt>Licence issue date</dt>
-        <dd>{{ formatDate(item.licenceIssueDate) }}</dd>
-      </div>
-      <div>
-        <dt>Licence expiry date</dt>
-        <dd>{{ formatDate(item.licenceExpiryDate) }}</dd>
-      </div>
-      <div>
-        <dt>Company in charge</dt>
-        <dd>{{ item.companyInCharge }}</dd>
-      </div>
-      <div>
-        <dt>Phone</dt>
-        <dd>{{ item.phone }}</dd>
-      </div>
-      <div>
-        <dt>Email</dt>
-        <dd>{{ item.email }}</dd>
-      </div>
-      <div>
-        <dt>Website</dt>
-        <dd>{{ item.website }}</dd>
-      </div>
-      <div>
-        <dt>Created by</dt>
-        <dd>{{ item.createdBy }}</dd>
-      </div>
-      <div>
-        <dt>Created date (GST)</dt>
-        <dd>{{ formatAuditDate(item.createdAt) }}</dd>
-      </div>
-      <div>
-        <dt>Last updated by</dt>
-        <dd>{{ item.lastUpdatedBy }}</dd>
-      </div>
-      <div>
-        <dt>Last updated date (GST)</dt>
-        <dd>{{ formatAuditDate(item.lastUpdatedAt) }}</dd>
-      </div>
-    </dl>
+      <dl class="company-details">
+        <div>
+          <dt>Short name</dt>
+          <dd>{{ item.shortName }}</dd>
+        </div>
+        <div>
+          <dt>Primary address</dt>
+          <dd>{{ item.primaryAddress }}</dd>
+        </div>
+        <div>
+          <dt>Address 1</dt>
+          <dd>{{ item.address1 }}</dd>
+        </div>
+        <div>
+          <dt>Address 2</dt>
+          <dd>{{ item.address2 }}</dd>
+        </div>
+        <div>
+          <dt>Address 3</dt>
+          <dd>{{ item.address3 }}</dd>
+        </div>
+        <div>
+          <dt>Incorporation date</dt>
+          <dd>{{ formatDate(item.incorporationDate) }}</dd>
+        </div>
+        <div>
+          <dt>Reference number</dt>
+          <dd>{{ item.referenceNumber }}</dd>
+        </div>
+        <div>
+          <dt>Licence issue date</dt>
+          <dd>{{ formatDate(item.licenceIssueDate) }}</dd>
+        </div>
+        <div>
+          <dt>Licence expiry date</dt>
+          <dd>{{ formatDate(item.licenceExpiryDate) }}</dd>
+        </div>
+        <div>
+          <dt>Company in charge</dt>
+          <dd>{{ item.companyInCharge }}</dd>
+        </div>
+        <div>
+          <dt>Phone</dt>
+          <dd>{{ item.phone }}</dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd>{{ item.email }}</dd>
+        </div>
+        <div>
+          <dt>Website</dt>
+          <dd>{{ item.website }}</dd>
+        </div>
+        <div>
+          <dt>Created by</dt>
+          <dd>{{ item.createdBy }}</dd>
+        </div>
+        <div>
+          <dt>Created date (GST)</dt>
+          <dd>{{ formatAuditDate(item.createdAt) }}</dd>
+        </div>
+        <div>
+          <dt>Last updated by</dt>
+          <dd>{{ item.lastUpdatedBy }}</dd>
+        </div>
+        <div>
+          <dt>Last updated date (GST)</dt>
+          <dd>{{ formatAuditDate(item.lastUpdatedAt) }}</dd>
+        </div>
+      </dl>
+    </div>
   }
 </section>
