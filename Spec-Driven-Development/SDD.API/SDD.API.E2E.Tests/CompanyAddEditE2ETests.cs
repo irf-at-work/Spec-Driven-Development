@@ -48,7 +48,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Expect(incorporationDate).ToHaveValueAsync(new Regex("^\\d{2}-\\d{2}-\\d{4}$"));
 
         await incorporationDate.FillAsync("09-01-2024");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save", Exact = true }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/company-master/NEWCO$"));
 
         using var request = JsonDocument.Parse(createRequest);
@@ -92,7 +92,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/new").ToString());
         await Page.GetByLabel("Company code").FillAsync("NORTH");
         await Page.GetByLabel("Company name").FillAsync("North Insurance");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save", Exact = true }).ClickAsync();
         await Expect(Page.GetByText("This company code already exists.")).ToBeVisibleAsync();
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH/edit").ToString());
@@ -109,7 +109,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
             companyFieldNames.Select(label => label.Trim()));
         await companyName.FillAsync("North Mutual");
         await Page.GetByLabel("Short name").FillAsync("Updated North");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save", Exact = true }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/company-master/NORTH$"));
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "North Mutual" })).ToBeVisibleAsync();
 
@@ -128,7 +128,13 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
             {
                 return;
             }
-            await FulfillJsonAsync(route, CompanyDetails("NORTH", "North Insurance"), 200);
+            var path = new Uri(route.Request.Url).AbsolutePath;
+            await FulfillJsonAsync(
+                route,
+                path.EndsWith("/divisions", StringComparison.OrdinalIgnoreCase)
+                    ? Array.Empty<object>()
+                    : CompanyDetails("NORTH", "North Insurance"),
+                200);
         });
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH").ToString());
@@ -137,7 +143,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         var viewFieldLabels = Page.Locator("app-company-fields .read-field span");
         await Expect(viewFieldLabels).ToHaveCountAsync(14);
         var viewLabels = await viewFieldLabels.AllTextContentsAsync();
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Edit" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Edit", Exact = true }).ClickAsync();
         var companyName = Page.GetByLabel("Company name");
         await companyName.FillAsync("Unsaved name");
         await Page.GetByLabel("Address 1").FillAsync("Unsaved address");

@@ -5,6 +5,7 @@ import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
+import { CompanyStructureService } from '../../api/generated/api/companyStructure.service';
 import { CompanyForm } from './company-form';
 
 @Component({ standalone: true, template: '<h1>Company listing</h1>' })
@@ -34,6 +35,11 @@ describe('CompanyForm', () => {
       apiCompaniesPost: vi.fn(() => of(company)),
       apiCompaniesCompanyCodePut: vi.fn(() => of(company)),
     },
+    structureApi = {
+      apiCompaniesCompanyCodeDivisionsGet: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDivisionsPost: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDepartmentsPost: vi.fn(() => of({})),
+    },
   ) {
     await TestBed.configureTestingModule({
       imports: [CompanyForm],
@@ -43,6 +49,7 @@ describe('CompanyForm', () => {
           { path: 'company-master/new', component: CompanyForm },
         ]),
         { provide: CompanyService, useValue: api },
+        { provide: CompanyStructureService, useValue: structureApi },
       ],
     }).compileComponents();
 
@@ -117,22 +124,112 @@ describe('CompanyForm', () => {
     expect(phone.valid).toBe(true);
   });
 
-  it('returns to the company listing when creation is canceled', async () => {
+  it('clears unsaved company values when Reset is selected', async () => {
     const { harness } = await createForm();
     await harness.navigateByUrl('/company-master/new', CompanyForm);
     await harness.fixture.whenStable();
 
     const cancelButton = Array.from(
       harness.routeNativeElement?.querySelectorAll('button') ?? [],
-    ).find((button) => button.textContent?.trim() === 'Cancel');
+    ).find((button) => button.textContent?.trim() === 'Reset');
     if (!cancelButton) {
-      throw new Error('Cancel button was not rendered.');
+      throw new Error('Reset button was not rendered.');
     }
 
+    const form = harness.routeDebugElement?.componentInstance as CompanyForm;
+    form.form.controls.companyCode.setValue('NORTH');
     cancelButton.click();
     await harness.fixture.whenStable();
 
-    expect(harness.routeNativeElement?.textContent).toContain('Company listing');
+    expect(form.form.controls.companyCode.value).toBe('');
+  });
+
+  it('shows the three-step progress indicator and saves company details before opening Division', async () => {
+    const api = {
+      apiCompaniesCompanyCodeGet: vi.fn(() => of(company)),
+      apiCompaniesPost: vi.fn(() => of(company)),
+      apiCompaniesCompanyCodePut: vi.fn(() => of(company)),
+    };
+    const { harness } = await createForm(api);
+    const form = await harness.navigateByUrl('/company-master/new', CompanyForm);
+    form.form.controls.companyCode.setValue('NORTH');
+    form.form.controls.companyName.setValue('North');
+
+    expect(form.step()).toBe('basic');
+    expect(harness.routeNativeElement?.querySelectorAll('[data-step]').length).toBe(3);
+    form.saveAndAddDivision();
+    await harness.fixture.whenStable();
+
+    expect(api.apiCompaniesPost).toHaveBeenCalledOnce();
+    expect(form.step()).toBe('division');
+    expect(form.companyCode()).toBe('NORTH');
+  });
+
+  it('keeps entered division values and remains on the step when its save fails', async () => {
+    const structureApi = {
+      apiCompaniesCompanyCodeDivisionsGet: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDivisionsPost: vi.fn(() =>
+        throwError(() => new HttpErrorResponse({ status: 500 })),
+      ),
+      apiCompaniesCompanyCodeDepartmentsPost: vi.fn(() => of({})),
+    };
+    const { harness } = await createForm(undefined, structureApi);
+    const form = await harness.navigateByUrl(
+      '/company-master/new?step=division&companyCode=NORTH',
+      CompanyForm,
+    );
+    form.addDivision();
+    form.divisionForms.at(0).controls.divisionCode.setValue('WEST');
+    form.divisionForms.at(0).controls.name.setValue('Western Office');
+
+    form.saveDivisionAndAddDepartment();
+    await harness.fixture.whenStable();
+
+    expect(form.step()).toBe('division');
+    expect(form.divisionForms.at(0).controls.name.value).toBe('Western Office');
+    expect(form.error()).toContain('could not be saved');
+  });
+
+  it('loads one department entry form and the current company division options', async () => {
+    const structureApi = {
+      apiCompaniesCompanyCodeDivisionsGet: vi.fn(() =>
+        of([{ divisionCode: 'WEST', name: 'Western Office' }]),
+      ),
+      apiCompaniesCompanyCodeDivisionsPost: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDepartmentsPost: vi.fn(() => of({})),
+    };
+    const { harness } = await createForm(undefined, structureApi);
+    const form = await harness.navigateByUrl(
+      '/company-master/new?step=department&companyCode=NORTH',
+      CompanyForm,
+    );
+    await harness.fixture.whenStable();
+
+    expect(form.step()).toBe('department');
+    expect(form.departmentForms.length).toBe(1);
+    expect(form.divisionOptions().map((division) => division.divisionCode)).toEqual(['WEST']);
+  });
+
+  it('resets only the current structure step without clearing previously saved company context', async () => {
+    const structureApi = {
+      apiCompaniesCompanyCodeDivisionsGet: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDivisionsPost: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDepartmentsPost: vi.fn(() => of({})),
+    };
+    const { harness } = await createForm(undefined, structureApi);
+    const form = await harness.navigateByUrl(
+      '/company-master/new?step=division&companyCode=NORTH',
+      CompanyForm,
+    );
+    form.addDivision();
+    form.divisionForms.at(0).controls.name.setValue('Unsaved');
+
+    form.resetStep();
+
+    expect(form.step()).toBe('division');
+    expect(form.companyCode()).toBe('NORTH');
+    expect(form.divisionForms.length).toBe(0);
+    expect(structureApi.apiCompaniesCompanyCodeDivisionsPost).not.toHaveBeenCalled();
   });
 
   it('parses typed DD-MM-YYYY dates and serializes them as date-only values', async () => {

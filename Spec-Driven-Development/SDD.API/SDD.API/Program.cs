@@ -24,6 +24,8 @@ builder.Services.AddCors(options => options.AddPolicy(
         .AllowAnyMethod()));
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<CompanyService>();
+builder.Services.AddScoped<ICompanyStructureRepository, CompanyStructureRepository>();
+builder.Services.AddScoped<CompanyStructureService>();
 builder.Services.AddSingleton(TimeProvider.System);
 
 var brokerConnection = builder.Configuration.GetConnectionString("BrokerConnection");

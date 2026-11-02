@@ -10,11 +10,105 @@ form {
   box-shadow: 0 0.6rem 1.7rem rgb(24 79 73 / 7%);
 }
 
-.form-actions {
+.form-actions,
+.setup-card-heading,
+.setup-card-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   gap: 0.75rem;
+}
+
+.form-actions {
+  justify-content: flex-end;
   margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.setup-progress {
+  max-width: 76rem;
+  margin: 1rem auto;
+}
+
+.setup-progress ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.setup-progress li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  font-weight: 600;
+}
+
+.setup-progress li[aria-current='step'] {
+  border-color: var(--color-focus);
+  color: var(--color-primary-900);
+  background: color-mix(in srgb, var(--color-focus) 10%, var(--color-surface));
+}
+
+.setup-progress li span {
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-page);
+  font-size: 0.85rem;
+}
+
+.setup-panel {
+  display: grid;
+  gap: 1rem;
+  max-width: 76rem;
+  margin: 1rem auto 0;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-surface);
+  box-shadow: 0 0.6rem 1.7rem rgb(24 79 73 / 7%);
+}
+
+.setup-panel > h2,
+.setup-card h3 {
+  margin: 0;
+  color: var(--color-primary-900);
+}
+
+.setup-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-page);
+}
+
+.setup-card-heading {
+  justify-content: space-between;
+}
+
+.setup-card-actions {
+  flex-shrink: 0;
+}
+
+.structure-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.5rem 0.75rem;
+}
+
+.structure-fields mat-form-field {
+  width: 100%;
 }
 
 .error-message {
@@ -24,5 +118,29 @@ form {
 @media (max-width: 560px) {
   form {
     padding: 0.75rem;
+  }
+
+  .setup-panel {
+    padding: 0.75rem;
+  }
+
+  .setup-progress ol {
+    gap: 0.35rem;
+  }
+
+  .setup-progress li {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .setup-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .setup-card-actions {
+    align-self: flex-end;
   }
 }

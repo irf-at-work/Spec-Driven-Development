@@ -22,14 +22,23 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, EMPTY, finalize, map, of, switchMap, tap } from 'rxjs';
+import { catchError, concatMap, EMPTY, finalize, from, map, of, switchMap, tap, toArray } from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
+import { CompanyStructureService } from '../../api/generated/api/companyStructure.service';
 import { CompanyDto } from '../../api/generated/model/companyDto';
 import { CreateCompanyRequest } from '../../api/generated/model/createCompanyRequest';
 import { UpdateCompanyRequest } from '../../api/generated/model/updateCompanyRequest';
+import { DivisionDto } from '../../api/generated/model/divisionDto';
 import { CompanyFields } from '../../shared/company-fields/company-fields';
+import { MatSelectModule } from '@angular/material/select';
 
 type CompanyFormControls = {
   companyCode: FormControl<string>;
@@ -53,6 +62,27 @@ type CompanyFormValue = {
     ? Value
     : never;
 };
+
+type DivisionFormControls = {
+  divisionCode: FormControl<string>;
+  name: FormControl<string>;
+  shortName: FormControl<string>;
+  address1: FormControl<string>;
+  address2: FormControl<string>;
+  address3: FormControl<string>;
+  inCharge: FormControl<string>;
+  phone: FormControl<string>;
+  email: FormControl<string>;
+};
+
+type DepartmentFormControls = {
+  departmentCode: FormControl<string>;
+  name: FormControl<string>;
+  shortName: FormControl<string>;
+  divisionCodes: FormControl<string[]>;
+};
+
+type CompanySetupStep = 'basic' | 'division' | 'department';
 
 const FIELD_ORDER: readonly (keyof CompanyFormControls)[] = [
   'companyCode',
@@ -134,6 +164,7 @@ class CompanyDateAdapter extends NativeDateAdapter {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatSelectModule,
     ReactiveFormsModule,
     RouterLink,
     CompanyFields,
@@ -149,6 +180,7 @@ class CompanyDateAdapter extends NativeDateAdapter {
 })
 export class CompanyForm implements OnInit {
   private readonly api = inject(CompanyService);
+  private readonly structureApi = inject(CompanyStructureService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly route = inject(ActivatedRoute);
@@ -194,6 +226,13 @@ export class CompanyForm implements OnInit {
   readonly saving = signal(false);
   readonly loadError = signal<string | null>(null);
   readonly error = signal<string | null>(null);
+  readonly step = signal<CompanySetupStep>('basic');
+  readonly companyCode = signal<string | null>(null);
+  readonly divisionOptions = signal<DivisionDto[]>([]);
+  readonly savedDivisionCodes = signal<Set<string>>(new Set());
+  readonly collapsedDivisions = signal<Set<number>>(new Set());
+  readonly divisionForms = new FormArray<FormGroup<DivisionFormControls>>([]);
+  readonly departmentForms = new FormArray<FormGroup<DepartmentFormControls>>([]);
 
   ngOnInit(): void {
     this.form.controls.companyName.valueChanges
@@ -207,6 +246,28 @@ export class CompanyForm implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.shortNameEdited = true;
+      });
+
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const requestedStep = params.get('step');
+        const companyCode = params.get('companyCode');
+        if (
+          !companyCode ||
+          (requestedStep !== 'division' && requestedStep !== 'department')
+        ) {
+          this.companyCode.set(null);
+          this.step.set('basic');
+          return;
+        }
+
+        this.companyCode.set(companyCode);
+        this.step.set(requestedStep);
+        if (requestedStep === 'department' && this.departmentForms.length === 0) {
+          this.addDepartment();
+        }
+        this.loadDivisions(companyCode, requestedStep === 'division');
       });
 
     this.route.paramMap
@@ -296,6 +357,344 @@ export class CompanyForm implements OnInit {
           queryParamsHandling: 'preserve',
         });
       });
+  }
+
+  saveAndAddDivision(): void {
+    this.error.set(null);
+    this.form.markAllAsTouched();
+    if (this.form.invalid) {
+      this.focusFirstInvalidField();
+      return;
+    }
+
+    this.saving.set(true);
+    this.api
+      .apiCompaniesPost({ createCompanyRequest: this.toCreateRequest(this.form.getRawValue()) })
+      .pipe(
+        catchError((error: unknown) => {
+          this.applyApiError(error);
+          return EMPTY;
+        }),
+        finalize(() => this.saving.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((company) => this.navigateToStep('division', company.companyCode));
+  }
+
+  resetStep(): void {
+    this.error.set(null);
+    switch (this.step()) {
+      case 'basic':
+        this.shortNameEdited = false;
+        this.form.reset({
+          companyCode: '',
+          companyName: '',
+          shortName: '',
+          address1: '',
+          address2: '',
+          address3: '',
+          incorporationDate: null,
+          referenceNumber: '',
+          licenceIssueDate: null,
+          licenceExpiryDate: null,
+          companyInCharge: '',
+          phone: '',
+          email: '',
+          website: '',
+        });
+        break;
+      case 'division':
+        this.divisionForms.clear();
+        this.collapsedDivisions.set(new Set());
+        break;
+      case 'department':
+        this.departmentForms.clear();
+        break;
+    }
+  }
+
+  addDivision(): void {
+    this.divisionForms.push(new FormGroup<DivisionFormControls>({
+      divisionCode: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(12)],
+      }),
+      name: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(100)],
+      }),
+      shortName: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(30)] }),
+      address1: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
+      address2: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
+      address3: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
+      inCharge: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(60)] }),
+      phone: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(20)] }),
+      email: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
+    }));
+    this.error.set(null);
+  }
+
+  removeDivision(index: number): void {
+    const divisionCode = this.divisionForms.at(index).controls.divisionCode.value;
+    if (this.savedDivisionCodes().has(divisionCode)) {
+      const confirmed = typeof window !== 'undefined' &&
+        window.confirm('Delete this saved division? The server will prevent deletion while departments remain assigned.');
+      const companyCode = this.companyCode();
+      if (!confirmed || !companyCode) {
+        return;
+      }
+
+      this.structureApi
+        .apiCompaniesCompanyCodeDivisionsDivisionCodeDelete({ companyCode, divisionCode })
+        .pipe(
+          catchError((error: unknown) => {
+            this.applyStructureError(error);
+            return EMPTY;
+          }),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe(() => {
+          this.divisionForms.removeAt(index);
+          this.divisionOptions.update((divisions) =>
+            divisions.filter((division) => division.divisionCode !== divisionCode),
+          );
+          this.savedDivisionCodes.update((codes) => {
+            const updated = new Set(codes);
+            updated.delete(divisionCode);
+            return updated;
+          });
+        });
+      return;
+    }
+
+    const confirmed = typeof window !== 'undefined' &&
+      window.confirm('Delete this unsaved division card? Its entered details will be lost.');
+    if (confirmed) {
+      this.divisionForms.removeAt(index);
+      this.collapsedDivisions.set(new Set());
+    }
+  }
+
+  toggleDivision(index: number): void {
+    const collapsed = new Set(this.collapsedDivisions());
+    if (collapsed.has(index)) {
+      collapsed.delete(index);
+    } else {
+      collapsed.add(index);
+    }
+    this.collapsedDivisions.set(collapsed);
+  }
+
+  isDivisionCollapsed(index: number): boolean {
+    return this.collapsedDivisions().has(index);
+  }
+
+  isSavedDivision(index: number): boolean {
+    return this.savedDivisionCodes().has(
+      this.divisionForms.at(index).controls.divisionCode.value,
+    );
+  }
+
+  saveDivisionAndExit(): void {
+    this.saveDivisions('exit');
+  }
+
+  saveDivisionAndAddDepartment(): void {
+    if (this.divisionForms.length === 0) {
+      this.error.set('Add at least one division before continuing to Department.');
+      return;
+    }
+    this.saveDivisions('department');
+  }
+
+  addDepartment(): void {
+    this.departmentForms.push(new FormGroup<DepartmentFormControls>({
+      departmentCode: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(12)],
+      }),
+      name: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(100)],
+      }),
+      shortName: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(30)] }),
+      divisionCodes: new FormControl([], {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+    }));
+    this.error.set(null);
+  }
+
+  saveDepartments(): void {
+    this.error.set(null);
+    const companyCode = this.companyCode();
+    if (!companyCode) {
+      this.error.set('Save the company details before adding departments.');
+      return;
+    }
+    if (this.departmentForms.length === 0) {
+      this.error.set('Add at least one department before saving.');
+      return;
+    }
+    this.departmentForms.controls.forEach((department) => department.markAllAsTouched());
+    if (this.departmentForms.invalid) {
+      this.error.set('Complete the required department details and choose at least one division.');
+      return;
+    }
+
+    const requests = this.departmentForms.getRawValue();
+    this.saving.set(true);
+    from(requests)
+      .pipe(
+        concatMap((request) =>
+          this.structureApi.apiCompaniesCompanyCodeDepartmentsPost({
+            companyCode,
+            createDepartmentRequest: {
+              departmentCode: request.departmentCode,
+              name: request.name,
+              shortName: request.shortName || null,
+              divisionCodes: request.divisionCodes,
+            },
+          }),
+        ),
+        toArray(),
+        catchError((error: unknown) => {
+          this.applyStructureError(error);
+          return EMPTY;
+        }),
+        finalize(() => this.saving.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.navigateToCompanyDetails(companyCode);
+      });
+  }
+
+  backToDivision(): void {
+    const companyCode = this.companyCode();
+    if (companyCode) {
+      this.navigateToStep('division', companyCode);
+    }
+  }
+
+  private saveDivisions(destination: 'exit' | 'department'): void {
+    this.error.set(null);
+    const companyCode = this.companyCode();
+    if (!companyCode) {
+      this.error.set('Save the company details before adding divisions.');
+      return;
+    }
+    this.divisionForms.controls.forEach((division) => division.markAllAsTouched());
+    if (this.divisionForms.invalid) {
+      this.error.set('Complete the required division details before saving.');
+      return;
+    }
+
+    const divisions = this.divisionForms.getRawValue()
+      .filter((division) => !this.savedDivisionCodes().has(division.divisionCode))
+      .map((division) => ({
+      divisionCode: division.divisionCode,
+      name: division.name,
+      shortName: division.shortName || null,
+      address1: division.address1 || null,
+      address2: division.address2 || null,
+      address3: division.address3 || null,
+      inCharge: division.inCharge || null,
+      phone: division.phone || null,
+      email: division.email || null,
+      }));
+
+    this.saving.set(true);
+    this.structureApi
+      .apiCompaniesCompanyCodeDivisionsPost({
+        companyCode,
+        createDivisionsRequest: { divisions },
+      })
+      .pipe(
+        catchError((error: unknown) => {
+          this.applyStructureError(error);
+          return EMPTY;
+        }),
+        finalize(() => this.saving.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        if (destination === 'department') {
+          this.navigateToStep('department', companyCode);
+        } else {
+          this.navigateToCompanyDetails(companyCode);
+        }
+      });
+  }
+
+  private navigateToCompanyDetails(companyCode: string): void {
+    void this.router.navigate(['/company-master', companyCode], {
+      queryParams: { step: null, companyCode: null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private navigateToStep(step: Exclude<CompanySetupStep, 'basic'>, companyCode: string): void {
+    this.companyCode.set(companyCode);
+    this.step.set(step);
+    if (step === 'department' && this.departmentForms.length === 0) {
+      this.addDepartment();
+    }
+    this.loadDivisions(companyCode, step === 'division');
+    void this.router.navigate(['/company-master/new'], {
+      queryParams: { step, companyCode },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private loadDivisions(companyCode: string, populateDivisionForms: boolean): void {
+    this.structureApi
+      .apiCompaniesCompanyCodeDivisionsGet({ companyCode })
+      .pipe(
+        tap((divisions) => {
+          this.divisionOptions.set(divisions);
+          if (populateDivisionForms && this.divisionForms.length === 0) {
+            for (const division of divisions) {
+              this.divisionForms.push(this.toDivisionForm(division));
+            }
+            this.savedDivisionCodes.set(
+              new Set(divisions.map((division) => division.divisionCode)),
+            );
+          }
+          if (this.step() === 'department' && this.departmentForms.length === 0) {
+            this.addDepartment();
+          }
+        }),
+        catchError((error: unknown) => {
+          this.applyStructureError(error);
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
+
+  private toDivisionForm(division: DivisionDto): FormGroup<DivisionFormControls> {
+    const form = new FormGroup<DivisionFormControls>({
+      divisionCode: new FormControl(division.divisionCode, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(12)],
+      }),
+      name: new FormControl(division.name, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(100)],
+      }),
+      shortName: new FormControl(division.shortName ?? '', { nonNullable: true }),
+      address1: new FormControl(division.address1 ?? '', { nonNullable: true }),
+      address2: new FormControl(division.address2 ?? '', { nonNullable: true }),
+      address3: new FormControl(division.address3 ?? '', { nonNullable: true }),
+      inCharge: new FormControl(division.inCharge ?? '', { nonNullable: true }),
+      phone: new FormControl(division.phone ?? '', { nonNullable: true }),
+      email: new FormControl(division.email ?? '', { nonNullable: true }),
+    });
+    form.disable({ emitEvent: false });
+    return form;
   }
 
   private populateForm(company: CompanyDto): void {
@@ -442,6 +841,28 @@ export class CompanyForm implements OnInit {
     }
 
     this.focusFirstInvalidField();
+  }
+
+  private applyStructureError(error: unknown): void {
+    if (error instanceof HttpErrorResponse) {
+      const body = error.error;
+      if (isRecord(body) && isRecord(body['errors'])) {
+        const messages = Object.values(body['errors'])
+          .flatMap((value) => Array.isArray(value) ? value : [])
+          .filter((value): value is string => typeof value === 'string');
+        if (messages.length > 0) {
+          this.error.set(messages.join(' '));
+          return;
+        }
+      }
+      this.error.set(
+        isRecord(body) && typeof body['detail'] === 'string'
+          ? body['detail']
+          : 'The company structure could not be saved. Check the details and try again.',
+      );
+      return;
+    }
+    this.error.set('The company structure could not be saved. Please try again.');
   }
 }
 

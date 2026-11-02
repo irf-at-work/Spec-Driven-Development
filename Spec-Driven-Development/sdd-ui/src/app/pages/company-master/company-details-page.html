@@ -71,6 +71,287 @@
           <div><dt>Last updated date (GST)</dt><dd>{{ formatAuditDate(item.lastUpdatedAt) || '—' }}</dd></div>
         </dl>
       </section>
+      <section class="detail-section division-section" aria-labelledby="divisions-heading">
+        <h2 id="divisions-heading">Divisions</h2>
+        @if (structureLoading()) {
+          <p role="status">Loading divisions…</p>
+        } @else if (structureError(); as message) {
+          <p class="error-message" role="alert">{{ message }}</p>
+        } @else if (divisions().length === 0) {
+          <p>No divisions have been added to this company yet.</p>
+        } @else {
+          @for (division of divisions(); track division.divisionCode) {
+            <article class="division-card">
+              <header class="division-card-heading">
+                <h3>{{ division.name }}</h3>
+                <div class="details-actions">
+                  <button
+                    mat-button
+                    type="button"
+                    [attr.aria-expanded]="!isDivisionCollapsed(division.divisionCode ?? '')"
+                    [attr.aria-label]="
+                      (isDivisionCollapsed(division.divisionCode ?? '') ? 'Expand' : 'Collapse') +
+                      ' division ' +
+                      division.divisionCode
+                    "
+                    (click)="toggleDivision(division.divisionCode ?? '')"
+                  >
+                    {{ isDivisionCollapsed(division.divisionCode ?? '') ? 'Expand' : 'Collapse' }}
+                  </button>
+                  <button
+                    mat-button
+                    type="button"
+                    [attr.aria-label]="
+                      (editingDivisionCode() === division.divisionCode ? 'Cancel editing' : 'Edit') +
+                      ' division ' +
+                      division.divisionCode
+                    "
+                    (click)="
+                      editingDivisionCode() === division.divisionCode
+                        ? cancelDivisionEdit()
+                        : startEditingDivision(division)
+                    "
+                  >
+                    {{ editingDivisionCode() === division.divisionCode ? 'Cancel edit' : 'Edit' }}
+                  </button>
+                  <button
+                    mat-button
+                    type="button"
+                    [attr.aria-label]="'Delete division ' + division.divisionCode"
+                    (click)="deleteDivision(division)"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </header>
+              @if (!isDivisionCollapsed(division.divisionCode ?? '')) {
+                @if (editingDivisionCode() === division.divisionCode) {
+                  <div class="division-edit-fields" [formGroup]="divisionEditForm">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Division name</mat-label>
+                      <input matInput formControlName="name" maxlength="100" required />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Short name</mat-label>
+                      <input matInput formControlName="shortName" maxlength="30" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Division name (second language)</mat-label>
+                      <input matInput formControlName="nameL2" maxlength="100" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Short name (second language)</mat-label>
+                      <input matInput formControlName="shortNameL2" maxlength="30" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Address 1</mat-label>
+                      <input matInput formControlName="address1" maxlength="100" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Address 2</mat-label>
+                      <input matInput formControlName="address2" maxlength="100" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Address 3</mat-label>
+                      <input matInput formControlName="address3" maxlength="100" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Address 1 (second language)</mat-label>
+                      <input matInput formControlName="address1L2" maxlength="100" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Address 2 (second language)</mat-label>
+                      <input matInput formControlName="address2L2" maxlength="100" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Address 3 (second language)</mat-label>
+                      <input matInput formControlName="address3L2" maxlength="100" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Commercial registration number</mat-label>
+                      <input matInput formControlName="commercialRegistrationNumber" maxlength="20" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Licence issue date</mat-label>
+                      <input matInput type="date" formControlName="licenceIssueDate" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Licence expiry date</mat-label>
+                      <input matInput type="date" formControlName="licenceExpiryDate" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>In charge</mat-label>
+                      <input matInput formControlName="inCharge" maxlength="60" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>In charge (second language)</mat-label>
+                      <input matInput formControlName="inChargeL2" maxlength="60" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Phone</mat-label>
+                      <input matInput formControlName="phone" maxlength="20" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Fax</mat-label>
+                      <input matInput formControlName="fax" maxlength="20" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Mobile</mat-label>
+                      <input matInput formControlName="mobile" maxlength="20" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Email</mat-label>
+                      <input matInput formControlName="email" maxlength="100" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Remarks</mat-label>
+                      <textarea matInput formControlName="remarks"></textarea>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Active</mat-label>
+                      <mat-select formControlName="active">
+                        <mat-option value="Y">Yes</mat-option>
+                        <mat-option value="N">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="division-edit-actions">
+                    <button mat-button type="button" (click)="cancelDivisionEdit()">Cancel</button>
+                    <button mat-flat-button type="button" (click)="saveDivisionEdit()">Save division</button>
+                  </div>
+                } @else {
+                  <dl class="division-details">
+                    <div><dt>Division code</dt><dd>{{ division.divisionCode }}</dd></div>
+                    <div><dt>Short name</dt><dd>{{ division.shortName || '—' }}</dd></div>
+                    <div>
+                      <dt>Address</dt>
+                      <dd>{{ formatDivisionAddress(division) || '—' }}</dd>
+                    </div>
+                    <div><dt>In charge</dt><dd>{{ division.inCharge || '—' }}</dd></div>
+                    <div><dt>Phone</dt><dd>{{ division.phone || '—' }}</dd></div>
+                    <div><dt>Email</dt><dd>{{ division.email || '—' }}</dd></div>
+                  </dl>
+                }
+                <div class="department-table-wrapper">
+                  <table>
+                    <caption>Departments in {{ division.name }}</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Department code</th>
+                        <th scope="col">Department name</th>
+                        <th scope="col">Short name</th>
+                        <th scope="col">In charge</th>
+                        @if (editingDivisionCode() === division.divisionCode) {
+                          <th scope="col" class="department-action-column">Actions</th>
+                        }
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (department of division.departments ?? []; track department.departmentCode) {
+                        <tr>
+                          <td>{{ department.departmentCode }}</td>
+                          <td>{{ department.name }}</td>
+                          <td>{{ department.shortName || '—' }}</td>
+                          <td>{{ department.inCharge || '—' }}</td>
+                          @if (editingDivisionCode() === division.divisionCode) {
+                            <td class="department-action-column">
+                              <button
+                                mat-icon-button
+                                type="button"
+                                [attr.aria-label]="'Remove ' + department.name + ' from ' + division.name"
+                                (click)="removeDepartmentAssignment(division, department)"
+                              >
+                                <mat-icon aria-hidden="true">delete</mat-icon>
+                              </button>
+                            </td>
+                          }
+                        </tr>
+                      } @empty {
+                        <tr>
+                          <td [attr.colspan]="editingDivisionCode() === division.divisionCode ? 5 : 4">
+                            No departments are assigned to this division.
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+                @if (editingDivisionCode() === division.divisionCode) {
+                  <div class="department-assignment-actions">
+                    <button mat-stroked-button type="button" (click)="openNewDepartment(division)">
+                      Add new department
+                    </button>
+                    <button mat-stroked-button type="button" (click)="openExistingDepartments(division)">
+                      Add existing departments
+                    </button>
+                  </div>
+                }
+              }
+            </article>
+          }
+        }
+        @if (departmentDialog() === 'new') {
+          <section class="department-dialog" role="dialog" aria-modal="true" aria-labelledby="new-department-title">
+            <div [formGroup]="newDepartmentForm">
+              <h3 id="new-department-title">Add new department</h3>
+              <mat-form-field appearance="outline">
+                <mat-label>Department code</mat-label>
+                <input matInput formControlName="departmentCode" maxlength="12" required />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Department name</mat-label>
+                <input matInput formControlName="name" maxlength="100" required />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Short name</mat-label>
+                <input matInput formControlName="shortName" maxlength="30" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>In charge</mat-label>
+                <input matInput formControlName="inCharge" maxlength="60" />
+              </mat-form-field>
+              <div class="division-edit-actions">
+                <button mat-button type="button" (click)="closeDepartmentDialog()">Cancel</button>
+                <button mat-flat-button type="button" (click)="saveNewDepartment()">Save department</button>
+              </div>
+            </div>
+          </section>
+        } @else if (departmentDialog() === 'existing') {
+          <section class="department-dialog" role="dialog" aria-modal="true" aria-labelledby="existing-departments-title">
+            <div>
+              <h3 id="existing-departments-title">Add existing departments</h3>
+              @if (availableExistingDepartments(departmentDivisionCode() ?? '').length === 0) {
+                <p>All existing departments are already assigned to this division.</p>
+              } @else {
+                <mat-form-field appearance="outline">
+                  <mat-label>Departments</mat-label>
+                  <mat-select [formControl]="selectedExistingDepartmentCodes" multiple>
+                    @for (
+                      department of availableExistingDepartments(departmentDivisionCode() ?? '');
+                      track department.departmentCode
+                    ) {
+                      <mat-option [value]="department.departmentCode">
+                        {{ department.name }} ({{ department.departmentCode }})
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+              <div class="division-edit-actions">
+                <button mat-button type="button" (click)="closeDepartmentDialog()">Cancel</button>
+                <button
+                  mat-flat-button
+                  type="button"
+                  (click)="saveExistingDepartments()"
+                  [disabled]="availableExistingDepartments(departmentDivisionCode() ?? '').length === 0"
+                >
+                  Add selected departments
+                </button>
+              </div>
+            </div>
+          </section>
+        }
+      </section>
     </form>
   }
 </section>

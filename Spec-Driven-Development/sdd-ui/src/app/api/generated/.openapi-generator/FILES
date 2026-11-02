@@ -4,6 +4,7 @@ api.base.service.ts
 api.module.ts
 api/api.ts
 api/company.service.ts
+api/companyStructure.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -12,11 +13,18 @@ model/companyDto.ts
 model/companyFilterOperator.ts
 model/companyListItemDto.ts
 model/createCompanyRequest.ts
+model/createDepartmentRequest.ts
+model/createDivisionRequest.ts
+model/createDivisionsRequest.ts
+model/departmentDto.ts
+model/divisionDto.ts
 model/httpValidationProblemDetails.ts
+model/linkDepartmentsRequest.ts
 model/models.ts
 model/paginatedResultOfCompanyListItemDto.ts
 model/problemDetails.ts
 model/updateCompanyRequest.ts
+model/updateDivisionRequest.ts
 param.ts
 provide-api.ts
 query.params.ts

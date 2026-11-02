@@ -10,5 +10,8 @@ public sealed class CompanyConflictException(string message) : Exception(message
 {
 }
 
+public sealed class CompanyNotFoundException()
+    : Exception("The requested company does not exist.");
+
 public sealed class CompanyReferenceException()
     : Exception("This company cannot be deleted because it is referenced by other records.");

@@ -1,3 +1,5 @@
 export * from './company.service';
 import { CompanyService } from './company.service';
-export const APIS = [CompanyService];
+export * from './companyStructure.service';
+import { CompanyStructureService } from './companyStructure.service';
+export const APIS = [CompanyService, CompanyStructureService];

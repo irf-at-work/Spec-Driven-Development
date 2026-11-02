@@ -10,12 +10,14 @@
 }
 
 .details-heading,
-.details-actions {
+.details-actions,
+.division-card-heading {
   display: flex;
   align-items: center;
 }
 
-.details-heading {
+.details-heading,
+.division-card-heading {
   justify-content: space-between;
   gap: 1rem;
 }
@@ -45,7 +47,6 @@
 
 .heading-input {
   padding: 0.2rem 0.45rem;
-  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   background: var(--color-surface);
 }
@@ -61,6 +62,16 @@
   flex-shrink: 0;
 }
 
+.heading-input,
+.division-card,
+.division-details > div,
+.division-edit-fields,
+.department-table-wrapper,
+.department-dialog,
+.company-details > div {
+  border: 1px solid var(--color-border);
+}
+
 .detail-section {
   display: grid;
   gap: 0.65rem;
@@ -70,6 +81,137 @@
   margin: 0;
   color: var(--color-primary-900);
   font-size: 1.05rem;
+}
+
+.division-section,
+.division-card {
+  gap: 1rem;
+}
+
+.division-card {
+  display: grid;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--color-page);
+}
+
+.division-card-heading h3,
+.department-dialog h3 {
+  margin: 0;
+  color: var(--color-primary-900);
+}
+
+.division-card-heading h3 {
+  font-size: 1rem;
+}
+
+.division-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 0.65rem;
+  margin: 0;
+}
+
+.division-details > div {
+  min-width: 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.6rem;
+  background: var(--color-surface);
+}
+
+.division-details dt,
+.department-table-wrapper th,
+.company-details dt {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.division-details dt {
+  margin-bottom: 0.25rem;
+}
+
+.division-details dd,
+.company-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.division-edit-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.5rem 0.75rem;
+  padding: 1rem;
+  border-radius: 0.65rem;
+  background: var(--color-surface);
+}
+
+.division-edit-fields mat-form-field,
+.department-dialog mat-form-field,
+.company-details dd mat-form-field {
+  width: 100%;
+}
+
+.division-edit-actions,
+.department-assignment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.department-table-wrapper {
+  overflow-x: auto;
+  border-radius: 0.6rem;
+  background: var(--color-surface);
+}
+
+.department-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.department-table-wrapper caption {
+  padding: 0.75rem 1rem;
+  color: var(--color-primary-900);
+  font-weight: 600;
+  text-align: left;
+}
+
+.department-table-wrapper th,
+.department-table-wrapper td {
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--color-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.department-table-wrapper .department-action-column {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  width: 4.5rem;
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.department-dialog {
+  position: fixed;
+  z-index: 10;
+  inset: 50% auto auto 50%;
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: min(85vh, 48rem);
+  overflow: auto;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  transform: translate(-50%, -50%);
+  border-radius: 1rem;
+  background: var(--color-surface);
+  box-shadow: 0 1rem 3rem rgb(24 79 73 / 20%);
+}
+
+.department-dialog > div {
+  display: grid;
+  gap: 0.75rem;
 }
 
 .company-details {
@@ -83,25 +225,12 @@
   min-width: 0;
   min-height: 5rem;
   padding: 0.8rem 1rem;
-  border: 1px solid var(--color-border);
   border-radius: 0.65rem;
   background: var(--color-page);
 }
 
 .company-details dt {
   margin-bottom: 0.35rem;
-  color: var(--color-muted);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.company-details dd {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-
-.company-details dd mat-form-field {
-  width: 100%;
 }
 
 .error-message,
@@ -127,5 +256,10 @@
   .details-actions {
     align-self: flex-end;
     flex-wrap: wrap;
+  }
+
+  .division-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
