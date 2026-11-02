@@ -1,14 +1,16 @@
 <section class="page">
   <header class="page-header">
     <div>
-      <h1>
+      <div style="display: flex; flex-direction: row; justify-content: space-between">
+        <h1>{{ pageTitle() }}</h1>
         <app-icon-button
         action="back"
         tooltip="Back to make"
         accessibleName="Back to make"
         (clicked)="back()"
       />
-        {{ pageTitle() }}</h1>
+      </div>
+      
       <p class="subtitle">Enter the details for this vehicle model. Fields marked * are required.</p>
     </div>
   </header>

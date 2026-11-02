@@ -239,7 +239,7 @@ export class VehicleModelFormComponent implements HasUnsavedChanges {
       .subscribe({
         next: (options) => {
           this.variantOptions.set(options.variants ?? []);
-          this.typeOptions.set(options['types'] ?? []);
+          this.typeOptions.set(options.vehicleTypes ?? []);
           this.bodyTypeOptions.set(options.bodyTypes ?? []);
           this.fuelTypeOptions.set(options.fuelTypes ?? []);
           this.cylinderOptions.set(options.cylinders ?? []);
