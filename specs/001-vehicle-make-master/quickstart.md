@@ -44,12 +44,12 @@ Return to the repository root after running UI commands. Playwright browser inst
 
 Use only an owner-approved local test schema. Create test makes and models through the application UI; do not seed or alter database rows through a separate command unless explicitly approved. The approved constitution C3 exception for unpaged lookup options is already recorded.
 
-1. Open the vehicle-make list. Verify at most 10 rows are displayed, the default order is Make Code ascending, and page navigation is available. Verify the breadcrumb is present and accessible.
+1. Open the vehicle-make list. Verify it defaults to 10 rows and offers page sizes 10, 25, and 50, the default order is Make Code ascending, and page navigation is available. Verify the breadcrumb is present and accessible.
 2. Filter each text column using the available operators; verify a change takes effect 500 ms after typing stops, matches across pages, and combines with other filters. Sort by each supported column and verify ordering applies across the full result set.
 3. Open Add. Try a blank Make Code and verify it is rejected; then use a valid code and required names. Verify case/spacing normalization, limits, and `admin` audit stamp.
 4. Try an existing Make Code and verify the duplicate message and that no second record is created.
 5. Enter optional English and Arabic details. Verify right-to-left Arabic rendering, exact preservation of Arabic characters and spacing, and API character-count validation. Persisted Arabic values at the maximum lengths remain gated on the approved schema resolution described above.
-6. Open a make and verify read-only mode. Edit it and verify Make Code remains immutable. Make an unsaved change, turn editing off, cancel discard, then repeat and confirm discard.
+6. Open a make and verify editable fields are enabled immediately while Make Code remains immutable. Save a change. Make another unsaved change, leave the page and cancel discard, then repeat and confirm discard.
 7. For a make with no models, request deletion, cancel and verify it remains. Request deletion again, confirm the irreversible warning, and verify it is gone. The C3 exception for the fixed, read-only model-options endpoint is recorded; it never writes to the list table.
 8. Open a make with no models and verify its model list is empty; add and edit models on their dedicated pages while make editing is enabled. Verify model codes are immutable after creation, unique within a make, and may be reused under another make. Try leaving an unsaved model form and verify the discard confirmation; verify model saves do not save or discard unsaved make changes.
 9. Verify all nine optional model dropdowns show active English descriptions, save the selected codes, reject inactive or wrong-list codes from direct API requests, and allow an existing inactive selection to be kept unchanged on edit. These checks require the owner-provided list fixtures. Verify numeric limits and API field-length validation on model input.
@@ -60,7 +60,7 @@ Use only an owner-approved local test schema. Create test makes and models throu
 ## Expected Evidence
 
 - After lookup fixtures are loaded and the approved Arabic storage resolution is implemented, API and UI test reports should show all acceptance tests passing; format and lint checks should pass. Until then, report fixture-dependent dropdown acceptance and persisted Arabic maximum-length support as blocked rather than treating empty lookup arrays as a complete acceptance pass.
-- The end-to-end suite covers make list/filter/sort/page, make and model create/update validation and duplicates, read-only/edit/discard behavior, active-state changes, dedicated model-page lifecycle, breadcrumbs, dropdown selections, confirmed/cancelled deletions, and make-delete refusal with existing models.
+- The end-to-end suite covers make list/filter/sort/page, make and model create/update validation and duplicates, open-in-edit and discard behavior, active-state changes, dedicated model-page lifecycle, breadcrumbs, dropdown selections, confirmed/cancelled deletions, and make-delete refusal with existing models.
 - No secret values appear in logs, test reports, or committed files.
 
 ## Current Verification Checkpoint (30-Oct-2026)

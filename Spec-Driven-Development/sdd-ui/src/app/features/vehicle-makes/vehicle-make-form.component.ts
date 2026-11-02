@@ -55,7 +55,7 @@ interface FormValues {
 }
 
 /**
- * Adds a new vehicle make, or shows an existing one read-only with an Edit switch. It is one form for both
+ * Adds a new vehicle make, or opens an existing one in edit mode. It is one form for both
  * jobs (spec, User Stories 2 and 3), chosen by the route's data.
  */
 @Component({
@@ -80,8 +80,6 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   
   private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
-  // Named in the template, because the Active switch is also a slide toggle.
-  private readonly editToggle = viewChild('editSwitch', { read: MatSlideToggle });
   private readonly modelList = viewChild(VehicleModelListComponent);
 
   protected readonly mode: 'create' | 'view' =
@@ -89,7 +87,6 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   protected readonly heading = this.mode === 'create' ? 'Add vehicle make' : 'Vehicle make details';
   protected readonly limits = LIMITS;
 
-  protected readonly editing = signal(this.mode === 'create');
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly additionalOpen = signal(false);
@@ -133,9 +130,6 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
     active: new FormControl(true, { nonNullable: true }),
   });
 
-  // What was last saved or loaded, so turning Edit off can put the form back exactly as it was.
-  private savedValues: FormValues | null = null;
-
   constructor() {
     if (this.mode === 'view') {
       const makeCode = readMakeCodeFromHistory();
@@ -158,36 +152,6 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   }
   protected add(): void {
     void this.router.navigate(['/vehicle-makes/new']);
-  }
-
-  protected onEditToggle(checked: boolean): void {
-    if (checked) {
-      this.editing.set(true);
-      this.applyEditState();
-      return;
-    }
-
-    if (!this.hasUnsavedChanges()) {
-      this.stopEditing();
-      return;
-    }
-
-    void this.notifications.confirm({
-      title: 'Discard your changes?',
-      text: 'You have changes that have not been saved. Turning editing off will discard them.',
-      confirmButtonText: 'Discard changes',
-      cancelButtonText: 'Keep editing',
-      isDanger: true,
-    }).then((discard) => {
-      if (discard) {
-        this.stopEditing();
-        // return;
-      }
-      // const toggle = this.editToggle();
-      // if (toggle) {
-      //   toggle.checked = true;
-      // }
-    });
   }
 
   protected save(): void {
@@ -232,10 +196,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       .subscribe({
         next: (updated) => {
           this.saving.set(false);
-          const keepEditingForModel = this.modelList()?.hasUnsavedChanges() ?? false;
           this.showMake(updated);
-          this.editing.set(keepEditingForModel);
-          this.applyEditState();
           this.notifications.success('Vehicle make updated.');
         },
         error: (error: unknown) => this.onSaveFailed(error),
@@ -272,7 +233,6 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
 
     this.form.reset(values);
     this.currentMakeCode.set(values.makeCode);
-    this.savedValues = values;
     // FR-011: the optional section opens by itself when it holds anything, so nothing is hidden from the user.
     this.additionalOpen.set(
       values.remarks !== '' ||
@@ -283,24 +243,11 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
     this.applyEditState();
   }
 
-  private stopEditing(): void {
-    // model editing is on separate pages
-    if (this.savedValues) {
-      this.form.reset(this.savedValues);
-    }
-    this.editing.set(false);
-    this.applyEditState();
-  }
-
-  // Create: everything is editable. Open: everything is locked until Edit is switched on, and then the code stays locked.
+  // Existing make codes remain immutable while the rest of the form is editable.
   private applyEditState(): void {
-    if (this.mode === 'create' || this.editing()) {
-      this.form.enable();
-      if (this.mode === 'view') {
-        this.form.controls.makeCode.disable();
-      }
-    } else {
-      this.form.disable();
+    this.form.enable();
+    if (this.mode === 'view') {
+      this.form.controls.makeCode.disable();
     }
   }
 

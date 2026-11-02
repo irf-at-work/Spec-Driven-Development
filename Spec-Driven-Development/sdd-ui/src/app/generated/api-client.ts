@@ -24,7 +24,7 @@ export class PremiumAdjustmentOptionsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+        this.baseUrl = baseUrl ?? "http://localhost:5115/";
     }
 
     /**
@@ -88,7 +88,7 @@ export class PremiumAdjustmentsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+        this.baseUrl = baseUrl ?? "http://localhost:5115/";
     }
 
     /**
@@ -107,9 +107,10 @@ export class PremiumAdjustmentsClient {
      * @param activeOperator (optional) 
      * @param sortBy (optional) 
      * @param sortDirection (optional) 
+     * @param pageSize (optional) 
      * @return OK
      */
-    list(page: number | undefined, codeType: string | undefined, codeTypeOperator: string | undefined, code: string | undefined, codeOperator: string | undefined, companyCode: string | undefined, companyCodeOperator: string | undefined, name: string | undefined, nameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined, sortBy: string | undefined, sortDirection: string | undefined): Observable<PaginatedResultOfAdjustmentCodeListItemDto> {
+    list(page: number | undefined, codeType: string | undefined, codeTypeOperator: string | undefined, code: string | undefined, codeOperator: string | undefined, companyCode: string | undefined, companyCodeOperator: string | undefined, name: string | undefined, nameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined, sortBy: string | undefined, sortDirection: string | undefined, pageSize: number | undefined): Observable<PaginatedResultOfAdjustmentCodeListItemDto> {
         let url_ = this.baseUrl + "/api/premium-adjustments?";
         if (page === null)
             throw new globalThis.Error("The parameter 'page' cannot be null.");
@@ -171,6 +172,10 @@ export class PremiumAdjustmentsClient {
             throw new globalThis.Error("The parameter 'sortDirection' cannot be null.");
         else if (sortDirection !== undefined)
             url_ += "sortDirection=" + encodeURIComponent("" + sortDirection) + "&";
+        if (pageSize === null)
+            throw new globalThis.Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -459,7 +464,7 @@ export class VehicleMakesClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+        this.baseUrl = baseUrl ?? "http://localhost:5115/";
     }
 
     /**
@@ -474,9 +479,10 @@ export class VehicleMakesClient {
      * @param activeOperator (optional) 
      * @param sortBy (optional) 
      * @param sortDirection (optional) 
+     * @param pageSize (optional) 
      * @return OK
      */
-    list(page: number | undefined, makeCode: string | undefined, makeCodeOperator: string | undefined, makeName: string | undefined, makeNameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined, sortBy: string | undefined, sortDirection: string | undefined): Observable<PaginatedResultOfVehicleMakeListItemDto> {
+    list(page: number | undefined, makeCode: string | undefined, makeCodeOperator: string | undefined, makeName: string | undefined, makeNameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined, sortBy: string | undefined, sortDirection: string | undefined, pageSize: number | undefined): Observable<PaginatedResultOfVehicleMakeListItemDto> {
         let url_ = this.baseUrl + "/api/vehicle-makes?";
         if (page === null)
             throw new globalThis.Error("The parameter 'page' cannot be null.");
@@ -522,6 +528,10 @@ export class VehicleMakesClient {
             throw new globalThis.Error("The parameter 'sortDirection' cannot be null.");
         else if (sortDirection !== undefined)
             url_ += "sortDirection=" + encodeURIComponent("" + sortDirection) + "&";
+        if (pageSize === null)
+            throw new globalThis.Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -792,7 +802,7 @@ export class VehicleModelOptionsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+        this.baseUrl = baseUrl ?? "http://localhost:5115/";
     }
 
     /**
@@ -856,7 +866,7 @@ export class VehicleModelsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+        this.baseUrl = baseUrl ?? "http://localhost:5115/";
     }
 
     /**
@@ -869,9 +879,10 @@ export class VehicleModelsClient {
      * @param shortNameOperator (optional) 
      * @param active (optional) 
      * @param activeOperator (optional) 
+     * @param pageSize (optional) 
      * @return OK
      */
-    list(makeCode: string, page: number | undefined, modelCode: string | undefined, modelCodeOperator: string | undefined, modelName: string | undefined, modelNameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined): Observable<PaginatedResultOfVehicleModelDto> {
+    list(makeCode: string, page: number | undefined, modelCode: string | undefined, modelCodeOperator: string | undefined, modelName: string | undefined, modelNameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined, pageSize: number | undefined): Observable<PaginatedResultOfVehicleModelDto> {
         let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models?";
         if (makeCode === undefined || makeCode === null)
             throw new globalThis.Error("The parameter 'makeCode' must be defined.");
@@ -912,6 +923,10 @@ export class VehicleModelsClient {
             throw new globalThis.Error("The parameter 'activeOperator' cannot be null.");
         else if (activeOperator !== undefined)
             url_ += "activeOperator=" + encodeURIComponent("" + activeOperator) + "&";
+        if (pageSize === null)
+            throw new globalThis.Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1194,7 +1209,7 @@ export class WeatherForecastClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+        this.baseUrl = baseUrl ?? "http://localhost:5115/";
     }
 
     /**

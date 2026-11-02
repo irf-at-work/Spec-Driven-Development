@@ -39,6 +39,7 @@ public sealed class VehicleModelService(
         string makeCode,
         int page,
         ColumnFilters filters,
+        int pageSize,
         CancellationToken cancellationToken)
     {
         var normalisedMakeCode = VehicleMakeInputRules.NormaliseMakeCode(makeCode);
@@ -57,18 +58,18 @@ public sealed class VehicleModelService(
         var totalCount = await matching.CountAsync(cancellationToken);
 
         // Worked out in 64 bits so that a very large page number cannot overflow into a negative skip.
-        var skip = (int)Math.Min((long)(page - 1) * VehicleMakeListQuery.PageSize, int.MaxValue);
+        var skip = (int)Math.Min((long)(page - 1) * pageSize, int.MaxValue);
 
         // Inactive models stay in the list (FR-029), so there is no filter on the flag unless the user chooses one.
         var rows = await matching
             .Skip(skip)
-            .Take(VehicleMakeListQuery.PageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
 
         return new PaginatedResult<VehicleModelDto>(
             rows.Select(VehicleModelMapping.ToDto).ToList(),
             page,
-            VehicleMakeListQuery.PageSize,
+            pageSize,
             totalCount);
     }
 

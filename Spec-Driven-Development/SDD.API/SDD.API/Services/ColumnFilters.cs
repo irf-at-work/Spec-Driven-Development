@@ -115,6 +115,14 @@ public static class ColumnFilterQuery
         }
     }
 
+    public static void ValidatePageSize(int pageSize, IDictionary<string, string[]> errors)
+    {
+        if (!VehicleMakeListQuery.PageSizeOptions.Contains(pageSize))
+        {
+            errors["pageSize"] = [$"Page size must be one of: {string.Join(", ", VehicleMakeListQuery.PageSizeOptions)}."];
+        }
+    }
+
     /// <summary>
     /// Checks the operators. The errors are keyed by parameter name (for example <c>makeNameOperator</c>), so
     /// <paramref name="codeField"/> and <paramref name="nameField"/> are "makeCode"/"makeName" or "modelCode"/"modelName".

@@ -65,11 +65,13 @@ public static class PremiumAdjustmentListQuery
         int page,
         ColumnFilters filters,
         string? sortBy,
-        string? sortDirection)
+        string? sortDirection,
+        int pageSize = PageSize)
     {
         var errors = new Dictionary<string, string[]>();
 
         ColumnFilterQuery.ValidatePage(page, errors);
+        ColumnFilterQuery.ValidatePageSize(pageSize, errors);
         ColumnFilterQuery.ValidateOperators(filters, FilterableFields, errors);
 
         if (!string.IsNullOrWhiteSpace(sortBy) && !SortColumns.ContainsKey(sortBy.Trim()))

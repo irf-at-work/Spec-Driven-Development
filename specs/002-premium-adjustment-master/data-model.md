@@ -47,7 +47,7 @@ The primary key constraint is `PK_BRM_MISC_CODES` over `(MC_CODE, MC_COMP_CODE, 
 | Discount Type | String | Yes | Schema-defined | Item code from the Discount Type standard list; active items only for a new choice; ordered by description. |
 | Charges Type | String | Yes | Schema-defined | Item code from the Charges Type standard list; same rules. |
 | Charges Category | String | Yes | Schema-defined | Item code from the Charges Category standard list; same rules. |
-| Active | Boolean | Yes | N/A | On by default when adding. The user can turn it off while adding or editing, and on again while editing. This is the soft delete. Shown but not changeable in read-only view. Stored as `Y` or `N`. |
+| Active | Boolean | Yes | N/A | On by default when adding. The user can turn it off while adding or editing an opened code, and on again while editing. This is the soft delete. Stored as `Y` or `N`. |
 | Remarks | String | No | 2000 characters | Optional; normalise extra spaces as other non-Arabic text. |
 | Arabic Name | String | No | 100 characters | Display right to left; preserve text and spacing exactly. |
 | Arabic Short Name | String | No | 30 characters | Display right to left; preserve text and spacing exactly. |
@@ -90,8 +90,8 @@ All four are read from `STD_LIST_ITEM`, each selected by its `LI_TYPE`. The API 
 ## Lifecycle
 
 1. **Created**: Validated fields are normalised where applicable, saved with the chosen Active value (on by default), and stamped with `admin`.
-2. **Viewed**: Details are read-only by default; existing Additional Information expands when any of its fields has data. Active is shown but not changeable.
-3. **Edited**: Code Type, Code, and Company Code stay immutable. Other fields, including Active, are validated and normalised on save, and the changed-by value is stamped `admin`. Records saved earlier without Discount Type, Charges Type, or Charges Category must have all three chosen before they can be saved again.
+2. **Opened for editing**: Details are editable immediately; Code Type, Code, and Company Code stay immutable. Existing Additional Information expands when any of its fields has data.
+3. **Edited and saved**: Other fields, including Active, are validated and normalised on save, and the changed-by value is stamped `admin`. Records saved earlier without Discount Type, Charges Type, or Charges Category must have all three chosen before they can be saved again.
 4. **Deactivated and restored (soft delete)**: Turning Active off while editing and saving marks the record inactive. It stays in the list and can be opened. Turning Active on again and saving restores it.
 5. **Permanently deleted**: A user confirms the irreversible warning in the UI; the API permanently removes the record. No restore state exists after permanent deletion.
 
@@ -99,5 +99,5 @@ All four are read from `STD_LIST_ITEM`, each selected by its `LI_TYPE`. The API 
 
 - Filter each of Code Type (by description), Code, Company Code, Name, Short Name and Status by column. Text filters use the operators starts with, ends with, contains (default), equals and not equals; Status uses equals and not equals with Active or Inactive. There is no global search. Filters ignore upper and lower case, treat typed characters as plain text, must all match, ignore a blank value, and run over the complete set before pagination. "Not equals" also returns records whose value is empty. A null Active flag counts as Active.
 - Sort only by Code Type description, Code, Company Code, Name, or Short Name, ignoring upper and lower case. The initial order is Code Type description ascending then Code ascending. Every sort ends with a unique tie-break (Code Type, Code, Company Code) so no row repeats or disappears between pages. Sorting runs over the complete filtered set before pagination.
-- Return `items`, `page`, `pageSize`, and `totalCount`; page size is 10. Each list item includes the Active status, and inactive records are not filtered out unless the user applies the Status filter.
+- Return `items`, `page`, `pageSize`, and `totalCount`; supported page sizes are 10, 25, and 50, defaulting to 10. Each list item includes the Active status, and inactive records are not filtered out unless the user applies the Status filter.
 - Dropdown options: return the active items of the four fixed standard lists in one read-only response, ordered by description. This lookup is intentionally unpaged; the owner-approved constitution C3 exception was recorded on 02-Nov-2026.

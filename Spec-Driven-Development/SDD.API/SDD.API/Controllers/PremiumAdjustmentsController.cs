@@ -28,6 +28,7 @@ public sealed class PremiumAdjustmentsController(
         string? activeOperator = null,
         string? sortBy = null,
         string? sortDirection = null,
+        int pageSize = PremiumAdjustmentListQuery.PageSize,
         CancellationToken cancellationToken = default)
     {
         var filters = new ColumnFilters(
@@ -41,13 +42,13 @@ public sealed class PremiumAdjustmentsController(
             },
             new StatusFilter(active, activeOperator));
 
-        var errors = PremiumAdjustmentListQuery.Validate(page, filters, sortBy, sortDirection);
+        var errors = PremiumAdjustmentListQuery.Validate(page, filters, sortBy, sortDirection, pageSize);
         if (errors.Count > 0)
         {
             return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]>(errors)));
         }
 
-        return await adjustments.ListAsync(page, filters, sortBy, sortDirection, cancellationToken);
+        return await adjustments.ListAsync(page, filters, sortBy, sortDirection, pageSize, cancellationToken);
     }
 
     [HttpGet("{codeType}/{code}/{companyCode}")]

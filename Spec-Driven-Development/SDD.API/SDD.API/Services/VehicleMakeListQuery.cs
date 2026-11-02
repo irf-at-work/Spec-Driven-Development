@@ -10,6 +10,7 @@ namespace SDD.API.Services;
 public static class VehicleMakeListQuery
 {
     public const int PageSize = 10;
+    public static readonly int[] PageSizeOptions = [10, 25, 50];
     public const int MaximumPage = 1_000_000;
 
     private const string DefaultSortColumn = "makeCode";
@@ -29,11 +30,13 @@ public static class VehicleMakeListQuery
         int page,
         ColumnFilters filters,
         string? sortBy,
-        string? sortDirection)
+        string? sortDirection,
+        int pageSize = PageSize)
     {
         var errors = new Dictionary<string, string[]>();
 
         ColumnFilterQuery.ValidatePage(page, errors);
+        ColumnFilterQuery.ValidatePageSize(pageSize, errors);
         ColumnFilterQuery.ValidateOperators(filters, "makeCode", "makeName", errors);
 
         if (!string.IsNullOrWhiteSpace(sortBy) && !SortColumns.ContainsKey(sortBy.Trim()))

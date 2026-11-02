@@ -3,22 +3,12 @@
     <div>
       <h1>{{ heading }}</h1>
       @if (mode === 'view' && adjustment()) {
-        <p class="subtitle">Review the details, or switch on Edit to change them.</p>
+        <p class="subtitle">Update the details and save your changes.</p>
       } @else {
         <p class="subtitle">Fields marked * are required.</p>
       }
     </div>
     <div class="header-actions">
-      @if (mode === 'view') {
-        <mat-slide-toggle
-          #editSwitch
-          [checked]="editing()"
-          [disabled]="loading() || saving()"
-          (change)="onEditToggle($event.checked)"
-        >
-          Edit
-        </mat-slide-toggle>
-      }
       <app-icon-button
         action="back"
         tooltip="Back to premium adjustments"
@@ -179,17 +169,23 @@
         </div>
       </mat-expansion-panel>
 
-      @if (editing()) {
-        <div class="actions">
-          <app-icon-button
-            action="save"
-            type="submit"
-            tooltip="Save premium adjustment"
-            accessibleName="Save"
-            [disabled]="saving() || loading() || optionsLoading()"
-          />
-        </div>
-      }
+      <div class="actions">
+        <!-- <app-icon-button
+          action="save"
+          type="submit"
+          tooltip="Save premium adjustment"
+          accessibleName="Save"
+          [disabled]="saving() || loading() || optionsLoading()"
+        /> -->
+        <button
+        mat-flat-button
+        type="submit"
+         [disabled]="saving() || loading() || optionsLoading()"
+        style="border-radius: 15px; padding: 15px;color: white; background-color: var(--mat-sys-on-primary-fixed-variant); border: 0; display: flex; justify-content: end; align-items: end;"
+      >
+        {{ mode === 'create' ? 'Save vehicle make' : 'Save changes' }}
+      </button>
+      </div>
     </form>
   }
 </section>

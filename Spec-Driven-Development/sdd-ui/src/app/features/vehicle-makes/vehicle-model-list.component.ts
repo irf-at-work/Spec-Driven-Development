@@ -44,7 +44,8 @@ export class VehicleModelListComponent {
   readonly makeCode = input.required<string>();
   readonly makeEditable = input<boolean>(false);
 
-  protected readonly pageSize = 10;
+  protected readonly pageSizeOptions = [10, 25, 50];
+  protected readonly pageSize = signal(10);
   protected readonly items = signal<VehicleModelDto[]>([]);
   protected readonly totalCount = signal(0);
   protected readonly pageIndex = signal(0);
@@ -121,6 +122,7 @@ export class VehicleModelListComponent {
         this.shortNameFilter().value ? this.shortNameFilter().operator : undefined,
         activeVal,
         activeOp,
+        this.pageSize(),
       )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -148,6 +150,7 @@ export class VehicleModelListComponent {
 
   protected onPage(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
     this.load();
   }
 

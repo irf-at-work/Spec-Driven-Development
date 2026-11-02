@@ -72,6 +72,7 @@ public sealed class PremiumAdjustmentService(
         ColumnFilters filters,
         string? sortBy,
         string? sortDirection,
+        int pageSize,
         CancellationToken cancellationToken)
     {
         var matching = PremiumAdjustmentListQuery.Apply(
@@ -83,10 +84,10 @@ public sealed class PremiumAdjustmentService(
             sortDirection);
 
         var totalCount = await matching.CountAsync(cancellationToken);
-        var skip = (int)Math.Min((long)(page - 1) * PremiumAdjustmentListQuery.PageSize, int.MaxValue);
+        var skip = (int)Math.Min((long)(page - 1) * pageSize, int.MaxValue);
         var rows = await matching
             .Skip(skip)
-            .Take(PremiumAdjustmentListQuery.PageSize)
+            .Take(pageSize)
             .Select(row => new
             {
                 row.Code.McType,
@@ -108,7 +109,7 @@ public sealed class PremiumAdjustmentService(
             row.McShortDesc ?? string.Empty,
             PremiumAdjustmentMapping.IsActive(row.McActiveYn))).ToList();
 
-        return new PaginatedResult<AdjustmentCodeListItemDto>(items, page, PremiumAdjustmentListQuery.PageSize, totalCount);
+        return new PaginatedResult<AdjustmentCodeListItemDto>(items, page, pageSize, totalCount);
     }
 
     public async Task<AdjustmentCodeDto?> GetAsync(

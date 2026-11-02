@@ -24,6 +24,7 @@ public class VehicleModelsController(
         string? shortNameOperator = null,
         bool? active = null,
         string? activeOperator = null,
+        int pageSize = VehicleMakeListQuery.PageSize,
         CancellationToken cancellationToken = default)
     {
         var filters = new ColumnFilters(
@@ -32,13 +33,13 @@ public class VehicleModelsController(
             new TextFilter(shortName, shortNameOperator),
             new StatusFilter(active, activeOperator));
 
-        var errors = VehicleModelListQuery.Validate(page, filters);
+        var errors = VehicleModelListQuery.Validate(page, filters, pageSize);
         if (errors.Count > 0)
         {
             return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]>(errors)));
         }
 
-        var result = await vehicleModels.ListAsync(makeCode, page, filters, cancellationToken);
+        var result = await vehicleModels.ListAsync(makeCode, page, filters, pageSize, cancellationToken);
         if (result is null)
         {
             return MakeNotFoundProblem();

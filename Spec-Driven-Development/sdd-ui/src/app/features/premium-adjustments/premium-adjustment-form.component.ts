@@ -11,7 +11,6 @@ import {
   DestroyRef,
   inject,
   signal,
-  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -90,14 +89,12 @@ export class PremiumAdjustmentFormComponent implements HasUnsavedChanges {
   private readonly route = inject(ActivatedRoute);
   private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly editToggle = viewChild('editSwitch', { read: MatSlideToggle });
 
   protected readonly mode: 'create' | 'view' =
     this.route.snapshot.data['mode'] === 'view' ? 'view' : 'create';
   protected readonly heading =
     this.mode === 'create' ? 'Add Premium Adjustment' : 'Premium Adjustment Details';
   protected readonly limits = LIMITS;
-  protected readonly editing = signal(this.mode === 'create');
   protected readonly loading = signal(false);
   protected readonly optionsLoading = signal(true);
   protected readonly optionsFailed = signal(false);
@@ -106,7 +103,6 @@ export class PremiumAdjustmentFormComponent implements HasUnsavedChanges {
   protected readonly adjustment = signal<AdjustmentCodeDto | null>(null);
   protected readonly options = signal<PremiumAdjustmentOptionsDto | null>(null);
   private readonly key = signal<PremiumAdjustmentKey | null>(null);
-  private savedValues: AdjustmentFormValues | null = null;
 
   protected readonly form = new FormGroup({
     codeType: new FormControl('', {
@@ -194,38 +190,6 @@ export class PremiumAdjustmentFormComponent implements HasUnsavedChanges {
     void this.router.navigate(['/premium-adjustments']);
   }
 
-  protected onEditToggle(checked: boolean): void {
-    if (checked) {
-      this.editing.set(true);
-      this.applyEditState();
-      return;
-    }
-
-    if (!this.hasUnsavedChanges()) {
-      this.stopEditing();
-      return;
-    }
-
-    void this.notifications
-      .confirm({
-        title: 'Discard your changes?',
-        text: 'You have changes that have not been saved. Turning editing off will discard them.',
-        confirmButtonText: 'Discard changes',
-        cancelButtonText: 'Keep editing',
-        isDanger: true,
-      })
-      .then((discard) => {
-        if (discard) {
-          this.stopEditing();
-        } else {
-          const toggle = this.editToggle();
-          if (toggle) {
-            toggle.checked = true;
-          }
-        }
-      });
-  }
-
   protected save(): void {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
@@ -279,8 +243,6 @@ export class PremiumAdjustmentFormComponent implements HasUnsavedChanges {
         next: (updated) => {
           this.saving.set(false);
           this.showAdjustment(updated);
-          this.editing.set(false);
-          this.applyEditState();
           this.notifications.success('Premium adjustment updated.');
         },
         error: (error: unknown) => this.onSaveFailed(error),
@@ -358,29 +320,16 @@ export class PremiumAdjustmentFormComponent implements HasUnsavedChanges {
 
     this.adjustment.set(adjustment);
     this.form.reset(values);
-    this.savedValues = values;
     this.additionalOpen.set(ADDITIONAL_FIELDS.some((field) => values[field] !== ''));
     this.applyEditState();
   }
 
-  private stopEditing(): void {
-    if (this.savedValues) {
-      this.form.reset(this.savedValues);
-    }
-    this.editing.set(false);
-    this.applyEditState();
-  }
-
   private applyEditState(): void {
-    if (this.mode === 'create' || this.editing()) {
-      this.form.enable();
-      if (this.mode === 'view') {
-        this.form.controls.codeType.disable();
-        this.form.controls.code.disable();
-        this.form.controls.companyCode.disable();
-      }
-    } else {
-      this.form.disable();
+    this.form.enable();
+    if (this.mode === 'view') {
+      this.form.controls.codeType.disable();
+      this.form.controls.code.disable();
+      this.form.controls.companyCode.disable();
     }
   }
 

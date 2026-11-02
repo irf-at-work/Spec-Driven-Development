@@ -16,11 +16,11 @@
 - Q: What should the list use for its initial sort order? → A: Make Code.
 - Q: Should the Arabic Make Name, Short Name, and Remarks use the same maximum lengths as their English counterparts? → A: Yes; 100, 30, and 2000 characters respectively.
 - Q: Should Arabic fields preserve all spacing exactly, or should leading or repeated spaces be normalized? → A: Preserve Arabic text exactly, including all spacing.
-- Q: Which user story owns the add and delete journeys so each story can be independently tested? → A: Add belongs to User Story 2; permanent delete belongs to User Story 4. User Story 1 covers list browsing, filtering, sorting, paging, and read-only Open.
+- Q: Which user story owns the add and delete journeys so each story can be independently tested? → A: Add belongs to User Story 2; permanent delete belongs to User Story 4. User Story 1 covers list browsing, filtering, sorting, paging, and Open. (The 02-Nov-2026 decision below supersedes the original read-only behavior.)
 
 ### Session 2026-10-29 (addendum: vehicle models)
 
-- Q: Where do vehicle models appear? → A: On the Vehicle Makes page only, and only when a saved make is opened (read-only view or editing). They are never shown when a new make is being added.
+- Q: Where do vehicle models appear? → A: On the Vehicle Makes page only, and only when a saved make is opened. They are never shown when a new make is being added.
 - Q: How are models maintained? → A: ~~Inline on that page~~ **Superseded 30-Oct-2026 (see the last addendum below):** models are listed on the make's page, added and edited on their own pages, and deleted from the list with confirmation. Models are stored in the Oracle table `BRM_VEH_MODEL`, and each model belongs to one make through `VMOD_VMAK_CODE`.
 - Q: What is the key of the models table? → A: `VMOD_VMAK_CODE` plus `VMOD_CODE` together are the primary key, and `VMOD_VMAK_CODE` is also a foreign key to the make. So the same Model Code can exist under different makes, but only once within a make.
 - Q: How are the 12-character model fields (variant, type, body type, fuel type, cylinders, doors, driving type, body colour, category) filled in? → A: Every one of them is a dropdown whose choices come from the table `STD_LIST_ITEM`, selected by its `LI_TYPE`. The list types used are named in the data model so the owner can load the data.
@@ -52,6 +52,10 @@
 - Minimum text sizes are 16px for body text and 15px for table text.
 - Keep the Arabic character limits at 100/30/2000 characters. Resolve the verified Oracle byte-semantics constraint through a separately owner-approved schema change; do not lower the specified limits or claim full persisted-length support until that change is approved and verified.
 
+### Session 2026-11-02 (open-in-edit decision)
+
+- Opening a saved vehicle make enters edit mode immediately. Make Code remains locked; all other fields and model actions are available. There is no separate Edit control. Unsaved changes are confirmed when leaving the page.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Find and browse vehicle makes (Priority: P1)
@@ -60,14 +64,14 @@ As an insurance broker, I want one filterable, sortable list of vehicle makes so
 
 **Why this priority**: The list is the primary way brokers use and verify the master data.
 
-**Independent Test**: Create enough vehicle makes to span multiple pages, then filter by column, sort, and navigate the list and open a make read-only.
+**Independent Test**: Create enough vehicle makes to span multiple pages, then filter by column, sort, and navigate the list and open a make for editing.
 
 **Acceptance Scenarios**:
 
-1. **Given** there are vehicle makes, **When** the user opens the list, **Then** the list shows no more than 10 makes per page, initially sorts by Make Code, and provides page navigation.
+1. **Given** there are vehicle makes, **When** the user opens the list, **Then** the list initially shows 10 makes per page, offers page sizes of 10, 25, and 50, initially sorts by Make Code, and provides page navigation.
 2. **Given** matching makes exist on different pages, **When** the user filters a column (for example Make Name starts with "T"), **Then** matching results are found across all records, not only the current page, and filters on several columns together show only the makes that match all of them.
 3. **Given** makes exist on different pages, **When** the user sorts by a column, **Then** the ordering applies across all records, not only the current page.
-4. **Given** the list shows a vehicle make, **When** the user selects Open, **Then** that make opens in read-only view.
+4. **Given** the list shows a vehicle make, **When** the user selects Open, **Then** that make opens in edit mode with Make Code locked.
 5. **Given** makes with Active on and off exist, **When** the user views the list, **Then** each row shows its Active status; inactive makes stay in the list and can still be opened.
 6. **Given** the list is open, **When** it appears, **Then** there is no global search box; each data column offers its own filter, the text columns with an operator choice (starts with, ends with, contains, equal to, not equal to) and Status with Active or Inactive.
 7. **Given** a filter matches nothing, **When** the results appear, **Then** an empty-results message is shown that does not imply records were deleted, and clearing the filter brings the full list back.
@@ -96,21 +100,20 @@ As an insurance broker, I want to add a vehicle make with consistent English and
 
 ### User Story 3 - Open and edit a vehicle make (Priority: P1)
 
-As an insurance broker, I want to inspect a make and explicitly switch to editing it so that I can correct its details without changing its code.
+As an insurance broker, I want to edit a make as soon as I open it so that I can correct its details without changing its code.
 
 **Why this priority**: Accurate master details need a controlled way to be reviewed and maintained.
 
-**Independent Test**: Open a saved make, verify it is read-only, edit and save a field, then make an unsaved change and turn editing off to verify discard confirmation.
+**Independent Test**: Open a saved make, verify its editable fields are enabled and Make Code is locked, save a change, then make an unsaved change and leave the page to verify discard confirmation.
 
 **Acceptance Scenarios**:
 
-1. **Given** a saved make is opened, **When** its details are displayed, **Then** every field is read-only and the Make Code cannot be changed.
-2. **Given** a make is open, **When** the user switches editing on, **Then** every field except Make Code becomes editable.
+1. **Given** a saved make is opened, **When** its details are displayed, **Then** every field except Make Code is editable and the Make Code cannot be changed.
 3. **Given** a make contains any Additional Information value, **When** the user opens it, **Then** the Additional Information section is expanded automatically.
-4. **Given** the user has unsaved changes while editing, **When** they switch editing off, **Then** they are asked whether to discard the changes; confirming discards them and cancelling keeps editing and changes.
+4. **Given** the user has unsaved changes, **When** they leave the make page, **Then** they are asked whether to discard the changes; confirming discards them and cancelling keeps the page and changes.
 5. **Given** the user saves valid edits, **When** the save completes, **Then** the changes are stored with the same validation and text rules as creation and the record is stamped with user `admin`.
 6. **Given** the user attempts to save invalid edits, **When** validation runs, **Then** the invalid fields are identified and the changes are not saved.
-7. **Given** a make is open in read-only view, **When** its details are displayed, **Then** its Active status is shown but cannot be changed; **Given** editing is switched on, **When** the user turns Active off and saves, **Then** the make is soft deleted (it stays in the list, marked inactive), and turning Active on again and saving restores it.
+7. **Given** a make is open, **When** its details are displayed, **Then** its Active status is editable; turning Active off and saving soft deletes the make (it stays in the list, marked inactive), and turning Active on again and saving restores it.
 
 ### User Story 4 - Permanently delete a vehicle make (Priority: P2)
 
@@ -138,9 +141,9 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 **Acceptance Scenarios**:
 
 1. **Given** the add form for a new make is open, **When** the page is displayed, **Then** no models section is shown.
-2. **Given** a saved make is opened read-only, **When** its details are displayed, **Then** a models section lists only that make's models, no more than 10 per page, initially sorted by Model Code, with page navigation and a filter on each data column (FR-030); the models are display-only and no add, edit or delete action is offered.
-3. **Given** a make is open and editing is switched on, **When** the user selects the add-model action, **Then** the add-model page opens, showing which make the model will belong to (the user does not enter the Make Code again), and saving a valid model returns the user to the make's page where the model appears in the list.
-4. **Given** editing is switched on, **When** the user selects edit on a model, **Then** the edit-model page opens with its Model Code locked, and saving valid changes updates the model and returns the user to the make's page.
+2. **Given** a saved make is opened, **When** its details are displayed, **Then** a models section lists only that make's models, initially showing 10 per page and offering page sizes of 10, 25, and 50, initially sorted by Model Code, with page navigation and a filter on each data column (FR-030); add, edit and delete actions are available.
+3. **Given** a make is open, **When** the user selects the add-model action, **Then** the add-model page opens, showing which make the model will belong to (the user does not enter the Make Code again), and saving a valid model returns the user to the make's page where the model appears in the list.
+4. **Given** a make is open, **When** the user selects edit on a model, **Then** the edit-model page opens with its Model Code locked, and saving valid changes updates the model and returns the user to the make's page.
 5. **Given** a model page has unsaved changes, **When** the user cancels or tries to leave the page, **Then** they are asked whether to discard the changes; confirming discards them and cancelling keeps the page open and the changes.
 6. **Given** editing is switched on, **When** the user requests deletion of a model, **Then** a dialog states that deletion is permanent and cannot be undone; confirming removes only that model and cancelling leaves it unchanged.
 7. **Given** the user leaves Model Code blank, uses characters other than letters, digits or hyphens, or exceeds a field's limit, **When** they save, **Then** the field is identified and the model is not saved.
@@ -166,7 +169,7 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST provide a list of vehicle makes with no more than 10 records per page, initially sorted by Make Code, and controls to move between pages.
+- **FR-001**: The system MUST provide a list of vehicle makes with page sizes of 10, 25, and 50 records, defaulting to 10, initially sorted by Make Code, and controls to move between pages.
 - **FR-002**: The system MUST allow users to filter the vehicle makes list by column as described in FR-030, and to sort by Make Code, Make Name, and Short Name across all vehicle makes, not only the currently displayed page.
 - **FR-003**: The system MUST provide an action to open each vehicle make and an action to begin adding a new one.
 - **FR-004**: The system MUST require a non-null, non-empty Make Code of up to 12 characters containing only letters, digits, and hyphens; it MUST be saved in capitals and MUST be unique.
@@ -175,15 +178,15 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 - **FR-007**: The system MUST provide a collapsible Additional Information section with optional Remarks up to 2000 characters, Arabic Make Name up to 100 characters, Arabic Short Name up to 30 characters, and Arabic Remarks up to 2000 characters. Arabic values MUST be shown right to left and MUST NOT be altered, including their spacing. Persisting these character limits requires a separately owner-approved resolution to the verified Oracle byte-semantics constraint; do not claim full persisted-length support until that resolution is implemented and verified.
 - **FR-008**: The system MUST show a maximum-character message when a field reaches its limit and MUST prevent a value from exceeding the limit. The limit MUST also be enforced when data is saved.
 - **FR-009**: The system MUST tell the user when the required Make Code already exists and MUST NOT save the duplicate.
-- **FR-010**: Opening a vehicle make MUST show it read-only. An edit control MUST make every field except Make Code editable.
+- **FR-010**: Opening a vehicle make MUST enter edit mode immediately. Every field except Make Code MUST be editable, and no separate Edit control MUST be shown.
 - **FR-011**: The Additional Information section MUST open automatically when at least one of its fields contains data.
-- **FR-012**: When the user turns editing off with unsaved changes, the system MUST ask for confirmation before discarding them. Confirming MUST discard the changes; cancelling MUST preserve them and keep editing enabled.
+- **FR-012**: When the user leaves an opened make page with unsaved changes, the system MUST ask for confirmation before discarding them. Confirming MUST discard the changes; cancelling MUST keep the page open with its changes.
 - **FR-013**: The system MUST request confirmation before deletion and state that deletion cannot be undone. Confirmed deletion MUST permanently remove the record; cancelled deletion MUST leave it unchanged.
 - **FR-014**: Every successfully created or changed vehicle make MUST be stamped with the user `admin`.
 - **FR-015**: Invalid values and missing required values MUST be clearly identified, and invalid changes MUST NOT be saved.
-- **FR-016**: The system MUST show a models section only when a saved make is opened (read-only or editing) and MUST NOT show it when a new make is being added.
-- **FR-017**: The models section MUST list only the models of the open make, with no more than 10 per page, initially sorted by Model Code ascending, with controls to move between pages. Sorting within models is not included; filtering is (FR-030).
-- **FR-018**: The system MUST allow models to be added and edited on their own pages, reached from the make's page, and deleted from the models list with confirmation. These actions MUST be available only while editing of the make is switched on; in read-only view the models are display-only.
+- **FR-016**: The system MUST show a models section only when a saved make is opened and MUST NOT show it when a new make is being added.
+- **FR-017**: The models section MUST list only the models of the open make, with page sizes of 10, 25, and 50 records, defaulting to 10, initially sorted by Model Code ascending, with controls to move between pages. Sorting within models is not included; filtering is (FR-030).
+- **FR-018**: The system MUST allow models to be added and edited on their own pages, reached from the make's page, and deleted from the models list with confirmation. These actions MUST be available while the saved make page is open.
 - **FR-019**: The system MUST require a non-null, non-empty Model Code of up to 12 characters containing only letters, digits, and hyphens; it MUST be saved in capitals, MUST be unique within its make, and MUST NOT change after creation.
 - **FR-020**: The system MUST require a Model Name of up to 100 characters and a Short Name of up to 30 characters, and MUST apply the same text normalisation as for makes (FR-006). It MUST provide optional Remarks up to 2000 characters and optional Arabic Name (100), Arabic Short Name (30) and Arabic Remarks (2000), which MUST be shown right to left and preserved exactly, including spacing.
 - **FR-021**: The system MUST allow the other model details listed in the data model (variant, type, weight, load capacity, body type, fuel type, engine capacity, cylinders, seats, passengers, drivers, doors, make year, driving type, body colour, value in AED and category) as optional values that respect their limits. Number fields MUST accept only valid numbers within their size. Variant, type, body type, fuel type, cylinders, doors, driving type, body colour and category MUST each be chosen from a dropdown filled from the standard list items of the matching list type (named in the data model), and the system MUST refuse a code that is not one of the active items of that type, even if the screen sent it.
@@ -192,7 +195,7 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 - **FR-024**: Every successfully created or changed model MUST be stamped with the user `admin`.
 - **FR-025**: The system MUST tell the user when a Model Code already exists for the make and MUST NOT save the duplicate.
 - **FR-026**: The system MUST refuse permanent deletion of a vehicle make that still has one or more models and MUST tell the user to delete its models first.
-- **FR-027**: Every vehicle make MUST have an Active setting. It MUST be on by default when a make is added. The user MAY turn it off while adding or editing, and MAY turn it on again while editing. In read-only view it MUST be shown but not changeable. It is stored as `Y` or `N`. Turning it off MUST NOT remove the make, MUST NOT change its models, and MUST NOT make the make unreadable.
+- **FR-027**: Every vehicle make MUST have an Active setting. It MUST be on by default when a make is added. The user MAY turn it off while adding or while an opened make is being edited, and MAY turn it on again while editing. It is stored as `Y` or `N`. Turning it off MUST NOT remove the make, MUST NOT change its models, and MUST NOT make the make unreadable.
 - **FR-028**: Every vehicle model MUST have the same Active setting, with the same default and behaviour, on its page (adding and editing). It is stored as `Y` or `N`, independently of the make's Active setting.
 - **FR-029**: The list of makes and the list of models MUST show each record's Active status. Inactive records MUST stay in the list and MUST be openable.
 - **FR-030**: The system MUST NOT offer a single global search box. Instead, every visible data column of the vehicle makes list and of the models list MUST have its own filter. Text columns MUST offer the operators starts with, ends with, contains (the default), equal to and not equal to; the Status column MUST offer Active or Inactive with equal to and not equal to. Filters MUST ignore upper and lower case, MUST combine so that a record must match all of them, MUST apply across all records and not only the current page, MUST return the list to page 1 when they change, and a blank filter MUST be ignored. Characters the user types MUST be treated as plain text, never as search patterns. Filter results MUST update 500 ms after the user stops typing.
@@ -210,7 +213,7 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 ### Measurable Outcomes
 
 - **SC-001**: Brokers can find a make by filtering any column across all records and can sort the full result set by a chosen column.
-- **SC-002**: The list displays at most 10 records on each page and supports navigation through all matching records.
+- **SC-002**: The list supports page sizes of 10, 25, and 50 records, defaults to 10, and supports navigation through all matching records.
 - **SC-003**: 100% of successful create and edit actions save values within the stated field limits and text rules; invalid or duplicate values are not saved.
 - **SC-004**: Every deletion that is allowed to proceed requires explicit confirmation, and cancelling leaves the record unchanged. Permanent deletion of a make with models is refused.
 - **SC-005**: Created and changed records show `admin` as the recorded user.

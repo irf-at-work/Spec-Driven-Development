@@ -101,9 +101,9 @@
   <mat-paginator
     aria-label="Select a page of vehicle models"
     [length]="totalCount()"
-    [pageSize]="pageSize"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="pageSizeOptions"
     [pageIndex]="pageIndex()"
-    [hidePageSize]="true"
     [showFirstLastButtons]="true"
     (page)="onPage($event)"
   />

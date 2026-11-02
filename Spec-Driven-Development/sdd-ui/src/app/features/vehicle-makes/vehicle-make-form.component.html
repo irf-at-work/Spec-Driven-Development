@@ -4,46 +4,32 @@
 
       <h1>
         
-      <app-icon-button
-        action="back"
-        tooltip="Back to list"
-        accessibleName="Back to list"
-        (clicked)="back()"
-      />
+      
       
         {{ heading }}</h1>
       @if (mode === 'view' && currentMakeCode()) {
-        <p class="subtitle">Review the details, or switch on Edit to change them.</p>
+        <p class="subtitle">Update the details and save your changes.</p>
       } @else {
         <p class="subtitle">Fields marked * are required.</p>
       }
     </div>
-
-    @if (mode === 'view') {
-      <!-- <mat-slide-toggle
-        #editSwitch
-        [checked]="editing()"
-        [disabled]="loading() || saving()"
-        (change)="onEditToggle($event)"
-      >
-        Edit
-      </mat-slide-toggle> -->
-      <span style="display: flex; gap: 15px;">
-        <app-icon-button
-  action="edit"
-  tooltip="Edit details"
-  accessibleName="Edit vehicle make"
-  [disabled]="loading() || saving()"
-  (clicked)="onEditToggle(!editing())"
-/>
+    <div>
+      @if (mode === 'view') {
       <app-icon-button
         action="add"
         tooltip="Add vehicle make"
         accessibleName="Add vehicle make"
         (clicked)="add()"
       />
-      </span>
     }
+    <app-icon-button
+        action="back"
+        tooltip="Back to list"
+        accessibleName="Back to list"
+        (clicked)="back()"
+      />
+    </div>
+    
   </header>
 
   @if (loading()) {
@@ -123,7 +109,6 @@
       </div>
     </mat-expansion-panel>
     <div class="actions">
-      @if (editing()) {
       <button
         mat-flat-button
         type="submit"
@@ -132,13 +117,10 @@
       >
         {{ mode === 'create' ? 'Save vehicle make' : 'Save changes' }}
       </button>
-
-      
-    }
     </div>
   </form>
 
   @if (mode === 'view') {
-    <app-vehicle-model-list [makeCode]="currentMakeCode()" [makeEditable]="editing()" />
+    <app-vehicle-model-list [makeCode]="currentMakeCode()" [makeEditable]="true" />
   }
 </section>

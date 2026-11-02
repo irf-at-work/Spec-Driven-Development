@@ -122,9 +122,9 @@
     <mat-paginator
       aria-label="Select a page of premium adjustments"
       [length]="totalCount()"
-      [pageSize]="pageSize"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="pageSizeOptions"
       [pageIndex]="pageIndex()"
-      [hidePageSize]="true"
       [showFirstLastButtons]="true"
       (page)="onPage($event)"
     />

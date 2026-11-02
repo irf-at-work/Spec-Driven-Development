@@ -6,9 +6,10 @@ All routes are relative to `/api/premium-adjustments`, except the options lookup
 
 ## List Adjustment Codes
 
-`GET /api/premium-adjustments?page={page}&codeType={text}&codeTypeOperator={operator}&code={text}&codeOperator={operator}&companyCode={text}&companyCodeOperator={operator}&name={text}&nameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true|false}&activeOperator={operator}&sortBy={sortBy}&sortDirection={sortDirection}`
+`GET /api/premium-adjustments?page={page}&codeType={text}&codeTypeOperator={operator}&code={text}&codeOperator={operator}&companyCode={text}&companyCodeOperator={operator}&name={text}&nameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true|false}&activeOperator={operator}&sortBy={sortBy}&sortDirection={sortDirection}&pageSize={10|25|50}`
 
 - `page`: optional positive integer, default `1`.
+- `pageSize`: optional integer, one of `10`, `25`, or `50`; default `10`.
 - Column filters (there is no single `search` parameter, and no separate Code Type filter apart from these). Each filter is optional and has a value and an operator:
   - `codeType`, `code`, `companyCode`, `name` and `shortName` take text. `codeType` matches the Code Type description. Their `...Operator` is one of `startsWith`, `endsWith`, `contains`, `equals`, `notEquals`; default `contains` when omitted.
   - `active` takes `true` or `false`. `activeOperator` is `equals` or `notEquals`; default `equals`. A record with no flag counts as active.

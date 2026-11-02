@@ -27,6 +27,7 @@ public sealed class VehicleMakeService(
         ColumnFilters filters,
         string? sortBy,
         string? sortDirection,
+        int pageSize,
         CancellationToken cancellationToken)
     {
         var matching = VehicleMakeListQuery.Apply(database.BrmVehMakes.AsNoTracking(), filters, sortBy, sortDirection);
@@ -34,12 +35,12 @@ public sealed class VehicleMakeService(
         var totalCount = await matching.CountAsync(cancellationToken);
 
         // Worked out in 64 bits so that a very large page number cannot overflow into a negative skip.
-        var skip = (int)Math.Min((long)(page - 1) * VehicleMakeListQuery.PageSize, int.MaxValue);
+        var skip = (int)Math.Min((long)(page - 1) * pageSize, int.MaxValue);
 
         // Inactive makes stay in the list (FR-029), so there is no filter on the flag, only a read of it.
         var rows = await matching
             .Skip(skip)
-            .Take(VehicleMakeListQuery.PageSize)
+            .Take(pageSize)
             .Select(make => new { make.VmakCode, make.VmakName, make.VmakShortName, make.VmakActiveYn })
             .ToListAsync(cancellationToken);
 
@@ -51,7 +52,7 @@ public sealed class VehicleMakeService(
                 VehicleMakeMapping.IsActive(make.VmakActiveYn)))
             .ToList();
 
-        return new PaginatedResult<VehicleMakeListItemDto>(items, page, VehicleMakeListQuery.PageSize, totalCount);
+        return new PaginatedResult<VehicleMakeListItemDto>(items, page, pageSize, totalCount);
     }
 
     public async Task<VehicleMakeDto?> GetAsync(string makeCode, CancellationToken cancellationToken)

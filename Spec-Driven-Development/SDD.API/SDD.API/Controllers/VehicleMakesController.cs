@@ -24,6 +24,7 @@ public class VehicleMakesController(
         string? activeOperator = null,
         string? sortBy = null,
         string? sortDirection = null,
+        int pageSize = VehicleMakeListQuery.PageSize,
         CancellationToken cancellationToken = default)
     {
         var filters = new ColumnFilters(
@@ -32,13 +33,13 @@ public class VehicleMakesController(
             new TextFilter(shortName, shortNameOperator),
             new StatusFilter(active, activeOperator));
 
-        var errors = VehicleMakeListQuery.Validate(page, filters, sortBy, sortDirection);
+        var errors = VehicleMakeListQuery.Validate(page, filters, sortBy, sortDirection, pageSize);
         if (errors.Count > 0)
         {
             return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]>(errors)));
         }
 
-        return await vehicleMakes.ListAsync(page, filters, sortBy, sortDirection, cancellationToken);
+        return await vehicleMakes.ListAsync(page, filters, sortBy, sortDirection, pageSize, cancellationToken);
     }
 
     [HttpGet("{makeCode}")]

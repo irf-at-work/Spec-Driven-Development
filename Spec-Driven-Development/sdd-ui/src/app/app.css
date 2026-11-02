@@ -18,7 +18,56 @@
   letter-spacing: 0.02em;
 }
 
+.section-dropdown {
+  position: relative;
+}
+
 .section {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
   font-size: 0.9rem;
   opacity: 0.75;
+  list-style: none;
+}
+
+.section::-webkit-details-marker {
+  display: none;
+}
+
+.section::after {
+  content: '▾';
+  font-size: 0.75rem;
+}
+
+.section-dropdown[open] .section::after {
+  content: '▴';
+}
+
+.section-menu {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 10px);
+  left: -10px;
+  display: grid;
+  min-width: 190px;
+  padding: 6px;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 6px;
+  background: var(--sdd-header-bg);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 16%);
+}
+
+.section-menu a {
+  padding: 9px 10px;
+  border-radius: 4px;
+  color: var(--sdd-header-text);
+  text-decoration: none;
+}
+
+.section-menu a:hover,
+.section-menu a:focus-visible {
+  background: rgb(127 127 127 / 18%);
+  outline: none;
 }

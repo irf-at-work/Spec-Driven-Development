@@ -6,9 +6,10 @@ All routes are relative to `/api/vehicle-makes`. JSON names use camelCase. All n
 
 ## List
 
-`GET /api/vehicle-makes?page={page}&makeCode={text}&makeCodeOperator={operator}&makeName={text}&makeNameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true|false}&activeOperator={operator}&sortBy={sortBy}&sortDirection={sortDirection}`
+`GET /api/vehicle-makes?page={page}&makeCode={text}&makeCodeOperator={operator}&makeName={text}&makeNameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true|false}&activeOperator={operator}&sortBy={sortBy}&sortDirection={sortDirection}&pageSize={10|25|50}`
 
 - `page`: optional positive integer, default `1`.
+- `pageSize`: optional integer, one of `10`, `25`, or `50`; default `10`.
 - Column filters (they replace the former single `search` parameter, which no longer exists). Each filter is optional and has a value and an operator:
   - `makeCode`, `makeName` and `shortName` take text. Their `...Operator` is one of `startsWith`, `endsWith`, `contains`, `equals`, `notEquals`; default `contains` when omitted.
   - `active` takes `true` or `false`. `activeOperator` is `equals` or `notEquals`; default `equals`.
@@ -18,7 +19,7 @@ All routes are relative to `/api/vehicle-makes`. JSON names use camelCase. All n
   - All supplied filters must match (AND).
 - `sortBy`: optional `makeCode`, `makeName`, or `shortName`; default `makeCode`.
 - `sortDirection`: optional `asc` or `desc`; default `asc`.
-- Page size is fixed at 10 for this workflow. Filtering and sorting apply to all records before pagination.
+- Page size is one of `10`, `25`, or `50` (default `10`). Filtering and sorting apply to all records before pagination.
 - `200 OK`: shared `PaginatedResult<VehicleMakeListItemDto>` with `items`, `page`, `pageSize`, and `totalCount`. Each item contains `makeCode`, `makeName`, `shortName`, and `active`.
 - Invalid page, sort or operator values: `400 Bad Request` with ProblemDetails (errors keyed by parameter name, for example `makeNameOperator`).
 
@@ -71,7 +72,7 @@ Models live under their make. The Make Code always comes from the route; it is n
 
 | Action | Route | Success | Failures |
 |---|---|---|---|
-| List | `GET ?page={page}&modelCode={text}&modelCodeOperator={operator}&modelName={text}&modelNameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true or false}&activeOperator={operator}` | `200` `PaginatedResult<VehicleModelDto>` (page size 10, ordered by `modelCode` ascending; column filters follow the same rules as the makes list; no sorting) | `400` bad page or operator, `404` make not found |
+| List | `GET ?page={page}&modelCode={text}&modelCodeOperator={operator}&modelName={text}&modelNameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true or false}&activeOperator={operator}&pageSize={10|25|50}` | `200` `PaginatedResult<VehicleModelDto>` (page size 10, 25, or 50; default 10; ordered by `modelCode` ascending; column filters follow the same rules as the makes list; no sorting) | `400` bad page, page size or operator, `404` make not found |
 | Get one | `GET /{modelCode}` | `200` `VehicleModelDto` (used by the model edit page so it can load by key) | `404` make or model not found |
 | Create | `POST` with `CreateVehicleModelRequest` | `200` created `VehicleModelDto` | `400` validation (keyed by field), `404` make not found, `409` code already exists for this make |
 | Update | `PUT /{modelCode}` with `UpdateVehicleModelRequest` (no model code in the body) | `200` updated `VehicleModelDto` | `400`, `404` |

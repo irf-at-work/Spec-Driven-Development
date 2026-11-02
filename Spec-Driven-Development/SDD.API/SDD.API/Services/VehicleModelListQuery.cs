@@ -8,11 +8,15 @@ namespace SDD.API.Services;
 /// </summary>
 public static class VehicleModelListQuery
 {
-    public static IReadOnlyDictionary<string, string[]> Validate(int page, ColumnFilters filters)
+    public static IReadOnlyDictionary<string, string[]> Validate(
+        int page,
+        ColumnFilters filters,
+        int pageSize = VehicleMakeListQuery.PageSize)
     {
         var errors = new Dictionary<string, string[]>();
 
         ColumnFilterQuery.ValidatePage(page, errors);
+        ColumnFilterQuery.ValidatePageSize(pageSize, errors);
         ColumnFilterQuery.ValidateOperators(filters, "modelCode", "modelName", errors);
 
         return errors;

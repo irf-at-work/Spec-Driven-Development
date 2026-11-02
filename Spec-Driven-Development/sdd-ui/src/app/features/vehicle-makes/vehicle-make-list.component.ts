@@ -38,7 +38,8 @@ export class VehicleMakeListComponent {
   private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly pageSize = 10;
+  protected readonly pageSizeOptions = [10, 25, 50];
+  protected readonly pageSize = signal(10);
   protected readonly columns = ['makeCode', 'makeName', 'shortName', 'status', 'actions'];
 
   protected readonly items = signal<VehicleMakeListItemDto[]>([]);
@@ -95,6 +96,7 @@ export class VehicleMakeListComponent {
         activeOp,
         this.sortColumn(),
         this.sortDirection(),
+        this.pageSize(),
       )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -135,6 +137,7 @@ export class VehicleMakeListComponent {
 
   protected onPage(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
     this.load();
   }
 

@@ -21,7 +21,7 @@ The configured `STD_LIST_ITEM` table currently has no vehicle-model list types o
 | Arabic Make Name | String | No | 100 characters | Display right to left; preserve text and spacing exactly. |
 | Arabic Short Name | String | No | 30 characters | Display right to left; preserve text and spacing exactly. |
 | Arabic Remarks | String | No | 2000 characters | Display right to left; preserve text and spacing exactly. |
-| Active | Boolean | Yes | N/A | On by default when adding. The user can turn it off while adding or editing, and on again while editing. This is the soft delete. Shown but not changeable in read-only view. |
+| Active | Boolean | Yes | N/A | On by default when adding. The user can turn it off while adding or editing an opened make, and on again while editing. This is the soft delete. |
 | Created By | String | Yes | Existing schema-defined | Set to `admin` on create, if represented by the existing schema. |
 | Last Changed By | String | Yes | Existing schema-defined | Set to `admin` on create and every successful edit, if represented by the existing schema. |
 
@@ -153,8 +153,8 @@ The API only reads `STD_LIST_ITEM`; it never writes it. Only the nine approved t
 ## Lifecycle
 
 1. **Created**: Validated fields are normalized where applicable, saved, and stamped with `admin`.
-2. **Viewed**: Details are read-only by default; existing Additional Information expands when any of its fields has data.
-3. **Edited**: Make Code stays immutable. Other fields are validated and normalized on save, and the changed-by value is stamped `admin`.
+2. **Opened for editing**: Details are editable immediately; Make Code stays immutable. Existing Additional Information expands when any of its fields has data.
+3. **Edited and saved**: Other fields are validated and normalized on save, and the changed-by value is stamped `admin`.
 4. **Deactivated and restored (soft delete)**: Turning Active off while editing and saving marks the record inactive. It stays in the list and can be opened. Turning Active on again and saving restores it. A make's models are not changed when the make is turned off.
 5. **Permanently deleted**: A user confirms the irreversible warning in the UI; the API permanently removes the selected model or a make with no models. A make that still has models cannot be deleted until its models are removed. No restore state exists after permanent deletion.
 
@@ -162,7 +162,7 @@ The API only reads `STD_LIST_ITEM`; it never writes it. Only the nine approved t
 
 - Search only Make Code, Make Name, and Short Name; search the complete set before pagination.
 - Sort only Make Code, Make Name, and Short Name; initial order is Make Code ascending. Apply sorting to the complete filtered set before pagination.
-- Return `items`, `page`, `pageSize`, and `totalCount`; page size is 10.
+- Return `items`, `page`, `pageSize`, and `totalCount`; supported page sizes are 10, 25, and 50, defaulting to 10.
 - Models of a make: return only the rows whose `VMOD_VMAK_CODE` equals the open make's code, ordered by Model Code ascending, paged at 10, using the same `PaginatedResult` shape. No search or sort options.
 - Both the make list items and the model rows include their Active status. Inactive records are not filtered out of either list.
 - Dropdown options: return the active `STD_LIST_ITEM` choices for the nine fixed list types, ordered by English description. This lookup is intentionally unpaged under the owner-approved spec decision; record the required constitution C3 exception before implementation.

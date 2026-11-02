@@ -51,7 +51,8 @@ export class PremiumAdjustmentListComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationService);
 
-  protected readonly pageSize = 10;
+  protected readonly pageSizeOptions = [10, 25, 50];
+  protected readonly pageSize = signal(10);
   protected readonly columns = [
     'codeType',
     'code',
@@ -115,6 +116,7 @@ export class PremiumAdjustmentListComponent {
         active.value ? active.operator : undefined,
         this.sortColumn(),
         this.sortDirection(),
+        this.pageSize(),
       )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -156,6 +158,7 @@ export class PremiumAdjustmentListComponent {
 
   protected onPage(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
     this.load();
   }
 

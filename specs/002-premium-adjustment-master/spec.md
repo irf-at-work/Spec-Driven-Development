@@ -19,7 +19,7 @@ WHAT:
 
 3. Dropdown choices: Code Type, Discount Type, Charges Type and Charges Category each show the active items of their own standard list, by description.
 
-4. Open and edit: opening a record shows it read-only. An Edit toggle makes every field editable except Code Type, Code and Company Code. Active is one of the editable fields: turning it off and saving soft deletes the record, and turning it on again restores it. The Additional Information section opens automatically when it contains data. Records saved earlier without a Discount Type, Charges Type or Charges Category must have them chosen before they can be saved again. Turning the toggle off with unsaved changes asks the user to confirm discarding them.
+4. Open and edit: opening a record enters edit mode immediately. Every field except Code Type, Code and Company Code is editable; no separate Edit control is shown. Active is one of the editable fields: turning it off and saving soft deletes the record, and turning it on again restores it. The Additional Information section opens automatically when it contains data. Records saved earlier without a Discount Type, Charges Type or Charges Category must have them chosen before they can be saved again. Leaving with unsaved changes asks the user to confirm discarding them.
 
 5. Delete: permanent removal, only after the user confirms in a dialog that says the deletion cannot be undone. Turning Active off is the reversible alternative.
 
@@ -59,14 +59,14 @@ As an insurance broker, I want one filterable, sortable list of adjustment codes
 
 **Acceptance Scenarios**:
 
-1. **Given** there are adjustment codes, **When** the user opens the list, **Then** the list shows no more than 10 codes per page, initially sorts by Code Type then Code, and provides page navigation.
+1. **Given** there are adjustment codes, **When** the user opens the list, **Then** the list initially shows 10 codes per page, offers page sizes of 10, 25, and 50, initially sorts by Code Type then Code, and provides page navigation.
 2. **Given** the list is open, **When** it appears, **Then** there is no global search box; each data column offers its own filter, the text columns with an operator choice (starts with, ends with, contains, equal to, not equal to) and Status with Active or Inactive.
 3. **Given** matching codes exist on different pages, **When** the user filters a column (for example Name starts with "F"), **Then** matching results are found across all records, not only the current page, and filters on several columns together show only the codes that match all of them.
 4. **Given** the user is on a later page, **When** they change a filter or the sort order, **Then** the list returns to page 1.
 5. **Given** a filter matches nothing, **When** the results appear, **Then** an empty-results message is shown that does not imply records were deleted, and clearing the filter brings the full list back.
 6. **Given** codes exist on different pages, **When** the user sorts by a column, **Then** the ordering applies across all records, not only the current page, and ignores upper and lower case.
 7. **Given** codes with Active on and off exist, **When** the user views the list, **Then** each row shows its Active status; inactive codes stay in the list and can still be opened.
-8. **Given** the list shows an adjustment code, **When** the user selects the open icon, **Then** that code opens in read-only view.
+8. **Given** the list shows an adjustment code, **When** the user selects the open icon, **Then** that code opens in edit mode with Code Type, Code and Company Code locked.
 9. **Given** the list shows an adjustment code, **When** the user selects the delete icon, **Then** the user is asked to confirm permanent deletion before the record is removed.
 10. **Given** the list is open, **When** the user selects the add icon, **Then** the user can begin entering a new adjustment code.
 
@@ -95,22 +95,21 @@ As an insurance broker, I want to add an adjustment code with consistent English
 
 ### User Story 3 - Open and edit an adjustment code (Priority: P1)
 
-As an insurance broker, I want to inspect an adjustment code and explicitly switch to editing it so that I can correct its details without changing its code.
+As an insurance broker, I want to edit an adjustment code as soon as I open it so that I can correct its details without changing its key.
 
 **Why this priority**: Accurate master details need a controlled way to be reviewed and maintained.
 
-**Independent Test**: Open a saved adjustment code, verify it is read-only, edit and save a field, then make an unsaved change and turn editing off to verify discard confirmation.
+**Independent Test**: Open a saved adjustment code, verify its editable fields are enabled and its key fields are locked, save a change, then make an unsaved change and leave the page to verify discard confirmation.
 
 **Acceptance Scenarios**:
 
-1. **Given** a saved adjustment code is opened, **When** its details are displayed, **Then** every field is read-only and Code Type, Code, and Company Code cannot be changed.
-2. **Given** an adjustment code is open, **When** the user switches editing on, **Then** every field except Code Type, Code, and Company Code becomes editable.
+1. **Given** a saved adjustment code is opened, **When** its details are displayed, **Then** every field except Code Type, Code, and Company Code is editable, and those three key fields cannot be changed.
 3. **Given** an adjustment code contains any Additional Information value, **When** the user opens it, **Then** the Additional Information section is expanded automatically.
-4. **Given** the user has unsaved changes while editing, **When** they switch editing off, **Then** they are asked whether to discard the changes; confirming discards them and cancelling keeps editing and changes.
+4. **Given** the user has unsaved changes, **When** they leave the adjustment-code page, **Then** they are asked whether to discard the changes; confirming discards them and cancelling keeps the page and changes.
 5. **Given** the user saves valid edits, **When** the save completes, **Then** the changes are stored with the same validation and text rules as creation and the record is stamped with user `admin`.
 6. **Given** the user attempts to save invalid edits, **When** validation runs, **Then** the invalid fields are identified and the changes are not saved.
 7. **Given** an adjustment code was saved earlier without Discount Type, Charges Type, or Charges Category, **When** the user edits and saves it, **Then** the user must choose all three before the save succeeds.
-8. **Given** an adjustment code is open in read-only view, **When** its details are displayed, **Then** its Active status is shown but cannot be changed; **Given** editing is switched on, **When** the user turns Active off and saves, **Then** the code is soft deleted (it stays in the list, marked inactive), and turning Active on again and saving restores it.
+8. **Given** an adjustment code is open, **When** its details are displayed, **Then** its Active status is editable; turning Active off and saving soft deletes the code (it stays in the list, marked inactive), and turning Active on again and saving restores it.
 9. **Given** the open form has unsaved changes, **When** the user selects Back, follows a breadcrumb link, or uses the browser's back button, **Then** they are asked whether to discard the changes before leaving.
 
 ### User Story 4 - Permanently delete an adjustment code (Priority: P2)
@@ -143,7 +142,7 @@ As an insurance broker, I want to permanently delete an adjustment code only aft
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST provide a list of adjustment codes with no more than 10 records per page, initially sorted by Code Type then Code, and controls to move between pages.
+- **FR-001**: The system MUST provide a list of adjustment codes with page sizes of 10, 25, and 50 records, defaulting to 10, initially sorted by Code Type then Code, and controls to move between pages.
 - **FR-002**: The system MUST NOT offer a single global search box. Instead, every visible data column of the list (Code Type by description, Code, Company Code, Name, Short Name and Status) MUST have its own filter. Text columns MUST offer the operators starts with, ends with, contains (the default), equal to and not equal to; the Status column MUST offer Active or Inactive with equal to and not equal to. Filters MUST ignore upper and lower case, MUST combine so that a record must match all of them, MUST apply across all records before paging, MUST take effect shortly after typing stops, MUST return the list to page 1 when they change, and a blank filter MUST be ignored. "Not equal to" MUST also list records whose value is empty. Characters the user types MUST be treated as plain text, never as search patterns. The system MUST also allow users to sort by Code Type, Code, Company Code, Name and Short Name across all adjustment codes, ignoring upper and lower case.
 - **FR-003**: The system MUST provide an action to open each adjustment code and an action to begin adding a new one.
 - **FR-004**: The system MUST require a non-null, non-empty Code of up to 12 characters containing only letters, digits, and hyphens, saved in capitals.
@@ -154,14 +153,14 @@ As an insurance broker, I want to permanently delete an adjustment code only aft
 - **FR-009**: The system MUST provide a collapsible Additional Information section with optional Remarks up to 2000 characters, Arabic Name up to 100 characters, Arabic Short Name up to 30 characters, and Arabic Remarks up to 2000 characters. Arabic values MUST be shown right to left and MUST NOT be altered, including their spacing.
 - **FR-010**: The system MUST show a maximum-character message when a field reaches its limit and MUST prevent a value from exceeding the limit. The limit MUST also be enforced when data is saved.
 - **FR-011**: The system MUST tell the user when the Code Type, Code, and Company Code combination already exists and MUST NOT save the duplicate.
-- **FR-012**: Opening an adjustment code MUST show it read-only. An edit control MUST make every field except Code Type, Code, and Company Code editable.
+- **FR-012**: Opening an adjustment code MUST enter edit mode immediately. Every field except Code Type, Code, and Company Code MUST be editable, and no separate Edit control MUST be shown.
 - **FR-013**: The Additional Information section MUST open automatically when at least one of its fields contains data.
-- **FR-014**: When the user turns editing off with unsaved changes, the system MUST ask for confirmation before discarding them. Confirming MUST discard the changes; cancelling MUST preserve them and keep editing enabled.
+- **FR-014**: When the user leaves an opened adjustment-code page with unsaved changes, the system MUST ask for confirmation before discarding them. Confirming MUST discard the changes; cancelling MUST keep the page open with its changes.
 - **FR-015**: The system MUST request confirmation before deletion and state that deletion cannot be undone. Confirmed deletion MUST permanently remove the record; cancelled deletion MUST leave it unchanged.
 - **FR-016**: Every successfully created or changed adjustment code MUST be stamped with the user `admin`.
 - **FR-017**: Invalid values and missing required values MUST be clearly identified, and invalid changes MUST NOT be saved.
 - **FR-018**: Code Type, Discount Type, Charges Type, and Charges Category dropdowns MUST each show the active items of their own standard list, ordered by description. Each stored choice MUST be the item's code, and the system MUST refuse a code that is not an active item of the right list, even if the screen sent it. An adjustment code that already holds a choice which has since become inactive MUST still show it and MAY be saved with it unchanged; it MUST NOT be offered to anyone choosing a new value.
-- **FR-019**: Every adjustment code MUST have an Active setting. It MUST be on by default when a code is added. The user MAY turn it off while adding or editing, and MAY turn it on again while editing. In read-only view it MUST be shown but not changeable. It is stored as `Y` or `N`. Turning it off MUST NOT remove the code and MUST NOT make it unreadable.
+- **FR-019**: Every adjustment code MUST have an Active setting. It MUST be on by default when a code is added. The user MAY turn it off while adding or while an opened code is being edited, and MAY turn it on again while editing. It is stored as `Y` or `N`. Turning it off MUST NOT remove the code and MUST NOT make it unreadable.
 - **FR-020**: The list MUST show each record's Active status, and inactive records MUST stay in the list and MUST be openable.
 - **FR-021**: Row and page actions (add, open, delete and going back) MUST be shown as icons, and each icon MUST have a tooltip that names the action and an accessible name for screen readers.
 - **FR-022**: Text on every screen MUST be easy to read and MUST follow feature 001's typography rule (FR-032 of that spec): the same minimum sizes, Inter for all English text and Noto Sans Arabic for Arabic text, both available without an internet connection.
@@ -178,7 +177,7 @@ As an insurance broker, I want to permanently delete an adjustment code only aft
 ### Measurable Outcomes
 
 - **SC-001**: Brokers can find an adjustment code by filtering any column across all records and can sort the full result set by a chosen column.
-- **SC-002**: The list displays at most 10 records on each page and supports navigation through all matching records.
+- **SC-002**: The list supports page sizes of 10, 25, and 50 records, defaults to 10, and supports navigation through all matching records.
 - **SC-003**: 100% of successful create and edit actions save values within the stated field limits and text rules; invalid or duplicate values are not saved.
 - **SC-004**: 100% of deletion attempts require explicit confirmation, and cancelling leaves the adjustment code unchanged.
 - **SC-005**: Created and changed records show `admin` as the recorded user.
