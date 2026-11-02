@@ -51,6 +51,7 @@ export interface ApiCompaniesCompanyCodeDepartmentsPostRequestParams {
 export interface ApiCompaniesCompanyCodeDivisionsDivisionCodeDeleteRequestParams {
     companyCode: string;
     divisionCode: string;
+    destinationDivisionCode?: string;
 }
 
 export interface ApiCompaniesCompanyCodeDivisionsDivisionCodeDepartmentsDepartmentCodeDeleteRequestParams {
@@ -238,6 +239,16 @@ export class CompanyStructureService extends BaseService {
         if (divisionCode === null || divisionCode === undefined) {
             throw new Error('Required parameter divisionCode was null or undefined when calling apiCompaniesCompanyCodeDivisionsDivisionCodeDelete.');
         }
+        const destinationDivisionCode = requestParameters?.destinationDivisionCode;
+
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'destinationDivisionCode',
+            <any>destinationDivisionCode,
+            QueryParamStyle.Form,
+            true,
+        );
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -269,6 +280,7 @@ export class CompanyStructureService extends BaseService {
         return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

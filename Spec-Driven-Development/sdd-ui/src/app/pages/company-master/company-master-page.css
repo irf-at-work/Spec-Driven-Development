@@ -1,12 +1,25 @@
-.page-actions {
+.page-heading {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.page-heading h1 {
+  margin: 0;
+}
+
+section[aria-labelledby='company-master-title'] {
+  display: flex;
+  height: calc(100dvh - 12rem);
+  flex-direction: column;
 }
 
 .table-container {
   --company-table-header-height: 3.5rem;
-  height: max(10rem, calc(100dvh - 27.5rem));
+  flex: 1 1 0;
+  min-height: 10rem;
   overflow: auto;
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;

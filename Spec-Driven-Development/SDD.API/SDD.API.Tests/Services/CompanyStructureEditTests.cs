@@ -32,18 +32,70 @@ public sealed class CompanyStructureEditTests
     }
 
     [Fact]
-    public async Task Blocks_division_deletion_while_department_assignments_remain()
+    public async Task Deletes_division_and_moves_departments_to_the_selected_division()
     {
         var repository = new FakeCompanyStructureRepository();
         repository.CompanyRows.Add(new() { CompCode = "C01", CompName = "Company" });
+        repository.DivisionRows.Add(Division("NORTH"));
+        repository.DivisionRows.Add(Division("SOUTH"));
+        repository.DepartmentRows.Add(Department("NORTH", "FIN"));
+        repository.DepartmentRows.Add(Department("NORTH", "IT"));
+        var service = new CompanyStructureService(repository);
+
+        var deleted = await service.DeleteDivisionAsync(
+            "C01",
+            "NORTH",
+            "SOUTH",
+            CancellationToken.None);
+
+        Assert.True(deleted);
+        Assert.Equal(["SOUTH"], repository.DivisionRows.Select(division => division.DivnCode));
+        Assert.Equal(
+            ["FIN", "IT"],
+            repository.DepartmentRows.Select(department => department.DeptCode).OrderBy(code => code));
+        Assert.All(repository.DepartmentRows, department => Assert.Equal("SOUTH", department.DeptDivnCode));
+        Assert.Equal(1, repository.SaveCount);
+    }
+
+    [Fact]
+    public async Task Division_deletion_keeps_departments_already_assigned_to_the_destination()
+    {
+        var repository = new FakeCompanyStructureRepository();
+        repository.DivisionRows.AddRange([Division("NORTH"), Division("SOUTH")]);
+        repository.DepartmentRows.AddRange(
+        [
+            Department("NORTH", "FIN"),
+            Department("SOUTH", "FIN"),
+            Department("NORTH", "IT"),
+        ]);
+        var service = new CompanyStructureService(repository);
+
+        var deleted = await service.DeleteDivisionAsync(
+            "C01",
+            "NORTH",
+            "SOUTH",
+            CancellationToken.None);
+
+        Assert.True(deleted);
+        Assert.Equal(["FIN", "IT"], repository.DepartmentRows.Select(department => department.DeptCode).OrderBy(code => code));
+        Assert.All(repository.DepartmentRows, department => Assert.Equal("SOUTH", department.DeptDivnCode));
+        Assert.Equal(1, repository.SaveCount);
+    }
+
+    [Fact]
+    public async Task Division_deletion_requires_an_existing_destination_when_departments_remain()
+    {
+        var repository = new FakeCompanyStructureRepository();
         repository.DivisionRows.Add(Division("NORTH"));
         repository.DepartmentRows.Add(Department("NORTH", "FIN"));
         var service = new CompanyStructureService(repository);
 
         await Assert.ThrowsAsync<CompanyConflictException>(() =>
-            service.DeleteDivisionAsync("C01", "NORTH", CancellationToken.None));
+            service.DeleteDivisionAsync("C01", "NORTH", null, CancellationToken.None));
 
         Assert.Single(repository.DivisionRows);
+        Assert.Single(repository.DepartmentRows);
+        Assert.Equal("NORTH", repository.DepartmentRows[0].DeptDivnCode);
         Assert.Equal(0, repository.SaveCount);
     }
 
@@ -103,17 +155,21 @@ public sealed class CompanyStructureEditTests
     }
 
     [Fact]
-    public async Task Blocks_removing_the_final_department_assignment()
+    public async Task Removes_the_final_department_assignment()
     {
         var repository = new FakeCompanyStructureRepository();
         repository.DepartmentRows.Add(Department("NORTH", "FIN"));
         var service = new CompanyStructureService(repository);
 
-        await Assert.ThrowsAsync<CompanyConflictException>(() =>
-            service.RemoveDepartmentAssignmentAsync("C01", "NORTH", "FIN", CancellationToken.None));
+        var removed = await service.RemoveDepartmentAssignmentAsync(
+            "C01",
+            "NORTH",
+            "FIN",
+            CancellationToken.None);
 
-        Assert.Single(repository.DepartmentRows);
-        Assert.Equal(0, repository.SaveCount);
+        Assert.True(removed);
+        Assert.Empty(repository.DepartmentRows);
+        Assert.Equal(1, repository.SaveCount);
     }
 
     private static StdDivision Division(string divisionCode) =>

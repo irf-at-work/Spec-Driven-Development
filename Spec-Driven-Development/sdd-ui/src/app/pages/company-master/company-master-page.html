@@ -1,6 +1,6 @@
 <section aria-labelledby="company-master-title">
-  <h1 id="company-master-title">Company Master</h1>
-  <div class="page-actions">
+  <header class="page-heading">
+    <h1 id="company-master-title">Company Master</h1>
     <a mat-flat-button routerLink="/company-master/new" queryParamsHandling="preserve">
       <mat-icon aria-hidden="true">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -9,7 +9,7 @@
       </mat-icon>
       Add company
     </a>
-  </div>
+  </header>
 
   @if (error(); as loadError) {
     <p class="error-message" role="alert">{{ loadError }}</p>

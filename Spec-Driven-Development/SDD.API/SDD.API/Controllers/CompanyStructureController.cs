@@ -92,11 +92,16 @@ public sealed class CompanyStructureController(CompanyStructureService service) 
     public async Task<Results<NoContent, NotFound<ProblemDetails>, Conflict<ProblemDetails>>> DeleteDivision(
         string companyCode,
         string divisionCode,
+        [FromQuery] string? destinationDivisionCode,
         CancellationToken cancellationToken)
     {
         try
         {
-            return await service.DeleteDivisionAsync(companyCode, divisionCode, cancellationToken)
+            return await service.DeleteDivisionAsync(
+                    companyCode,
+                    divisionCode,
+                    destinationDivisionCode,
+                    cancellationToken)
                 ? TypedResults.NoContent()
                 : NotFoundProblem("Division not found.", "No division exists with the requested code in this company.");
         }

@@ -11,13 +11,12 @@
 
 .details-heading,
 .details-actions,
-.division-card-heading {
+.division-panel-actions {
   display: flex;
   align-items: center;
 }
 
-.details-heading,
-.division-card-heading {
+.details-heading {
   justify-content: space-between;
   gap: 1rem;
 }
@@ -34,8 +33,7 @@
   color: var(--color-muted);
 }
 
-.company-title h1,
-.heading-input {
+.company-title h1 {
   display: block;
   width: min(100%, 42rem);
   margin: 0 0 0.5rem;
@@ -45,25 +43,20 @@
   line-height: 1.2;
 }
 
-.heading-input {
-  padding: 0.2rem 0.45rem;
-  border-radius: 0.5rem;
-  background: var(--color-surface);
-}
-
-.heading-input:focus-visible {
-  border-color: var(--color-focus);
-  outline: 3px solid color-mix(in srgb, var(--color-focus) 24%, transparent);
-  outline-offset: 1px;
-}
-
 .details-actions {
   gap: 0.5rem;
   flex-shrink: 0;
 }
 
-.heading-input,
-.division-card,
+.details-edit-actions {
+  justify-content: flex-end;
+}
+
+.destructive-action {
+  color: var(--mat-sys-error, #b3261e);
+}
+
+.division-panel,
 .division-details > div,
 .division-edit-fields,
 .department-table-wrapper,
@@ -83,26 +76,33 @@
   font-size: 1.05rem;
 }
 
-.division-section,
-.division-card {
+.division-section {
   gap: 1rem;
 }
 
-.division-card {
-  display: grid;
-  padding: 1rem;
+.division-panel {
   border-radius: 0.75rem;
   background: var(--color-page);
 }
 
-.division-card-heading h3,
+.division-panel mat-panel-title,
 .department-dialog h3 {
-  margin: 0;
   color: var(--color-primary-900);
+  font-weight: 700;
 }
 
-.division-card-heading h3 {
-  font-size: 1rem;
+.division-panel-actions {
+  gap: 0.25rem;
+  margin-inline-end: 0.5rem;
+}
+
+.division-panel-actions button {
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .division-panel .mat-expansion-panel-body {
+  display: grid;
+  gap: 1rem;
 }
 
 .division-details {
@@ -158,6 +158,10 @@
   justify-content: flex-end;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.division-edit-actions {
+  margin-top: 0.25rem;
 }
 
 .department-table-wrapper {
@@ -258,8 +262,8 @@
     flex-wrap: wrap;
   }
 
-  .division-card-heading {
-    align-items: flex-start;
-    flex-direction: column;
+  .division-panel-actions {
+    gap: 0;
+    margin-inline-end: 0;
   }
 }

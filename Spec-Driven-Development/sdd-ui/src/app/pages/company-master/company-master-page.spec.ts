@@ -51,6 +51,15 @@ describe('CompanyMasterPage', () => {
     await harness.fixture.whenStable();
 
     const page = harness.routeNativeElement as HTMLElement;
+    const heading = page.querySelector('.page-heading');
+    expect(heading?.querySelector('h1')?.textContent).toContain('Company Master');
+    expect(heading?.querySelector('a')?.textContent).toContain('Add company');
+    expect(getComputedStyle(heading!).justifyContent).toBe('space-between');
+    expect(
+      getComputedStyle(page.querySelector('section[aria-labelledby="company-master-title"]')!)
+        .display,
+    ).toBe('flex');
+    expect(getComputedStyle(page.querySelector('.table-container')!).flexGrow).toBe('1');
     expect(page.textContent).toContain('North Insurance');
     expect(page.textContent).toContain('Bay Road, Tower 2');
     expect(page.querySelector('[aria-label*="Created by Admin"]')).not.toBeNull();

@@ -761,6 +761,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "destinationDivisionCode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
           }
         ],
         "responses": {

@@ -293,6 +293,7 @@ public sealed class CompanyStructureService(
     public async Task<bool> DeleteDivisionAsync(
         string companyCode,
         string divisionCode,
+        string? destinationDivisionCode,
         CancellationToken cancellationToken)
     {
         var divisions = await repository.ToListAsync(
@@ -303,13 +304,49 @@ public sealed class CompanyStructureService(
         {
             return false;
         }
-        if (await repository.AnyAsync(
-                repository.Departments.Where(department =>
-                    department.DeptCompCode == companyCode && department.DeptDivnCode == divisionCode),
-                cancellationToken))
+
+        var departments = await repository.ToListAsync(
+            repository.Departments.Where(department =>
+                department.DeptCompCode == companyCode && department.DeptDivnCode == divisionCode),
+            cancellationToken);
+        if (departments.Count > 0)
         {
-            throw new CompanyConflictException(
-                "Remove the division's department assignments before deleting this division.");
+            if (string.IsNullOrWhiteSpace(destinationDivisionCode) ||
+                string.Equals(destinationDivisionCode, divisionCode, StringComparison.Ordinal))
+            {
+                throw new CompanyConflictException(
+                    "Select another division to keep the department assignments before deleting this division.");
+            }
+
+            var destination = await repository.ToListAsync(
+                repository.Divisions.Where(division =>
+                    division.DivnCompCode == companyCode &&
+                    division.DivnCode == destinationDivisionCode),
+                cancellationToken);
+            if (destination.Count == 0)
+            {
+                throw new CompanyConflictException(
+                    "The selected destination division does not exist in this company.");
+            }
+
+            var destinationDepartments = await repository.ToListAsync(
+                repository.Departments.Where(department =>
+                    department.DeptCompCode == companyCode &&
+                    department.DeptDivnCode == destinationDivisionCode),
+                cancellationToken);
+            EnsureDepartmentGroupsConsistent(departments.Concat(destinationDepartments));
+            var destinationDepartmentCodes = destinationDepartments
+                .Select(department => department.DeptCode)
+                .ToHashSet(StringComparer.Ordinal);
+            var now = _timeProvider.GetUtcNow().UtcDateTime;
+            foreach (var department in departments)
+            {
+                repository.Remove(department);
+                if (!destinationDepartmentCodes.Contains(department.DeptCode))
+                {
+                    repository.Add(CloneDepartment(department, destinationDivisionCode, now));
+                }
+            }
         }
 
         repository.Remove(divisions[0]);
@@ -332,16 +369,6 @@ public sealed class CompanyStructureService(
         if (rows.Count == 0)
         {
             return false;
-        }
-
-        var assignments = await repository.ToListAsync(
-            repository.Departments.Where(department =>
-                department.DeptCompCode == companyCode && department.DeptCode == departmentCode),
-            cancellationToken);
-        if (assignments.Count <= 1)
-        {
-            throw new CompanyConflictException(
-                "A department must remain assigned to at least one division.");
         }
 
         repository.Remove(rows[0]);
