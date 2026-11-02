@@ -2,10 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  OnInit,
   inject,
   input,
   output,
-  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -121,7 +121,7 @@ export type StatusFilterOperator = 'equals' | 'notEquals';
 }
   `,
 })
-export class ColumnFilterComponent {
+export class ColumnFilterComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly type = input<'text' | 'status'>('text');

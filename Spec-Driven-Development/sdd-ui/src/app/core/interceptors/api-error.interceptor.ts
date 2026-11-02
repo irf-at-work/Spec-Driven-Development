@@ -71,10 +71,11 @@ async function readProblem(response: HttpErrorResponse): Promise<ApiProblem> {
   return fallbackProblem(status);
 }
 
-function parseProblem(status: number, data: any): ApiProblem {
+function parseProblem(status: number, data: unknown): ApiProblem {
+  const errors = (data as { errors?: unknown } | null | undefined)?.errors;
   const fieldErrors: Record<string, string[]> = {};
-  if (data?.errors && typeof data.errors === 'object') {
-    for (const [key, value] of Object.entries(data.errors)) {
+  if (errors && typeof errors === 'object') {
+    for (const [key, value] of Object.entries(errors)) {
       if (Array.isArray(value)) {
         fieldErrors[key] = value.map(String);
       } else if (value) {

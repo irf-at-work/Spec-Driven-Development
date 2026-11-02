@@ -8,11 +8,12 @@ public enum TextFilterOperator
     StartsWith,
     EndsWith,
     EqualTo,
-    NotEqualTo
+    NotEqualTo,
+    Between
 }
 
 /// <summary>One text column's filter: the text the user typed and the operator they chose (blank means "contains").</summary>
-public sealed record TextFilter(string? Value = null, string? Operator = null);
+public sealed record TextFilter(string? Value = null, string? Operator = null, string? ValueTo = null);
 
 /// <summary>The Status filter: Active (true) or Inactive (false), with "equals" (the default) or "notEquals".</summary>
 public sealed record StatusFilter(bool? Value = null, string? Operator = null);

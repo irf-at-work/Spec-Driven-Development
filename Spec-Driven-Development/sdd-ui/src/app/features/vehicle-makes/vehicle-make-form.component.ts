@@ -14,11 +14,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
 
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProblem, isApiProblemError } from '../../core/api-problem';
@@ -28,9 +27,8 @@ import { IconButtonComponent } from '../../shared/icon-button/icon-button.compon
 import { LimitedTextFieldComponent } from '../../shared/limited-text-field/limited-text-field.component';
 import { HasUnsavedChanges } from '../../shared/unsaved-changes.guard';
 import { notBlank } from '../../shared/validators';
+import { readMakeCodeFromHistory } from '../../shared/navigation-state';
 import { VehicleModelListComponent } from './vehicle-model-list.component';
-
-const MESSAGE_DURATION_MS = 5000;
 
 // The same limits the API enforces (FR-004 to FR-007). The API stays the authority; these only help the user sooner.
 const LIMITS = {
@@ -336,15 +334,4 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       this.additionalOpen.set(true);
     }
   }
-}
-
-// The code of the chosen make travels in the browser's navigation state, so it never appears in the address bar.
-// The state survives a page refresh, which is why it is read from the history entry.
-function readMakeCodeFromHistory(): string | null {
-  const state: unknown = history.state;
-  if (typeof state === 'object' && state !== null && 'makeCode' in state) {
-    const makeCode = state.makeCode;
-    return typeof makeCode === 'string' && makeCode.length > 0 ? makeCode : null;
-  }
-  return null;
 }
