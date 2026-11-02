@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
-import { readMakeCodeFromHistory } from '../navigation-state';
+import { readMakeCodeFromHistory, readPremiumAdjustmentKeyFromHistory } from '../navigation-state';
 import { BreadcrumbContext, Crumb, buildTrail, isBreadcrumbPage } from './breadcrumb';
 
 /**
@@ -19,7 +19,7 @@ export class BreadcrumbService {
       startWith(null),
       map(() => this.currentTrail()),
     ),
-    { initialValue: [] as readonly Crumb[]  },
+    { initialValue: [] as readonly Crumb[] },
   );
 
   private currentTrail(): readonly Crumb[] {
@@ -37,6 +37,7 @@ export class BreadcrumbService {
       // The model pages carry the make in the address; the make's own page carries it in the navigation state.
       makeCode: route.paramMap.get('makeCode') ?? readMakeCodeFromHistory(),
       modelCode: route.paramMap.get('modelCode'),
+      adjustmentCode: readPremiumAdjustmentKeyFromHistory()?.code ?? null,
     };
     return buildTrail(page, context);
   }

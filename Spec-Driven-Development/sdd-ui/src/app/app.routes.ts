@@ -5,6 +5,36 @@ import { unsavedChangesGuard } from './shared/unsaved-changes.guard';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'vehicle-makes' },
   {
+    path: 'premium-adjustments/new',
+    title: 'Add Premium Adjustment',
+    data: { mode: 'create', breadcrumb: 'premium-adjustment-new' },
+    canDeactivate: [unsavedChangesGuard],
+    loadComponent: () =>
+      import('./features/premium-adjustments/premium-adjustment-form.component').then(
+        (module) => module.PremiumAdjustmentFormComponent,
+      ),
+  },
+  {
+    path: 'premium-adjustments/view',
+    title: 'Premium Adjustment Details',
+    data: { mode: 'view', breadcrumb: 'premium-adjustment-view' },
+    canDeactivate: [unsavedChangesGuard],
+    loadComponent: () =>
+      import('./features/premium-adjustments/premium-adjustment-form.component').then(
+        (module) => module.PremiumAdjustmentFormComponent,
+      ),
+  },
+  {
+    path: 'premium-adjustments',
+    pathMatch: 'full',
+    title: 'Premium Adjustment Master',
+    data: { breadcrumb: 'premium-adjustments' },
+    loadComponent: () =>
+      import('./features/premium-adjustments/premium-adjustment-list.component').then(
+        (module) => module.PremiumAdjustmentListComponent,
+      ),
+  },
+  {
     path: 'vehicle-makes',
     title: 'Vehicle Make Master',
     data: { breadcrumb: 'makes' },

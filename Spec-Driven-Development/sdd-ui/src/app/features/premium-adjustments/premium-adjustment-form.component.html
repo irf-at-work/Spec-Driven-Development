@@ -1,0 +1,195 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>{{ heading }}</h1>
+      @if (mode === 'view' && adjustment()) {
+        <p class="subtitle">Review the details, or switch on Edit to change them.</p>
+      } @else {
+        <p class="subtitle">Fields marked * are required.</p>
+      }
+    </div>
+    <div class="header-actions">
+      @if (mode === 'view') {
+        <mat-slide-toggle
+          #editSwitch
+          [checked]="editing()"
+          [disabled]="loading() || saving()"
+          (change)="onEditToggle($event.checked)"
+        >
+          Edit
+        </mat-slide-toggle>
+      }
+      <app-icon-button
+        action="back"
+        tooltip="Back to premium adjustments"
+        accessibleName="Back to premium adjustments"
+        (clicked)="back()"
+      />
+    </div>
+  </header>
+
+  @if (loading() || optionsLoading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading premium adjustment details" />
+  }
+
+  @if (optionsFailed()) {
+    <div class="state" role="alert">
+      The dropdown options could not be loaded. Return to the list and try again.
+    </div>
+  } @else {
+    <form class="card" novalidate [formGroup]="form" (ngSubmit)="save()">
+      <div class="grid">
+        <mat-form-field class="third" appearance="outline">
+          <mat-label>Code Type</mat-label>
+          <mat-select formControlName="codeType">
+            @for (
+              option of optionsFor(options()?.codeTypes, adjustment()?.codeType);
+              track option.code
+            ) {
+              <mat-option [value]="option.code">{{ option.description }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.codeType.hasError('required')) {
+            <mat-error>Code Type is required.</mat-error>
+          } @else if (fieldMessage(form.controls.codeType); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+        <app-limited-text-field
+          class="third"
+          label="Code"
+          patternMessage="Code can contain only letters, digits and hyphens."
+          [control]="form.controls.code"
+          [maxLength]="limits.code"
+          [uppercase]="true"
+        />
+        <app-limited-text-field
+          class="third"
+          label="Company Code"
+          patternMessage="Company Code can contain only letters, digits and hyphens."
+          [control]="form.controls.companyCode"
+          [maxLength]="limits.companyCode"
+          [uppercase]="true"
+        />
+        <app-limited-text-field
+          class="name"
+          label="Name"
+          [control]="form.controls.name"
+          [maxLength]="limits.name"
+        />
+        <app-limited-text-field
+          class="short"
+          label="Short Name"
+          [control]="form.controls.shortName"
+          [maxLength]="limits.shortName"
+        />
+        <mat-form-field class="third" appearance="outline">
+          <mat-label>Discount Type</mat-label>
+          <mat-select formControlName="discountType">
+            @for (
+              option of optionsFor(options()?.discountTypes, adjustment()?.discountType);
+              track option.code
+            ) {
+              <mat-option [value]="option.code">{{ option.description }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.discountType.hasError('required')) {
+            <mat-error>Discount Type is required.</mat-error>
+          } @else if (fieldMessage(form.controls.discountType); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="third" appearance="outline">
+          <mat-label>Charges Type</mat-label>
+          <mat-select formControlName="chargesType">
+            @for (
+              option of optionsFor(options()?.chargesTypes, adjustment()?.chargesType);
+              track option.code
+            ) {
+              <mat-option [value]="option.code">{{ option.description }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.chargesType.hasError('required')) {
+            <mat-error>Charges Type is required.</mat-error>
+          } @else if (fieldMessage(form.controls.chargesType); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="third" appearance="outline">
+          <mat-label>Charges Category</mat-label>
+          <mat-select formControlName="chargesCategory">
+            @for (
+              option of optionsFor(options()?.chargesCategories, adjustment()?.chargesCategory);
+              track option.code
+            ) {
+              <mat-option [value]="option.code">{{ option.description }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.chargesCategory.hasError('required')) {
+            <mat-error>Charges Category is required.</mat-error>
+          } @else if (fieldMessage(form.controls.chargesCategory); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-slide-toggle class="active" formControlName="active">Active</mat-slide-toggle>
+      </div>
+
+      <mat-expansion-panel
+        class="additional"
+        [expanded]="additionalOpen()"
+        (opened)="additionalOpen.set(true)"
+        (closed)="additionalOpen.set(false)"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>Additional Information</mat-panel-title>
+          <mat-panel-description>Remarks and Arabic details (all optional)</mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="grid">
+          <app-limited-text-field
+            class="full"
+            label="Remarks"
+            [control]="form.controls.remarks"
+            [maxLength]="limits.remarks"
+            [multiline]="true"
+            [showCounter]="true"
+          />
+          <app-limited-text-field
+            class="half"
+            label="Arabic Name"
+            [control]="form.controls.arabicName"
+            [maxLength]="limits.arabicName"
+            [rtl]="true"
+          />
+          <app-limited-text-field
+            class="half"
+            label="Arabic Short Name"
+            [control]="form.controls.arabicShortName"
+            [maxLength]="limits.arabicShortName"
+            [rtl]="true"
+          />
+          <app-limited-text-field
+            class="full"
+            label="Arabic Remarks"
+            [control]="form.controls.arabicRemarks"
+            [maxLength]="limits.arabicRemarks"
+            [multiline]="true"
+            [rtl]="true"
+            [showCounter]="true"
+          />
+        </div>
+      </mat-expansion-panel>
+
+      @if (editing()) {
+        <div class="actions">
+          <app-icon-button
+            action="save"
+            type="submit"
+            tooltip="Save premium adjustment"
+            accessibleName="Save"
+            [disabled]="saving() || loading() || optionsLoading()"
+          />
+        </div>
+      }
+    </form>
+  }
+</section>

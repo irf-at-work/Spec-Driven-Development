@@ -235,6 +235,7 @@ the authority.
 | Date | Article | Exception | Reason |
 | ---- | ------- | --------- | ------ |
 | 2026-10-29 | B8 (listing endpoints MUST be paged) | The single read-only `GET /api/vehicle-model-options` lookup returns the nine fixed `STD_LIST_ITEM` dropdown lists in one unpaged response (feature 001, FR-021). | The lists are small, fixed lookups that fill dropdowns; paging them would add nine requests and paging controls with no benefit. Owner-approved in the feature 001 clarifications of 29-Oct-2026 (Q: "Should model-field dropdown choices be paged?" A: No). |
+| 2026-11-02 | B8 (listing endpoints MUST be paged) | The single read-only `GET /api/premium-adjustment-options` lookup returns the four fixed `STD_LIST_ITEM` dropdown lists (Code Type, Discount Type, Charges Type, Charges Category) in one unpaged response (feature 002, FR-018). | The lists are small, fixed lookups that fill dropdowns; paging them would add four requests, a loop through pages in the UI and paging controls with no benefit. Same reasoning as the feature 001 exception. Owner-approved on 2026-11-02 at the feature 002 plan gate. |
 
 ### C4 — Amendment log
 

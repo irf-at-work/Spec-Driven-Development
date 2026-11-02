@@ -18,12 +18,23 @@ public sealed record TextFilter(string? Value = null, string? Operator = null, s
 /// <summary>The Status filter: Active (true) or Inactive (false), with "equals" (the default) or "notEquals".</summary>
 public sealed record StatusFilter(bool? Value = null, string? Operator = null);
 
-/// <summary>
-/// The four filters shared by the makes list and the models list (FR-030): code, name, short name and status.
-/// Every filter is optional, and a filter with a blank value is ignored.
-/// </summary>
+/// <summary>Text filters for the columns a list exposes, plus its optional Active status filter.</summary>
 public sealed record ColumnFilters(TextFilter Code, TextFilter Name, TextFilter ShortName, StatusFilter Active)
 {
+    public ColumnFilters(IReadOnlyDictionary<string, TextFilter> textFilters, StatusFilter active)
+        : this(new TextFilter(), new TextFilter(), new TextFilter(), active)
+    {
+        TextFilters = new Dictionary<string, TextFilter>(textFilters, StringComparer.OrdinalIgnoreCase);
+    }
+
+    public IReadOnlyDictionary<string, TextFilter> TextFilters { get; init; } =
+        new Dictionary<string, TextFilter>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["code"] = Code,
+            ["name"] = Name,
+            ["shortName"] = ShortName
+        };
+
     public static ColumnFilters None { get; } = new(new TextFilter(), new TextFilter(), new TextFilter(), new StatusFilter());
 }
 
@@ -112,11 +123,30 @@ public static class ColumnFilterQuery
         ColumnFilters filters,
         string codeField,
         string nameField,
+        IDictionary<string, string[]> errors) =>
+        ValidateOperators(
+            filters,
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["code"] = codeField,
+                ["name"] = nameField,
+                ["shortName"] = "shortName"
+            },
+            errors);
+
+    /// <summary>
+    /// Checks the operators for the declared text columns. Values map filter keys to API parameter names used in errors.
+    /// </summary>
+    public static void ValidateOperators(
+        ColumnFilters filters,
+        IReadOnlyDictionary<string, string> filterableFields,
         IDictionary<string, string[]> errors)
     {
-        CheckText(filters.Code.Operator, codeField + "Operator", errors);
-        CheckText(filters.Name.Operator, nameField + "Operator", errors);
-        CheckText(filters.ShortName.Operator, "shortNameOperator", errors);
+        foreach (var (filterKey, field) in filterableFields)
+        {
+            filters.TextFilters.TryGetValue(filterKey, out var filter);
+            CheckText(filter?.Operator, field + "Operator", errors);
+        }
 
         if (!TryParseStatusOperator(filters.Active.Operator, out _))
         {
@@ -132,11 +162,33 @@ public static class ColumnFilterQuery
         Expression<Func<T, string?>> name,
         Expression<Func<T, string?>> shortName,
         Expression<Func<T, string?>> activeFlag)
+        => Apply(
+            source,
+            filters,
+            new Dictionary<string, Expression<Func<T, string?>>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["code"] = code,
+                ["name"] = name,
+                ["shortName"] = shortName
+            },
+            activeFlag);
+
+    /// <summary>Assumes <see cref="ValidateOperators"/> has already passed.</summary>
+    public static IQueryable<T> Apply<T>(
+        IQueryable<T> source,
+        ColumnFilters filters,
+        IReadOnlyDictionary<string, Expression<Func<T, string?>>> textColumns,
+        Expression<Func<T, string?>> activeFlag)
     {
         // One Where per filter: separate Where calls combine with AND.
-        source = WhereText(source, code, filters.Code);
-        source = WhereText(source, name, filters.Name);
-        source = WhereText(source, shortName, filters.ShortName);
+        foreach (var (filterKey, column) in textColumns)
+        {
+            if (filters.TextFilters.TryGetValue(filterKey, out var filter))
+            {
+                source = WhereText(source, column, filter);
+            }
+        }
+
         return WhereStatus(source, activeFlag, filters.Active);
     }
 

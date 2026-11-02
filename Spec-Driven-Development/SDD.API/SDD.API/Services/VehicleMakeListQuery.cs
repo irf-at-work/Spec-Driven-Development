@@ -15,12 +15,14 @@ public static class VehicleMakeListQuery
     private const string DefaultSortColumn = "makeCode";
 
     // The allow-list: only these names can be sorted on, so nothing a caller types ever reaches the query as a column name.
+    // Each key is upper-cased, as the filters are. Oracle otherwise compares letter by letter, so "BMW" (capital M)
+    // would sort before "Bentley" (small e) instead of after it.
     private static readonly Dictionary<string, Expression<Func<BrmVehMake, string?>>> SortColumns =
         new(StringComparer.OrdinalIgnoreCase)
         {
-            ["makeCode"] = make => make.VmakCode,
-            ["makeName"] = make => make.VmakName,
-            ["shortName"] = make => make.VmakShortName
+            ["makeCode"] = make => make.VmakCode.ToUpper(),
+            ["makeName"] = make => (make.VmakName ?? string.Empty).ToUpper(),
+            ["shortName"] = make => (make.VmakShortName ?? string.Empty).ToUpper()
         };
 
     public static IReadOnlyDictionary<string, string[]> Validate(

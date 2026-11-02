@@ -16,7 +16,7 @@
 - Q: What should the list use for its initial sort order? → A: Make Code.
 - Q: Should the Arabic Make Name, Short Name, and Remarks use the same maximum lengths as their English counterparts? → A: Yes; 100, 30, and 2000 characters respectively.
 - Q: Should Arabic fields preserve all spacing exactly, or should leading or repeated spaces be normalized? → A: Preserve Arabic text exactly, including all spacing.
-- Q: Which user story owns the add and delete journeys so each story can be independently tested? → A: Add belongs to User Story 2; permanent delete belongs to User Story 4. User Story 1 covers list browsing, search, sorting, paging, and read-only Open.
+- Q: Which user story owns the add and delete journeys so each story can be independently tested? → A: Add belongs to User Story 2; permanent delete belongs to User Story 4. User Story 1 covers list browsing, filtering, sorting, paging, and read-only Open.
 
 ### Session 2026-10-29 (addendum: vehicle models)
 
@@ -45,6 +45,12 @@
   - The model add and edit pages are reached from the make's page, and saving returns the user to that make. Adding, editing and deleting a model stay available only while the make's editing is switched on.
   - Leaving the make's page for a model page while the make has unsaved changes asks for confirmation first.
 - Q: What is wrong with the readability? → A: The text is too small and the font is not good looking. The owner wants larger text and one clear, good-looking typeface used everywhere. Decision: Inter for English text and Noto Sans Arabic for Arabic text.
+
+### Session 2026-11-02 (analysis follow-up)
+
+- Filter results update 500 ms after typing stops.
+- Minimum text sizes are 16px for body text and 15px for table text.
+- Keep the Arabic character limits at 100/30/2000 characters. Resolve the verified Oracle byte-semantics constraint through a separately owner-approved schema change; do not lower the specified limits or claim full persisted-length support until that change is approved and verified.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -166,7 +172,7 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 - **FR-004**: The system MUST require a non-null, non-empty Make Code of up to 12 characters containing only letters, digits, and hyphens; it MUST be saved in capitals and MUST be unique.
 - **FR-005**: The system MUST require a Make Name of up to 100 characters and a Short Name of up to 30 characters.
 - **FR-006**: The system MUST save English names and short names with the first letter of each word capitalized, except words entered entirely in capitals, which MUST retain their casing. It MUST remove extra spaces from non-Arabic text fields.
-- **FR-007**: The system MUST provide a collapsible Additional Information section with optional Remarks up to 2000 characters, Arabic Make Name up to 100 characters, Arabic Short Name up to 30 characters, and Arabic Remarks up to 2000 characters. Arabic values MUST be shown right to left and MUST NOT be altered, including their spacing.
+- **FR-007**: The system MUST provide a collapsible Additional Information section with optional Remarks up to 2000 characters, Arabic Make Name up to 100 characters, Arabic Short Name up to 30 characters, and Arabic Remarks up to 2000 characters. Arabic values MUST be shown right to left and MUST NOT be altered, including their spacing. Persisting these character limits requires a separately owner-approved resolution to the verified Oracle byte-semantics constraint; do not claim full persisted-length support until that resolution is implemented and verified.
 - **FR-008**: The system MUST show a maximum-character message when a field reaches its limit and MUST prevent a value from exceeding the limit. The limit MUST also be enforced when data is saved.
 - **FR-009**: The system MUST tell the user when the required Make Code already exists and MUST NOT save the duplicate.
 - **FR-010**: Opening a vehicle make MUST show it read-only. An edit control MUST make every field except Make Code editable.
@@ -189,10 +195,10 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 - **FR-027**: Every vehicle make MUST have an Active setting. It MUST be on by default when a make is added. The user MAY turn it off while adding or editing, and MAY turn it on again while editing. In read-only view it MUST be shown but not changeable. It is stored as `Y` or `N`. Turning it off MUST NOT remove the make, MUST NOT change its models, and MUST NOT make the make unreadable.
 - **FR-028**: Every vehicle model MUST have the same Active setting, with the same default and behaviour, on its page (adding and editing). It is stored as `Y` or `N`, independently of the make's Active setting.
 - **FR-029**: The list of makes and the list of models MUST show each record's Active status. Inactive records MUST stay in the list and MUST be openable.
-- **FR-030**: The system MUST NOT offer a single global search box. Instead, every visible data column of the vehicle makes list and of the models list MUST have its own filter. Text columns MUST offer the operators starts with, ends with, contains (the default), equal to and not equal to; the Status column MUST offer Active or Inactive with equal to and not equal to. Filters MUST ignore upper and lower case, MUST combine so that a record must match all of them, MUST apply across all records and not only the current page, MUST return the list to page 1 when they change, and a blank filter MUST be ignored. Characters the user types MUST be treated as plain text, never as search patterns.
+- **FR-030**: The system MUST NOT offer a single global search box. Instead, every visible data column of the vehicle makes list and of the models list MUST have its own filter. Text columns MUST offer the operators starts with, ends with, contains (the default), equal to and not equal to; the Status column MUST offer Active or Inactive with equal to and not equal to. Filters MUST ignore upper and lower case, MUST combine so that a record must match all of them, MUST apply across all records and not only the current page, MUST return the list to page 1 when they change, and a blank filter MUST be ignored. Characters the user types MUST be treated as plain text, never as search patterns. Filter results MUST update 500 ms after the user stops typing.
 - **FR-031**: Row and page actions (add, open, edit, delete and going back) MUST be shown as icons, and each icon MUST have a tooltip that names the action and an accessible name for screen readers.
-- **FR-032**: Text on every screen MUST be easy to read: body text MUST be at least 16px and table text at least 15px, with comfortable row spacing, Inter MUST be used for all English text and Noto Sans Arabic for Arabic text, and both MUST be available without an internet connection. [NEEDS CLARIFICATION: the sizes (16px and 15px) are proposed values for the owner to confirm.]
-FR-033: Every page MUST show a breadcrumb trail beneath the header (Master Data › Vehicle Makes › the open make › the current page). Each step except the current page MUST be a link, the current page MUST be marked as such for screen readers, and following a link while a form has unsaved changes MUST ask for confirmation first.
+- **FR-032**: Text on every screen MUST be easy to read: body text MUST be at least 16px and table text at least 15px, with comfortable row spacing; Inter MUST be used for all English text and Noto Sans Arabic for Arabic text, and both MUST be available without an internet connection.
+- **FR-033**: Every page MUST show a breadcrumb trail beneath the header (Master Data › Vehicle Makes › the open make › the current page). Each step except the current page MUST be a link, the current page MUST be marked as such for screen readers, and following a link while a form has unsaved changes MUST ask for confirmation first.
 
 ### Key Entities *(include if feature involves data)*
 

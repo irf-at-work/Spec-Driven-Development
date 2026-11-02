@@ -10,8 +10,6 @@ export class NotificationService {
    */
   success(message: string): void {
     Swal.fire({
-      toast: true,
-      position: 'top-end',
       icon: 'success',
       text: message,
       showConfirmButton: false,
@@ -31,8 +29,6 @@ export class NotificationService {
 
   info(message: string): void {
     Swal.fire({
-      toast: true,
-      position: 'top-end',
       icon: 'info',
       text: message,
       showConfirmButton: false,

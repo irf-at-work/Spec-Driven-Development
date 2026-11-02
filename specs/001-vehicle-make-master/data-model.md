@@ -8,7 +8,7 @@ Two logical entities are needed: Vehicle Make, and Vehicle Model, which belongs 
 
 The owner approved read-only inspection and the dedicated test-schema/fixture scope. Metadata was inspected using the configured Oracle session (`IIRIS_RD_DEVP`); no DDL or database-data changes were run. The make/model keys, non-cascading foreign key, list-item key, active-flag constraints, audit triggers, and declared column lengths were verified.
 
-The configured `STD_LIST_ITEM` table currently has no vehicle-model list types or fixtures. Its `LI_TYPE VARCHAR2(20 BYTE)` supports the proposed names; the owner confirmed the approved list types and fixtures will be loaded separately. No lookup data was changed. All inspected `VARCHAR2` fields use byte semantics, which cannot guarantee the specified character limits for Arabic text; owner-approved schema resolution is needed before full character-limit support can be claimed.
+The configured `STD_LIST_ITEM` table currently has no vehicle-model list types or fixtures. Its `LI_TYPE VARCHAR2(20 BYTE)` supports the proposed names; the owner confirmed the approved list types and fixtures will be loaded separately. No lookup data was changed. All inspected `VARCHAR2` fields use byte semantics, which cannot guarantee the specified character limits for Arabic text. The owner confirmed the Arabic limits remain 100/30/2000 characters; propose a schema resolution and obtain separate explicit approval before DDL. Do not claim full persisted character-limit support until the approved resolution is implemented and verified.
 
 ## Entity: Vehicle Make
 
@@ -109,7 +109,7 @@ A Vehicle Model belongs to exactly one Vehicle Make and is maintained inline on 
 | Last Changed By | `VMOD_UP_BY` | VARCHAR2(12) | Nullable | `admin` for now |
 | Last Changed Date | `VMOD_UP_DT` | DATE | Nullable | No database trigger was found; the API must stamp it in GST. |
 
-All model `VARCHAR2` columns use byte semantics. The database byte limits do not guarantee the stated character limits for multi-byte text.
+All model `VARCHAR2` columns use byte semantics. The database byte limits do not guarantee the stated character limits for multi-byte text. The owner chose to preserve the specified Arabic character limits; a separately approved schema resolution is required before claiming that those maxima can be persisted.
 
 ### Dropdown list types (Oracle `STD_LIST_ITEM`)
 

@@ -53,6 +53,7 @@ builder.Services.AddOpenApi(options =>
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
 builder.Services.AddDbContext<SddDbContext>(options => options.UseOracle(oracleConnectionString));
+builder.Services.AddScoped<PremiumAdjustmentService>();
 builder.Services.AddScoped<VehicleMakeService>();
 builder.Services.AddScoped<VehicleModelService>();
 builder.Services.AddSingleton(TimeProvider.System);

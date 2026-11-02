@@ -22,7 +22,11 @@ describe('buildTrail', () => {
   });
 
   it('names the open make by its code, with a plain fallback when the code is not known', () => {
-    expect(labels(buildTrail('make-view', toyota))).toEqual(['Master Data', 'Vehicle Makes', 'TOY']);
+    expect(labels(buildTrail('make-view', toyota))).toEqual([
+      'Master Data',
+      'Vehicle Makes',
+      'TOY',
+    ]);
     expect(labels(buildTrail('make-view', none))[2]).toBe('Vehicle make');
   });
 
@@ -41,6 +45,22 @@ describe('buildTrail', () => {
       'TOY',
       'Edit COROLLA',
     ]);
+  });
+
+  it('links the premium adjustment form back to its list and names an open code', () => {
+    const addTrail = buildTrail('premium-adjustment-new', none);
+    expect(labels(addTrail)).toEqual([
+      'Master Data',
+      'Premium Adjustments',
+      'Add Premium Adjustment',
+    ]);
+    expect(addTrail[1].link).toEqual(['/premium-adjustments']);
+
+    const viewTrail = buildTrail('premium-adjustment-view', {
+      ...none,
+      adjustmentCode: 'ZT1000000001',
+    });
+    expect(labels(viewTrail)).toEqual(['Master Data', 'Premium Adjustments', 'ZT1000000001']);
   });
 
   it('never links the current step', () => {

@@ -59,7 +59,7 @@
 ### Keep pagination, search, and sorting on the server
 
 - **Decision**: Use the existing shared `PaginatedResult<T>` API response type. Apply validated make search and allow-listed sorting to the full database query before `Skip`/`Take`; page makes and a make's models at 10 rows, with Make Code and Model Code ascending defaults respectively. The fixed lookup-options response is the one approved unpaged lookup exception.
-- **Rationale**: The spec explicitly requires make search/sort across all records and paged model browsing; client-side operations on the visible page would produce incorrect results. The constitution requires `PaginatedResult<T>` with `items`, `page`, `pageSize`, and `totalCount` for listing endpoints.
+- **Rationale**: The spec explicitly requires make filtering/sorting across all records and paged model browsing; client-side operations on the visible page would produce incorrect results. The constitution requires `PaginatedResult<T>` with `items`, `page`, `pageSize`, and `totalCount` for listing endpoints.
 - **Alternatives considered**: Load all make/model records and filter/sort in Angular. Rejected because it breaks the page-size contract. Paging each of the nine small fixed lookup lists was also rejected by the owner; record the explicit exception under C3 before implementation.
 
 ### Keep storage and identity decisions within owner-approved schema
@@ -80,21 +80,22 @@
 2. Angular version is resolved: the constitution now says Angular 22 (v1.0.2), matching the existing project. No downgrade.
 3. Confirm Oracle provider license acceptance and Oracle 19c schema access before new scaffolding or database integration work.
 4. Owner approval is required before any DDL or database inserts, updates, or deletes. No database changes were made as part of this planning update.
-5. Before implementation, formally record the owner-approved unpaged model-options lookup exception under constitution C3.
+5. The owner-approved unpaged model-options lookup exception is already recorded under constitution C3.
+6. The owner confirmed a 500 ms filter debounce, minimums of 16px body text and 15px table text, and retention of Arabic character limits at 100/30/2000. A schema resolution for Arabic storage still requires separate explicit approval before DDL.
 
 ## Unresolved Technical Questions
 
-- The owner has described make table `BRM_VEH_MAKE`, model table `BRM_VEH_MODEL`, and lookup table `STD_LIST_ITEM` (see `data-model.md`). Verify live keys, the model foreign key's non-cascading delete rule, active defaults/check constraints, character-versus-byte length semantics, audit timestamp behavior, the `LI_TYPE`/`LI_CODE` key, and that lookup descriptions are available before scaffolding or integration tests. Any missing required database rule must be escalated for owner-approved DDL; do not infer or change schema.
+- The owner has described make table `BRM_VEH_MAKE`, model table `BRM_VEH_MODEL`, and lookup table `STD_LIST_ITEM` (see `data-model.md`). Read-only inspection has verified keys, the model foreign key's non-cascading delete rule, active defaults/check constraints, byte-based length semantics, audit timestamp behavior, and the `LI_TYPE`/`LI_CODE` key. Model lookup fixtures are still pending. Any required schema change must be proposed and separately approved; do not infer or change schema.
 - Confirm which Oracle connection profile may be used for approved scaffolding and integration tests. Secrets must be supplied through user-secrets or environment variables and must not enter source control.
 
 ## Vehicle Model Design Decisions
 
 - **Decision**: Treat `Vehicle Model` as a child of `Vehicle Make`, keyed by `(VMOD_VMAK_CODE, VMOD_CODE)`. Use nested CRUD routes so the make code is supplied by the URL and cannot be changed in the model form. Model edits save independently from make edits.
-- **Rationale**: This follows the owner-confirmed Oracle composite key and the spec's inline, per-row save behavior. A model's code is unique only within its make.
+- **Rationale**: This follows the owner-confirmed Oracle composite key and the spec's dedicated model pages with independent saves. A model's code is unique only within its make.
 - **Alternatives considered**: A global model-code key or accepting the make code in the request body. Rejected because these conflict with the confirmed table key and could allow a model to move between makes.
 - **Decision**: Refuse permanent make deletion while any model exists. Verify that Oracle enforces a non-cascading foreign key; pre-check for child models for a clear response and map a concurrent foreign-key conflict to `409 ProblemDetails`.
 - **Rationale**: This is the clarified spec behavior and prevents accidental child-data loss.
 - **Alternatives considered**: Cascade-delete children or leave a raw Oracle constraint error. Rejected because cascade risks data loss and raw database errors violate the API error contract.
 - **Decision**: Load the nine fixed, active list types from `STD_LIST_ITEM` in one read-only, unpaged options response, ordered by English description. Reject newly selected codes that are inactive or belong to another list type; allow an existing inactive code to remain unchanged during an edit.
 - **Rationale**: The spec defines these fields as optional dropdowns and confirms unpaged lookup behavior. One fixed endpoint avoids repeated requests and prevents callers from selecting arbitrary list types.
-- **Alternatives considered**: Nine separate endpoints, caller-supplied list types, or paged options. Rejected because they add calls/configurable surface or conflict with the owner-approved lookup behavior. Record the B8 exception under C3 before implementation.
+- **Alternatives considered**: Nine separate endpoints, caller-supplied list types, or paged options. Rejected because they add calls/configurable surface or conflict with the owner-approved lookup behavior. The B8 exception is recorded under C3.

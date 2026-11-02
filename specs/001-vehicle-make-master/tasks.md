@@ -12,7 +12,7 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 
 **Organization**: Tasks are grouped by user story and ordered by actual dependencies. Existing API/UI work is not assumed to satisfy the acceptance criteria until covered by the tasks and tests below.
 
-**Change request 30-Oct-2026**: Column filters replace the global search, models move to their own pages, actions become icons with tooltips, notifications move to SweetAlert2, and the typography changes to Inter and Noto Sans Arabic. Where T010 to T014 mention "search" and T033 to T038 describe an "inline" model editor, Phase 9 (T044 to T060) supersedes that wording; the old tasks are not re-opened.
+**Change request 30-Oct-2026**: Column filters replace the global search, models move to their own pages, actions become icons with tooltips, notifications move to SweetAlert2, and the typography changes to Inter and Noto Sans Arabic. T010-T014 are historical search-era tasks; T048-T053 define the current filter behavior. T034/T038 record the original inline-model baseline; T055-T057 define the current dedicated model-page behavior. Do not implement the superseded wording.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -49,21 +49,21 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 
 **Goal**: Brokers can find makes across the full dataset, sort and page consistently, see Active status, and open a make read-only.
 
-**Independent Test**: With more than 10 approved test makes, verify the default Make Code ascending order, Active status, full-set search/sort, paging, empty results, and read-only Open details.
+**Independent Test**: With more than 10 approved test makes, verify the default Make Code ascending order, Active status, full-set column filtering and sorting, paging, empty results, and read-only Open details.
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Add API tests for page size 10, Make Code ascending default, full-set search and allow-listed sorting, total count, inactive-row visibility, and get-by-code behavior in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API.Tests/VehicleMakes/VehicleMakeApiTests.cs` and `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API.Tests/VehicleMakes/VehicleMakeListQueryTests.cs`.
-- [ ] T011 [P] [US1] Add Playwright tests for list rendering, Active status, page navigation, empty results, search/sort across pages, and read-only Open in `Spec-Driven-Development/tests/vehicle-make-e2e/list-and-read.spec.ts`.
+- [ ] T010 [P] [US1] Add API tests for page size 10, Make Code ascending default, allow-listed sorting, total count, inactive-row visibility, and get-by-code behavior in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API.Tests/VehicleMakes/VehicleMakeApiTests.cs` and `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API.Tests/VehicleMakes/VehicleMakeListQueryTests.cs`. Column-filter tests are specified by T048.
+- [ ] T011 [P] [US1] Add Playwright tests for list rendering, Active status, page navigation, empty results, and read-only Open in `Spec-Driven-Development/tests/vehicle-make-e2e/list-and-read.spec.ts`. Current column-filter coverage is specified by T049.
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Ensure make list/detail DTOs and the server query expose Active status, search Make Code/Name/Short Name and allow-list sort fields across all records before paging at 10, defaulting to Make Code ascending, in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/DTOs/VehicleMakeListItemDto.cs`, `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/DTOs/VehicleMakeDto.cs`, `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Services/VehicleMakeListQuery.cs`, and `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Services/VehicleMakeService.cs`.
+- [ ] T012 [US1] Ensure make list/detail DTOs and the server query expose Active status and allow-listed sorting across all records before paging at 10, defaulting to Make Code ascending, in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/DTOs/VehicleMakeListItemDto.cs`, `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/DTOs/VehicleMakeDto.cs`, `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Services/VehicleMakeListQuery.cs`, and `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Services/VehicleMakeService.cs`. Current per-column filtering is specified by T050.
 - [ ] T013 [US1] Ensure typed `GET /api/vehicle-makes` and `GET /api/vehicle-makes/{makeCode}` return the shared page shape and `ProblemDetails` for invalid query/not-found cases in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Controllers/VehicleMakesController.cs`.
-- [ ] T014 [US1] Complete the standalone OnPush make list and read-only detail flow, including signal-based state, `inject()`, Material table/search/sort/page controls, empty state, visible Add/Delete controls, and immutable Make Code in `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-make-list.component.ts`, `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-make-list.component.html`, `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-make-form.component.ts`, and `Spec-Driven-Development/sdd-ui/src/app/app.routes.ts`.
+- [ ] T014 [US1] Complete the standalone OnPush make list and read-only detail flow, including signal-based state, `inject()`, Material table/sort/page controls, empty state, visible Add/Delete controls, and immutable Make Code in `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-make-list.component.ts`, `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-make-list.component.html`, `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-make-form.component.ts`, and `Spec-Driven-Development/sdd-ui/src/app/app.routes.ts`. Current per-column filter controls are specified by T053.
 - [ ] T015 [US1] Regenerate the list/read API client from the development OpenAPI document into `Spec-Driven-Development/sdd-ui/src/app/generated/api-client.ts` and resolve any generated-client type/build errors without editing generated output manually.
 
-**Checkpoint**: User Story 1 passes its API and browser tests with list/read behavior independently verifiable.
+**Checkpoint**: User Story 1 passes its API and browser tests with list/read behavior independently verifiable. The final column-filter behavior and tests are covered by T048-T053.
 
 ---
 
@@ -134,24 +134,24 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 
 ## Phase 7: User Story 5 - Manage the models of a vehicle make (Priority: P2)
 
-**Goal**: Brokers can page through, add, edit, soft-delete, restore, and permanently delete models inline on a saved make; new-make forms never show models.
+**Goal**: Brokers can page through models on a saved make and add, edit, soft-delete, restore, and permanently delete them on dedicated pages; new-make forms never show models.
 
-**Independent Test**: Open a saved make, verify its own models are listed 10 per page in Model Code ascending order, add/edit/delete a model inline, verify unsaved-row confirmation and independent make changes, and confirm the new-make form has no models section.
+**Independent Test**: Open a saved make, verify its own models are listed 10 per page in Model Code ascending order, add/edit models on dedicated pages, delete from the list with confirmation, verify unsaved-change confirmation and independent make/model saves, and confirm the new-make form has no models section.
 
 ### Tests for User Story 5
 
 - [ ] T033 [P] [US5] Add API tests for make-scoped paging/order, composite-key uniqueness, duplicate errors, immutable Model Code, every required/optional model field and numeric constraint, `admin` auditing, Active default/independence, fixed-list dropdown validation, preservation of unchanged inactive selections, and model delete outcomes in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API.Tests/VehicleModels/VehicleModelApiTests.cs`.
-- [X] T034 [P] [US5] Add Playwright tests for read-only model listing, inline create/edit/delete, model-code locking, empty state, model-row discard confirmation, independent make/model saves, dropdown labels and selections, Active status, and no models on new-make forms in `Spec-Driven-Development/tests/vehicle-make-e2e/manage-vehicle-models.spec.ts`.
+- [X] T034 [P] [US5] Add Playwright tests for the original read-only model listing and inline create/edit/delete baseline, model-code locking, empty state, model-row discard confirmation, independent make/model saves, dropdown labels and selections, Active status, and no models on new-make forms in `Spec-Driven-Development/tests/vehicle-make-e2e/manage-vehicle-models.spec.ts`. The inline-page scenarios are superseded by T055.
 
 ### Implementation for User Story 5
 
 - [X] T035 [US5] Implement model DTOs and request validation using the exact rules in `specs/001-vehicle-make-master/data-model.md`: Model Code is required, “12 characters”, “Letters, digits, hyphens only; saved in capitals; unique within its make; immutable after creation”; Model Name “100 characters”; Short Name “30 characters”; Remarks “2000 characters”; Arabic fields “100 / 30 / 2000 characters” preserved exactly; the nine list-code fields are optional 12-character dropdowns; Weight and Load Capacity are optional 100-character text; Engine Capacity is a non-negative whole number; Make Year is a non-negative whole number up to 4 digits; Seats, Passengers, and Drivers are non-negative whole numbers up to 3 digits; Value is a non-negative AED decimal; Active is `Y` or `N`, defaults on, and is independent of make Active, in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/DTOs/VehicleModelDto.cs`, `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/DTOs/CreateVehicleModelRequest.cs`, `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/DTOs/UpdateVehicleModelRequest.cs`, and `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Services/VehicleModelInputRules.cs`.
 - [X] T036 [US5] Implement make-scoped model paging (10 rows, Model Code ascending), create/update/delete with `admin` audit fields, `(VMOD_VMAK_CODE, VMOD_CODE)` uniqueness, fixed `STD_LIST_ITEM` type validation, inactive-current-value preservation, and safe Oracle constraint-error mapping in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Services/VehicleModelService.cs`.
 - [X] T037 [US5] Implement typed nested model list/create/update/delete endpoints and the fixed read-only `GET /api/vehicle-model-options` response with active English descriptions ordered by description; return `ProblemDetails` for all errors and keep the options lookup unpaged only after T003 in `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Controllers/VehicleModelsController.cs`, `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Controllers/VehicleModelOptionsController.cs`, and `Spec-Driven-Development/Spec-Driven-Development/SDD.API/SDD.API/Program.cs`.
-- [X] T038 [US5] Add the inline paged model list and typed reactive row editor with read-only display, empty state, model Active status, fixed dropdown options, immutable make/model keys, independent row saves, and discard/delete confirmation while hiding models for a new make in `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-model-list.component.ts`, `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-model-list.component.html`, and `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-make-form.component.html`.
+- [X] T038 [US5] Implement the original inline paged model list and typed reactive row editor baseline with read-only display, empty state, model Active status, fixed dropdown options, immutable make/model keys, independent row saves, and discard/delete confirmation while hiding models for a new make. The inline editor is superseded by T056; keep this completed task as implementation history.
 - [X] T039 [US5] Regenerate all model CRUD and options types into `Spec-Driven-Development/sdd-ui/src/app/generated/api-client.ts`; resolve OpenAPI/client/UI type errors without manual edits to generated output.
 
-**Checkpoint**: User Story 5 implementation is in place. API coverage passes against the approved Oracle test schema; valid dropdown-selection and inactive-current-value acceptance remain blocked until the owner loads the approved lookup fixtures.
+**Checkpoint**: The original model API and inline UI baseline are in place. The dedicated-page migration and updated browser coverage remain in T055-T057. Fixture-dependent dropdown acceptance remains blocked until the owner loads the approved lookup fixtures.
 
 ---
 
@@ -162,15 +162,13 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 - [X] T040 [P] Update feature decision records with approved model-key, lookup, deletion, and C3-exception decisions in `docs/decisions/vehicle-make-master.md`.
 - [X] T041 [P] Update the runnable prerequisites, commands, expected results, and complete five-story acceptance walkthrough in `specs/001-vehicle-make-master/quickstart.md` without including secrets.
 - [X] T042 Verify formatter/linter configuration and single-runner coverage for API formatting/analyzers, Angular lint/format, API tests, Angular tests, Playwright, and production builds in `Spec-Driven-Development/sdd-ui/eslint.config.js`, `Spec-Driven-Development/sdd-ui/package.json`, and `Spec-Driven-Development/test-all.ps1`.
-- [ ] T043 Run the complete test/build runner, fix failures, and record passing API, Angular, Playwright, formatting, lint, and build results in `Spec-Driven-Development/test-all.ps1` and `specs/001-vehicle-make-master/quickstart.md`.
-
-> T043 remains open: available API, Angular, formatting, lint, and build checks pass, but fixture-dependent model dropdown acceptance and persisted Arabic maximum-length support cannot be completed without owner action.
+The single final full test/build run is T060 after the remaining implementation and owner-decision gates; do not run a separate Phase 8 full suite.
 
 ---
 
 ## Phase 9: Change request 30-Oct-2026 (filters, model pages, icons, typography, notifications)
 
-**Purpose**: Deliver FR-030 to FR-032 and the revised FR-018, FR-022 and FR-028 from the amended spec. Paths are relative to the repository root.
+**Purpose**: Deliver FR-030 to FR-033 and the revised FR-018, FR-022 and FR-028 from the amended spec. Paths are relative to the repository root.
 
 ### Gate
 
@@ -178,7 +176,7 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 
 ### Look and feel (FR-031, FR-032)
 
-- [ ] T045 [P] Load Inter and Noto Sans Arabic from the installed packages (no network use), apply them app-wide and to Material through its typography settings, use Noto Sans Arabic for Arabic fields, and set body text to at least 16px, table text to at least 15px, with comfortable row spacing, in `Spec-Driven-Development/sdd-ui/src/styles.css`, `Spec-Driven-Development/sdd-ui/src/app/app.css` and `Spec-Driven-Development/sdd-ui/angular.json` if the package styles must be listed there.
+- [ ] T045 [P] After owner confirmation of the minimum sizes in T062 and package approval in T044, load Inter and Noto Sans Arabic locally, apply them app-wide and to Material through its typography settings, use Noto Sans Arabic for Arabic fields, and apply the owner-confirmed minimum body/table sizes with comfortable row spacing, in `Spec-Driven-Development/sdd-ui/src/styles.css`, `Spec-Driven-Development/sdd-ui/src/app/app.css` and `Spec-Driven-Development/sdd-ui/angular.json` if package styles must be listed there.
 - [ ] T046 [P] Load the self-hosted icon font and provide one icon-button pattern (icon, tooltip naming the action, accessible name) used for add, open, edit, delete and back in `Spec-Driven-Development/sdd-ui/src/styles.css` and `Spec-Driven-Development/sdd-ui/src/app/shared/icon-button/icon-button.component.ts`; replace the text buttons in `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-make-list.component.html`, `vehicle-make-form.component.html` and `vehicle-model-list.component.html`.
 - [ ] T047 One notification service wrapping SweetAlert2 for toasts and confirmations (plain text only, never its HTML option), then replace every `MatSnackBar` and confirm-dialog use, including the HTTP error interceptor and the unsaved-changes guard, with it; remove the old confirm dialog once nothing uses it, with unit tests, in `Spec-Driven-Development/sdd-ui/src/app/shared/notifications/notification.service.ts`, `Spec-Driven-Development/sdd-ui/src/app/core/interceptors/api-error.interceptor.ts`, `Spec-Driven-Development/sdd-ui/src/app/shared/unsaved-changes.guard.ts` and the vehicle-makes components.
 
@@ -198,11 +196,19 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 - [ ] T056 [US5] Move model add and edit out of the make page into one model form page (add and edit modes, Model Code locked on edit, dropdowns loaded when the page opens), keep the model list on the make page with Add and Edit visible only while make editing is on, and return to the make after saving, in `Spec-Driven-Development/sdd-ui/src/app/features/vehicle-makes/vehicle-model-form.component.ts`, `vehicle-model-form.component.html`, `vehicle-model-list.component.ts`, `vehicle-model-list.component.html`, `vehicle-make-form.component.html` and `Spec-Driven-Development/sdd-ui/src/app/app.routes.ts`.
 - [ ] T057 [US5] Add the unsaved-changes confirmation for leaving the model page, and for leaving the make page for a model page while the make has unsaved changes, using the notification service, in `Spec-Driven-Development/sdd-ui/src/app/shared/unsaved-changes.guard.ts` and the make and model form components.
 
+### Remaining decisions and breadcrumbs (FR-030, FR-032, FR-033)
+
+- [X] T061 Owner confirmed a 500 ms filter debounce; it is recorded in FR-030. The API/UI acceptance tests in T048-T053 must assert this timing.
+- [X] T062 Owner confirmed minimums of 16px for body text and 15px for table text. Record them in FR-032; T045 applies these values.
+- [ ] T063 Propose a schema resolution that preserves the Arabic character limits of 100/30/2000, then obtain separate explicit owner approval before DDL. Implement and verify only after approval; update `data-model.md` and `quickstart.md`, and keep persisted Arabic maximum-length acceptance blocked until verified.
+- [ ] T064 [P] Add Playwright acceptance coverage for FR-033: breadcrumb appearance on make list/form and model list/form pages; correct hierarchy and destinations; current-page accessibility semantics; and confirmation before navigating away from unsaved form changes through a breadcrumb link, in `Spec-Driven-Development/tests/vehicle-make-e2e/breadcrumbs.spec.ts`.
+- [ ] T065 Implement the shared breadcrumb trail on every make and model page, with the specified hierarchy, link destinations, screen-reader current-page state, and unsaved-change confirmation when a breadcrumb link is followed, in the shared breadcrumb component and the vehicle-make/model page components.
+
 ### Close-out
 
 - [ ] T058 Update every Playwright test that finds buttons by visible text so it uses the icon buttons' accessible names, in `Spec-Driven-Development/tests/vehicle-make-e2e/`.
 - [ ] T059 [P] Update `specs/001-vehicle-make-master/quickstart.md` (filters, model pages, new packages and how to install them) and `docs/decisions/vehicle-make-master.md` (SweetAlert2, typefaces, filter design, model pages).
-- [ ] T060 Run the complete runner `Spec-Driven-Development/test-all.ps1`, fix failures, and record the results in `specs/001-vehicle-make-master/quickstart.md`.
+- [ ] T060 Run the complete runner `Spec-Driven-Development/test-all.ps1` only after T044-T059, T061-T065 and all required owner/schema/fixture gates are resolved; fix failures and record the results in `specs/001-vehicle-make-master/quickstart.md`. Report fixture-dependent dropdown tests or Arabic maximum-length persistence as blocked unless their respective gates are actually closed.
 
 ---
 
@@ -210,11 +216,11 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 
 ### Phase Dependencies
 
-- **Setup (Phase 1)**: T001 is a package-policy check; T002 gates Oracle inspection/scaffolding; T003 is a prerequisite only for model-options implementation; T004 and T005 establish browser and test-runner infrastructure.
+- **Setup (Phase 1)**: T001 is a package-policy check; T002's read-only schema inspection and T003's C3 exception recording are complete; T004 and T005 establish browser and test-runner infrastructure. The filter and typography decisions in T061/T062 are complete; T063 tracks the remaining Arabic schema approval.
 - **Foundational (Phase 2)**: T006 and T009 prepare shared API/client behavior. T007-T008 require T002 and block model persistence work. They do not prevent make-only story work from starting.
-- **User Stories**: US1 can start after shared API/client and test infrastructure. US2 follows US1 to use its Add action. US3 follows US2 to extend the same form. US4 needs US1 and the model mapping from T007 to enforce FR-026. US5 needs T002, T003, T007, and US1's saved-make detail route.
-- **Polish (Phase 8)**: Depends on all selected stories and their tests; T043 runs last.
-- **Change request (Phase 9)**: T044 (package approval and install by the owner) gates every task that uses SweetAlert2, the typefaces or the icon font (T045 to T047, T053, T056, T058). Filter work (T048 to T053) and model-page work (T054 to T057) are independent of each other. T060 runs last and supersedes T043 as the final full run.
+- **User Stories**: US1 can start after shared API/client and test infrastructure. US2 follows US1 to use its Add action. US3 follows US2 to extend the same form. US4 needs US1 and the model mapping from T007 to enforce FR-026. US5 needs the verified schema from T002, recorded C3 exception from T003, T007, and US1's saved-make detail route.
+- **Polish (Phase 8)**: Depends on all selected stories. The sole final full run is T060.
+- **Change request (Phase 9)**: T044 (package approval and install by the owner) gates every task that uses SweetAlert2, the typefaces or the icon font (T045 to T047, T053, T056, T058). The owner decisions in T061/T062 are confirmed; T048-T053 must assert the 500 ms filter debounce and T045 applies the confirmed typography sizes. T063 gates any claim of persisted Arabic maximum-length support. Filter work (T048 to T053) and model-page work (T054 to T057) are otherwise independent. Breadcrumb tests T064 precede implementation T065; T065 also depends on the shared notifications/unsaved-change behavior in T047 and T057. T060 is the sole final full run and runs after all implementation, test, and owner gates.
 
 ### User Story Dependencies
 
@@ -222,7 +228,7 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 - **US2 (P1)**: Uses the list Add action from US1.
 - **US3 (P1)**: Extends US2's typed add form for edit/update.
 - **US4 (P2)**: Uses US1's list Delete action and requires the child-model mapping; does not require full US5 model UI.
-- **US5 (P2)**: Requires a saved-make detail route and approved model/list schema mappings; it does not depend on US2 or US3 for the model API, but the complete page integration uses their make form.
+- **US5 (P2)**: Requires a saved-make detail route and approved model/list schema mappings; it does not depend on US2 or US3 for the model API, but the complete page integration uses their make form. The C3 exception is already recorded; fixture data and approval/verification of the Arabic schema resolution remain separate gates.
 
 ### Within Each User Story
 
@@ -252,16 +258,16 @@ Task: T011 Browser list/read tests in Spec-Driven-Development/tests/vehicle-make
 ### MVP First
 
 1. Complete the required shared setup and test runner; defer Oracle-specific work until approved access is confirmed.
-2. Complete **US1 only** for the MVP: browse, search, sort, page, and open make details read-only.
+2. Complete **US1 only** for the MVP: browse, filter, sort, page, and open make details read-only.
 3. Validate US1 independently with more than 10 approved makes and its API/browser tests.
 4. Add US2 create, US3 edit, and US4 safe permanent deletion as separately tested increments.
-5. Add US5 inline model maintenance only after the C3 exception and Oracle schema gates are complete.
+5. Complete US5's dedicated model-page migration after the approved schema is available; the C3 exception is already recorded. Run the final suite only after the owner-decision and fixture gates are closed or explicitly reported as blocked.
 
 ### Incremental Delivery
 
-- US1 delivers a browsable, searchable, sortable make list and read-only details.
+- US1 delivers a browsable, filterable, sortable make list and read-only details.
 - US2 adds validated make creation.
 - US3 adds controlled make editing and Active restore/deactivation.
 - US4 adds confirmed permanent make deletion with child-model protection.
-- US5 adds paged, inline vehicle-model CRUD and fixed lookup dropdowns.
+- US5 adds paged vehicle-model CRUD on dedicated pages and fixed lookup dropdowns.
 - Run the complete test runner and quickstart acceptance walkthrough before declaring the feature complete.

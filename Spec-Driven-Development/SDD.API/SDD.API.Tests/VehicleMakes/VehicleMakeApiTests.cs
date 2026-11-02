@@ -556,6 +556,22 @@ public class VehicleMakeApiTests(OracleApiFactory factory)
     }
 
     [Fact]
+    public async Task Sorting_ignores_upper_and_lower_case_so_BMW_sorts_after_Bentley()
+    {
+        var runId = await MakesForFiltering(
+            ("Bentley", "Ben", true),
+            ("BMW", "BMW", true),
+            ("Audi", "Aud", true));
+
+        var ascending = await FilteredCodes($"makeCode={runId}&sortBy=makeName&sortDirection=asc");
+        var descending = await FilteredCodes($"makeCode={runId}&sortBy=makeName&sortDirection=desc");
+
+        // Audi, Bentley, BMW. A plain letter-by-letter comparison would put BMW before Bentley, because capital M sorts before small e.
+        Assert.Equal(new[] { "03", "01", "02" }, ascending);
+        Assert.Equal(new[] { "02", "01", "03" }, descending);
+    }
+
+    [Fact]
     public async Task The_old_search_parameter_no_longer_filters_anything()
     {
         var runId = await MakesForFiltering(("One", "One", true), ("Two", "Two", true));

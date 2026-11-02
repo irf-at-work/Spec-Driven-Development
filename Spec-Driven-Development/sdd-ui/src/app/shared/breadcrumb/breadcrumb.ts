@@ -8,14 +8,32 @@ export interface Crumb {
 }
 
 /** Each route names its page, and the trail for that page is built from it. */
-export type BreadcrumbPage = 'makes' | 'make-new' | 'make-view' | 'model-new' | 'model-edit';
+export type BreadcrumbPage =
+  | 'makes'
+  | 'make-new'
+  | 'make-view'
+  | 'model-new'
+  | 'model-edit'
+  | 'premium-adjustments'
+  | 'premium-adjustment-new'
+  | 'premium-adjustment-view';
 
 export interface BreadcrumbContext {
   readonly makeCode: string | null;
   readonly modelCode: string | null;
+  readonly adjustmentCode?: string | null;
 }
 
-const PAGES: readonly string[] = ['makes', 'make-new', 'make-view', 'model-new', 'model-edit'];
+const PAGES: readonly string[] = [
+  'makes',
+  'make-new',
+  'make-view',
+  'model-new',
+  'model-edit',
+  'premium-adjustments',
+  'premium-adjustment-new',
+  'premium-adjustment-view',
+];
 
 export function isBreadcrumbPage(value: unknown): value is BreadcrumbPage {
   return typeof value === 'string' && PAGES.includes(value);
@@ -48,6 +66,20 @@ export function buildTrail(page: BreadcrumbPage, context: BreadcrumbContext): re
         VEHICLE_MAKES_LINK,
         makeStep(context),
         { label: context.modelCode ? `Edit ${context.modelCode}` : 'Edit model' },
+      ];
+    case 'premium-adjustments':
+      return [MASTER_DATA, { label: 'Premium Adjustments' }];
+    case 'premium-adjustment-new':
+      return [
+        MASTER_DATA,
+        { label: 'Premium Adjustments', link: ['/premium-adjustments'] },
+        { label: 'Add Premium Adjustment' },
+      ];
+    case 'premium-adjustment-view':
+      return [
+        MASTER_DATA,
+        { label: 'Premium Adjustments', link: ['/premium-adjustments'] },
+        { label: context.adjustmentCode ?? 'Adjustment Details' },
       ];
   }
 }
