@@ -60,6 +60,8 @@ describe('CompanyDetailsPage deletion', () => {
 
     const panel = harness.routeNativeElement?.querySelector('.details-panel');
     expect(panel).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('[aria-label*="Created by"]')).toBeNull();
+    expect(harness.routeNativeElement?.textContent).toContain('Audit history');
     expect(
       Array.from(panel?.querySelectorAll('.company-details dt, .read-field span') ?? []).some((label) =>
         label.textContent?.includes('Short name'),

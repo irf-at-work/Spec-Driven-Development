@@ -6,16 +6,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 export type CompanyFilterOperator =
-  | 'StartsWith'
-  | 'EndsWith'
-  | 'Contains'
-  | 'DoesNotContain'
-  | 'Equals'
-  | 'NotEquals';
+  'StartsWith' | 'EndsWith' | 'Contains' | 'DoesNotContain' | 'Equals' | 'NotEquals';
 
 export interface FilterChange {
   value: string;
-  operator: CompanyFilterOperator;
+  operator: CompanyFilterOperator | null;
 }
 
 @Component({
@@ -28,7 +23,7 @@ export interface FilterChange {
 export class FilterControl {
   readonly label = input.required<string>();
   readonly value = input('');
-  readonly operator = input<CompanyFilterOperator>('Contains');
+  readonly operator = input<CompanyFilterOperator | null>(null);
   readonly changed = output<FilterChange>();
   readonly cleared = output<void>();
 
@@ -45,18 +40,24 @@ export class FilterControl {
     this.changed.emit({ value, operator: this.operator() });
   }
 
-  emitOperator(operator: CompanyFilterOperator): void {
-    this.changed.emit({ value: this.value(), operator });
+  emitOperator(operator: CompanyFilterOperator | ''): void {
+    this.changed.emit({ value: this.value(), operator: operator || null });
   }
 
   setOperatorFromEvent(event: Event): void {
     const target = event.target;
     if (target instanceof HTMLSelectElement) {
-      this.emitOperator(target.value as CompanyFilterOperator);
+      if (target.value === '' || this.isCompanyFilterOperator(target.value)) {
+        this.emitOperator(target.value);
+      }
     }
   }
 
   clear(): void {
     this.cleared.emit();
+  }
+
+  private isCompanyFilterOperator(value: string): value is CompanyFilterOperator {
+    return this.operators.some((operator) => operator.value === value);
   }
 }

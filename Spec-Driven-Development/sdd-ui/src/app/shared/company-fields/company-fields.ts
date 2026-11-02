@@ -35,4 +35,26 @@ export class CompanyFields {
     { name: 'email', label: 'Email', maxLength: 100 },
     { name: 'website', label: 'Website', maxLength: 100 },
   ];
+
+  sanitizePhoneInput(event: Event): void {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const value = input.value;
+    const cursor = input.selectionStart ?? value.length;
+    const sanitized = value.replace(/\D/g, '').slice(0, 10);
+    if (value === sanitized) {
+      return;
+    }
+
+    const cursorPosition = Math.min(
+      value.slice(0, cursor).replace(/\D/g, '').length,
+      sanitized.length,
+    );
+    input.value = sanitized;
+    this.form().get('phone')?.setValue(sanitized);
+    input.setSelectionRange(cursorPosition, cursorPosition);
+  }
 }

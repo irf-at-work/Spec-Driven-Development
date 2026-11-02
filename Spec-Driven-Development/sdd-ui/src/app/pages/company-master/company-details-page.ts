@@ -12,7 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, EMPTY, finalize, map, switchMap, tap } from 'rxjs';
@@ -28,7 +27,6 @@ import { CompanyFields } from '../../shared/company-fields/company-fields';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatTooltipModule,
     ReactiveFormsModule,
     RouterLink,
     CompanyFields,
@@ -145,10 +143,6 @@ export class CompanyDetailsPage implements OnInit {
     const day = String(gulfTime.getUTCDate()).padStart(2, '0');
     const month = String(gulfTime.getUTCMonth() + 1).padStart(2, '0');
     return `${day}-${month}-${gulfTime.getUTCFullYear()}`;
-  }
-
-  historyText(company: CompanyDto): string {
-    return `Created by ${company.createdBy || 'Unknown'}; last updated by ${company.lastUpdatedBy || 'Unknown'}`;
   }
 
   startEditing(): void {

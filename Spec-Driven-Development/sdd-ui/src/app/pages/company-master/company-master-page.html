@@ -28,19 +28,8 @@
       aria-label="Companies"
     >
       <ng-container matColumnDef="actions" [stickyEnd]="true">
-        <th mat-header-cell *matHeaderCellDef scope="col" [style.width]="columnWidth('actions')">
-          Actions
-          <span
-            class="resize-handle"
-            role="separator"
-            aria-orientation="vertical"
-            tabindex="0"
-            aria-label="Resize Actions column"
-            (pointerdown)="startResize('actions', $event)"
-            (keydown)="keyboardResize('actions', $event)"
-          ></span>
-        </th>
-        <td mat-cell *matCellDef="let company" [style.width]="columnWidth('actions')">
+        <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+        <td mat-cell *matCellDef="let company">
           <button
             mat-icon-button
             type="button"

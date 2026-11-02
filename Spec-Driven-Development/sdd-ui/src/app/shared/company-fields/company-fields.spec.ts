@@ -46,4 +46,26 @@ describe('CompanyFields', () => {
     expect(form.controls.companyName.value).toBe('North Mutual');
     expect(form.controls.address1.value).toBe('Bay Road');
   });
+
+  it('removes non-digits from phone input and keeps an unchanged legacy value intact', async () => {
+    await TestBed.configureTestingModule({ imports: [CompanyFields] }).compileComponents();
+    const fixture = TestBed.createComponent(CompanyFields);
+    const form = createForm();
+    form.controls.phone.setValue('555-OLD');
+    fixture.componentRef.setInput('form', form);
+    fixture.componentRef.setInput('mode', 'edit');
+    fixture.detectChanges();
+
+    const phone = fixture.nativeElement.querySelector(
+      'input[inputmode="numeric"]',
+    ) as HTMLInputElement;
+    expect(phone.value).toBe('555-OLD');
+
+    phone.value = '12abc34567890';
+    phone.dispatchEvent(new Event('input', { bubbles: true }));
+    fixture.detectChanges();
+
+    expect(phone.value).toBe('1234567890');
+    expect(form.controls.phone.value).toBe('1234567890');
+  });
 });

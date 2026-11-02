@@ -189,6 +189,7 @@
               [formControlName]="field.name"
               [maxlength]="field.maxLength"
               [attr.inputmode]="field.name === 'phone' ? 'numeric' : null"
+              (input)="field.name === 'phone' && sanitizePhoneInput($event)"
             />
             @if (errorFor()(field.name); as message) {
               <mat-error>{{ message }}</mat-error>

@@ -58,14 +58,17 @@ describe('CompanyMasterPage', () => {
     expect(page.querySelector('[aria-label="Filter by licence expiry date"]')).toBeNull();
     expect(page.textContent).toContain('Email');
     expect(page.querySelector('.column-header-row')).not.toBeNull();
-    expect(page.querySelector('.column-header-row')?.textContent?.indexOf('Actions'))
-      .toBeGreaterThan(page.querySelector('.column-header-row')?.textContent?.indexOf('Website') ?? -1);
+    const actionsHeader = page.querySelector('.column-header-row th.mat-column-actions');
+    expect(actionsHeader).not.toBeNull();
+    expect(actionsHeader?.textContent?.trim()).toBe('Actions');
+    expect(getComputedStyle(actionsHeader!).width).toBe('88px');
+    expect(getComputedStyle(actionsHeader!).borderLeftWidth).toBe('1px');
+    expect(getComputedStyle(actionsHeader!).boxShadow).toContain('rgb(38 51 49 / 8%)');
+    expect(actionsHeader?.classList.contains('mat-column-actions')).toBe(true);
     expect(page.querySelector('.filter-row')).not.toBeNull();
     expect(getComputedStyle(page.querySelector('.column-header-row')!).position).toBe('sticky');
     expect(getComputedStyle(page.querySelector('.filter-row')!).position).toBe('sticky');
-    const icons = Array.from(
-      page.querySelectorAll('button[mat-icon-button] mat-icon'),
-    );
+    const icons = Array.from(page.querySelectorAll('button[mat-icon-button] mat-icon'));
     expect(icons.length).toBeGreaterThan(0);
     for (const icon of icons) {
       expect(icon.querySelector('svg')).not.toBeNull();
@@ -73,7 +76,7 @@ describe('CompanyMasterPage', () => {
     }
   });
 
-  it('restores operators, omits default operators, and clears both filter parameters', async () => {
+  it('restores explicit operators and clears both filter parameters', async () => {
     const { api, harness } = await createPage();
     const page = await harness.navigateByUrl(
       '/company-master?page=2&companyName=North&companyNameOperator=StartsWith&incorporationDate=2020-03-05',
@@ -85,14 +88,16 @@ describe('CompanyMasterPage', () => {
       expect.objectContaining({ companyName: 'North', companyNameOperator: 'StartsWith' }),
     );
     expect(page.queryState().companyNameOperator).toBe('StartsWith');
-    expect(harness.routeNativeElement?.querySelector('[aria-label="Filter by incorporation date"]')).toBeNull();
+    expect(
+      harness.routeNativeElement?.querySelector('[aria-label="Filter by incorporation date"]'),
+    ).toBeNull();
 
     page.setFilter('companyName', { value: 'South', operator: 'Contains' });
     await harness.fixture.whenStable();
     expect(page.queryState().page).toBe(1);
-    expect(page.queryState().companyNameOperator).toBeUndefined();
+    expect(page.queryState().companyNameOperator).toBe('Contains');
     expect(api.apiCompaniesGet).toHaveBeenLastCalledWith(
-      expect.objectContaining({ companyName: 'South' }),
+      expect.objectContaining({ companyName: 'South', companyNameOperator: 'Contains' }),
     );
     expect(harness.routeNativeElement?.textContent).not.toContain('Incorporation date filter');
 
@@ -105,7 +110,28 @@ describe('CompanyMasterPage', () => {
     );
   });
 
-  it('keeps the table and existing rows visible while a filter request is pending', async () => {
+  it('ignores a filter value from the URL when no operator is selected', async () => {
+    const { api, harness } = await createPage();
+    const page = await harness.navigateByUrl(
+      '/company-master?companyName=North',
+      CompanyMasterPage,
+    );
+    await harness.fixture.whenStable();
+
+    expect(page.queryState().companyName).toBeUndefined();
+    expect(api.apiCompaniesGet).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 1, pageSize: 10 }),
+    );
+    expect(
+      (
+        harness.routeNativeElement?.querySelector(
+          '[aria-label="Company name operator"]',
+        ) as HTMLSelectElement
+      ).value,
+    ).toBe('');
+  });
+
+  it('waits for an operator choice before applying typed filter text', async () => {
     const pendingRequest = new Subject<typeof response>();
     const api = {
       apiCompaniesGet: vi.fn().mockReturnValueOnce(of(response)).mockReturnValue(pendingRequest),
@@ -124,6 +150,18 @@ describe('CompanyMasterPage', () => {
     filter.dispatchEvent(new Event('input', { bubbles: true }));
     await harness.fixture.whenStable();
 
+    expect(api.apiCompaniesGet).toHaveBeenCalledTimes(1);
+    expect(page.queryState().companyName).toBeUndefined();
+    const operator = harness.routeNativeElement?.querySelector(
+      'select[aria-label="Company name operator"]',
+    );
+    if (!(operator instanceof HTMLSelectElement)) {
+      throw new Error('Company name operator selector was not rendered.');
+    }
+    operator.value = 'Contains';
+    operator.dispatchEvent(new Event('change', { bubbles: true }));
+    await harness.fixture.whenStable();
+
     const table = harness.routeNativeElement?.querySelector('table[aria-label="Companies"]');
     expect(page.loading()).toBe(true);
     expect(table).not.toBeNull();
@@ -137,14 +175,16 @@ describe('CompanyMasterPage', () => {
     await harness.fixture.whenStable();
 
     expect(page.loading()).toBe(false);
-    expect(harness.routeNativeElement?.querySelector('table[aria-label="Companies"]')).not.toBeNull();
+    expect(
+      harness.routeNativeElement?.querySelector('table[aria-label="Companies"]'),
+    ).not.toBeNull();
     expect(harness.routeNativeElement?.querySelectorAll('.company-row')).toHaveLength(0);
   });
 
   it('restores query filters and pagination and updates them when a filter changes', async () => {
     const { api, harness } = await createPage();
     const page = await harness.navigateByUrl(
-      '/company-master?page=2&pageSize=10&sortBy=companyName&sortDirection=desc&companyName=North',
+      '/company-master?page=2&pageSize=10&sortBy=companyName&sortDirection=desc&companyName=North&companyNameOperator=Contains',
       CompanyMasterPage,
     );
     await harness.fixture.whenStable();

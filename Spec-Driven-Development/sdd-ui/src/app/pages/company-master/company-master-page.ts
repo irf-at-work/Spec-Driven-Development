@@ -94,6 +94,10 @@ export class CompanyMasterPage implements OnInit {
     sortBy: 'companyName',
     sortDirection: 'asc',
   });
+  readonly unselectedFilterValues = signal<Partial<Record<FilterKey, string>>>({});
+  readonly unselectedFilterOperators = signal<Partial<Record<FilterKey, CompanyFilterOperator>>>(
+    {},
+  );
   readonly companies = signal<CompanyListItemDto[]>([]);
   readonly totalCount = signal(0);
   readonly loading = signal(false);
@@ -136,25 +140,47 @@ export class CompanyMasterPage implements OnInit {
   }
 
   filterValue(key: FilterKey): string {
-    return this.queryState()[key] ?? '';
+    return this.unselectedFilterValues()[key] ?? this.queryState()[key] ?? '';
   }
 
-  filterOperator(key: OperatorKey): CompanyFilterOperator {
-    return this.queryState()[key] ?? 'Contains';
+  filterOperator(key: OperatorKey): CompanyFilterOperator | null {
+    const filter = FILTERS.find((entry) => entry.operatorKey === key)!;
+    return this.unselectedFilterOperators()[filter.key] ?? this.queryState()[key] ?? null;
   }
 
   setFilter(key: FilterKey, change: FilterChange): void {
     const filter = FILTERS.find((entry) => entry.key === key)!;
     const value = change.value.trim();
+
+    if (!change.operator) {
+      this.unselectedFilterValues.update((values) => ({ ...values, [key]: change.value }));
+      return;
+    }
+    const operator = change.operator;
+
+    this.unselectedFilterValues.update(({ [key]: _, ...values }) => values);
+    this.unselectedFilterOperators.update((operators) => ({
+      ...operators,
+      [key]: operator,
+    }));
+
+    if (!value) {
+      this.navigateWithQuery({ [key]: null, [filter.operatorKey]: null, page: 1 });
+      return;
+    }
+
+    this.unselectedFilterOperators.update(({ [key]: _, ...operators }) => operators);
     this.navigateWithQuery({
-      [key]: value || null,
-      [filter.operatorKey]: !value || change.operator === 'Contains' ? null : change.operator,
+      [key]: value,
+      [filter.operatorKey]: operator,
       page: 1,
     });
   }
 
   clearFilter(key: FilterKey): void {
     const filter = FILTERS.find((entry) => entry.key === key)!;
+    this.unselectedFilterValues.update(({ [key]: _, ...values }) => values);
+    this.unselectedFilterOperators.update(({ [key]: _, ...operators }) => operators);
     this.navigateWithQuery({ [key]: null, [filter.operatorKey]: null, page: 1 });
   }
 
@@ -234,17 +260,16 @@ export class CompanyMasterPage implements OnInit {
 
     for (const { key, operatorKey } of FILTERS) {
       const value = params.get(key);
-      if (value) {
+      const operator = params.get(operatorKey);
+      if (
+        value &&
+        operator &&
+        ['StartsWith', 'EndsWith', 'Contains', 'DoesNotContain', 'Equals', 'NotEquals'].includes(
+          operator,
+        )
+      ) {
         state[key] = value;
-        const operator = params.get(operatorKey);
-        if (
-          operator &&
-          ['StartsWith', 'EndsWith', 'Contains', 'DoesNotContain', 'Equals', 'NotEquals'].includes(
-            operator,
-          )
-        ) {
-          state[operatorKey] = operator as CompanyFilterOperator;
-        }
+        state[operatorKey] = operator as CompanyFilterOperator;
       }
     }
 

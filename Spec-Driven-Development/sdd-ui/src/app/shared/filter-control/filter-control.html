@@ -8,25 +8,37 @@
       (ngModelChange)="emitValue($event)"
     />
   </mat-form-field>
-  <label class="operator-select">
-    <span>{{ label() }} operator</span>
+  <div class="operator-control" [class.operator-active]="operator() !== null">
+    <mat-icon aria-hidden="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          [attr.fill]="operator() === null ? 'none' : 'currentColor'"
+          [attr.stroke]="operator() === null ? 'currentColor' : 'none'"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+          d="M3 4h18l-7 8v6l-4 3v-9L3 4z"
+        />
+      </svg>
+    </mat-icon>
     <select
       [attr.aria-label]="label() + ' operator'"
+      [attr.title]="label() + ' operator'"
       [ngModel]="operator()"
       [ngModelOptions]="{ standalone: true }"
       (ngModelChange)="emitOperator($event)"
     >
+      <option value="">Choose operator</option>
       @for (option of operators; track option.value) {
         <option [value]="option.value">{{ option.label }}</option>
       }
     </select>
-  </label>
+  </div>
   <button
     mat-icon-button
     type="button"
     class="clear-filter"
     [attr.aria-label]="'Clear ' + label().toLowerCase() + ' filter'"
-    [disabled]="!value() && operator() === 'Contains'"
+    [disabled]="!value() && operator() === null"
     (click)="clear()"
   >
     <mat-icon aria-hidden="true">
