@@ -11,6 +11,8 @@ public sealed class DashboardNavigationTests(DashboardUiFixture dashboard) : Pag
     [Fact]
     public async Task Masters_menu_shows_two_destinations_and_opens_each_route()
     {
+        await Page.RouteAsync("**/api/companies**", route => FulfillJsonAsync(route, EmptyList()));
+        await Page.RouteAsync("**/api/list-items**", route => FulfillJsonAsync(route, EmptyList()));
         await Page.GotoAsync(dashboard.BaseAddress.ToString());
 
         var content = Page.Locator("main.dashboard-content");
@@ -32,15 +34,31 @@ public sealed class DashboardNavigationTests(DashboardUiFixture dashboard) : Pag
         var menuItems = menu.GetByRole(AriaRole.Menuitem);
         await Expect(menuItems).ToHaveCountAsync(2);
         await Expect(menu.GetByRole(AriaRole.Menuitem, new() { Name = "Company Master" })).ToBeVisibleAsync();
-        await Expect(menu.GetByRole(AriaRole.Menuitem, new() { Name = "Listing Master" })).ToBeVisibleAsync();
+        await Expect(menu.GetByRole(AriaRole.Menuitem, new() { Name = "List Item Master" })).ToBeVisibleAsync();
 
         await menu.GetByRole(AriaRole.Menuitem, new() { Name = "Company Master" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/company-master$"));
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Company Master" })).ToBeVisibleAsync();
 
         await masters.ClickAsync();
-        await menu.GetByRole(AriaRole.Menuitem, new() { Name = "Listing Master" }).ClickAsync();
+        await menu.GetByRole(AriaRole.Menuitem, new() { Name = "List Item Master" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/listing-master$"));
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Listing Master" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "List Item Master" })).ToBeVisibleAsync();
     }
+
+    private static object EmptyList() => new { items = Array.Empty<object>(), page = 1, pageSize = 10, totalCount = 0 };
+
+    private static Task FulfillJsonAsync(Microsoft.Playwright.IRoute route, object body) =>
+        route.FulfillAsync(new RouteFulfillOptions
+        {
+            Status = 200,
+            ContentType = "application/json",
+            Body = System.Text.Json.JsonSerializer.Serialize(body),
+            Headers = new Dictionary<string, string>
+            {
+                ["Access-Control-Allow-Origin"] = "http://127.0.0.1:4200",
+                ["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS",
+                ["Access-Control-Allow-Headers"] = "content-type, accept",
+            },
+        });
 }

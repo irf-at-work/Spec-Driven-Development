@@ -1,0 +1,130 @@
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.page-heading h1 {
+  margin: 0;
+}
+
+section[aria-labelledby='listing-master-title'] {
+  display: flex;
+  height: calc(100dvh - 12rem);
+  flex-direction: column;
+}
+
+.table-container {
+  --table-header-height: 3.5rem;
+  flex: 1 1 0;
+  min-height: 10rem;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  isolation: isolate;
+}
+
+table {
+  table-layout: fixed;
+  min-width: max(100%, 1100px);
+  width: max-content;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th,
+td {
+  padding: 0.6rem 0.75rem;
+  overflow: hidden;
+  border-right: 1px solid color-mix(in srgb, var(--color-border) 62%, transparent);
+  border-bottom: 1px solid var(--color-border);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+th {
+  background: var(--color-primary-100);
+  color: var(--color-primary-900);
+  font-weight: 700;
+}
+
+.column-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: var(--table-header-height);
+}
+
+.column-header-row th {
+  height: var(--table-header-height);
+}
+
+.filter-row {
+  position: sticky;
+  top: var(--table-header-height);
+  z-index: 2;
+  box-shadow: 0 0.35rem 0.55rem rgb(20 54 88 / 8%);
+}
+
+.filter-row th {
+  padding: 0.45rem 0.5rem;
+  background: var(--color-surface);
+}
+
+.filter-row mat-form-field {
+  width: 100%;
+  min-width: 120px;
+  font-size: 0.875rem;
+}
+
+.list-item-row {
+  cursor: pointer;
+}
+
+.list-item-row:nth-child(even) td {
+  background: color-mix(in srgb, var(--color-page) 55%, var(--color-surface));
+}
+
+.list-item-row:hover td {
+  background: var(--color-primary-100);
+}
+
+.list-item-row:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
+.mat-column-actions,
+.mat-column-filter-actions {
+  width: 6rem;
+  min-width: 6rem;
+  max-width: 6rem;
+  border-left: 1px solid var(--color-border);
+  text-align: center;
+  box-shadow: -0.35rem 0 0.55rem rgb(38 51 49 / 8%);
+}
+
+th[stickyEnd],
+td[stickyEnd] {
+  z-index: 4;
+  background: var(--color-surface);
+}
+
+.empty-state {
+  padding: 1.5rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+:host ::ng-deep .mat-mdc-paginator {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 600px) {
+  section[aria-labelledby='listing-master-title'] {
+    height: calc(100dvh - 9rem);
+  }
+}

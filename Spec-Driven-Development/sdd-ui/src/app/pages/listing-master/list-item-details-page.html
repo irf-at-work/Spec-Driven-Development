@@ -1,0 +1,123 @@
+<section aria-labelledby="list-item-details-title">
+  <a mat-button routerLink="/listing-master" queryParamsHandling="preserve">Back to list items</a>
+
+  @if (loading()) {
+    <p role="status">Loading list item details…</p>
+  } @else if (loadError(); as message) {
+    <p class="error-message" role="alert">{{ message }}</p>
+  } @else if (item(); as current) {
+    <article class="details-panel">
+      <header class="details-heading">
+        <div>
+          <p class="eyebrow">List item configuration</p>
+          <h1 id="list-item-details-title">{{ current.description || current.liCode }}</h1>
+          <p class="identity">{{ current.liType }} / {{ current.liCode }}</p>
+        </div>
+        @if (!editing()) {
+          <div class="details-actions">
+            <button mat-flat-button type="button" (click)="startEditing()">Edit</button>
+            <button
+              class="destructive-action"
+              mat-button
+              type="button"
+              [disabled]="deleting()"
+              (click)="deleteItem()"
+            >
+              {{ deleting() ? 'Deleting…' : 'Delete' }}
+            </button>
+          </div>
+        }
+      </header>
+
+      @if (error(); as message) {
+        <p class="error-message" role="alert">{{ message }}</p>
+      }
+      @if (deleteError(); as message) {
+        <p class="error-message" role="alert">{{ message }}</p>
+      }
+
+      @if (editing()) {
+        <app-list-item-form
+          mode="edit"
+          [initialItem]="current"
+          [pending]="saving()"
+          [serverErrors]="validationErrors()"
+          (submitted)="save($event)"
+          (cancelled)="cancelEditing()"
+        />
+      } @else {
+        <section class="detail-section" aria-labelledby="business-values-heading">
+          <h2 id="business-values-heading">Configuration values</h2>
+          <dl class="details-grid">
+            <div>
+              <dt>List type</dt>
+              <dd>{{ current.liType }}</dd>
+            </div>
+            <div>
+              <dt>List code</dt>
+              <dd>{{ current.liCode }}</dd>
+            </div>
+            <div>
+              <dt>Description</dt>
+              <dd>{{ current.description || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Description (L2)</dt>
+              <dd>{{ current.descriptionL2 || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Short description</dt>
+              <dd>{{ current.shortDescription || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Short description (L2)</dt>
+              <dd>{{ current.shortDescriptionL2 || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Value</dt>
+              <dd>{{ current.value || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Active status</dt>
+              <dd>
+                {{
+                  current.activeYn === 'Y' ? 'Active' : current.activeYn === 'N' ? 'Inactive' : '—'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Flex 01</dt>
+              <dd>{{ current.flex01 || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Flex 02</dt>
+              <dd>{{ current.flex02 || '—' }}</dd>
+            </div>
+          </dl>
+        </section>
+      }
+
+      <section class="detail-section" aria-labelledby="audit-heading">
+        <h2 id="audit-heading">Audit history</h2>
+        <dl class="details-grid">
+          <div>
+            <dt>Created by</dt>
+            <dd>{{ current.createdBy || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Created date (GST)</dt>
+            <dd>{{ formatAuditDate(current.createdAt) || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Last updated by</dt>
+            <dd>{{ current.lastUpdatedBy || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Last updated date (GST)</dt>
+            <dd>{{ formatAuditDate(current.lastUpdatedAt) || '—' }}</dd>
+          </div>
+        </dl>
+      </section>
+    </article>
+  }
+</section>

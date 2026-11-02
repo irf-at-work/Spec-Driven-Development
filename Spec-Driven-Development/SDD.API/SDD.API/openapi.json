@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5114/"
+      "url": "http://127.0.0.1:5115/"
     }
   ],
   "paths": {
@@ -765,10 +765,8 @@
           {
             "name": "destinationDivisionCode",
             "in": "query",
-            "required": false,
             "schema": {
-              "type": "string",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -913,6 +911,375 @@
           },
           {
             "name": "departmentCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/list-items": {
+      "get": {
+        "tags": [
+          "ListItem"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "liType"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "asc"
+            }
+          },
+          {
+            "name": "liType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "liTypeOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListItemFilterOperator"
+            }
+          },
+          {
+            "name": "liCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "liCodeOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListItemFilterOperator"
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "descriptionOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListItemFilterOperator"
+            }
+          },
+          {
+            "name": "shortDescription",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shortDescriptionOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListItemFilterOperator"
+            }
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "valueOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListItemFilterOperator"
+            }
+          },
+          {
+            "name": "activeYn",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResultOfListItemListItemDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ListItem"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateListItemRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateListItemRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateListItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListItemDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/list-items/{liType}/{liCode}": {
+      "get": {
+        "tags": [
+          "ListItem"
+        ],
+        "parameters": [
+          {
+            "name": "liType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "liCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListItemDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ListItem"
+        ],
+        "parameters": [
+          {
+            "name": "liType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "liCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateListItemRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateListItemRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateListItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListItemDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ListItem"
+        ],
+        "parameters": [
+          {
+            "name": "liType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "liCode",
             "in": "path",
             "required": true,
             "schema": {
@@ -1413,6 +1780,63 @@
           }
         }
       },
+      "CreateListItemRequest": {
+        "required": [
+          "liType",
+          "liCode"
+        ],
+        "type": "object",
+        "properties": {
+          "liType": {
+            "maxLength": 20,
+            "type": "string"
+          },
+          "liCode": {
+            "maxLength": 12,
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionL2": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "shortDescription": {
+            "maxLength": 30,
+            "type": "string",
+            "nullable": true
+          },
+          "shortDescriptionL2": {
+            "maxLength": 30,
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "activeYn": {
+            "pattern": "^[YN]$",
+            "type": "string",
+            "nullable": true
+          },
+          "flex01": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "flex02": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "DepartmentDto": {
         "type": "object",
         "properties": {
@@ -1606,6 +2030,121 @@
           }
         }
       },
+      "ListItemDto": {
+        "required": [
+          "liType",
+          "liCode"
+        ],
+        "type": "object",
+        "properties": {
+          "liType": {
+            "type": "string"
+          },
+          "liCode": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionL2": {
+            "type": "string",
+            "nullable": true
+          },
+          "shortDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "shortDescriptionL2": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "activeYn": {
+            "type": "string",
+            "nullable": true
+          },
+          "flex01": {
+            "type": "string",
+            "nullable": true
+          },
+          "flex02": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastUpdatedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "ListItemFilterOperator": {
+        "enum": [
+          "StartsWith",
+          "EndsWith",
+          "Contains",
+          "DoesNotContain",
+          "Equals",
+          "NotEquals",
+          null
+        ]
+      },
+      "ListItemListItemDto": {
+        "required": [
+          "liType",
+          "liCode"
+        ],
+        "type": "object",
+        "properties": {
+          "liType": {
+            "type": "string"
+          },
+          "liCode": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "shortDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "activeYn": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastUpdatedBy": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "PaginatedResultOfCompanyListItemDto": {
         "type": "object",
         "properties": {
@@ -1613,6 +2152,29 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CompanyListItemDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PaginatedResultOfListItemListItemDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListItemListItemDto"
             }
           },
           "page": {
@@ -1861,6 +2423,51 @@
             "nullable": true
           }
         }
+      },
+      "UpdateListItemRequest": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionL2": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "shortDescription": {
+            "maxLength": 30,
+            "type": "string",
+            "nullable": true
+          },
+          "shortDescriptionL2": {
+            "maxLength": 30,
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "activeYn": {
+            "pattern": "^[YN]$",
+            "type": "string",
+            "nullable": true
+          },
+          "flex01": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "flex02": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          }
+        }
       }
     }
   },
@@ -1870,6 +2477,9 @@
     },
     {
       "name": "CompanyStructure"
+    },
+    {
+      "name": "ListItem"
     }
   ]
 }

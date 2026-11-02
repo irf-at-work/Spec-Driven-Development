@@ -1,0 +1,102 @@
+<form class="item-form" [formGroup]="form" (ngSubmit)="submit()">
+  @if (apiError(); as message) {
+    <p class="error-message" role="alert">{{ message }}</p>
+  }
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>List type</mat-label>
+      <input
+        matInput
+        formControlName="liType"
+        maxlength="20"
+        required
+        [readonly]="mode() === 'edit'"
+      />
+      @if (fieldError('liType'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>List code</mat-label>
+      <input
+        matInput
+        formControlName="liCode"
+        maxlength="12"
+        required
+        [readonly]="mode() === 'edit'"
+      />
+      @if (fieldError('liCode'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <input matInput formControlName="description" maxlength="100" />
+      @if (fieldError('description'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description (L2)</mat-label>
+      <input matInput formControlName="descriptionL2" maxlength="100" />
+      @if (fieldError('descriptionL2'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Short description</mat-label>
+      <input matInput formControlName="shortDescription" maxlength="30" />
+      @if (fieldError('shortDescription'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Short description (L2)</mat-label>
+      <input matInput formControlName="shortDescriptionL2" maxlength="30" />
+      @if (fieldError('shortDescriptionL2'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Value</mat-label>
+      <input matInput formControlName="value" maxlength="100" />
+      @if (fieldError('value'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Active status</mat-label>
+      <mat-select formControlName="activeYn" required>
+        <mat-option value="Y">Active</mat-option>
+        <mat-option value="N">Inactive</mat-option>
+      </mat-select>
+      @if (fieldError('activeYn'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Flex 01</mat-label>
+      <input matInput formControlName="flex01" maxlength="100" />
+      @if (fieldError('flex01'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Flex 02</mat-label>
+      <input matInput formControlName="flex02" maxlength="100" />
+      @if (fieldError('flex02'); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+  <div class="form-actions">
+    @if (mode() === 'edit') {
+      <button mat-button type="button" [disabled]="pending()" (click)="cancelled.emit()">
+        Cancel
+      </button>
+    }
+    <button mat-flat-button type="submit" [disabled]="pending()">
+      {{ pending() ? 'Saving…' : mode() === 'create' ? 'Create list item' : 'Save changes' }}
+    </button>
+  </div>
+</form>

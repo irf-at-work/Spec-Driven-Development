@@ -24,7 +24,7 @@ describe('DashboardLayout', () => {
     expect(compiled.querySelector('[aria-label="Masters"]')).not.toBeNull();
   });
 
-  it('opens exactly the Company Master and Listing Master menu entries', async () => {
+  it('opens exactly the Company Master and List Item Master menu entries', async () => {
     const fixture = TestBed.createComponent(DashboardLayout);
     fixture.detectChanges();
     const loader = TestbedHarnessEnvironment.loader(fixture);
@@ -33,7 +33,7 @@ describe('DashboardLayout', () => {
     await menu.open();
     const labels = await Promise.all((await menu.getItems()).map((item) => item.getText()));
 
-    expect(labels).toEqual(['Company Master', 'Listing Master']);
+    expect(labels).toEqual(['Company Master', 'List Item Master']);
   });
 
   it('defines dashboard, company CRUD and listing destinations', () => {
@@ -45,6 +45,8 @@ describe('DashboardLayout', () => {
       'company-master/new',
       'company-master/:companyCode/edit',
       'company-master/:companyCode',
+      'listing-master/new',
+      'listing-master/:liType/:liCode',
       'listing-master',
     ]);
   });

@@ -1,0 +1,16 @@
+<section aria-labelledby="create-list-item-title">
+  <a mat-button routerLink="/listing-master" queryParamsHandling="preserve">Back to list items</a>
+  <article class="details-panel">
+    <header>
+      <p class="eyebrow">List Item Master</p>
+      <h1 id="create-list-item-title">Add list item</h1>
+    </header>
+    <app-list-item-form
+      mode="create"
+      [pending]="saving()"
+      [apiError]="error()"
+      [serverErrors]="validationErrors()"
+      (submitted)="create($event)"
+    />
+  </article>
+</section>

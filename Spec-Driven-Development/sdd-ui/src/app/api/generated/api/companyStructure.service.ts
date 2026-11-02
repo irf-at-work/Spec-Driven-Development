@@ -242,6 +242,7 @@ export class CompanyStructureService extends BaseService {
         const destinationDivisionCode = requestParameters?.destinationDivisionCode;
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,
             'destinationDivisionCode',
@@ -249,6 +250,7 @@ export class CompanyStructureService extends BaseService {
             QueryParamStyle.Form,
             true,
         );
+
 
         let localVarHeaders = this.defaultHeaders;
 

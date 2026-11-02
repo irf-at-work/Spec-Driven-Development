@@ -36,6 +36,20 @@ export const routes: Routes = [
             (module) => module.CompanyDetailsPage,
           ),
       },
+      {
+        path: 'listing-master/new',
+        loadComponent: () =>
+          import('./pages/listing-master/list-item-create-page').then(
+            (module) => module.ListItemCreatePage,
+          ),
+      },
+      {
+        path: 'listing-master/:liType/:liCode',
+        loadComponent: () =>
+          import('./pages/listing-master/list-item-details-page').then(
+            (module) => module.ListItemDetailsPage,
+          ),
+      },
       { path: 'listing-master', component: ListingMasterPage },
     ],
   },

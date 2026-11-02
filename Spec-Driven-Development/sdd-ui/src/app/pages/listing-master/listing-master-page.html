@@ -1,0 +1,123 @@
+<section aria-labelledby="listing-master-title">
+  <header class="page-heading">
+    <h1 id="listing-master-title">List Item Master</h1>
+    <a mat-flat-button routerLink="/listing-master/new" queryParamsHandling="preserve">
+      <mat-icon aria-hidden="true">add</mat-icon>
+      Add list item
+    </a>
+  </header>
+
+  @if (error(); as loadError) {
+    <p class="error-message" role="alert">{{ loadError }}</p>
+  }
+  @if (loading()) {
+    <p role="status">Loading list items…</p>
+  }
+
+  <div class="table-container">
+    <table
+      mat-table
+      matSort
+      matSortDisableClear
+      [dataSource]="items()"
+      [matSortActive]="queryState().sortBy ?? 'liType'"
+      [matSortDirection]="queryState().sortDirection === 'desc' ? 'desc' : 'asc'"
+      (matSortChange)="setSort($event)"
+      aria-label="List item configurations"
+    >
+      <ng-container matColumnDef="actions" [stickyEnd]="true">
+        <th mat-header-cell *matHeaderCellDef scope="col">History</th>
+        <td mat-cell *matCellDef="let item">
+          <button
+            mat-icon-button
+            type="button"
+            [matTooltip]="historyText(item)"
+            [attr.aria-label]="historyText(item)"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <mat-icon aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M13 3a9 9 0 0 0-9 9H1l4 4 4-4H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"
+                />
+              </svg>
+            </mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="filter-actions" [stickyEnd]="true">
+        <th mat-header-cell *matHeaderCellDef scope="col"></th>
+      </ng-container>
+
+      @for (filter of filters; track filter.key) {
+        <ng-container [matColumnDef]="filter.key">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">
+            {{ filter.label }}
+          </th>
+          <td mat-cell *matCellDef="let item">{{ item[filter.key] || '—' }}</td>
+        </ng-container>
+        <ng-container [matColumnDef]="'filter-' + filter.key">
+          <th mat-header-cell *matHeaderCellDef>
+            <app-filter-control
+              [label]="filter.label"
+              [value]="filterValue(filter.key)"
+              [operator]="filterOperator(filter.operatorKey)"
+              (changed)="setFilter(filter.key, $event)"
+              (cleared)="clearFilter(filter.key)"
+            />
+          </th>
+        </ng-container>
+      }
+
+      <ng-container matColumnDef="activeYn">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Active</th>
+        <td mat-cell *matCellDef="let item">
+          {{ item.activeYn === 'Y' ? 'Yes' : item.activeYn === 'N' ? 'No' : '—' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="filter-activeYn">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Active status</mat-label>
+            <mat-select
+              aria-label="Filter by active status"
+              [value]="queryState().activeYn ?? ''"
+              (selectionChange)="setActiveFilter($event.value)"
+            >
+              <mat-option value="">All</mat-option>
+              <mat-option value="Y">Active</mat-option>
+              <mat-option value="N">Inactive</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </th>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="column-header-row"></tr>
+      <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>
+      <tr
+        mat-row
+        *matRowDef="let item; columns: displayedColumns"
+        class="list-item-row"
+        role="link"
+        tabindex="0"
+        (click)="openItem(item)"
+        (keydown.enter)="openItem(item)"
+        (keydown.space)="$event.preventDefault(); openItem(item)"
+      ></tr>
+    </table>
+    @if (!loading() && !error() && items().length === 0) {
+      <p class="empty-state">No list items found.</p>
+    }
+  </div>
+
+  <mat-paginator
+    aria-label="List item table pages"
+    [length]="totalCount()"
+    [pageIndex]="(queryState().page ?? 1) - 1"
+    [pageSize]="queryState().pageSize ?? 10"
+    [pageSizeOptions]="[10, 25, 50]"
+    (page)="setPage($event)"
+  />
+</section>
