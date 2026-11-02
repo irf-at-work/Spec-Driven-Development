@@ -7,11 +7,74 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { CodeFilterOperator } from '../../models/code-filter-operator';
+import { CodeSortColumn } from '../../models/code-sort-column';
+import { CodeSortDirection } from '../../models/code-sort-direction';
 import { PaginatedResult } from '../../models/paginated-result';
 
 export interface ListCodes$Params {
   page?: number;
   pageSize?: number;
+
+/**
+ * Column used to order filtered records before pagination.
+ */
+  sortBy?: CodeSortColumn;
+
+/**
+ * Sort order for the selected column.
+ */
+  sortDirection?: CodeSortDirection;
+
+/**
+ * Case-insensitive filter operator for Code; must be supplied with codeValue.
+ */
+  codeOperator?: CodeFilterOperator;
+
+/**
+ * Literal text used to filter Code.
+ */
+  codeValue?: string;
+
+/**
+ * Case-insensitive filter operator for Code Description; must be supplied with codeDescriptionValue.
+ */
+  codeDescriptionOperator?: CodeFilterOperator;
+
+/**
+ * Literal text used to filter Code Description.
+ */
+  codeDescriptionValue?: string;
+
+/**
+ * Case-insensitive filter operator for Type; must be supplied with codeTypeValue.
+ */
+  codeTypeOperator?: CodeFilterOperator;
+
+/**
+ * Literal text used to filter Type.
+ */
+  codeTypeValue?: string;
+
+/**
+ * Case-insensitive filter operator for Value 1; must be supplied with value1Value.
+ */
+  value1Operator?: CodeFilterOperator;
+
+/**
+ * Literal text used to filter Value 1.
+ */
+  value1Value?: string;
+
+/**
+ * Case-insensitive filter operator for Value 2; must be supplied with value2Value.
+ */
+  value2Operator?: CodeFilterOperator;
+
+/**
+ * Literal text used to filter Value 2.
+ */
+  value2Value?: string;
 }
 
 export function listCodes(http: HttpClient, rootUrl: string, params?: ListCodes$Params, context?: HttpContext): Observable<StrictHttpResponse<PaginatedResult>> {
@@ -19,6 +82,18 @@ export function listCodes(http: HttpClient, rootUrl: string, params?: ListCodes$
   if (params) {
     rb.query('page', params.page, {});
     rb.query('pageSize', params.pageSize, {});
+    rb.query('sortBy', params.sortBy, {});
+    rb.query('sortDirection', params.sortDirection, {});
+    rb.query('codeOperator', params.codeOperator, {});
+    rb.query('codeValue', params.codeValue, {});
+    rb.query('codeDescriptionOperator', params.codeDescriptionOperator, {});
+    rb.query('codeDescriptionValue', params.codeDescriptionValue, {});
+    rb.query('codeTypeOperator', params.codeTypeOperator, {});
+    rb.query('codeTypeValue', params.codeTypeValue, {});
+    rb.query('value1Operator', params.value1Operator, {});
+    rb.query('value1Value', params.value1Value, {});
+    rb.query('value2Operator', params.value2Operator, {});
+    rb.query('value2Value', params.value2Value, {});
   }
 
   return http.request(

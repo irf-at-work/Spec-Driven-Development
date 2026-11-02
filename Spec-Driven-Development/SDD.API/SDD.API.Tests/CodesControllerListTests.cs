@@ -18,6 +18,94 @@ public sealed class CodesControllerListTests
 
         Assert.Equal(1, service.RequestedPage);
         Assert.Equal(10, service.RequestedPageSize);
+        Assert.Equal(CodeSortColumn.Code, service.RequestedSortBy);
+        Assert.Equal(CodeSortDirection.Ascending, service.RequestedSortDirection);
+        Assert.Empty(service.RequestedFilters);
+    }
+
+    [Fact]
+    public async Task List_passes_selected_sort_to_service()
+    {
+        var service = new FakeCodesService();
+        var controller = new CodesController(service);
+
+        await controller.List(sortBy: CodeSortColumn.CodeDescription, sortDirection: CodeSortDirection.Descending);
+
+        Assert.Equal(CodeSortColumn.CodeDescription, service.RequestedSortBy);
+        Assert.Equal(CodeSortDirection.Descending, service.RequestedSortDirection);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public async Task List_rejects_undefined_sort_values(bool invalidSortBy, bool invalidDirection)
+    {
+        var service = new FakeCodesService();
+        var controller = new CodesController(service);
+
+        var result = await controller.List(
+            sortBy: invalidSortBy ? (CodeSortColumn)999 : null,
+            sortDirection: invalidDirection ? (CodeSortDirection)999 : null);
+
+        var response = Assert.IsAssignableFrom<ObjectResult>(result.Result);
+        Assert.Equal(StatusCodes.Status400BadRequest, response.StatusCode);
+        Assert.IsAssignableFrom<ValidationProblemDetails>(response.Value);
+    }
+
+    [Fact]
+    public async Task List_passes_all_column_filters_to_the_service()
+    {
+        var service = new FakeCodesService();
+        var controller = new CodesController(service);
+
+        await controller.List(
+            codeOperator: CodeFilterOperator.Contains,
+            codeValue: "usd",
+            codeTypeOperator: CodeFilterOperator.EqualTo,
+            codeTypeValue: "currency");
+
+        Assert.Equal(
+            [
+                new CodeColumnFilter(CodeFilterColumn.Code, CodeFilterOperator.Contains, "usd"),
+                new CodeColumnFilter(CodeFilterColumn.CodeType, CodeFilterOperator.EqualTo, "currency")
+            ],
+            service.RequestedFilters);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public async Task List_rejects_filter_without_its_operator_or_value(
+        bool includeOperator,
+        bool includeValue)
+    {
+        var service = new FakeCodesService();
+        var controller = new CodesController(service);
+
+        var result = await controller.List(
+            codeOperator: includeOperator ? CodeFilterOperator.Contains : null,
+            codeValue: includeValue ? "usd" : null);
+
+        var response = Assert.IsAssignableFrom<ObjectResult>(result.Result);
+        Assert.Equal(StatusCodes.Status400BadRequest, response.StatusCode);
+        Assert.IsAssignableFrom<ValidationProblemDetails>(response.Value);
+        Assert.Empty(service.RequestedFilters);
+    }
+
+    [Fact]
+    public async Task List_rejects_undefined_filter_operator()
+    {
+        var service = new FakeCodesService();
+        var controller = new CodesController(service);
+
+        var result = await controller.List(
+            codeOperator: (CodeFilterOperator)999,
+            codeValue: "usd");
+
+        var response = Assert.IsAssignableFrom<ObjectResult>(result.Result);
+        Assert.Equal(StatusCodes.Status400BadRequest, response.StatusCode);
+        Assert.IsAssignableFrom<ValidationProblemDetails>(response.Value);
+        Assert.Empty(service.RequestedFilters);
     }
 
     [Theory]
@@ -55,7 +143,7 @@ public sealed class CodesControllerListTests
     {
         var service = new FakeCodesService
         {
-            ListResult = (_, _, _) => throw new InvalidOperationException("database failure"),
+            ListResult = (_, _, _, _, _, _) => throw new InvalidOperationException("database failure"),
         };
         var controller = new CodesController(service);
 
@@ -78,7 +166,7 @@ public sealed class CodesControllerListTests
         };
         var service = new FakeCodesService
         {
-            ListResult = (page, pageSize, _) => Task.FromResult(
+            ListResult = (page, pageSize, _, _, _, _) => Task.FromResult(
                 new PaginatedResult<CodeRecordResponse>([record], page, pageSize, 1)),
         };
         var controller = new CodesController(service);
@@ -101,22 +189,31 @@ public sealed class CodesControllerListTests
     {
         public int RequestedPage { get; private set; }
         public int RequestedPageSize { get; private set; }
+        public CodeSortColumn RequestedSortBy { get; private set; }
+        public CodeSortDirection RequestedSortDirection { get; private set; }
+        public IReadOnlyList<CodeColumnFilter> RequestedFilters { get; private set; } = [];
 
-        public Func<int, int, CancellationToken, Task<PaginatedResult<CodeRecordResponse>>> ListResult
+        public Func<int, int, IReadOnlyList<CodeColumnFilter>, CodeSortColumn, CodeSortDirection, CancellationToken, Task<PaginatedResult<CodeRecordResponse>>> ListResult
         {
             get;
             init;
-        } = (page, pageSize, _) => Task.FromResult(
+        } = (page, pageSize, _, _, _, _) => Task.FromResult(
             new PaginatedResult<CodeRecordResponse>([], page, pageSize, 0));
 
         public Task<PaginatedResult<CodeRecordResponse>> ListAsync(
             int page,
             int pageSize,
+            IReadOnlyList<CodeColumnFilter> filters,
+            CodeSortColumn sortBy,
+            CodeSortDirection sortDirection,
             CancellationToken cancellationToken)
         {
             RequestedPage = page;
             RequestedPageSize = pageSize;
-            return ListResult(page, pageSize, cancellationToken);
+            RequestedSortBy = sortBy;
+            RequestedSortDirection = sortDirection;
+            RequestedFilters = filters;
+            return ListResult(page, pageSize, filters, sortBy, sortDirection, cancellationToken);
         }
 
         public Task<CodeRecordResponse?> GetAsync(

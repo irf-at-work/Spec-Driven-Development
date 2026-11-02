@@ -52,6 +52,14 @@
 - **Evidence**: API project files under `Spec-Driven-Development/SDD.API/SDD.API/`; UI project under `Spec-Driven-Development/sdd-ui/`.
 - **Implementation prerequisite**: The constitution specifies Angular 21, Angular Material, xUnit, and Playwright. The repository currently declares Angular 22.2 and does not include Angular Material, an API test project, or Playwright setup. Reconcile package/version choices and obtain owner approval before changing dependencies. No constitution amendment is proposed by this plan.
 
+### 7. Apply column filters in the database before pagination
+
+- **Decision**: Add optional operator/value query parameters for the five displayed data columns. Validate operators against an allowlist, apply case-insensitive predicates to the matching Oracle columns, combine active filters using AND, then count and page the filtered query. Escape LIKE wildcards so filter values are treated literally.
+- **Rationale**: The user requires filters to find matches across all records, not only the current page. Filtering in the database preserves accurate pagination and avoids fetching the full table into the UI.
+- **Alternatives considered**: Filtering only the already-loaded page was rejected because it can hide matches on other pages. Fetching every row and filtering in memory was rejected because it scales with the entire table and bypasses database pagination.
+- **Evidence**: Clarifications in [spec.md](spec.md), FR-035–FR-036; Oracle-backed `STD_CODES` list operations in the existing API.
+- **Contract**: The optional per-column query parameter pairs are defined in [contracts/codes-master.openapi.yaml](contracts/codes-master.openapi.yaml). The Angular client remains generated from that contract.
+
 ## Alternatives Summary
 
 | Concern | Chosen direction | Rejected alternative |
@@ -60,6 +68,7 @@
 | Record identity | Composite Code + Type | Code-only key |
 | Audit fields | Oracle `SYSDATE`, `ADMIN`, preserve creation values | Browser/session values or update audit tracking |
 | Validation | UI assistance plus Oracle-compatible server validation | Character count alone or silent truncation |
+| Listing filters | Allowlisted, case-insensitive Oracle predicates before pagination; active filters combine with AND | Current-page-only or full-table client filtering |
 | API/client contract | OpenAPI source of truth, generated Angular client | Hand-maintained duplicate client models |
 | Application layout | Extend existing API and UI | New runtime project or unrelated architecture |
 

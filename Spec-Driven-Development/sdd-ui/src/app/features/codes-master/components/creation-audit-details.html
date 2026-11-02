@@ -1,16 +1,32 @@
-<span class="audit-control" (mouseenter)="open()" (mouseleave)="close()">
+<span
+  class="audit-control"
+  cdkOverlayOrigin
+  #auditOrigin="cdkOverlayOrigin"
+  (mouseenter)="open()"
+  (mouseleave)="scheduleClose()"
+>
   <button
     type="button"
     class="audit-button"
     [attr.aria-label]="'Creation audit for ' + record().code"
     [attr.aria-expanded]="isOpen()"
     (focus)="open()"
-    (blur)="close()"
+    (blur)="scheduleClose()"
     (click)="open()"
   >
     <span aria-hidden="true">i</span>
   </button>
-  @if (isOpen()) {
-    <span class="audit-tooltip" role="tooltip">{{ details() }}</span>
-  }
 </span>
+
+<ng-template
+  cdk-connected-overlay
+  [cdkConnectedOverlayOrigin]="auditOrigin"
+  [cdkConnectedOverlayOpen]="isOpen()"
+  [cdkConnectedOverlayPositions]="overlayPositions"
+  [cdkConnectedOverlayPush]="true"
+  (overlayOutsideClick)="close()"
+>
+  <span class="audit-tooltip" role="tooltip" (mouseenter)="cancelClose()" (mouseleave)="close()">
+    {{ details() }}
+  </span>
+</ng-template>

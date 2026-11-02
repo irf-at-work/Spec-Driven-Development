@@ -53,7 +53,13 @@ public sealed class CodesControllerCreateTests
         };
         public Func<CodeWriteRequest, CancellationToken, Task<CodeRecordResponse>>? Create { get; init; }
 
-        public Task<PaginatedResult<CodeRecordResponse>> ListAsync(int page, int pageSize, CancellationToken cancellationToken) =>
+        public Task<PaginatedResult<CodeRecordResponse>> ListAsync(
+            int page,
+            int pageSize,
+            IReadOnlyList<CodeColumnFilter> filters,
+            CodeSortColumn sortBy,
+            CodeSortDirection sortDirection,
+            CancellationToken cancellationToken) =>
             Task.FromResult(new PaginatedResult<CodeRecordResponse>([], page, pageSize, 0));
 
         public Task<CodeRecordResponse?> GetAsync(string code, string codeType, CancellationToken cancellationToken) =>

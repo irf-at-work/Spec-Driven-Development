@@ -2,17 +2,15 @@
   <header class="page-header">
     <div>
       <h1 id="codes-heading">Codes Master</h1>
-      <p>Review and manage reference codes.</p>
+      
     </div>
-    <a mat-flat-button color="primary" routerLink="/codes/add">Add</a>
+    <div class="page-actions">
+      @if (hasActiveFilters()) {
+        <button mat-button type="button" (click)="clearAllFilters()">Clear all filters</button>
+      }
+      <a mat-flat-button color="primary" routerLink="/codes/add">Add</a>
+    </div>
   </header>
-
-  @if (successMessage()) {
-    <p class="success-message" role="status">
-      {{ successMessage() }}
-      <button mat-button type="button" (click)="feedbackService.clearSuccess()">Dismiss</button>
-    </p>
-  }
 
   @if (deleteError()) {
     <p class="error-message" role="alert">{{ deleteError() }}</p>
@@ -25,33 +23,112 @@
       <p>The codes could not be loaded. Please try again.</p>
       <button mat-button type="button" (click)="loadPage(page())">Retry</button>
     </div>
-  } @else if (records().length === 0) {
+  } @else if (records().length === 0 && !hasActiveFilters()) {
     <p class="state-message" role="status">No codes are available.</p>
   } @else {
     <div class="table-container">
-      <table mat-table [dataSource]="records()" aria-label="Codes Master records">
+      <table
+        mat-table
+        [dataSource]="records()"
+        matSort
+        matSortDisableClear
+        [matSortActive]="sortActive()"
+        [matSortDirection]="sortDirection()"
+        (matSortChange)="onSortChange($event)"
+        aria-label="Codes Master records"
+      >
+        <colgroup>
+          <col class="code-column" />
+          <col class="description-column" />
+          <col class="type-column" />
+          <col class="value-column" />
+          <col class="value-column" />
+          <col class="actions-column" />
+        </colgroup>
         <ng-container matColumnDef="code">
-          <th mat-header-cell *matHeaderCellDef>Code</th>
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="code">Code</div>
+              <app-column-filter-control
+                [column]="'code'"
+                [label]="'Code'"
+                [filter]="filters().code ?? null"
+                [draftValue]="filterDraftValues().code ?? filters().code?.value ?? ''"
+                (filterChange)="onFilterChange('code', $event)"
+                (draftValueChange)="onFilterDraftChange('code', $event)"
+              />
+            </div>
+          </th>
           <td mat-cell *matCellDef="let record">{{ record.code }}</td>
         </ng-container>
 
         <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>Code Description</th>
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="description">Code Description</div>
+              <app-column-filter-control
+                [column]="'codeDescription'"
+                [label]="'Code Description'"
+                [filter]="filters().codeDescription ?? null"
+                [draftValue]="
+                  filterDraftValues().codeDescription ?? filters().codeDescription?.value ?? ''
+                "
+                (filterChange)="onFilterChange('codeDescription', $event)"
+                (draftValueChange)="onFilterDraftChange('codeDescription', $event)"
+              />
+            </div>
+          </th>
           <td mat-cell *matCellDef="let record">{{ record.codeDescription ?? '—' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="type">Type</div>
+              <app-column-filter-control
+                [column]="'codeType'"
+                [label]="'Type'"
+                [filter]="filters().codeType ?? null"
+                [draftValue]="filterDraftValues().codeType ?? filters().codeType?.value ?? ''"
+                (filterChange)="onFilterChange('codeType', $event)"
+                (draftValueChange)="onFilterDraftChange('codeType', $event)"
+              />
+            </div>
+          </th>
           <td mat-cell *matCellDef="let record">{{ record.codeType }}</td>
         </ng-container>
 
         <ng-container matColumnDef="value1">
-          <th mat-header-cell *matHeaderCellDef>Value 1</th>
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="value1">Value 1</div>
+              <app-column-filter-control
+                [column]="'value1'"
+                [label]="'Value 1'"
+                [filter]="filters().value1 ?? null"
+                [draftValue]="filterDraftValues().value1 ?? filters().value1?.value ?? ''"
+                (filterChange)="onFilterChange('value1', $event)"
+                (draftValueChange)="onFilterDraftChange('value1', $event)"
+              />
+            </div>
+          </th>
           <td mat-cell *matCellDef="let record">{{ record.value1 ?? '—' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="value2">
-          <th mat-header-cell *matHeaderCellDef>Value 2</th>
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="value2">Value 2</div>
+              <app-column-filter-control
+                [column]="'value2'"
+                [label]="'Value 2'"
+                [filter]="filters().value2 ?? null"
+                [draftValue]="filterDraftValues().value2 ?? filters().value2?.value ?? ''"
+                (filterChange)="onFilterChange('value2', $event)"
+                (draftValueChange)="onFilterDraftChange('value2', $event)"
+              />
+            </div>
+          </th>
           <td mat-cell *matCellDef="let record">{{ record.value2 ?? '—' }}</td>
         </ng-container>
 
@@ -60,20 +137,31 @@
           <td mat-cell *matCellDef="let record" class="actions-cell">
             <app-creation-audit-details [record]="record" />
             <a
-              mat-button
+              class="icon-action"
               [routerLink]="['/codes/edit']"
               [queryParams]="{ code: record.code, codeType: record.codeType }"
+              [attr.aria-label]="'Edit ' + record.code + ' (' + record.codeType + ')'"
+              title="Edit"
             >
-              Edit
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66z"
+                />
+              </svg>
             </a>
             <button
-              mat-button
+              class="icon-action delete-action"
               type="button"
               [attr.aria-label]="'Delete ' + record.code + ' (' + record.codeType + ')'"
+              title="Delete"
               [disabled]="isDeleting()"
               (click)="deleteRecord(record)"
             >
-              Delete
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                />
+              </svg>
             </button>
           </td>
         </ng-container>
@@ -83,14 +171,20 @@
       </table>
     </div>
 
-    <mat-paginator
-      [length]="totalCount()"
-      [pageIndex]="page() - 1"
-      [pageSize]="pageSize()"
-      [pageSizeOptions]="[10]"
-      [disabled]="isLoading()"
-      aria-label="Codes Master pagination"
-      (page)="onPageChange($event)"
-    />
+    @if (records().length === 0) {
+      <p class="state-message" role="status">No codes match the applied filters.</p>
+    }
+
+    @if (totalCount() > 0) {
+      <mat-paginator
+        [length]="totalCount()"
+        [pageIndex]="page() - 1"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="pageSizeOptions"
+        [disabled]="isLoading()"
+        aria-label="Codes Master pagination"
+        (page)="onPageChange($event)"
+      />
+    }
   }
 </section>

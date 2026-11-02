@@ -138,6 +138,35 @@
 
 ---
 
+## Phase 8: User Story 1 - Per-column filtering
+
+**Goal**: Filter all Codes Master records by the selected data column before pagination, while keeping the existing listing behavior.
+
+**Independent Test**: Apply each supported filter operator, combine filters on two columns, verify case-insensitive matching and accurate pagination, and clear a filter without changing other active filters.
+
+### Tests for User Story 1 filtering
+
+- [X] T044 [P] [US1] Add API tests for filter query binding, invalid/incomplete filter pairs, filter propagation, and paginated filtered counts in `Spec-Driven-Development/SDD.API/SDD.API.Tests/CodesControllerListTests.cs` and `Spec-Driven-Development/SDD.API/SDD.API.Tests/CodesServiceTests.cs`.
+- [X] T045 [P] [US1] Add Playwright tests for per-column filter menus, all six operators, case-insensitive matching, multiple filters, pagination, and clearing one filter in `Spec-Driven-Development/sdd-ui/e2e/codes-master-list.spec.ts`.
+
+### Implementation for User Story 1 filtering
+
+- [X] T046 [US1] Add the per-column operator/value query parameters and `CodeFilterOperator` enum to `specs/001-codes-master/contracts/codes-master.openapi.yaml`, then regenerate the typed Angular client in `Spec-Driven-Development/sdd-ui/src/app/api/generated/`.
+- [X] T047 [US1] Implement validated per-column filter query parameters and case-insensitive, allowlisted Oracle predicates combined with AND before count/pagination in `Spec-Driven-Development/SDD.API/SDD.API/Controllers/CodesController.cs`, `Spec-Driven-Development/SDD.API/SDD.API/Contracts/CodeColumnFilter.cs`, `Spec-Driven-Development/SDD.API/SDD.API/Contracts/CodeFilterOperator.cs`, `Spec-Driven-Development/SDD.API/SDD.API/Services/CodesRepository.cs`, `Spec-Driven-Development/SDD.API/SDD.API/Services/CodesService.cs`, `Spec-Driven-Development/SDD.API/SDD.API/Services/ICodesRepository.cs`, and `Spec-Driven-Development/SDD.API/SDD.API/Services/ICodesService.cs`.
+- [X] T048 [US1] Implement accessible filter controls for Code, Code Description, Type, Value 1, and Value 2, connect them to the generated API query parameters, and reset pagination when filters change in `Spec-Driven-Development/sdd-ui/src/app/features/codes-master/`.
+- [X] T049 [US1] Document manual filter verification and run focused API tests, Playwright listing tests, and the Angular build in `specs/001-codes-master/quickstart.md`.
+
+## Phase 9: Listing actions, sorting, and page-size controls
+
+**Goal**: Complete the requested listing improvements while preserving filtering and pagination behavior.
+
+**Independent Test**: Sort columns in both directions, choose each page size, verify icon-based row actions and audit hover, and confirm or cancel deletion using SweetAlert.
+
+- [X] T050 Add API and Playwright coverage for sorting, page-size selection, icon actions, audit hover, and SweetAlert delete confirmation in `Spec-Driven-Development/SDD.API/SDD.API.Tests/` and `Spec-Driven-Development/sdd-ui/e2e/`.
+- [X] T051 Add allowlisted sort parameters to the OpenAPI contract and generated client, then apply server-side ordering after filters and before pagination in `Spec-Driven-Development/SDD.API/SDD.API/` and `Spec-Driven-Development/sdd-ui/src/app/api/generated/`.
+- [X] T052 Add sortable data-column headers, page sizes 10/15/20/50, icon-only Edit/Delete actions, and SweetAlert delete confirmation in `Spec-Driven-Development/sdd-ui/src/app/features/codes-master/`.
+- [X] T053 Validate the focused API/UI suites and update the contract, feature specification, plan, and quickstart in `specs/001-codes-master/`.
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -147,6 +176,29 @@
 - **Foundational (Phase 2)**: Depends on Setup. All stories require safe database configuration, API error handling, shared pagination, client generation, and application routing.
 - **User Stories (Phase 3+)**: Start after the foundation and any explicitly noted story dependency.
 - **Polish (Phase 7)**: Depends on all four stories selected for delivery.
+- **US1 filtering extension (Phase 8)**: Depends on the existing US1 listing and the updated OpenAPI contract. T044 and T045 can run in parallel; T046 follows the tests, T047 follows the contract, T048 follows the generated client and API query, and T049 validates all changes.
+- **Listing improvements (Phase 9)**: Depends on the filtered listing. Complete T050 before T051/T052, then T053 validates the full behavior and documentation.
+- **Visible filters (Phase 10)**: Depends on the existing filter controls. T054 specifies the browser verification; T055 implements the revised layout; T056 validates and updates feature documentation.
+
+## Phase 10: Column-header filtering
+
+**Goal**: Place filters directly beneath their corresponding table headings and keep operator choices visible outside the table clipping region.
+
+**Independent Test**: Verify each sortable column heading contains a value input and funnel icon; open the icon and verify all operators are visible in an overlay above the table.
+
+- [X] T054 Add Playwright checks for filter controls in table header cells, visible operator choices, and overlay placement outside the horizontally scrolling table in `Spec-Driven-Development/sdd-ui/e2e/codes-master-list.spec.ts`.
+- [X] T055 Place each value input and funnel icon beneath its column heading and render operator choices in an Angular CDK overlay in `Spec-Driven-Development/sdd-ui/src/app/features/codes-master/`.
+- [X] T056 Run the filter acceptance tests and UI build, then update the feature requirements and quickstart in `specs/001-codes-master/`.
+
+## Phase 11: Professional listing and Add page layout
+
+**Goal**: Align the table grid and present the Add form in a polished, responsive layout.
+
+**Independent Test**: Check equal header/filter alignment, consistent table column sizing, a light Add-page surface with aligned form fields, and a single-column mobile form without horizontal overflow.
+
+- [X] T057 Add browser assertions for listing alignment, Add page presentation, and mobile layout in `Spec-Driven-Development/sdd-ui/e2e/codes-master-list.spec.ts` and `Spec-Driven-Development/sdd-ui/e2e/codes-master-add.spec.ts`.
+- [X] T058 Apply consistent table column proportions, header/row styling, and a responsive light-background Add form card in `Spec-Driven-Development/sdd-ui/src/app/features/codes-master/`.
+- [X] T059 Run the full UI acceptance suite, unit tests, production build, and format checks, then document visual layout validation in `specs/001-codes-master/`.
 
 ### User Story Dependencies
 
@@ -170,6 +222,7 @@
 - In US3, T029 and T030 can be authored in parallel. API retrieval/update work and the Edit page can proceed in parallel after US1.
 - In US4, T035 and T036 can be authored in parallel. API deletion and confirmation UI can proceed in parallel after US1.
 - Different user stories can proceed in parallel after Phase 2, but US2–US4 share the CodesService, API controller, generated client, and listing feedback surface; coordinate changes to those files to avoid conflicts.
+- In the US1 filtering extension, T044 API tests and T045 Playwright tests can be authored in parallel because they use separate test files.
 
 ## Parallel Examples
 
@@ -201,6 +254,13 @@ T035 API delete tests: SDD.API/SDD.API.Tests/CodesControllerDeleteTests.cs
 T036 UI delete tests: sdd-ui/e2e/codes-master-delete.spec.ts
 ```
 
+### User Story 1 filtering extension
+
+```text
+T044 API filter tests: SDD.API/SDD.API.Tests/CodesControllerListTests.cs and CodesServiceTests.cs
+T045 UI filter tests: sdd-ui/e2e/codes-master-list.spec.ts
+```
+
 ## Implementation Strategy
 
 ### MVP First (User Story 1)
@@ -216,7 +276,8 @@ T036 UI delete tests: sdd-ui/e2e/codes-master-delete.spec.ts
 2. Deliver US2 create flow and verify creation audit rules against an approved test-data environment.
 3. Deliver US3 composite-key-safe edit and audit preservation.
 4. Deliver US4 confirmation-protected delete.
-5. Run the complete quickstart and acceptance suite before feature completion.
+5. Deliver the US1 per-column filter extension, including database filtering before pagination.
+6. Run the complete quickstart and acceptance suite before feature completion.
 
 ### Safe Data Validation
 

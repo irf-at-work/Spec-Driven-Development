@@ -51,6 +51,7 @@ test('loads by both key values, keeps identity immutable, and updates the record
   });
 
   await page.goto('/codes/edit?code=EDIT&codeType=GENERAL');
+  await expect(page.locator('.form-page')).toHaveCSS('background-color', 'rgb(255, 253, 251)');
   await expect(page.getByRole('textbox', { name: 'Code', exact: true })).toHaveValue('EDIT');
   await expect(page.getByRole('textbox', { name: 'Code', exact: true })).toHaveAttribute(
     'readonly',
@@ -74,13 +75,18 @@ test('loads by both key values, keeps identity immutable, and updates the record
   await page
     .getByRole('textbox', { name: 'Code Description', exact: true })
     .fill('Updated description');
+  await expect(page.getByRole('textbox', { name: 'Short Description', exact: true })).toHaveValue(
+    'Short',
+  );
   await page.getByRole('button', { name: 'Save' }).first().click();
 
+  await expect(page.locator('.swal2-popup')).toContainText('Code updated successfully.');
+  await page.locator('.swal2-confirm').click();
   await expect(page.getByRole('heading', { name: 'Codes Master' })).toBeVisible();
-  await expect(page.locator('.success-message')).toContainText('Code updated successfully.');
   expect(updateBody?.['code']).toBe('EDIT');
   expect(updateBody?.['codeType']).toBe('GENERAL');
   expect(updateBody?.['codeDescription']).toBe('Updated description');
+  expect(updateBody?.['shortDescription']).toBe('Short');
 });
 
 test('shows a safe missing-record error', async ({ page }) => {
@@ -100,6 +106,32 @@ test('shows a safe missing-record error', async ({ page }) => {
   await expect(page.getByText('Internal database details.')).toHaveCount(0);
 });
 
+test('shows a validation alert when required edit fields are empty', async ({ page }) => {
+  await page.route('**/api/codes/record**', async (route) => {
+    await route.fulfill({ contentType: 'application/json', json: editRecord });
+  });
+
+  await page.goto('/codes/edit?code=EDIT&codeType=GENERAL');
+  await page.getByRole('textbox', { name: 'Code Description', exact: true }).fill('');
+  await page.getByRole('button', { name: 'Save' }).click();
+
+  await expect(page.locator('.swal2-popup')).toContainText('Code Description is required.');
+});
+
+test('cancel restores the loaded values without leaving the edit page', async ({ page }) => {
+  await page.route('**/api/codes/record**', async (route) => {
+    await route.fulfill({ contentType: 'application/json', json: editRecord });
+  });
+
+  await page.goto('/codes/edit?code=EDIT&codeType=GENERAL');
+  const description = page.getByRole('textbox', { name: 'Code Description', exact: true });
+  await description.fill('Draft change');
+  await page.getByRole('button', { name: 'Cancel' }).click();
+
+  await expect(description).toHaveValue('Original description');
+  await expect(page.getByRole('heading', { name: 'Codes Master' })).toBeVisible();
+});
+
 test('asks before leaving an edited record with unsaved changes', async ({ page }) => {
   await page.route('**/api/codes/record**', async (route) => {
     await route.fulfill({ contentType: 'application/json', json: editRecord });
@@ -108,7 +140,7 @@ test('asks before leaving an edited record with unsaved changes', async ({ page 
   await page.goto('/codes/edit?code=EDIT&codeType=GENERAL');
   await page.getByRole('textbox', { name: 'Code Description', exact: true }).fill('Draft change');
   page.once('dialog', (dialog) => dialog.dismiss());
-  await page.getByRole('button', { name: 'Cancel' }).click();
+  await page.getByRole('button', { name: 'Back' }).click();
 
-  await expect(page.getByRole('heading', { name: 'Edit Codes Master' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Codes Master' })).toBeVisible();
 });

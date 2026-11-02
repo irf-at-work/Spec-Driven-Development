@@ -25,6 +25,78 @@ paths:
             type: integer
             minimum: 1
             default: 10
+        - name: sortBy
+          in: query
+          required: false
+          description: Column used to order filtered records before pagination.
+          schema:
+            $ref: "#/components/schemas/CodeSortColumn"
+        - name: sortDirection
+          in: query
+          required: false
+          description: Sort order for the selected column.
+          schema:
+            $ref: "#/components/schemas/CodeSortDirection"
+        - name: codeOperator
+          in: query
+          required: false
+          description: Case-insensitive filter operator for Code; must be supplied with codeValue.
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: codeValue
+          in: query
+          required: false
+          description: Literal text used to filter Code.
+          schema:
+            type: string
+        - name: codeDescriptionOperator
+          in: query
+          required: false
+          description: Case-insensitive filter operator for Code Description; must be supplied with codeDescriptionValue.
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: codeDescriptionValue
+          in: query
+          required: false
+          description: Literal text used to filter Code Description.
+          schema:
+            type: string
+        - name: codeTypeOperator
+          in: query
+          required: false
+          description: Case-insensitive filter operator for Type; must be supplied with codeTypeValue.
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: codeTypeValue
+          in: query
+          required: false
+          description: Literal text used to filter Type.
+          schema:
+            type: string
+        - name: value1Operator
+          in: query
+          required: false
+          description: Case-insensitive filter operator for Value 1; must be supplied with value1Value.
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: value1Value
+          in: query
+          required: false
+          description: Literal text used to filter Value 1.
+          schema:
+            type: string
+        - name: value2Operator
+          in: query
+          required: false
+          description: Case-insensitive filter operator for Value 2; must be supplied with value2Value.
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: value2Value
+          in: query
+          required: false
+          description: Literal text used to filter Value 2.
+          schema:
+            type: string
       responses:
         "200":
           description: A page of code records.
@@ -144,6 +216,22 @@ components:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
   schemas:
+    CodeSortColumn:
+      type: string
+      enum: [Code, CodeDescription, CodeType, Value1, Value2]
+      description: Data column to sort; Actions is not sortable.
+    CodeSortDirection:
+      type: string
+      enum: [Ascending, Descending]
+    CodeFilterOperator:
+      type: string
+      enum:
+        - StartsWith
+        - EndsWith
+        - Contains
+        - DoesNotContain
+        - EqualTo
+        - NotEqualTo
     CodeWrite:
       type: object
       required:
@@ -188,7 +276,10 @@ components:
           description: Maximum 2000 bytes in the target Oracle database character set.
         activeYn:
           type: [string, "null"]
-          description: Maximum 1 byte in the target Oracle database character set; allowed values are unspecified.
+          description: |
+            Maximum 1 byte in the target Oracle database character set.
+            Add defaults the UI toggle on and submits Y/N. Edit preserves the
+            stored value unless the toggle changes.
       description: |
         On update, the API matches the immutable code/codeType composite key
         from the query parameters and rejects a body whose identity differs.

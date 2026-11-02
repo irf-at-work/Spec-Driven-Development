@@ -19,7 +19,7 @@ const record = {
   createdDate: '2025-01-15T00:00:00',
 };
 
-test('requires confirmation containing both key values and removes only after success', async ({
+test('confirms deletion with SweetAlert containing both key values then removes the record', async ({
   page,
 }) => {
   let deleted = false;
@@ -42,16 +42,14 @@ test('requires confirmation containing both key values and removes only after su
   });
 
   await page.goto('/codes');
-  page.once('dialog', async (dialog) => {
-    expect(dialog.message()).toContain('DELETE-ME');
-    expect(dialog.message()).toContain('GENERAL');
-    await dialog.accept();
-  });
   await page.getByRole('button', { name: 'Delete DELETE-ME (GENERAL)' }).click();
 
-  await expect(
-    page.getByRole('status').filter({ hasText: 'Code deleted successfully.' }),
-  ).toBeVisible();
+  await expect(page.locator('.swal2-popup')).toContainText('DELETE-ME');
+  await expect(page.locator('.swal2-popup')).toContainText('GENERAL');
+  await expect(page.locator('.swal2-confirm')).toHaveText('Delete');
+  expect(deleted).toBe(false);
+  await page.locator('.swal2-confirm').click();
+  await expect(page.locator('.swal2-popup')).toContainText('Code deleted successfully.');
   await expect(page.getByText('No codes are available.')).toBeVisible();
   await expect(page.getByRole('row')).toHaveCount(0);
 });
@@ -69,8 +67,9 @@ test('cancelling confirmation makes no delete request', async ({ page }) => {
   });
 
   await page.goto('/codes');
-  page.once('dialog', (dialog) => dialog.dismiss());
   await page.getByRole('button', { name: 'Delete DELETE-ME (GENERAL)' }).click();
+  await expect(page.locator('.swal2-popup')).toBeVisible();
+  await page.locator('.swal2-cancel').click();
 
   await expect(page.getByRole('cell', { name: 'DELETE-ME', exact: true })).toBeVisible();
   expect(deleteRequests).toBe(0);
@@ -94,8 +93,9 @@ test('keeps the row and shows safe constraint feedback when deletion fails', asy
   });
 
   await page.goto('/codes');
-  page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Delete DELETE-ME (GENERAL)' }).click();
+  await expect(page.locator('.swal2-popup')).toBeVisible();
+  await page.locator('.swal2-confirm').click();
 
   await expect(page.getByRole('alert')).toContainText(
     'This code cannot be deleted because another record depends on it.',

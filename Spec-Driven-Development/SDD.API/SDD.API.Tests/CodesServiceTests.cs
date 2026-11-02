@@ -35,6 +35,45 @@ public sealed class CodesServiceTests
     }
 
     [Fact]
+    public async Task List_applies_all_filters_before_counting_and_paging()
+    {
+        var filters = new[]
+        {
+            new CodeColumnFilter(CodeFilterColumn.Code, CodeFilterOperator.Contains, "usd"),
+            new CodeColumnFilter(CodeFilterColumn.CodeType, CodeFilterOperator.EqualTo, "CURRENCY"),
+        };
+        var listedRecord = new STD_CODES
+        {
+            CC_CODE = "USD",
+            CC_TYPE = "CURRENCY",
+            CC_COMP_CODE = "USD",
+        };
+        var repository = new FakeCodesRepository
+        {
+            TotalCount = 1,
+            ListedRecords = [listedRecord],
+        };
+        var service = CreateService(repository);
+
+        var result = await service.ListAsync(
+            2,
+            10,
+            filters,
+            CodeSortColumn.CodeDescription,
+            CodeSortDirection.Descending,
+            default);
+
+        Assert.Equal(filters, repository.CountFilters);
+        Assert.Equal(filters, repository.PageFilters);
+        Assert.Equal(CodeSortColumn.CodeDescription, repository.RequestedSortBy);
+        Assert.Equal(CodeSortDirection.Descending, repository.RequestedSortDirection);
+        Assert.Equal(10, repository.RequestedSkip);
+        Assert.Equal(10, repository.RequestedPageSize);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal("USD", Assert.Single(result.Items).Code);
+    }
+
+    [Fact]
     public async Task Create_rejects_duplicate_composite_key_without_adding_a_record()
     {
         var repository = new FakeCodesRepository
@@ -55,7 +94,8 @@ public sealed class CodesServiceTests
     [Fact]
     public async Task Create_uses_composite_key_and_sets_server_controlled_values()
     {
-        var repository = new FakeCodesRepository();
+        var systemDate = new DateTime(2025, 1, 15, 9, 30, 0);
+        var repository = new FakeCodesRepository { SystemDate = systemDate };
         var service = CreateService(repository);
 
         var response = await service.CreateAsync(
@@ -72,10 +112,12 @@ public sealed class CodesServiceTests
         Assert.Equal("OTHER", repository.AddedRecord.CC_TYPE);
         Assert.Equal("SHARED", repository.AddedRecord.CC_COMP_CODE);
         Assert.Equal("ADMIN", repository.AddedRecord.CC_CR_BY);
-        Assert.Null(repository.AddedRecord.CC_CR_DT);
+        Assert.Equal(systemDate, repository.AddedRecord.CC_CR_DT);
         Assert.Null(repository.AddedRecord.CC_UP_BY);
         Assert.Null(repository.AddedRecord.CC_UP_DT);
         Assert.Equal("SHARED", response.Code);
+        Assert.Equal("ADMIN", response.CreatedBy);
+        Assert.Equal(systemDate, response.CreatedDate);
     }
 
     [Fact]
@@ -92,9 +134,10 @@ public sealed class CodesServiceTests
     }
 
     [Fact]
-    public async Task Update_preserves_creation_audit_and_keeps_update_audit_null()
+    public async Task Update_preserves_creation_audit_and_sets_update_audit_from_system_date()
     {
         var createdDate = new DateTime(2025, 1, 15, 9, 30, 0);
+        var systemDate = new DateTime(2025, 2, 20, 10, 15, 0);
         var record = new STD_CODES
         {
             CC_CODE = "EDIT",
@@ -105,7 +148,7 @@ public sealed class CodesServiceTests
             CC_UP_BY = "OLD",
             CC_UP_DT = createdDate,
         };
-        var repository = new FakeCodesRepository { Record = record };
+        var repository = new FakeCodesRepository { Record = record, SystemDate = systemDate };
         var service = CreateService(repository);
 
         var response = await service.UpdateAsync(
@@ -118,8 +161,12 @@ public sealed class CodesServiceTests
         Assert.Equal("Updated", record.CC_DESC);
         Assert.Equal("ORIGINAL", record.CC_CR_BY);
         Assert.Equal(createdDate, record.CC_CR_DT);
-        Assert.Null(record.CC_UP_BY);
-        Assert.Null(record.CC_UP_DT);
+        Assert.Equal("ADMIN", record.CC_UP_BY);
+        Assert.Equal(systemDate, record.CC_UP_DT);
+        Assert.Equal("ADMIN", response!.UpdatedBy);
+        Assert.Equal(systemDate, response.UpdatedDate);
+        Assert.Equal("ORIGINAL", response.CreatedBy);
+        Assert.Equal(createdDate, response.CreatedDate);
     }
 
     [Fact]
@@ -157,20 +204,45 @@ public sealed class CodesServiceTests
     private sealed class FakeCodesRepository : ICodesRepository
     {
         public STD_CODES? Record { get; init; }
+        public DateTime SystemDate { get; init; } = new(2025, 1, 1);
         public Func<string, string, bool> Exists { get; init; } = (_, _) => false;
         public Exception? SaveException { get; init; }
+        public int TotalCount { get; init; }
+        public IReadOnlyList<STD_CODES> ListedRecords { get; init; } = [];
         public bool AddCalled { get; private set; }
         public STD_CODES? AddedRecord { get; private set; }
         public STD_CODES? RemovedRecord { get; private set; }
         public (string Code, string CodeType)? FindKey { get; private set; }
+        public IReadOnlyList<CodeColumnFilter>? CountFilters { get; private set; }
+        public IReadOnlyList<CodeColumnFilter>? PageFilters { get; private set; }
+        public int RequestedSkip { get; private set; }
+        public int RequestedPageSize { get; private set; }
+        public CodeSortColumn RequestedSortBy { get; private set; }
+        public CodeSortDirection RequestedSortDirection { get; private set; }
 
-        public Task<int> CountAsync(CancellationToken cancellationToken) => Task.FromResult(0);
+        public Task<int> CountAsync(
+            IReadOnlyList<CodeColumnFilter> filters,
+            CancellationToken cancellationToken)
+        {
+            CountFilters = filters;
+            return Task.FromResult(TotalCount);
+        }
 
         public Task<IReadOnlyList<STD_CODES>> GetPageAsync(
             int skip,
             int pageSize,
-            CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<STD_CODES>>([]);
+            IReadOnlyList<CodeColumnFilter> filters,
+            CodeSortColumn sortBy,
+            CodeSortDirection sortDirection,
+            CancellationToken cancellationToken)
+        {
+            RequestedSkip = skip;
+            RequestedPageSize = pageSize;
+            RequestedSortBy = sortBy;
+            RequestedSortDirection = sortDirection;
+            PageFilters = filters;
+            return Task.FromResult(ListedRecords);
+        }
 
         public Task<STD_CODES?> FindAsync(
             string code,
@@ -180,6 +252,9 @@ public sealed class CodesServiceTests
             FindKey = (code, codeType);
             return Task.FromResult(Record);
         }
+
+        public Task<DateTime> GetSystemDateAsync(CancellationToken cancellationToken) =>
+            Task.FromResult(SystemDate);
 
         public Task<bool> ExistsAsync(
             string code,

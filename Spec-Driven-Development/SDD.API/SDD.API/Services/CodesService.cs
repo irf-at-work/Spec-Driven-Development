@@ -14,6 +14,9 @@ public sealed class CodesService(
     public async Task<PaginatedResult<CodeRecordResponse>> ListAsync(
         int page,
         int pageSize,
+        IReadOnlyList<CodeColumnFilter> filters,
+        CodeSortColumn sortBy,
+        CodeSortDirection sortDirection,
         CancellationToken cancellationToken)
     {
         var skip = (long)(page - 1) * pageSize;
@@ -25,8 +28,14 @@ public sealed class CodesService(
                 "Choose a lower page number or page size.");
         }
 
-        var totalCount = await repository.CountAsync(cancellationToken);
-        var records = await repository.GetPageAsync((int)skip, pageSize, cancellationToken);
+        var totalCount = await repository.CountAsync(filters, cancellationToken);
+        var records = await repository.GetPageAsync(
+            (int)skip,
+            pageSize,
+            filters,
+            sortBy,
+            sortDirection,
+            cancellationToken);
 
         return new PaginatedResult<CodeRecordResponse>(
             records.Select(Map).ToArray(),
@@ -56,6 +65,7 @@ public sealed class CodesService(
         }
 
         var record = CreateRecord(request);
+        record.CC_CR_DT = await repository.GetSystemDateAsync(cancellationToken);
         try
         {
             await repository.AddAsync(record, cancellationToken);
@@ -102,8 +112,8 @@ public sealed class CodesService(
         }
 
         ApplyEditableValues(record, request);
-        record.CC_UP_BY = null;
-        record.CC_UP_DT = null;
+        record.CC_UP_BY = "ADMIN";
+        record.CC_UP_DT = await repository.GetSystemDateAsync(cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Updated a Codes Master record.");
@@ -201,7 +211,9 @@ public sealed class CodesService(
             LongDescriptionInArabic = record.CC_LONG_DESC_L2,
             ActiveYn = record.CC_ACTIVE_YN,
             CreatedBy = record.CC_CR_BY,
-            CreatedDate = record.CC_CR_DT
+            CreatedDate = record.CC_CR_DT,
+            UpdatedBy = record.CC_UP_BY,
+            UpdatedDate = record.CC_UP_DT
         };
 
     private static CodesApiException DuplicateRecord() =>

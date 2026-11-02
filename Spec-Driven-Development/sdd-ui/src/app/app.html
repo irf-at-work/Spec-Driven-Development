@@ -4,19 +4,38 @@
 
 <div class="app-shell">
   <aside class="master-navigation" aria-label="Main navigation">
-    <h2>Master</h2>
-    <nav>
-      @for (item of masterNavigation; track item.path) {
-        <a
-          mat-button
-          [routerLink]="item.path"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          {{ item.label }}
-        </a>
-      }
-    </nav>
+    <button
+      mat-button
+      class="master-navigation-toggle"
+      type="button"
+      aria-controls="master-navigation-links"
+      [attr.aria-expanded]="isMasterNavigationExpanded()"
+      (click)="toggleMasterNavigation()"
+    >
+      <span>Masters</span>
+      <svg
+        class="master-navigation-chevron"
+        [class.expanded]="isMasterNavigationExpanded()"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path d="m7 10 5 5 5-5" />
+      </svg>
+    </button>
+    @if (isMasterNavigationExpanded()) {
+      <nav id="master-navigation-links">
+        @for (item of masterNavigation; track item.path) {
+          <a
+            mat-button
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            {{ item.label }}
+          </a>
+        }
+      </nav>
+    }
   </aside>
 
   <main class="main-content" id="main-content">

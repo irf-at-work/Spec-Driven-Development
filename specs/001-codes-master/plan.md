@@ -1,12 +1,12 @@
 # Implementation Plan: Codes Master
 
-**Branch**: `sdd.muktha` | **Date**: 2026-10-29 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-codes-master` | **Date**: 2026-10-30 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `/specs/001-codes-master/spec.md`
 
 ## Summary
 
-Provide broker users with a paginated Codes Master listing and dedicated add/edit pages, while preserving the existing Oracle `STD_CODES` data and composite key. The .NET API will use the constitution-mandated Oracle Entity Framework Core database-first approach; the Angular UI will consume the API contract generated from OpenAPI. The API owns validation, key-safe CRUD, and creation audit values. The UI provides the required navigation, forms, feedback, and accessible audit details.
+Provide broker users with a paginated, sortable Codes Master listing, case-insensitive per-column filtering across all records, and dedicated add/edit pages, while preserving the existing Oracle `STD_CODES` data and composite key. The .NET API will use the constitution-mandated Oracle Entity Framework Core database-first approach; the Angular UI will consume the API contract generated from OpenAPI. The API owns validation, key-safe CRUD, filtering, sorting, and creation audit values. The UI provides the required navigation, filter controls, forms, feedback, and accessible audit details.
 
 ## Technical Context
 
@@ -22,11 +22,11 @@ Provide broker users with a paginated Codes Master listing and dedicated add/edi
 
 **Project Type**: Web application (ASP.NET Core API + Angular UI + Oracle database).
 
-**Performance Goals**: No feature-specific response-time SLA is specified. The listing uses the constitution's default page size of 10.
+**Performance Goals**: No feature-specific response-time SLA is specified. The listing defaults to 10 records per page and offers 10, 15, 20, and 50.
 
-**Constraints**: Keep schema and scaffolded files unchanged; use database-first entities and partial extensions; generated OpenAPI client only; strict Angular typing and typed forms; no authentication; no secrets in source control; require explicit user intent for data changes and confirmation for deletion; do not add packages without approval.
+**Constraints**: Keep schema and scaffolded files unchanged; use database-first entities and partial extensions; generated OpenAPI client only; strict Angular typing and typed forms; no authentication; no secrets in source control; require explicit user intent for data changes and confirmation for deletion; do not add packages without approval. Allowlist filterable and sortable columns and operators; apply case-insensitive filters and selected sorting in Oracle before pagination, combining multiple column filters using AND.
 
-**Scale/Scope**: One Master-data feature over the existing `STD_CODES` records, with paginated listing, record-level audit details, and create/read/update/delete. No search, filter, sort, authentication, or schema change.
+**Scale/Scope**: One Master-data feature over the existing `STD_CODES` records, with paginated listing, per-column filtering, server-side sorting, record-level audit details, and create/read/update/delete. No authentication or schema change.
 
 ## Constitution Check
 
@@ -61,9 +61,10 @@ Provide broker users with a paginated Codes Master listing and dedicated add/edi
 | Angular 21, Material, generated client, and test-stack requirements are reconciled with current dependencies | CONDITIONAL: implementation prerequisite; see [research.md](research.md) |
 | Database byte semantics and `SYSDATE` behavior are treated as Oracle-owned | PASS; target character set and server time zone must be verified before implementation |
 | User data changes require deliberate interaction and destructive delete confirmation | PASS |
-| No authentication or extra search/sort/filter behavior is introduced | PASS |
+| Requested filters are restricted to the five data columns, combine using AND, and apply before pagination | PASS |
+| Sorting is allowlisted and applied after filtering but before pagination; no authentication or schema change is introduced | PASS |
 
-**Post-design result**: PASS for design; implementation is gated on the explicit prerequisites in the research record. No constitutional exception is proposed.
+**Post-design result**: PASS. Filtering extends the existing list query and OpenAPI contract; it adds no packages, database schema, or separate data store. No constitutional exception is proposed.
 
 ## Project Structure
 
@@ -116,7 +117,15 @@ Test locations follow the existing solution/project conventions once approved te
 
 ## Plain-English Workflow
 
-The user opens Master > Codes Master and reviews ten records at a time. Add and Edit take the user to separate pages. The API checks required fields and Oracle byte limits, then reads or changes the matching record using both Code and Code Type. Creating a record derives Company Code from Code and records the required creation details in Oracle. Editing keeps the original key and creation details. Delete asks the user to confirm first. The UI reports success or a safe, understandable error and can show the selected record's creation details accessibly.
+The user opens Master > Codes Master and reviews ten records at a time, with options for 10, 15, 20, or 50. Filter controls on the five data columns find matching records across the full database result set; multiple filters must all match. Data columns can be sorted in either direction, and filtering and sorting are applied before pagination. Add and Edit take the user to separate pages. The API checks required fields and Oracle byte limits, then reads or changes the matching record using both Code and Code Type. Creating a record derives Company Code from Code and records the required creation details in Oracle. Editing keeps the original key and creation details. Delete asks the user to confirm first. The UI reports success or a safe, understandable error and can show the selected record's creation details accessibly.
+
+## Filter Design
+
+Each sortable column heading has a value input and adjacent filter icon directly beneath it. Fixed proportional table columns keep filter rows aligned; the icon opens the complete operator list in a CDK overlay, which remains visible above the table and is not clipped by the horizontally scrollable table container. The Add page uses a muted light surface around a separate white form card, with evenly spaced form fields that collapse to one column on narrow screens. The UI sends the selected operator and value for each of the five data columns as optional list query parameters. The API validates the operators against a closed set and applies each filter to its allowlisted Oracle column before counting or paging. Matching is case-insensitive, literal `%`, `_`, and escape characters are treated as user input rather than SQL wildcards, and multiple filters combine using AND. `No Filter` omits that column's operator and value. The OpenAPI contract remains the source for the regenerated Angular client.
+
+## Sorting Design
+
+The UI sends an allowlisted sort column and direction with list requests. The API applies that ordering to the filtered result set before pagination, using Code and Code Type as stable tie-breakers. The five visible data columns are sortable; Actions is not. A sort change resets the page index to 1.
 
 ## Complexity Tracking
 

@@ -8,6 +8,14 @@
 
 **Input**: User description: "Create the Codes Master feature specification for navigation, listing, add, edit, delete, audit details, and use of the existing Oracle STD_CODES data source."
 
+## Clarifications
+
+### Session 2026-10-30
+
+- Q: Should column filters apply to all database records or only the records currently loaded on the page? → A: Apply filters to all database records, then paginate the matches.
+- Q: If filters are active on more than one column, should a record have to match every column filter or any one of them? → A: A record must match every active column filter.
+- Q: Should text filters ignore uppercase and lowercase differences? → A: Ignore case.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Browse codes (Priority: P1)
@@ -25,6 +33,7 @@ As an application user, I can open Codes Master from the Master navigation and r
 3. **Given** a listed record, **When** the user hovers over or focuses its audit target, **Then** the actual creation audit values for that record are shown.
 4. **Given** no code records are available, **When** the listing loads, **Then** an understandable empty state is shown.
 5. **Given** records cannot be retrieved, **When** the listing loads, **Then** an understandable error is shown and the failure is not presented as an empty successful result.
+6. **Given** the listing contains records, **When** the user opens a data-column filter, selects an operator, enters a value, and applies it, **Then** the displayed records match that filter across all database records before pagination.
 
 ---
 
@@ -89,6 +98,7 @@ As an application user, I can deliberately confirm deletion of a selected code r
 - A user activates Add or Save repeatedly while a save is in progress.
 - A deletion is rejected by an existing database constraint.
 - The listing contains more records than fit on one page.
+- A filter has no matches, is cleared, or is combined with another column filter.
 
 ## Requirements *(mandatory)*
 
@@ -100,10 +110,16 @@ As an application user, I can deliberately confirm deletion of a selected code r
 - **FR-002**: Selecting `Codes Master` MUST open a page headed `Codes Master`.
 - **FR-003**: The listing MUST show the columns in this order: Code (`CC_CODE`), Code Description (`CC_DESC`), Type (`CC_TYPE`), Value 1 (`CC_VALUE1`), Value 2 (`CC_VALUE2`), and Actions.
 - **FR-004**: The listing MUST place its `Add` button in the top-right corner and provide `Edit` and `Delete` actions for every record.
-- **FR-005**: The listing MUST provide pagination with a default page size of 10 records. It MUST NOT add search, filtering, or sorting.
+- **FR-041**: Edit and Delete actions MUST use recognizable icon-only controls with accessible names identifying the action and record key.
+- **FR-042**: Delete MUST require a SweetAlert confirmation identifying both Code and Code Type. Canceling the confirmation MUST leave the record unchanged.
+- **FR-043**: The listing columns and filter controls MUST align consistently across the table grid. The Add page MUST use a subtle light background with a distinct form surface, maintain even field alignment, and adapt to narrow screens without horizontal page overflow.
+- **FR-005**: The listing MUST provide pagination with a default page size of 10 records and allow page sizes of 10, 15, 20, and 50.
+- **FR-040**: The five data-column headers MUST support ascending and descending server-side sorting across the full filtered result set before pagination. The Actions column MUST NOT be sortable. Changing sort order MUST return the listing to page 1.
 - **FR-006**: The listing MUST distinguish a successful empty result from a retrieval failure and display understandable user feedback for each.
 - **FR-007**: After a successful add, edit, or delete, the user MUST return to the listing and receive a success message. An unsuccessful operation MUST NOT be reported as successful.
 - **FR-008**: User-facing messages MUST use British/Indian English, explain the issue in plain language, and avoid credentials, connection strings, raw SQL, stack traces, and other sensitive implementation details.
+- **FR-035**: The listing MUST provide a filter control beneath each sortable data-column heading: Code, Code Description, Type, Value 1, and Value 2. Each control MUST show a value input and an adjacent filter icon. Activating the icon MUST display all options (`No Filter`, `Starts With`, `Ends With`, `Contains`, `Does Not Contain`, `Equal To`, and `Not Equal To`) in a visible overlay above the table, and provide an apply action.
+- **FR-036**: A filter MUST apply to its selected column across all database records before pagination, without distinguishing uppercase and lowercase letters. Multiple active column filters MUST be combined so that a record matches every active filter. `No Filter` MUST clear the filter for that column, and a `Clear all filters` action MUST clear every active filter. The listing MUST update to show the matching records and their correct paginated count.
 
 #### Data source and identity
 
@@ -131,14 +147,17 @@ As an application user, I can deliberately confirm deletion of a selected code r
   | 8 | Flex 1 | `CC_FLEX_01` | 60 bytes |
   | 9 | Flex 2 | `CC_FLEX_02` | 2000 bytes |
 
-- **FR-017**: Code and Code Type MUST be mandatory. The application MUST NOT assume that Code Type is a dropdown or derive its options from an unapproved source.
+- **FR-017**: Code, Code Type, and Code Description MUST be mandatory. The application MUST NOT assume that Code Type is a dropdown or derive its options from an unapproved source.
 - **FR-018**: The forms MUST provide a `More` control, collapsed by default, that reveals these additional fields in order: Desc In Arabic (`CC_DESC_L2`, 100 bytes), Short Desc In Arabic (`CC_SHORT_DESC_L2`, 30 bytes), Long Description In Arabic (`CC_LONG_DESC_L2`, 2000 bytes), and Active Y/N (`CC_ACTIVE_YN`, 1 byte). Expanding or collapsing the section MUST preserve entered values.
 - **FR-019**: All entered values MUST be validated against their database byte-length limits before persistence. Validation MUST account for Oracle `VARCHAR2(... BYTE)` semantics, MUST provide clear field-level errors, and MUST NOT silently truncate values.
-- **FR-020**: The application MUST NOT assume allowed values, mandatory status, or a default for Active Y/N beyond the existing one-byte column limit.
-- **FR-021**: Add and Edit pages MUST provide `Save`, `Cancel`, and `Back` actions. On Add, the page-header `Add` button and `Save` MUST perform the same form submission; only one submission may be in progress at a time. `Cancel` and `Back` MUST return to the listing, with a confirmation before discarding unsaved changes.
+- **FR-020**: Active Y/N MUST be presented as a toggle. On Add it MUST default to on, submitting `Y` when on and `N` when off. On Edit, it MUST reflect the stored value without changing it unless the user changes the toggle.
+- **FR-021**: Add and Edit pages MUST provide `Save`, `Cancel`, and `Back` actions. On Add, the page-header `Add` control MUST navigate to the Add page and MUST NOT submit the form. `Save` MUST submit the form; only one submission may be in progress at a time. The Add page's `Back` MUST appear beside `Add` in the page-header's top-right action group. The Add page's `Save` and `Cancel` MUST be centered below the form. Add-page `Cancel` MUST clear entered values, reset the active toggle to its default, and remain on the Add page. Edit-page `Cancel` and `Back` MUST return to the listing, with a confirmation before discarding unsaved changes.
 - **FR-022**: The Edit page MUST retrieve a record by both `CC_CODE` and `CC_TYPE`, populate all fields from stored values, and preserve the selected record identity. Code and Code Type MUST NOT be changeable during an edit in a way that could update a different record.
 - **FR-023**: Missing records and database retrieval, insert, and update errors MUST result in clear user feedback. Failed operations MUST leave existing data unchanged and MUST NOT be presented as successful.
 - **FR-024**: Repeated activation of Add or Save while a submission is pending MUST NOT create duplicate submissions.
+- **FR-037**: On Add, typing in Code Description MUST fill Short Description with the first 30 characters until the user edits Short Description manually. Code Description changes MUST NOT overwrite a manually edited Short Description.
+- **FR-038**: Desc In Arabic, Short Desc In Arabic, and Long Description In Arabic MUST use right-to-left text direction and right-aligned text.
+- **FR-039**: After a successful create, update, or delete, the application MUST show a SweetAlert success dialog identifying the completed operation.
 
 #### Creation and update audit
 
@@ -172,13 +191,19 @@ As an application user, I can deliberately confirm deletion of a selected code r
 - **AC-012**: Given a user selects Delete, when the confirmation is shown, then both key fields identify the record; cancelling leaves it unchanged and confirming deletes only that composite-key record.
 - **AC-013**: Given deletion fails or is blocked by a database constraint, when the operation completes, then the record is not reported as deleted and an understandable error is displayed.
 - **AC-014**: Given a listing has no records, when it loads, then an empty state is shown; given retrieval fails, then an error state distinct from the empty state is shown.
-- **AC-015**: Given more than 10 records are available, when the listing is used, then the user can navigate the paginated results with a default page size of 10 and no added search, filtering, or sorting.
+- **AC-015**: Given more records are available, when the listing is used, then the user can navigate pages with a default size of 10 and choose page sizes 10, 15, 20, or 50.
 - **AC-016**: Given a user activates Add or Save repeatedly while a save is pending, when the form is submitted, then only one submission occurs.
 - **AC-017**: Given a form has unsaved changes, when Cancel or Back is selected, then the user is asked to confirm before the changes are discarded.
 - **AC-018**: Given a record has creation audit values, when its row audit target is hovered over, keyboard-focused, or activated on a touch device, then actual stored Created By and Created Date values are shown; NULL values are clearly identified as not recorded.
 - **AC-019**: Given a stored creation date is displayed, then its calendar date is preserved without time-zone conversion and formatted as `DD-MMM-YYYY` under the project GST display convention.
 - **AC-020**: Given any database or validation operation fails, when feedback is displayed, then it explains the issue in plain language without exposing credentials, connection strings, raw SQL, or stack traces.
 - **AC-021**: Given the feature is planned or implemented, when it is checked against project governance, then the existing table and schema remain unchanged, credentials remain absent from source-controlled files, and no authentication feature is introduced.
+- **AC-022**: Given records are available, when the user filters one or more data columns using supported operators and values, then all database records are checked without distinguishing uppercase and lowercase letters, only records matching every active filter are displayed, pagination reflects the match count, and selecting `No Filter` clears that column's filter.
+- **AC-023**: Given records are available, when the user selects a sortable data-column header, then the full filtered result set is sorted ascending or descending before pagination and the listing returns to page 1.
+- **AC-024**: Given a record is listed, when the user views its row actions, then Edit and Delete are icon-only controls with accessible names that include the composite key.
+- **AC-025**: Given a record is selected for deletion, when the confirmation is shown, then both Code and Code Type are identified, canceling causes no delete request, and only explicit confirmation proceeds with deletion.
+- **AC-026**: Given the listing is displayed, when the user views a sortable column heading, then its filter input and icon appear directly beneath the heading; activating the icon shows all operator choices in an overlay above the table without clipping or obscuring them.
+- **AC-027**: Given the listing or Add page is displayed, when the layout is viewed at desktop or narrow mobile widths, then listing columns and filter rows remain aligned, Add fields form an even grid on desktop and a single column on mobile, and the Add page has a light page surface with a distinct form card and no horizontal page overflow.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -194,6 +219,7 @@ As an application user, I can deliberately confirm deletion of a selected code r
 - **SC-003**: 100% of successful create and edit checks preserve the required composite identity and audit-field behavior.
 - **SC-004**: At least 90% of representative users can complete a basic add or edit task on their first attempt without assistance.
 - **SC-005**: Every unsuccessful retrieval or data change is distinguishable to the user from a successful result, and no user-facing error exposes a credential or raw technical diagnostic.
+- **SC-006**: 100% of filter operators return only matching records from the full dataset, and clearing a filter restores the unfiltered paginated listing.
 
 ## Assumptions
 

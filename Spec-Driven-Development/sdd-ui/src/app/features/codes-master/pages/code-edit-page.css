@@ -1,6 +1,11 @@
 .form-page {
   max-width: 70rem;
   margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 0.85rem rgb(48 39 31 / 5%);
 }
 
 .page-header {
@@ -18,15 +23,43 @@
 
 .page-header p {
   margin: 0.5rem 0 0;
-  color: #5f6368;
+  color: var(--app-muted);
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .form-actions {
   display: flex;
+  justify-content: center;
   gap: 0.5rem;
   padding: 1rem 0;
+  border-top: 1px solid var(--app-border);
+}
+
+@media (max-width: 640px) {
+  .form-page {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page-header-actions {
+    align-self: flex-end;
+  }
 }
 
 .error-message {
-  color: #8b1e1e;
+  color: var(--app-error);
+  padding: 0.8rem 1rem;
+  background: var(--app-error-soft);
+  border: 1px solid var(--app-error-border);
+  border-radius: 0.5rem;
 }

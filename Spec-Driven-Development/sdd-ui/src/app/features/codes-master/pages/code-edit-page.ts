@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CodeFormFields } from '../components/code-form-fields';
 import { codeFields, createCodeForm, toCodeWrite } from '../forms/code-form';
 import { CodesApiService } from '../services/codes-api.service';
@@ -12,7 +12,7 @@ import { CodesFeedbackService } from '../services/codes-feedback.service';
 @Component({
   selector: 'app-code-edit-page',
   standalone: true,
-  imports: [CodeFormFields, MatButtonModule],
+  imports: [CodeFormFields, MatButtonModule, RouterLink],
   styleUrl: './code-edit-page.css',
   templateUrl: './code-edit-page.html',
 })
@@ -28,8 +28,10 @@ export class CodeEditPage implements OnInit {
   protected readonly errorMessage = signal('');
   protected readonly isLoading = signal(true);
   protected readonly isSubmitting = signal(false);
+  protected readonly formResetVersion = signal(0);
   private code = '';
   private codeType = '';
+  private originalFormValue = this.form.getRawValue();
   protected readonly recordLoaded = signal(false);
 
   constructor() {
@@ -60,6 +62,15 @@ export class CodeEditPage implements OnInit {
 
     this.form.markAllAsTouched();
     if (this.form.invalid) {
+      const requiredFields: [keyof typeof this.form.controls, string][] = [
+        ['code', 'Code'],
+        ['codeType', 'Code Type'],
+        ['codeDescription', 'Code Description'],
+      ];
+      const missingFields = requiredFields
+        .filter(([field]) => this.form.controls[field].hasError('required'))
+        .map(([, label]) => label);
+      this.feedback.showRequiredFieldsValidation(missingFields);
       return;
     }
 
@@ -103,10 +114,24 @@ export class CodeEditPage implements OnInit {
     void this.router.navigate(['/codes']);
   }
 
+  protected resetForm(): void {
+    if (this.isSubmitting() || !this.recordLoaded()) {
+      return;
+    }
+
+    this.form.reset(this.originalFormValue);
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.serverErrors.set({});
+    this.errorMessage.set('');
+    this.formResetVersion.update((version) => version + 1);
+  }
+
   private async loadRecord(): Promise<void> {
     try {
       const record = await this.codesApi.get(this.code, this.codeType);
       this.form.patchValue(record);
+      this.originalFormValue = this.form.getRawValue();
       this.form.markAsPristine();
       this.recordLoaded.set(true);
     } catch (error: unknown) {

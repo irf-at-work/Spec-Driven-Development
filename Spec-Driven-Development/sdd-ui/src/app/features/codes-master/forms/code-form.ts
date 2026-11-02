@@ -47,7 +47,10 @@ export function createCodeForm(record?: CodeRecord): CodeFormGroup {
       nonNullable: true,
       validators: [Validators.required],
     }),
-    codeDescription: new FormControl(record?.codeDescription ?? '', { nonNullable: true }),
+    codeDescription: new FormControl(record?.codeDescription ?? '', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
     shortDescription: new FormControl(record?.shortDescription ?? '', { nonNullable: true }),
     longDescription: new FormControl(record?.longDescription ?? '', { nonNullable: true }),
     value1: new FormControl(record?.value1 ?? '', { nonNullable: true }),
@@ -61,7 +64,7 @@ export function createCodeForm(record?: CodeRecord): CodeFormGroup {
     longDescriptionInArabic: new FormControl(record?.longDescriptionInArabic ?? '', {
       nonNullable: true,
     }),
-    activeYn: new FormControl(record?.activeYn ?? '', { nonNullable: true }),
+    activeYn: new FormControl(record?.activeYn ?? 'Y', { nonNullable: true }),
   });
 }
 

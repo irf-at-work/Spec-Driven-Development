@@ -7,6 +7,9 @@ public interface ICodesService
     Task<PaginatedResult<CodeRecordResponse>> ListAsync(
         int page,
         int pageSize,
+        IReadOnlyList<CodeColumnFilter> filters,
+        CodeSortColumn sortBy,
+        CodeSortDirection sortDirection,
         CancellationToken cancellationToken);
 
     Task<CodeRecordResponse?> GetAsync(

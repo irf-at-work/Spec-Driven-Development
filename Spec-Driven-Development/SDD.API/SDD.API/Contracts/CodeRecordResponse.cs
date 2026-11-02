@@ -18,4 +18,6 @@ public sealed class CodeRecordResponse
     public string? ActiveYn { get; init; }
     public string? CreatedBy { get; init; }
     public DateTime? CreatedDate { get; init; }
+    public string? UpdatedBy { get; init; }
+    public DateTime? UpdatedDate { get; init; }
 }

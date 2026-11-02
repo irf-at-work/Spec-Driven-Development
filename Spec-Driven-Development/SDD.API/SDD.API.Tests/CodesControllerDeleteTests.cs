@@ -55,7 +55,13 @@ public sealed class CodesControllerDeleteTests
         public Func<string, string, CancellationToken, Task<bool>>? Delete { get; init; }
         public (string Code, string CodeType)? RequestedKey { get; private set; }
 
-        public Task<PaginatedResult<CodeRecordResponse>> ListAsync(int page, int pageSize, CancellationToken cancellationToken) =>
+        public Task<PaginatedResult<CodeRecordResponse>> ListAsync(
+            int page,
+            int pageSize,
+            IReadOnlyList<CodeColumnFilter> filters,
+            CodeSortColumn sortBy,
+            CodeSortDirection sortDirection,
+            CancellationToken cancellationToken) =>
             Task.FromResult(new PaginatedResult<CodeRecordResponse>([], page, pageSize, 0));
 
         public Task<CodeRecordResponse?> GetAsync(string code, string codeType, CancellationToken cancellationToken) =>

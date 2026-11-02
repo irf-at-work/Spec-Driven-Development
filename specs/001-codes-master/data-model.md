@@ -22,7 +22,7 @@ Represents one code value of one type. Identity is the composite pair `(CC_CODE,
 | Desc In Arabic | `CC_DESC_L2` | `VARCHAR2(100 BYTE)` | Optional |
 | Short Desc In Arabic | `CC_SHORT_DESC_L2` | `VARCHAR2(30 BYTE)` | Optional |
 | Long Description In Arabic | `CC_LONG_DESC_L2` | `VARCHAR2(2000 BYTE)` | Optional |
-| Active Y/N | `CC_ACTIVE_YN` | `VARCHAR2(1 BYTE)` | Optional; allowed values/default are not established |
+| Active Y/N | `CC_ACTIVE_YN` | `VARCHAR2(1 BYTE)` | Optional; Add defaults the UI toggle on and submits `Y`/`N`; Edit preserves the stored value unless the toggle changes |
 | Created By | `CC_CR_BY` | `VARCHAR2(12 BYTE)` | New rows store `ADMIN`; not user-editable |
 | Created Date | `CC_CR_DT` | Oracle `DATE` | New rows use Oracle `SYSDATE`; not user-editable |
 | Updated By | `CC_UP_BY` | `VARCHAR2(12 BYTE)` | NULL on creation and after ordinary edits |
@@ -54,3 +54,17 @@ Present     -- confirmed delete --> Not present
 ```
 
 Validation failures, duplicate keys, missing rows, and database errors do not transition the stored record to a successful new state.
+
+## Listing Filter Query
+
+Filters are transient query inputs and are not stored in `STD_CODES`. Each supported field pairs one operator with one text value:
+
+| Listing field | Oracle column |
+|---|---|
+| Code | `CC_CODE` |
+| Code Description | `CC_DESC` |
+| Type | `CC_TYPE` |
+| Value 1 | `CC_VALUE1` |
+| Value 2 | `CC_VALUE2` |
+
+Supported operators are Starts With, Ends With, Contains, Does Not Contain, Equal To, and Not Equal To; No Filter omits the field's query pair. Matching ignores letter case. Multiple field filters combine using AND, and filtering occurs before the result count and pagination are calculated.

@@ -1,6 +1,11 @@
 .codes-page {
-  max-width: 90rem;
+  max-width: 96rem;
   margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 0.85rem rgb(48 39 31 / 5%);
 }
 
 .page-header {
@@ -11,59 +16,205 @@
   margin-bottom: 1.5rem;
 }
 
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .page-header h1 {
   margin: 0;
   font-size: 1.75rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
 }
 
 .page-header p {
   margin: 0.5rem 0 0;
-  color: #5f6368;
+  color: var(--app-muted);
 }
 
 .state-message {
   padding: 1.5rem;
-  background: #fff;
-  border: 1px solid #d5d9df;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
   border-radius: 0.5rem;
 }
 
 .error-message {
-  color: #8b1e1e;
-}
-
-.success-message {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  color: #174f2a;
-  background: #e8f5eb;
-  border-radius: 0.5rem;
+  color: var(--app-error);
 }
 
 .table-container {
-  overflow-x: auto;
-  background: #fff;
-  border: 1px solid #d5d9df;
-  border-radius: 0.5rem;
+  max-height: 70vh;
+  overflow: auto;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 0.85rem rgb(48 39 31 / 6%);
 }
 
 table {
   width: 100%;
+  min-width: 68rem;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  --codes-grid-stripe-color: #f7f5f2;
+  --codes-grid-header-color: #f1ede8;
+  --mat-table-background-color: var(--app-surface);
+  --mat-table-header-container-background-color: var(--codes-grid-header-color);
+  background-color: var(--app-surface);
+}
+
+col.code-column {
+  width: 14%;
+}
+
+col.description-column {
+  width: 26%;
+}
+
+col.type-column {
+  width: 14%;
+}
+
+col.value-column {
+  width: 14%;
+}
+
+col.actions-column {
+  width: 18%;
+}
+
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+  padding: 0.7rem 0.75rem;
+  border-bottom-color: var(--app-border);
+}
+
+.mat-mdc-cell,
+.mat-mdc-row,
+.mat-mdc-row .mat-mdc-cell {
+  background: var(--app-surface);
+}
+
+.mat-mdc-row:nth-child(even),
+.mat-mdc-row:nth-child(even) .mat-mdc-cell {
+  background: var(--codes-grid-stripe-color);
+}
+
+.mat-mdc-row:hover,
+.mat-mdc-row:hover .mat-mdc-cell {
+  background: #faf8f6;
+  transition: background-color 140ms ease;
+}
+
+.mat-mdc-row:nth-child(even):hover,
+.mat-mdc-row:nth-child(even):hover .mat-mdc-cell {
+  background: #eee7df;
+}
+
+.mat-mdc-header-row,
+.mat-mdc-header-cell {
+  color: var(--app-text);
+  background: var(--codes-grid-header-color);
+  border-bottom: 1px solid var(--app-border-strong);
+}
+
+.mat-mdc-header-cell {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  vertical-align: top;
+}
+
+.column-header-content {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.column-heading {
+  min-height: 1.6rem;
+  display: flex;
+  align-items: center;
+  color: var(--app-text);
+  font-weight: 650;
+}
+
+.column-heading .mat-sort-header-container {
+  min-height: 1.6rem;
+}
+
+app-column-filter-control {
+  min-width: 0;
 }
 
 .actions-cell {
   white-space: nowrap;
+  text-align: center;
+}
+
+.icon-action {
+  display: inline-grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-left: 0.15rem;
+  padding: 0.45rem;
+  place-items: center;
+  color: var(--app-accent);
+  background: transparent;
+  border: 0;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.icon-action:hover,
+.icon-action:focus-visible {
+  background: var(--app-accent-soft);
+}
+
+.icon-action:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 2px;
+}
+
+.icon-action svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: currentColor;
+}
+
+.icon-action.delete-action {
+  color: var(--app-accent);
+}
+
+.icon-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 mat-paginator {
   margin-top: 0.75rem;
-  background: transparent;
+  overflow: hidden;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 0.65rem;
 }
 
 @media (max-width: 640px) {
+  .codes-page {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+
   .page-header {
     align-items: center;
+  }
+
+  .page-actions {
+    align-items: flex-end;
+    flex-direction: column;
   }
 }

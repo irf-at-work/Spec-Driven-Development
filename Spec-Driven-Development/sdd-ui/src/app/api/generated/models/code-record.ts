@@ -18,5 +18,15 @@ export type CodeRecord = CodeWrite & {
  * Stored Oracle DATE calendar value; displayed as DD-MMM-YYYY without timezone conversion.
  */
 'createdDate'?: (string | null);
+
+/**
+ * Update actor stored in CC_UP_BY; ordinary edits leave it NULL.
+ */
+'updatedBy'?: (string | null);
+
+/**
+ * Update time stored in CC_UP_DT; ordinary edits leave it NULL.
+ */
+'updatedDate'?: (string | null);
 };
 

@@ -1,0 +1,68 @@
+<div class="column-filter-control">
+  <div class="filter-input-row">
+    <input
+      class="filter-value-input"
+      [id]="valueId"
+      [attr.aria-label]="'Filter value for ' + label()"
+      type="text"
+      [placeholder]="'Enter ' + label()"
+      [value]="draftValue()"
+      (input)="onValueInput($event)"
+    />
+    <button
+      type="button"
+      class="filter-trigger"
+      [class.filter-active]="filter() !== null"
+      [attr.aria-label]="'Filter ' + label()"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="isOpen()"
+      [attr.aria-controls]="panelId"
+      cdkOverlayOrigin
+      #filterOrigin="cdkOverlayOrigin"
+      (click)="toggle()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 5h16l-6.2 7.1v5.2l-3.6 1.8v-7L4 5z" />
+      </svg>
+    </button>
+  </div>
+
+  <ng-template
+    cdk-connected-overlay
+    [cdkConnectedOverlayOrigin]="filterOrigin"
+    [cdkConnectedOverlayOpen]="isOpen()"
+    [cdkConnectedOverlayPositions]="overlayPositions"
+    [cdkConnectedOverlayPush]="true"
+    (overlayOutsideClick)="closePanel()"
+  >
+    <div class="filter-panel" [id]="panelId" role="dialog" [attr.aria-label]="'Filter ' + label()">
+      <div
+        class="operator-options"
+        role="group"
+        [attr.aria-label]="'Filter operator for ' + label()"
+      >
+        @for (option of operatorOptions; track option.value) {
+          <button
+            type="button"
+            class="operator-option"
+            [class.operator-selected]="selectedOperator() === option.value"
+            [attr.aria-pressed]="selectedOperator() === option.value"
+            (click)="selectOperator(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="apply-filter-button"
+        [disabled]="!canApply()"
+        [attr.aria-label]="'Apply filter for ' + label()"
+        (click)="apply()"
+      >
+        Apply
+      </button>
+    </div>
+  </ng-template>
+</div>

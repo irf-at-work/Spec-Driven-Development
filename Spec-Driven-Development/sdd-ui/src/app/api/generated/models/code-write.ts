@@ -10,7 +10,9 @@
 export interface CodeWrite {
 
   /**
-   * Maximum 1 byte in the target Oracle database character set; allowed values are unspecified.
+   * Maximum 1 byte in the target Oracle database character set.
+   * Add defaults the UI toggle on and submits Y/N. Edit preserves the
+   * stored value unless the toggle changes.
    */
   activeYn?: (string | null);
 

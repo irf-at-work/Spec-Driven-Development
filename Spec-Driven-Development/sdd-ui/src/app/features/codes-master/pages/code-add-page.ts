@@ -26,6 +26,11 @@ export class CodeAddPage {
   protected readonly serverErrors = signal<Record<string, string[]>>({});
   protected readonly errorMessage = signal('');
   protected readonly isSubmitting = signal(false);
+  protected readonly formResetVersion = signal(0);
+
+  protected leavePage(): void {
+    void this.router.navigate(['/codes']);
+  }
 
   constructor() {
     this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -41,6 +46,15 @@ export class CodeAddPage {
 
     this.form.markAllAsTouched();
     if (this.form.invalid) {
+      const requiredFields: [keyof typeof this.form.controls, string][] = [
+        ['code', 'Code'],
+        ['codeType', 'Code Type'],
+        ['codeDescription', 'Code Description'],
+      ];
+      const missingFields = requiredFields
+        .filter(([field]) => this.form.controls[field].hasError('required'))
+        .map(([, label]) => label);
+      this.feedback.showRequiredFieldsValidation(missingFields);
       return;
     }
 
@@ -76,11 +90,16 @@ export class CodeAddPage {
     }
   }
 
-  protected leavePage(): void {
-    if (this.form.dirty && !window.confirm('Discard your unsaved changes?')) {
+  protected resetForm(): void {
+    if (this.isSubmitting()) {
       return;
     }
 
-    void this.router.navigate(['/codes']);
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.serverErrors.set({});
+    this.errorMessage.set('');
+    this.formResetVersion.update((version) => version + 1);
   }
 }

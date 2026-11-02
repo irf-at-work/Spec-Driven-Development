@@ -10,13 +10,14 @@ import {
 import { CodeRecord } from '../../../api/generated/models/code-record';
 import { CodeWrite } from '../../../api/generated/models/code-write';
 import { PaginatedResult } from '../../../api/generated/models/paginated-result';
+import { ListCodes$Params } from '../../../api/generated/fn/operations/list-codes';
 
 @Injectable({ providedIn: 'root' })
 export class CodesApiService {
   private readonly api = inject(Api);
 
-  list(page: number, pageSize: number): Promise<PaginatedResult> {
-    return this.api.invoke(listCodes, { page, pageSize });
+  list(page: number, pageSize: number, filters: ListCodes$Params): Promise<PaginatedResult> {
+    return this.api.invoke(listCodes, { ...filters, page, pageSize });
   }
 
   get(code: string, codeType: string): Promise<CodeRecord> {

@@ -2,34 +2,55 @@
   <header class="page-header">
     <div>
       <h1 id="add-code-heading">Codes Master</h1>
-      <p>Enter the details for the new code.</p>
+      
     </div>
-    <button
-      mat-flat-button
-      color="primary"
-      type="submit"
-      form="codes-master-code-form"
-      [disabled]="isSubmitting()"
-    >
-      Add
-    </button>
+    <div class="page-header-actions">
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSubmitting()"
+        (click)="resetForm()"
+      >
+        Add
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSubmitting()"
+        (click)="leavePage()"
+      >
+        Back
+      </button>
+    </div>
   </header>
 
   @if (errorMessage()) {
     <p class="error-message" role="alert">{{ errorMessage() }}</p>
   }
 
-  <app-code-form-fields [form]="form" [serverErrors]="serverErrors()" (submitted)="save()">
-    <div class="form-actions">
-      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
-        Save
-      </button>
-      <button mat-button type="button" [disabled]="isSubmitting()" (click)="leavePage()">
-        Cancel
-      </button>
-      <button mat-button type="button" [disabled]="isSubmitting()" (click)="leavePage()">
-        Back
-      </button>
-    </div>
-  </app-code-form-fields>
+  <div class="form-card">
+    <app-code-form-fields
+      [form]="form"
+      [serverErrors]="serverErrors()"
+      [resetVersion]="formResetVersion()"
+      (submitted)="save()"
+    >
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
+          Save
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="isSubmitting()"
+          (click)="resetForm()"
+        >
+          Reset
+        </button>
+      </div>
+    </app-code-form-fields>
+  </div>
 </section>
