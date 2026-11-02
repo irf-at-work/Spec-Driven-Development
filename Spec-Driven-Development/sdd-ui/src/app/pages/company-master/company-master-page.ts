@@ -8,9 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -22,37 +20,59 @@ import {
   CompanyService,
 } from '../../api/generated/api/company.service';
 import { CompanyListItemDto } from '../../api/generated/model/companyListItemDto';
+import {
+  CompanyFilterOperator,
+  FilterChange,
+  FilterControl,
+} from '../../shared/filter-control/filter-control';
 
 const FILTERS = [
-  { key: 'companyName', label: 'Company name' },
-  { key: 'shortName', label: 'Short name' },
-  { key: 'primaryAddress', label: 'Primary address' },
-  { key: 'incorporationDate', label: 'Incorporation date', type: 'date' },
-  { key: 'referenceNumber', label: 'Reference number' },
-  { key: 'licenceIssueDate', label: 'Licence issue date', type: 'date' },
-  { key: 'licenceExpiryDate', label: 'Licence expiry date', type: 'date' },
-  { key: 'companyInCharge', label: 'Company in charge' },
-  { key: 'phone', label: 'Phone' },
-  { key: 'email', label: 'Email' },
-  { key: 'website', label: 'Website' },
+  { key: 'companyName', label: 'Company name', operatorKey: 'companyNameOperator' },
+  { key: 'shortName', label: 'Short name', operatorKey: 'shortNameOperator' },
+  { key: 'primaryAddress', label: 'Primary address', operatorKey: 'primaryAddressOperator' },
+  { key: 'referenceNumber', label: 'Reference number', operatorKey: 'referenceNumberOperator' },
+  { key: 'companyInCharge', label: 'Company in charge', operatorKey: 'companyInChargeOperator' },
+  { key: 'phone', label: 'Phone', operatorKey: 'phoneOperator' },
+  { key: 'email', label: 'Email', operatorKey: 'emailOperator' },
+  { key: 'website', label: 'Website', operatorKey: 'websiteOperator' },
+] as const;
+
+const DATE_COLUMNS = [
+  { key: 'incorporationDate', label: 'Incorporation date' },
+  { key: 'licenceIssueDate', label: 'Licence issue date' },
+  { key: 'licenceExpiryDate', label: 'Licence expiry date' },
+] as const;
+
+const COLUMNS = [
+  FILTERS[0],
+  FILTERS[1],
+  FILTERS[2],
+  DATE_COLUMNS[0],
+  FILTERS[3],
+  DATE_COLUMNS[1],
+  DATE_COLUMNS[2],
+  FILTERS[4],
+  FILTERS[5],
+  FILTERS[6],
+  FILTERS[7],
 ] as const;
 
 type FilterKey = (typeof FILTERS)[number]['key'];
+type OperatorKey = (typeof FILTERS)[number]['operatorKey'];
 
-const SORTABLE_COLUMNS: readonly string[] = FILTERS.map(({ key }) => key);
+const SORTABLE_COLUMNS: readonly string[] = COLUMNS.map(({ key }) => key);
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
     MatTooltipModule,
     RouterLink,
+    FilterControl,
   ],
   selector: 'app-company-master-page',
   styleUrl: './company-master-page.css',
@@ -64,9 +84,10 @@ export class CompanyMasterPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly filters = FILTERS;
-  readonly displayedColumns = ['actions', ...FILTERS.map(({ key }) => key)];
-  readonly filterColumns = ['filter-actions', ...FILTERS.map(({ key }) => `filter-${key}`)];
+  readonly filters = COLUMNS;
+  readonly displayedColumns = [...COLUMNS.map(({ key }) => key), 'actions'];
+  readonly filterColumns = [...COLUMNS.map(({ key }) => `filter-${key}`), 'filter-actions'];
+  readonly columnWidths = signal<Record<string, number>>({});
   readonly queryState = signal<ApiCompaniesGetRequestParams>({
     page: 1,
     pageSize: 10,
@@ -106,15 +127,68 @@ export class CompanyMasterPage implements OnInit {
       .subscribe();
   }
 
+  isFilterable(key: string): key is FilterKey {
+    return FILTERS.some((filter) => filter.key === key);
+  }
+
+  operatorKey(key: FilterKey): OperatorKey {
+    return FILTERS.find((filter) => filter.key === key)!.operatorKey;
+  }
+
   filterValue(key: FilterKey): string {
     return this.queryState()[key] ?? '';
   }
 
-  setFilterFromEvent(key: FilterKey, event: Event): void {
-    const target = event.target;
-    if (target instanceof HTMLInputElement) {
-      this.navigateWithQuery({ [key]: target.value || null, page: 1 });
-    }
+  filterOperator(key: OperatorKey): CompanyFilterOperator {
+    return this.queryState()[key] ?? 'Contains';
+  }
+
+  setFilter(key: FilterKey, change: FilterChange): void {
+    const filter = FILTERS.find((entry) => entry.key === key)!;
+    const value = change.value.trim();
+    this.navigateWithQuery({
+      [key]: value || null,
+      [filter.operatorKey]: !value || change.operator === 'Contains' ? null : change.operator,
+      page: 1,
+    });
+  }
+
+  clearFilter(key: FilterKey): void {
+    const filter = FILTERS.find((entry) => entry.key === key)!;
+    this.navigateWithQuery({ [key]: null, [filter.operatorKey]: null, page: 1 });
+  }
+
+  resizeColumn(column: string, width: number): void {
+    this.columnWidths.update((widths) => ({ ...widths, [column]: Math.max(100, width) }));
+  }
+
+  columnWidth(column: string): string | null {
+    const width = this.columnWidths()[column];
+    return width ? `${width}px` : null;
+  }
+
+  startResize(column: string, event: PointerEvent): void {
+    const header = (event.target as HTMLElement).closest('th');
+    if (!header) return;
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = header.getBoundingClientRect().width;
+    const move = (moveEvent: PointerEvent) =>
+      this.resizeColumn(column, startWidth + moveEvent.clientX - startX);
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up, { once: true });
+  }
+
+  keyboardResize(column: string, event: KeyboardEvent): void {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const header = (event.target as HTMLElement).closest('th');
+    const current = this.columnWidths()[column] ?? header?.getBoundingClientRect().width ?? 160;
+    this.resizeColumn(column, current + (event.key === 'ArrowRight' ? 16 : -16));
   }
 
   setSort(sort: Sort): void {
@@ -147,10 +221,7 @@ export class CompanyMasterPage implements OnInit {
   }
 
   historyText(company: CompanyListItemDto): string {
-    let historyTooltip = `Created by ${company.createdBy || 'Unknown'}`;
-    if (!!company.lastUpdatedBy)
-      historyTooltip.concat(`last updated by ${company.lastUpdatedBy}`);
-    return historyTooltip;
+    return `Created by ${company.createdBy || 'Unknown'}${company.lastUpdatedBy ? `; last updated by ${company.lastUpdatedBy}` : ''}`;
   }
 
   private readQueryState(params: ParamMap): ApiCompaniesGetRequestParams {
@@ -161,10 +232,19 @@ export class CompanyMasterPage implements OnInit {
       sortDirection: params.get('sortDirection') === 'desc' ? 'desc' : 'asc',
     };
 
-    for (const { key } of FILTERS) {
+    for (const { key, operatorKey } of FILTERS) {
       const value = params.get(key);
       if (value) {
         state[key] = value;
+        const operator = params.get(operatorKey);
+        if (
+          operator &&
+          ['StartsWith', 'EndsWith', 'Contains', 'DoesNotContain', 'Equals', 'NotEquals'].includes(
+            operator,
+          )
+        ) {
+          state[operatorKey] = operator as CompanyFilterOperator;
+        }
       }
     }
 

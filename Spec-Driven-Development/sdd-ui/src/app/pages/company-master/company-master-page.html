@@ -16,7 +16,6 @@
     <p class="error-message" role="alert">{{ loadError }}</p>
   }
 
-
   <div class="table-container">
     <table
       mat-table
@@ -28,9 +27,20 @@
       (matSortChange)="setSort($event)"
       aria-label="Companies"
     >
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
-        <td mat-cell *matCellDef="let company">
+      <ng-container matColumnDef="actions" [stickyEnd]="true">
+        <th mat-header-cell *matHeaderCellDef scope="col" [style.width]="columnWidth('actions')">
+          Actions
+          <span
+            class="resize-handle"
+            role="separator"
+            aria-orientation="vertical"
+            tabindex="0"
+            aria-label="Resize Actions column"
+            (pointerdown)="startResize('actions', $event)"
+            (keydown)="keyboardResize('actions', $event)"
+          ></span>
+        </th>
+        <td mat-cell *matCellDef="let company" [style.width]="columnWidth('actions')">
           <button
             mat-icon-button
             type="button"
@@ -51,12 +61,32 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="filter-actions" [stickyEnd]="true">
+        <th mat-header-cell *matHeaderCellDef scope="col"></th>
+      </ng-container>
+
       @for (filter of filters; track filter.key) {
         <ng-container [matColumnDef]="filter.key">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            scope="col"
+            [style.width]="columnWidth(filter.key)"
+            [attr.data-column]="filter.key"
+          >
             {{ filter.label }}
+            <span
+              class="resize-handle"
+              role="separator"
+              aria-orientation="vertical"
+              [attr.aria-label]="'Resize ' + filter.label + ' column'"
+              tabindex="0"
+              (pointerdown)="startResize(filter.key, $event)"
+              (keydown)="keyboardResize(filter.key, $event)"
+            ></span>
           </th>
-          <td mat-cell *matCellDef="let company">
+          <td mat-cell *matCellDef="let company" [style.width]="columnWidth(filter.key)">
             @if (
               filter.key === 'incorporationDate' ||
               filter.key === 'licenceIssueDate' ||
@@ -69,25 +99,24 @@
           </td>
         </ng-container>
 
-        <ng-container [matColumnDef]="'filter-' + filter.key">
-          <th mat-header-cell *matHeaderCellDef>
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Filter by {{ filter.label.toLowerCase() }}</mat-label>
-              <input
-                matInput
-                [type]="filter.type ?? 'text'"
+        @if (isFilterable(filter.key)) {
+          <ng-container [matColumnDef]="'filter-' + filter.key">
+            <th mat-header-cell *matHeaderCellDef>
+              <app-filter-control
+                [label]="filter.label"
                 [value]="filterValue(filter.key)"
-                [attr.aria-label]="'Filter by ' + filter.label.toLowerCase()"
-                (input)="setFilterFromEvent(filter.key, $event)"
+                [operator]="filterOperator(operatorKey(filter.key))"
+                (changed)="setFilter(filter.key, $event)"
+                (cleared)="clearFilter(filter.key)"
               />
-            </mat-form-field>
-          </th>
-        </ng-container>
+            </th>
+          </ng-container>
+        } @else {
+          <ng-container [matColumnDef]="'filter-' + filter.key">
+            <th mat-header-cell *matHeaderCellDef aria-hidden="true"></th>
+          </ng-container>
+        }
       }
-
-      <ng-container matColumnDef="filter-actions">
-        <th mat-header-cell *matHeaderCellDef scope="col"></th>
-      </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns" class="column-header-row"></tr>
       <tr mat-header-row *matHeaderRowDef="filterColumns" class="filter-row"></tr>

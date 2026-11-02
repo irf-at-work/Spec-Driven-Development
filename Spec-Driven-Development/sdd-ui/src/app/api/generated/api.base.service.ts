@@ -13,7 +13,7 @@ import { Configuration } from './configuration';
 import { OpenApiHttpParams, QueryParamStyle, concatHttpParamsObject} from './query.params';
 
 export class BaseService {
-    protected basePath = 'https://127.0.0.1:7246';
+    protected basePath = 'http://127.0.0.1:5138';
     public defaultHeaders = new HttpHeaders();
     public configuration: Configuration;
     public encoder: HttpParameterCodec;

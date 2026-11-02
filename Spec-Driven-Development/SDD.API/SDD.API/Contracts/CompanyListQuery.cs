@@ -12,13 +12,21 @@ public sealed class CompanyListQuery
 
     public string? CompanyName { get; set; }
 
+    public CompanyFilterOperator? CompanyNameOperator { get; set; }
+
     public string? ShortName { get; set; }
 
+    public CompanyFilterOperator? ShortNameOperator { get; set; }
+
     public string? PrimaryAddress { get; set; }
+
+    public CompanyFilterOperator? PrimaryAddressOperator { get; set; }
 
     public DateOnly? IncorporationDate { get; set; }
 
     public string? ReferenceNumber { get; set; }
+
+    public CompanyFilterOperator? ReferenceNumberOperator { get; set; }
 
     public DateOnly? LicenceIssueDate { get; set; }
 
@@ -26,9 +34,17 @@ public sealed class CompanyListQuery
 
     public string? CompanyInCharge { get; set; }
 
+    public CompanyFilterOperator? CompanyInChargeOperator { get; set; }
+
     public string? Phone { get; set; }
+
+    public CompanyFilterOperator? PhoneOperator { get; set; }
 
     public string? Email { get; set; }
 
+    public CompanyFilterOperator? EmailOperator { get; set; }
+
     public string? Website { get; set; }
+
+    public CompanyFilterOperator? WebsiteOperator { get; set; }
 }

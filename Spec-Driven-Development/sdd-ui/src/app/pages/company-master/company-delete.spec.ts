@@ -61,7 +61,7 @@ describe('CompanyDetailsPage deletion', () => {
     const panel = harness.routeNativeElement?.querySelector('.details-panel');
     expect(panel).not.toBeNull();
     expect(
-      Array.from(panel?.querySelectorAll('.company-details dt') ?? []).some((label) =>
+      Array.from(panel?.querySelectorAll('.company-details dt, .read-field span') ?? []).some((label) =>
         label.textContent?.includes('Short name'),
       ),
     ).toBe(true);

@@ -101,6 +101,12 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Expect(companyName).ToHaveValueAsync("North Insurance");
         await Expect(Page.GetByText("NORTH", new() { Exact = true }).First).ToBeVisibleAsync();
         await Expect(Page.Locator("[formControlName='companyCode']")).ToHaveCountAsync(0);
+        var fieldLabels = Page.Locator("app-company-fields .field-group h2");
+        await Expect(fieldLabels).ToHaveTextAsync(["Company information", "Address", "Licensing", "Contact"]);
+        var companyFieldNames = await Page.Locator("app-company-fields mat-form-field mat-label").AllTextContentsAsync();
+        Assert.Equal(
+            ["Company name", "Short name", "Address 1", "Address 2", "Address 3", "Incorporation date", "Reference number", "Licence issue date", "Licence expiry date", "Company in charge", "Phone", "Email", "Website"],
+            companyFieldNames.Select(label => label.Trim()));
         await companyName.FillAsync("North Mutual");
         await Page.GetByLabel("Short name").FillAsync("Updated North");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
@@ -111,6 +117,45 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         Assert.False(request.RootElement.TryGetProperty("companyCode", out _));
         Assert.Equal("North Mutual", request.RootElement.GetProperty("companyName").GetString());
         Assert.Equal("Updated North", request.RootElement.GetProperty("shortName").GetString());
+    }
+
+    [Fact]
+    public async Task Details_view_and_edit_keep_company_fields_in_the_same_order_and_cancel_restores_values()
+    {
+        await Page.RouteAsync("**/api/companies**", async route =>
+        {
+            if (await FulfillPreflightAsync(route))
+            {
+                return;
+            }
+            await FulfillJsonAsync(route, CompanyDetails("NORTH", "North Insurance"), 200);
+        });
+
+        await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH").ToString());
+        var fieldGroups = Page.Locator("app-company-fields .field-group h2");
+        await Expect(fieldGroups).ToHaveTextAsync(["Company information", "Address", "Licensing", "Contact"]);
+        var viewFieldLabels = Page.Locator("app-company-fields .read-field span");
+        await Expect(viewFieldLabels).ToHaveCountAsync(14);
+        var viewLabels = await viewFieldLabels.AllTextContentsAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Edit" }).ClickAsync();
+        var companyName = Page.GetByLabel("Company name");
+        await companyName.FillAsync("Unsaved name");
+        await Page.GetByLabel("Address 1").FillAsync("Unsaved address");
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Cancel" }).ClickAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "North Insurance" })).ToBeVisibleAsync();
+        await Expect(viewFieldLabels).ToHaveCountAsync(14);
+        var restoredLabels = await viewFieldLabels.AllTextContentsAsync();
+        Assert.Equal(viewLabels, restoredLabels);
+        var restoredName = await Page.Locator("app-company-fields .read-field")
+            .Filter(new() { HasText = "Company name" })
+            .Locator("strong")
+            .InnerTextAsync();
+        Assert.Equal("North Insurance", restoredName);
+        var restoredAddress = await Page.Locator("app-company-fields .read-field")
+            .Filter(new() { HasText = "Address 1" })
+            .Locator("strong")
+            .InnerTextAsync();
+        Assert.Equal("Bay Road", restoredAddress);
     }
 
     private static object CompanyList() => new
@@ -126,7 +171,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         companyCode,
         companyName,
         shortName = companyName,
-        address1 = (string?)null,
+        address1 = companyCode == "NORTH" ? "Bay Road" : null,
         address2 = (string?)null,
         address3 = (string?)null,
         incorporationDate = "2024-01-09",

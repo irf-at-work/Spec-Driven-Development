@@ -38,17 +38,17 @@ public sealed class CompanyService(
         ValidateListQuery(request);
 
         IQueryable<StdCompany> companies = repository.Companies;
-        companies = ApplyTextFilter(companies, request.CompanyName, company => company.CompName);
-        companies = ApplyTextFilter(companies, request.ShortName, company => company.CompShortName);
-        companies = ApplyAddressFilter(companies, request.PrimaryAddress);
+        companies = ApplyTextFilter(companies, request.CompanyName, request.CompanyNameOperator, company => company.CompName);
+        companies = ApplyTextFilter(companies, request.ShortName, request.ShortNameOperator, company => company.CompShortName);
+        companies = ApplyAddressFilter(companies, request.PrimaryAddress, request.PrimaryAddressOperator);
         companies = ApplyDateFilter(companies, request.IncorporationDate, company => company.CompIncorpDt);
-        companies = ApplyTextFilter(companies, request.ReferenceNumber, company => company.CompRefNo);
+        companies = ApplyTextFilter(companies, request.ReferenceNumber, request.ReferenceNumberOperator, company => company.CompRefNo);
         companies = ApplyDateFilter(companies, request.LicenceIssueDate, company => company.CompLicenseIssDt);
         companies = ApplyDateFilter(companies, request.LicenceExpiryDate, company => company.CompLicenseExpDt);
-        companies = ApplyTextFilter(companies, request.CompanyInCharge, company => company.CompIncharge);
-        companies = ApplyTextFilter(companies, request.Phone, company => company.CompPhone);
-        companies = ApplyTextFilter(companies, request.Email, company => company.CompEmail);
-        companies = ApplyTextFilter(companies, request.Website, company => company.CompWebsite);
+        companies = ApplyTextFilter(companies, request.CompanyInCharge, request.CompanyInChargeOperator, company => company.CompIncharge);
+        companies = ApplyTextFilter(companies, request.Phone, request.PhoneOperator, company => company.CompPhone);
+        companies = ApplyTextFilter(companies, request.Email, request.EmailOperator, company => company.CompEmail);
+        companies = ApplyTextFilter(companies, request.Website, request.WebsiteOperator, company => company.CompWebsite);
 
         var totalCount = await repository.CountAsync(companies, cancellationToken);
         var offset = (long)(request.Page - 1) * request.PageSize;
@@ -205,6 +205,7 @@ public sealed class CompanyService(
     private static IQueryable<StdCompany> ApplyTextFilter(
         IQueryable<StdCompany> companies,
         string? value,
+        CompanyFilterOperator? operation,
         Expression<Func<StdCompany, string?>> field)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -216,30 +217,63 @@ public sealed class CompanyService(
         var notNull = Expression.NotEqual(field.Body, Expression.Constant(null, typeof(string)));
         var lower = Expression.Call(field.Body, nameof(string.ToLower), Type.EmptyTypes);
         var term = Expression.Constant(value.Trim().ToLowerInvariant());
-        var contains = Expression.Call(lower, nameof(string.Contains), Type.EmptyTypes, term);
+        var filterOperator = operation ?? CompanyFilterOperator.Contains;
+        Expression comparison = filterOperator switch
+        {
+            CompanyFilterOperator.StartsWith => Expression.Call(lower, nameof(string.StartsWith), Type.EmptyTypes, term),
+            CompanyFilterOperator.EndsWith => Expression.Call(lower, nameof(string.EndsWith), Type.EmptyTypes, term),
+            CompanyFilterOperator.Contains or CompanyFilterOperator.DoesNotContain =>
+                Expression.Call(lower, nameof(string.Contains), Type.EmptyTypes, term),
+            CompanyFilterOperator.Equals or CompanyFilterOperator.NotEquals =>
+                Expression.Equal(lower, term),
+            _ => throw new InvalidOperationException("The company filter operator was not validated."),
+        };
+        if (filterOperator is CompanyFilterOperator.DoesNotContain or CompanyFilterOperator.NotEquals)
+        {
+            comparison = Expression.Not(comparison);
+        }
         return companies.Where(Expression.Lambda<Func<StdCompany, bool>>(
-            Expression.AndAlso(notNull, contains), parameter));
+            Expression.AndAlso(notNull, comparison), parameter));
     }
 
-    private static IQueryable<StdCompany> ApplyAddressFilter(IQueryable<StdCompany> companies, string? value)
+    private static IQueryable<StdCompany> ApplyAddressFilter(
+        IQueryable<StdCompany> companies,
+        string? value,
+        CompanyFilterOperator? operation)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return companies;
         }
 
-        var terms = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(term => term.ToLowerInvariant())
-            .ToArray();
-        foreach (var term in terms)
+        var parameter = Expression.Parameter(typeof(StdCompany), "company");
+        var address = ComposeAddressExpression(parameter);
+        return ApplyTextFilter(companies, value, operation, address);
+    }
+
+    private static Expression<Func<StdCompany, string?>> ComposeAddressExpression(ParameterExpression parameter)
+    {
+        Expression result = Expression.Constant(null, typeof(string));
+        var concat = typeof(string).GetMethod(nameof(string.Concat), [typeof(string), typeof(string)])!;
+        foreach (var propertyName in new[] { nameof(StdCompany.CompAddr1), nameof(StdCompany.CompAddr2), nameof(StdCompany.CompAddr3) })
         {
-            companies = companies.Where(company =>
-                (company.CompAddr1 != null && company.CompAddr1.ToLower().Contains(term))
-                || (company.CompAddr2 != null && company.CompAddr2.ToLower().Contains(term))
-                || (company.CompAddr3 != null && company.CompAddr3.ToLower().Contains(term)));
+            var property = Expression.Property(parameter, propertyName);
+            var trimmed = Expression.Condition(
+                Expression.NotEqual(property, Expression.Constant(null, typeof(string))),
+                Expression.Call(property, nameof(string.Trim), Type.EmptyTypes),
+                Expression.Constant(string.Empty));
+            var hasValue = Expression.NotEqual(trimmed, Expression.Constant(string.Empty));
+            var combined = Expression.Condition(
+                Expression.Equal(result, Expression.Constant(null, typeof(string))),
+                trimmed,
+                Expression.Call(concat, Expression.Call(concat, result, Expression.Constant(", ")), trimmed));
+            result = Expression.Condition(
+                hasValue,
+                combined,
+                result);
         }
 
-        return companies;
+        return Expression.Lambda<Func<StdCompany, string?>>(result, parameter);
     }
 
     private static IQueryable<StdCompany> ApplyDateFilter(
@@ -379,6 +413,24 @@ public sealed class CompanyService(
         {
             errors[JsonNamingPolicy.CamelCase.ConvertName(nameof(request.SortDirection))] =
                 ["Sort direction must be 'asc' or 'desc'."];
+        }
+
+        foreach (var (operatorName, filterOperator) in new (string Name, CompanyFilterOperator? Value)[]
+        {
+            (nameof(request.CompanyNameOperator), request.CompanyNameOperator),
+            (nameof(request.ShortNameOperator), request.ShortNameOperator),
+            (nameof(request.PrimaryAddressOperator), request.PrimaryAddressOperator),
+            (nameof(request.ReferenceNumberOperator), request.ReferenceNumberOperator),
+            (nameof(request.CompanyInChargeOperator), request.CompanyInChargeOperator),
+            (nameof(request.PhoneOperator), request.PhoneOperator),
+            (nameof(request.EmailOperator), request.EmailOperator),
+            (nameof(request.WebsiteOperator), request.WebsiteOperator),
+        })
+        {
+            if (filterOperator is not null && !Enum.IsDefined(filterOperator.Value))
+            {
+                errors[JsonNamingPolicy.CamelCase.ConvertName(operatorName)] = ["Choose a supported text filter operator."];
+            }
         }
 
         var offset = ((long)request.Page - 1) * request.PageSize;

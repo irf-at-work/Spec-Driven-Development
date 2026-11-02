@@ -29,6 +29,7 @@ import { CompanyService } from '../../api/generated/api/company.service';
 import { CompanyDto } from '../../api/generated/model/companyDto';
 import { CreateCompanyRequest } from '../../api/generated/model/createCompanyRequest';
 import { UpdateCompanyRequest } from '../../api/generated/model/updateCompanyRequest';
+import { CompanyFields } from '../../shared/company-fields/company-fields';
 
 type CompanyFormControls = {
   companyCode: FormControl<string>;
@@ -135,6 +136,7 @@ class CompanyDateAdapter extends NativeDateAdapter {
     MatInputModule,
     ReactiveFormsModule,
     RouterLink,
+    CompanyFields,
   ],
   providers: [
     { provide: DateAdapter, useClass: CompanyDateAdapter },

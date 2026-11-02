@@ -1,0 +1,201 @@
+<div class="company-fields" [formGroup]="form()">
+  <section class="field-group" aria-labelledby="identity-fields-heading">
+    <h2 id="identity-fields-heading">Company information</h2>
+    <div class="field-grid">
+      @if (mode() === 'view' || !form().get('companyCode')) {
+        <div class="read-field">
+          <span>Company code</span><strong>{{ company()['companyCode'] || '—' }}</strong>
+        </div>
+      } @else {
+        <mat-form-field appearance="outline"
+          ><mat-label>Company code</mat-label
+          ><input matInput formControlName="companyCode" maxlength="12" required />
+          @if (errorFor()('companyCode'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      }
+      @if (mode() === 'view') {
+        <div class="read-field">
+          <span>Company name</span><strong>{{ company()['companyName'] || '—' }}</strong>
+        </div>
+      } @else {
+        <mat-form-field appearance="outline"
+          ><mat-label>Company name</mat-label
+          ><input matInput formControlName="companyName" maxlength="100" required />
+          @if (errorFor()('companyName'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      }
+      @if (mode() === 'view') {
+        <div class="read-field">
+          <span>Short name</span><strong>{{ company()['shortName'] || '—' }}</strong>
+        </div>
+      } @else {
+        <mat-form-field appearance="outline"
+          ><mat-label>Short name</mat-label
+          ><input matInput formControlName="shortName" maxlength="30" />
+          @if (errorFor()('shortName'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      }
+    </div>
+  </section>
+
+  <section class="field-group" aria-labelledby="address-fields-heading">
+    <h2 id="address-fields-heading">Address</h2>
+    <div class="field-grid">
+      @for (field of addressFields; track field.name) {
+        @if (mode() === 'view') {
+          <div class="read-field">
+            <span>{{ field.label }}</span
+            ><strong>{{ company()[field.name] || '—' }}</strong>
+          </div>
+        } @else {
+          <mat-form-field appearance="outline"
+            ><mat-label>{{ field.label }}</mat-label
+            ><input matInput [formControlName]="field.name" [maxlength]="field.maxLength" />
+            @if (errorFor()(field.name); as message) {
+              <mat-error>{{ message }}</mat-error>
+            }
+          </mat-form-field>
+        }
+      }
+    </div>
+  </section>
+
+  <section class="field-group" aria-labelledby="licensing-fields-heading">
+    <h2 id="licensing-fields-heading">Licensing</h2>
+    <div class="field-grid">
+      @if (mode() === 'view') {
+        <div class="read-field">
+          <span>Incorporation date</span
+          ><strong>{{ formatDate()(company()['incorporationDate']) || '—' }}</strong>
+        </div>
+      } @else if (datePickerMode()) {
+        <mat-form-field appearance="outline"
+          ><mat-label>Incorporation date (DD-MM-YYYY)</mat-label
+          ><input
+            matInput
+            [matDatepicker]="incorporationPicker"
+            formControlName="incorporationDate"
+            placeholder="DD-MM-YYYY"
+          /><mat-datepicker-toggle matIconSuffix [for]="incorporationPicker" /><mat-datepicker
+            #incorporationPicker
+          />
+          @if (errorFor()('incorporationDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      } @else {
+        <mat-form-field appearance="outline"
+          ><mat-label>Incorporation date</mat-label
+          ><input matInput type="date" formControlName="incorporationDate" />
+          @if (errorFor()('incorporationDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      }
+      @if (mode() === 'view') {
+        <div class="read-field">
+          <span>Reference number</span><strong>{{ company()['referenceNumber'] || '—' }}</strong>
+        </div>
+      } @else {
+        <mat-form-field appearance="outline"
+          ><mat-label>Reference number</mat-label
+          ><input matInput formControlName="referenceNumber" maxlength="20" />
+          @if (errorFor()('referenceNumber'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      }
+      @if (mode() === 'view') {
+        <div class="read-field">
+          <span>Licence issue date</span
+          ><strong>{{ formatDate()(company()['licenceIssueDate']) || '—' }}</strong>
+        </div>
+      } @else if (datePickerMode()) {
+        <mat-form-field appearance="outline"
+          ><mat-label>Licence issue date (DD-MM-YYYY)</mat-label
+          ><input
+            matInput
+            [matDatepicker]="licenceIssuePicker"
+            formControlName="licenceIssueDate"
+            placeholder="DD-MM-YYYY"
+          /><mat-datepicker-toggle matIconSuffix [for]="licenceIssuePicker" /><mat-datepicker
+            #licenceIssuePicker
+          />
+          @if (errorFor()('licenceIssueDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      } @else {
+        <mat-form-field appearance="outline"
+          ><mat-label>Licence issue date</mat-label
+          ><input matInput type="date" formControlName="licenceIssueDate" />
+          @if (errorFor()('licenceIssueDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      }
+      @if (mode() === 'view') {
+        <div class="read-field">
+          <span>Licence expiry date</span
+          ><strong>{{ formatDate()(company()['licenceExpiryDate']) || '—' }}</strong>
+        </div>
+      } @else if (datePickerMode()) {
+        <mat-form-field appearance="outline"
+          ><mat-label>Licence expiry date (DD-MM-YYYY)</mat-label
+          ><input
+            matInput
+            [matDatepicker]="licenceExpiryPicker"
+            formControlName="licenceExpiryDate"
+            placeholder="DD-MM-YYYY"
+          /><mat-datepicker-toggle matIconSuffix [for]="licenceExpiryPicker" /><mat-datepicker
+            #licenceExpiryPicker
+          />
+          @if (errorFor()('licenceExpiryDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      } @else {
+        <mat-form-field appearance="outline"
+          ><mat-label>Licence expiry date</mat-label
+          ><input matInput type="date" formControlName="licenceExpiryDate" />
+          @if (errorFor()('licenceExpiryDate'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          }
+        </mat-form-field>
+      }
+    </div>
+  </section>
+
+  <section class="field-group" aria-labelledby="contact-fields-heading">
+    <h2 id="contact-fields-heading">Contact</h2>
+    <div class="field-grid">
+      @for (field of contactFields; track field.name) {
+        @if (mode() === 'view') {
+          <div class="read-field">
+            <span>{{ field.label }}</span
+            ><strong>{{ company()[field.name] || '—' }}</strong>
+          </div>
+        } @else {
+          <mat-form-field appearance="outline"
+            ><mat-label>{{ field.label }}</mat-label
+            ><input
+              matInput
+              [formControlName]="field.name"
+              [maxlength]="field.maxLength"
+              [attr.inputmode]="field.name === 'phone' ? 'numeric' : null"
+            />
+            @if (errorFor()(field.name); as message) {
+              <mat-error>{{ message }}</mat-error>
+            }
+          </mat-form-field>
+        }
+      }
+    </div>
+  </section>
+</div>

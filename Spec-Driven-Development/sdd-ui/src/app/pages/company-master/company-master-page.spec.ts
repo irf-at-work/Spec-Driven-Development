@@ -55,19 +55,54 @@ describe('CompanyMasterPage', () => {
     expect(page.textContent).toContain('Bay Road, Tower 2');
     expect(page.querySelector('[aria-label*="Created by Admin"]')).not.toBeNull();
     expect(page.textContent).toContain('Licence expiry date');
+    expect(page.querySelector('[aria-label="Filter by licence expiry date"]')).toBeNull();
     expect(page.textContent).toContain('Email');
     expect(page.querySelector('.column-header-row')).not.toBeNull();
+    expect(page.querySelector('.column-header-row')?.textContent?.indexOf('Actions'))
+      .toBeGreaterThan(page.querySelector('.column-header-row')?.textContent?.indexOf('Website') ?? -1);
     expect(page.querySelector('.filter-row')).not.toBeNull();
     expect(getComputedStyle(page.querySelector('.column-header-row')!).position).toBe('sticky');
     expect(getComputedStyle(page.querySelector('.filter-row')!).position).toBe('sticky');
     const icons = Array.from(
-      page.querySelectorAll('a[mat-flat-button] mat-icon, button[mat-icon-button] mat-icon'),
+      page.querySelectorAll('button[mat-icon-button] mat-icon'),
     );
     expect(icons.length).toBeGreaterThan(0);
     for (const icon of icons) {
       expect(icon.querySelector('svg')).not.toBeNull();
       expect(icon.textContent?.trim()).toBe('');
     }
+  });
+
+  it('restores operators, omits default operators, and clears both filter parameters', async () => {
+    const { api, harness } = await createPage();
+    const page = await harness.navigateByUrl(
+      '/company-master?page=2&companyName=North&companyNameOperator=StartsWith&incorporationDate=2020-03-05',
+      CompanyMasterPage,
+    );
+    await harness.fixture.whenStable();
+
+    expect(api.apiCompaniesGet).toHaveBeenLastCalledWith(
+      expect.objectContaining({ companyName: 'North', companyNameOperator: 'StartsWith' }),
+    );
+    expect(page.queryState().companyNameOperator).toBe('StartsWith');
+    expect(harness.routeNativeElement?.querySelector('[aria-label="Filter by incorporation date"]')).toBeNull();
+
+    page.setFilter('companyName', { value: 'South', operator: 'Contains' });
+    await harness.fixture.whenStable();
+    expect(page.queryState().page).toBe(1);
+    expect(page.queryState().companyNameOperator).toBeUndefined();
+    expect(api.apiCompaniesGet).toHaveBeenLastCalledWith(
+      expect.objectContaining({ companyName: 'South' }),
+    );
+    expect(harness.routeNativeElement?.textContent).not.toContain('Incorporation date filter');
+
+    page.clearFilter('companyName');
+    await harness.fixture.whenStable();
+    expect(page.queryState().companyName).toBeUndefined();
+    expect(page.queryState().companyNameOperator).toBeUndefined();
+    expect(api.apiCompaniesGet).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 1, pageSize: 10 }),
+    );
   });
 
   it('keeps the table and existing rows visible while a filter request is pending', async () => {
@@ -93,7 +128,7 @@ describe('CompanyMasterPage', () => {
     expect(page.loading()).toBe(true);
     expect(table).not.toBeNull();
     expect(table?.textContent).toContain('North Insurance');
-    expect(harness.routeNativeElement?.querySelector('[role="status"]')?.textContent).toContain(
+    expect(harness.routeNativeElement?.querySelector('[role="status"]')?.textContent).not.toContain(
       'Loading companies',
     );
 

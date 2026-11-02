@@ -24,3 +24,4 @@ export interface UpdateCompanyRequest {
     email?: string | null;
     website?: string | null;
 }
+

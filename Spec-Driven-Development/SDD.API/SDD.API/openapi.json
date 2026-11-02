@@ -58,6 +58,13 @@
             }
           },
           {
+            "name": "companyNameOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyFilterOperator"
+            }
+          },
+          {
             "name": "shortName",
             "in": "query",
             "schema": {
@@ -65,10 +72,24 @@
             }
           },
           {
+            "name": "shortNameOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyFilterOperator"
+            }
+          },
+          {
             "name": "primaryAddress",
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "primaryAddressOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyFilterOperator"
             }
           },
           {
@@ -84,6 +105,13 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "referenceNumberOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyFilterOperator"
             }
           },
           {
@@ -110,10 +138,24 @@
             }
           },
           {
+            "name": "companyInChargeOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyFilterOperator"
+            }
+          },
+          {
             "name": "phone",
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "phoneOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyFilterOperator"
             }
           },
           {
@@ -124,10 +166,24 @@
             }
           },
           {
+            "name": "emailOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyFilterOperator"
+            }
+          },
+          {
             "name": "website",
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "websiteOperator",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyFilterOperator"
             }
           }
         ],
@@ -447,6 +503,17 @@
             "nullable": true
           }
         }
+      },
+      "CompanyFilterOperator": {
+        "enum": [
+          "StartsWith",
+          "EndsWith",
+          "Contains",
+          "DoesNotContain",
+          "Equals",
+          "NotEquals",
+          null
+        ]
       },
       "CompanyListItemDto": {
         "required": [

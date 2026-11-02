@@ -19,6 +19,8 @@ import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 // @ts-ignore
 import { CompanyDto } from '../model/companyDto';
 // @ts-ignore
+import { CompanyFilterOperator } from '../model/companyFilterOperator';
+// @ts-ignore
 import { CreateCompanyRequest } from '../model/createCompanyRequest';
 // @ts-ignore
 import { HttpValidationProblemDetails } from '../model/httpValidationProblemDetails';
@@ -54,16 +56,24 @@ export interface ApiCompaniesGetRequestParams {
     sortBy?: string;
     sortDirection?: string;
     companyName?: string;
+    companyNameOperator?: CompanyFilterOperator;
     shortName?: string;
+    shortNameOperator?: CompanyFilterOperator;
     primaryAddress?: string;
+    primaryAddressOperator?: CompanyFilterOperator;
     incorporationDate?: string;
     referenceNumber?: string;
+    referenceNumberOperator?: CompanyFilterOperator;
     licenceIssueDate?: string;
     licenceExpiryDate?: string;
     companyInCharge?: string;
+    companyInChargeOperator?: CompanyFilterOperator;
     phone?: string;
+    phoneOperator?: CompanyFilterOperator;
     email?: string;
+    emailOperator?: CompanyFilterOperator;
     website?: string;
+    websiteOperator?: CompanyFilterOperator;
 }
 
 export interface ApiCompaniesPostRequestParams {
@@ -281,16 +291,24 @@ export class CompanyService extends BaseService {
         const sortBy = requestParameters?.sortBy;
         const sortDirection = requestParameters?.sortDirection;
         const companyName = requestParameters?.companyName;
+        const companyNameOperator = requestParameters?.companyNameOperator;
         const shortName = requestParameters?.shortName;
+        const shortNameOperator = requestParameters?.shortNameOperator;
         const primaryAddress = requestParameters?.primaryAddress;
+        const primaryAddressOperator = requestParameters?.primaryAddressOperator;
         const incorporationDate = requestParameters?.incorporationDate;
         const referenceNumber = requestParameters?.referenceNumber;
+        const referenceNumberOperator = requestParameters?.referenceNumberOperator;
         const licenceIssueDate = requestParameters?.licenceIssueDate;
         const licenceExpiryDate = requestParameters?.licenceExpiryDate;
         const companyInCharge = requestParameters?.companyInCharge;
+        const companyInChargeOperator = requestParameters?.companyInChargeOperator;
         const phone = requestParameters?.phone;
+        const phoneOperator = requestParameters?.phoneOperator;
         const email = requestParameters?.email;
+        const emailOperator = requestParameters?.emailOperator;
         const website = requestParameters?.website;
+        const websiteOperator = requestParameters?.websiteOperator;
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -341,6 +359,15 @@ export class CompanyService extends BaseService {
 
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,
+            'companyNameOperator',
+            <any>companyNameOperator,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
             'shortName',
             <any>shortName,
             QueryParamStyle.Form,
@@ -350,8 +377,26 @@ export class CompanyService extends BaseService {
 
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,
+            'shortNameOperator',
+            <any>shortNameOperator,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
             'primaryAddress',
             <any>primaryAddress,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'primaryAddressOperator',
+            <any>primaryAddressOperator,
             QueryParamStyle.Form,
             true,
         );
@@ -370,6 +415,15 @@ export class CompanyService extends BaseService {
             localVarQueryParameters,
             'referenceNumber',
             <any>referenceNumber,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'referenceNumberOperator',
+            <any>referenceNumberOperator,
             QueryParamStyle.Form,
             true,
         );
@@ -404,8 +458,26 @@ export class CompanyService extends BaseService {
 
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,
+            'companyInChargeOperator',
+            <any>companyInChargeOperator,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
             'phone',
             <any>phone,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'phoneOperator',
+            <any>phoneOperator,
             QueryParamStyle.Form,
             true,
         );
@@ -422,8 +494,26 @@ export class CompanyService extends BaseService {
 
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,
+            'emailOperator',
+            <any>emailOperator,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
             'website',
             <any>website,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'websiteOperator',
+            <any>websiteOperator,
             QueryParamStyle.Form,
             true,
         );

@@ -40,16 +40,44 @@ public sealed class CompanyListAndDetailsE2ETests(DashboardUiFixture dashboard) 
             "Website",
         })
         {
-            await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = column, Exact = true })).ToBeVisibleAsync();
+            await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = column }).First).ToBeVisibleAsync();
         }
 
         var companyNameFilter = Page.GetByLabel("Filter by company name");
         await Expect(companyNameFilter).ToHaveValueAsync("North");
+        var operatorSelect = Page.GetByLabel("Company name operator");
+        await operatorSelect.SelectOptionAsync("StartsWith");
+        await Expect(Page).ToHaveURLAsync(new Regex("companyNameOperator=StartsWith"));
         await companyNameFilter.FillAsync("South");
         await Expect(Page).ToHaveURLAsync(new Regex("companyName=South"));
         await Expect(Page).ToHaveURLAsync(new Regex("page=1"));
+        foreach (var filterOperator in new[] { "EndsWith", "Contains", "DoesNotContain", "Equals", "NotEquals" })
+        {
+            await operatorSelect.SelectOptionAsync(filterOperator);
+            if (filterOperator == "Contains")
+            {
+                await Expect(Page).Not.ToHaveURLAsync(new Regex("companyNameOperator="));
+            }
+            else
+            {
+                await Expect(Page).ToHaveURLAsync(new Regex($"companyNameOperator={filterOperator}"));
+            }
+        }
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Clear company name filter" }).EvaluateAsync("button => button.click()");
+        await Expect(Page).Not.ToHaveURLAsync(new Regex("companyName=|companyNameOperator="));
+        await Expect(Page.GetByLabel("Filter by licence issue date")).ToHaveCountAsync(0);
+        await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = "Licence issue date" }).First).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = "Actions" }).First).ToBeVisibleAsync();
+        var websiteResize = Page.GetByRole(AriaRole.Separator, new() { Name = "Resize Website column" });
+        await websiteResize.FocusAsync();
+        var websiteHeader = Page.Locator("th[data-column='website']");
+        var widthBefore = await websiteHeader.EvaluateAsync<double>("element => element.getBoundingClientRect().width");
+        await websiteResize.PressAsync("ArrowRight");
+        await Expect(websiteResize).ToBeFocusedAsync();
+        var widthAfter = await websiteHeader.EvaluateAsync<double>("element => parseFloat(element.style.width)");
+        Assert.True(widthAfter > widthBefore);
 
-        await Page.GetByRole(AriaRole.Columnheader, new() { Name = "Company name", Exact = true }).ClickAsync();
+        await Page.Locator("th[data-column='companyName']").ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("sortDirection=asc"));
 
         await Page.GetByRole(AriaRole.Button, new() { Name = "Next page" }).ClickAsync();

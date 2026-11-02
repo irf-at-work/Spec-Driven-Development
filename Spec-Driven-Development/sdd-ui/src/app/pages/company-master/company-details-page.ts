@@ -19,6 +19,7 @@ import { catchError, EMPTY, finalize, map, switchMap, tap } from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
 import { CompanyDto } from '../../api/generated/model/companyDto';
 import { UpdateCompanyRequest } from '../../api/generated/model/updateCompanyRequest';
+import { CompanyFields } from '../../shared/company-fields/company-fields';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +31,7 @@ import { UpdateCompanyRequest } from '../../api/generated/model/updateCompanyReq
     MatTooltipModule,
     ReactiveFormsModule,
     RouterLink,
+    CompanyFields,
   ],
   selector: 'app-company-details-page',
   styleUrl: './company-details-page.css',

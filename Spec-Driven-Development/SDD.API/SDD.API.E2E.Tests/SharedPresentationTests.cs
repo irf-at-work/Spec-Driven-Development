@@ -17,7 +17,7 @@ public sealed class SharedPresentationTests(DashboardUiFixture dashboard) : Page
         var headerPosition = await header.EvaluateAsync<string>("element => getComputedStyle(element).position");
         Assert.Equal("sticky", headerPosition);
         Assert.Equal(
-            "#1b5b8d",
+            "#23685f",
             await Page.EvaluateAsync<string>(
                 "() => getComputedStyle(document.documentElement).getPropertyValue('--color-primary-700').trim()"));
 
@@ -31,18 +31,8 @@ public sealed class SharedPresentationTests(DashboardUiFixture dashboard) : Page
         Assert.True(mastersBox.X >= headerBox.X);
         Assert.True(mastersBox.X + mastersBox.Width <= headerBox.X + headerBox.Width);
 
-        var tableWrapper = Page.GetByTestId("shared-table-wrapper");
-        await Expect(tableWrapper).ToBeVisibleAsync();
-        Assert.Equal(
-            "auto",
-            await tableWrapper.EvaluateAsync<string>("element => getComputedStyle(element).overflowX"));
-        Assert.NotEmpty(await Page.GetByRole(AriaRole.Columnheader).First.EvaluateAsync<string>(
-            "element => getComputedStyle(element).backgroundColor"));
-
-        var filter = Page.GetByLabel("Search examples");
-        await Expect(filter).ToBeVisibleAsync();
-        Assert.NotEqual(
-            "rgba(0, 0, 0, 0)",
-            await filter.EvaluateAsync<string>("element => getComputedStyle(element).borderTopColor"));
+        var content = Page.Locator("main.dashboard-content");
+        await Expect(content).ToBeVisibleAsync();
+        Assert.Equal(string.Empty, (await content.InnerTextAsync()).Trim());
     }
 }

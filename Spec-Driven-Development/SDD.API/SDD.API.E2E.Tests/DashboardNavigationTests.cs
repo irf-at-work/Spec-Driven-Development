@@ -13,6 +13,15 @@ public sealed class DashboardNavigationTests(DashboardUiFixture dashboard) : Pag
     {
         await Page.GotoAsync(dashboard.BaseAddress.ToString());
 
+        var content = Page.Locator("main.dashboard-content");
+        await Expect(content).ToBeVisibleAsync();
+        Assert.Equal(string.Empty, (await content.InnerTextAsync()).Trim());
+
+        var palette = await Page.EvaluateAsync<string[]>("() => { const styles = getComputedStyle(document.documentElement); return ['--color-page', '--color-primary-900', '--color-accent-700'].map(key => styles.getPropertyValue(key).trim()); }");
+        Assert.Equal("#f5f1e8", palette[0]);
+        Assert.Equal("#184f49", palette[1]);
+        Assert.Equal("#9a5d20", palette[2]);
+
         var header = Page.GetByRole(AriaRole.Banner);
         var masters = header.GetByRole(AriaRole.Button, new() { Name = "Masters" });
         await Expect(header).ToBeVisibleAsync();

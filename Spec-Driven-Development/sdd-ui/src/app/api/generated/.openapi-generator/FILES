@@ -9,6 +9,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/companyDto.ts
+model/companyFilterOperator.ts
 model/companyListItemDto.ts
 model/createCompanyRequest.ts
 model/httpValidationProblemDetails.ts

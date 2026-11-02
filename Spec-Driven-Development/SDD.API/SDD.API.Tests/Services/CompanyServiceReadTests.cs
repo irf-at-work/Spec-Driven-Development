@@ -5,6 +5,90 @@ namespace SDD.API.Tests.Services;
 
 public sealed class CompanyServiceReadTests
 {
+    [Theory]
+    [InlineData(CompanyFilterOperator.StartsWith, "AL", "A01")]
+    [InlineData(CompanyFilterOperator.EndsWith, "PHA", "A01")]
+    [InlineData(CompanyFilterOperator.Contains, "LP", "A01")]
+    [InlineData(CompanyFilterOperator.DoesNotContain, "BET", "A01")]
+    [InlineData(CompanyFilterOperator.Equals, "alpha", "A01")]
+    [InlineData(CompanyFilterOperator.NotEquals, "ALPHA", "A02")]
+    public async Task Applies_case_insensitive_text_operator_before_paging(
+        CompanyFilterOperator operation,
+        string value,
+        string expectedCompanyCode)
+    {
+        var repository = new FakeCompanyRepository();
+        repository.CompanyRows.AddRange(
+        [
+            new() { CompCode = "A01", CompName = "Alpha" },
+            new() { CompCode = "A02", CompName = "Beta" },
+        ]);
+        var service = new CompanyService(repository);
+
+        var result = await service.ListAsync(new CompanyListQuery
+        {
+            CompanyName = $"  {value}  ",
+            CompanyNameOperator = operation,
+            PageSize = 1,
+        }, CancellationToken.None);
+
+        Assert.Equal(expectedCompanyCode, Assert.Single(result.Items).CompanyCode);
+        Assert.Equal(1, result.TotalCount);
+    }
+
+    [Fact]
+    public async Task Ignores_blank_terms_and_null_values_for_negative_operators()
+    {
+        var repository = new FakeCompanyRepository();
+        repository.CompanyRows.AddRange(
+        [
+            new() { CompCode = "A01", CompName = "Alpha" },
+            new() { CompCode = "A02", CompName = "Beta" },
+            new() { CompCode = "A03", CompName = null! },
+        ]);
+        var service = new CompanyService(repository);
+
+        var noFilter = await service.ListAsync(new CompanyListQuery
+        {
+            CompanyName = "   ",
+            CompanyNameOperator = CompanyFilterOperator.Equals,
+        }, CancellationToken.None);
+        var notEqual = await service.ListAsync(new CompanyListQuery
+        {
+            CompanyName = "Alpha",
+            CompanyNameOperator = CompanyFilterOperator.NotEquals,
+        }, CancellationToken.None);
+
+        Assert.Equal(3, noFilter.TotalCount);
+        Assert.Equal(["A02"], notEqual.Items.Select(company => company.CompanyCode));
+    }
+
+    [Theory]
+    [InlineData(CompanyFilterOperator.StartsWith, "harbour, tower", "A01")]
+    [InlineData(CompanyFilterOperator.Contains, "harbour, tower", "A01")]
+    [InlineData(CompanyFilterOperator.Equals, "Harbour, Tower", "A01")]
+    public async Task Filters_composed_primary_address(
+        CompanyFilterOperator operation,
+        string value,
+        string expectedCompanyCode)
+    {
+        var repository = new FakeCompanyRepository();
+        repository.CompanyRows.AddRange(
+        [
+            new() { CompCode = "A01", CompName = "One", CompAddr1 = " Harbour ", CompAddr3 = "Tower" },
+            new() { CompCode = "A02", CompName = "Two", CompAddr1 = "Harbour", CompAddr2 = "View" },
+        ]);
+        var service = new CompanyService(repository);
+
+        var result = await service.ListAsync(new CompanyListQuery
+        {
+            PrimaryAddress = value,
+            PrimaryAddressOperator = operation,
+        }, CancellationToken.None);
+
+        Assert.Equal(expectedCompanyCode, Assert.Single(result.Items).CompanyCode);
+    }
+
     [Fact]
     public async Task Lists_companies_with_filters_stable_sorting_and_composed_addresses()
     {

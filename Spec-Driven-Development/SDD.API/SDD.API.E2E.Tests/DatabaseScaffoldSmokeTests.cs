@@ -16,8 +16,9 @@ public sealed class DatabaseScaffoldSmokeTests(
 
         await Page.GotoAsync(dashboard.BaseAddress.ToString());
 
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Dashboard" })).ToBeVisibleAsync();
+        var content = Page.Locator("main.dashboard-content");
+        await Expect(content).ToBeVisibleAsync();
+        Assert.Equal(string.Empty, (await content.InnerTextAsync()).Trim());
         await Expect(Page.GetByRole(AriaRole.Button, new() { Name = "Masters" })).ToBeVisibleAsync();
-        await Expect(Page.GetByTestId("shared-table-wrapper")).ToBeVisibleAsync();
     }
 }

@@ -20,22 +20,7 @@
       <div class="details-heading">
         <div class="company-title">
           <p>Company details</p>
-          @if (editing()) {
-            <h1 id="company-details-title">
-              <input
-                class="heading-input"
-                aria-label="Company name"
-                formControlName="companyName"
-                maxlength="100"
-                required
-              />
-            </h1>
-            @if (fieldError('companyName'); as message) {
-              <span class="field-error">{{ message }}</span>
-            }
-          } @else {
-            <h1 id="company-details-title">{{ item.companyName }}</h1>
-          }
+          <h1 id="company-details-title">{{ item.companyName }}</h1>
           <p>{{ item.companyCode }}</p>
         </div>
         <div class="details-actions">
@@ -85,239 +70,23 @@
       @if (deleteError(); as message) {
         <p class="error-message" role="alert">{{ message }}</p>
       }
-
-      <section class="detail-section" aria-labelledby="company-identity-heading">
-        <h2 id="company-identity-heading">Company information</h2>
-        <dl class="company-details">
-          <div>
-            <dt>Company code</dt>
-            <dd>{{ item.companyCode }}</dd>
-          </div>
-          <div>
-            <dt>Short name</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input matInput formControlName="shortName" maxlength="30" aria-label="Short name" />
-                </mat-form-field>
-              } @else {
-                {{ item.shortName || '—' }}
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>Company in charge</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input
-                    matInput
-                    formControlName="companyInCharge"
-                    maxlength="60"
-                    aria-label="Company in charge"
-                  />
-                </mat-form-field>
-              } @else {
-                {{ item.companyInCharge || '—' }}
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>Reference number</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input
-                    matInput
-                    formControlName="referenceNumber"
-                    maxlength="20"
-                    aria-label="Reference number"
-                  />
-                </mat-form-field>
-              } @else {
-                {{ item.referenceNumber || '—' }}
-              }
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      <section class="detail-section" aria-labelledby="company-address-heading">
-        <h2 id="company-address-heading">Address</h2>
-        <dl class="company-details">
-          <div>
-            <dt>Primary address</dt>
-            <dd>{{ item.primaryAddress || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Address 1</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input matInput formControlName="address1" maxlength="100" aria-label="Address 1" />
-                </mat-form-field>
-              } @else {
-                {{ item.address1 || '—' }}
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>Address 2</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input matInput formControlName="address2" maxlength="100" aria-label="Address 2" />
-                </mat-form-field>
-              } @else {
-                {{ item.address2 || '—' }}
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>Address 3</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input matInput formControlName="address3" maxlength="100" aria-label="Address 3" />
-                </mat-form-field>
-              } @else {
-                {{ item.address3 || '—' }}
-              }
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      <section class="detail-section" aria-labelledby="company-licensing-heading">
-        <h2 id="company-licensing-heading">Licensing</h2>
-        <dl class="company-details">
-          <div>
-            <dt>Incorporation date</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input
-                    matInput
-                    type="date"
-                    formControlName="incorporationDate"
-                    aria-label="Incorporation date"
-                  />
-                </mat-form-field>
-              } @else {
-                {{ formatDate(item.incorporationDate) || '—' }}
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>Licence issue date</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input
-                    matInput
-                    type="date"
-                    formControlName="licenceIssueDate"
-                    aria-label="Licence issue date"
-                  />
-                </mat-form-field>
-              } @else {
-                {{ formatDate(item.licenceIssueDate) || '—' }}
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>Licence expiry date</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input
-                    matInput
-                    type="date"
-                    formControlName="licenceExpiryDate"
-                    aria-label="Licence expiry date"
-                  />
-                </mat-form-field>
-              } @else {
-                {{ formatDate(item.licenceExpiryDate) || '—' }}
-              }
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      <section class="detail-section" aria-labelledby="company-contact-heading">
-        <h2 id="company-contact-heading">Contact</h2>
-        <dl class="company-details">
-          <div>
-            <dt>Phone</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input
-                    matInput
-                    formControlName="phone"
-                    maxlength="10"
-                    inputmode="numeric"
-                    aria-label="Phone"
-                    aria-describedby="phone-error"
-                  />
-                  @if (fieldError('phone'); as message) {
-                    <mat-error id="phone-error">{{ message }}</mat-error>
-                  }
-                </mat-form-field>
-              } @else {
-                {{ item.phone || '—' }}
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>Email</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input matInput formControlName="email" maxlength="100" aria-label="Email" />
-                </mat-form-field>
-              } @else {
-                {{ item.email || '—' }}
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>Website</dt>
-            <dd>
-              @if (editing()) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <input matInput formControlName="website" maxlength="100" aria-label="Website" />
-                </mat-form-field>
-              } @else {
-                {{ item.website || '—' }}
-              }
-            </dd>
-          </div>
-        </dl>
-      </section>
-
+      <app-company-fields
+        [form]="form"
+        [mode]="editing() ? 'edit' : 'view'"
+        [company]="item"
+        [errorFor]="fieldError.bind(this)"
+        [formatDate]="formatDate.bind(this)"
+      />
       <section class="detail-section" aria-labelledby="company-audit-heading">
         <h2 id="company-audit-heading">Audit history</h2>
         <dl class="company-details">
-          <div>
-            <dt>Created by</dt>
-            <dd>{{ item.createdBy || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Created date (GST)</dt>
-            <dd>{{ formatAuditDate(item.createdAt) || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Last updated by</dt>
-            <dd>{{ item.lastUpdatedBy || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Last updated date (GST)</dt>
-            <dd>{{ formatAuditDate(item.lastUpdatedAt) || '—' }}</dd>
-          </div>
+          <div><dt>Created by</dt><dd>{{ item.createdBy || '—' }}</dd></div>
+          <div><dt>Created date (GST)</dt><dd>{{ formatAuditDate(item.createdAt) || '—' }}</dd></div>
+          <div><dt>Last updated by</dt><dd>{{ item.lastUpdatedBy || '—' }}</dd></div>
+          <div><dt>Last updated date (GST)</dt><dd>{{ formatAuditDate(item.lastUpdatedAt) || '—' }}</dd></div>
         </dl>
       </section>
+
     </form>
   }
 </section>

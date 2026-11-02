@@ -1,0 +1,41 @@
+<div class="filter-control">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-value">
+    <mat-label>Filter by {{ label().toLowerCase() }}</mat-label>
+    <input
+      matInput
+      [attr.aria-label]="'Filter by ' + label().toLowerCase()"
+      [ngModel]="value()"
+      (ngModelChange)="emitValue($event)"
+    />
+  </mat-form-field>
+  <label class="operator-select">
+    <span>{{ label() }} operator</span>
+    <select
+      [attr.aria-label]="label() + ' operator'"
+      [ngModel]="operator()"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="emitOperator($event)"
+    >
+      @for (option of operators; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </label>
+  <button
+    mat-icon-button
+    type="button"
+    class="clear-filter"
+    [attr.aria-label]="'Clear ' + label().toLowerCase() + ' filter'"
+    [disabled]="!value() && operator() === 'Contains'"
+    (click)="clear()"
+  >
+    <mat-icon aria-hidden="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19l1.4-1.4L13.4 12z"
+        />
+      </svg>
+    </mat-icon>
+  </button>
+</div>

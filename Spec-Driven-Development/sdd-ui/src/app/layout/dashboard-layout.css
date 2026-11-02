@@ -18,7 +18,7 @@
   width: min(1200px, calc(100% - 2rem));
   margin: 1rem auto 0;
   border-radius: 1rem;
-  box-shadow: 0 0.75rem 2rem rgb(20 54 88 / 12%);
+  box-shadow: 0 0.75rem 2rem rgb(38 51 49 / 12%);
 }
 
 .dashboard-toolbar {
@@ -26,6 +26,7 @@
   min-height: 4rem;
   padding: 0 1.25rem;
   border: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-accent-700);
   border-radius: inherit;
   background: var(--color-surface);
 }
@@ -38,6 +39,17 @@
   text-decoration: none;
 }
 
+.brand::before {
+  display: inline-block;
+  width: 0.58rem;
+  height: 0.58rem;
+  margin-right: 0.65rem;
+  border-radius: 2px;
+  background: var(--color-accent-700);
+  content: '';
+  transform: rotate(45deg);
+}
+
 .toolbar-spacer {
   flex: 1;
 }
@@ -47,9 +59,13 @@
   font-weight: 600;
 }
 
+.masters-trigger:hover {
+  background: var(--color-primary-100);
+}
+
 .masters-trigger:focus-visible,
 .brand:focus-visible {
-  outline: 3px solid rgb(36 118 181 / 38%);
+  outline: 3px solid color-mix(in srgb, var(--color-focus) 45%, transparent);
   outline-offset: 3px;
 }
 
