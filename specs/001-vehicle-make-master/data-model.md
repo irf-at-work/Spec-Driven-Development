@@ -127,7 +127,7 @@ The nine dropdowns read the table `STD_LIST_ITEM`. Each is selected by its `LI_T
 | Body Colour | `VEH_BODY_COLOR` | `WHITE` / White |
 | Category | `VEH_CATEGORY` | `PRIVATE` / Private |
 
-The examples are only illustrations of the shape of the data. Nothing is inserted by this feature (constitution B8: the owner approves and performs any data load). Live inspection found only `CALC_TYPE` (4 active items), `CHARGE_CAT` (2), `CHARGE_TYPE` (3), and `DISCOUNT_TYPE` (2); none of the nine vehicle types or their fixtures are present.
+The examples are only illustrations of the shape of the data. The explicit Excel import below may insert owner-approved rows; it never updates or deletes existing rows. Live inspection found only `CALC_TYPE` (4 active items), `CHARGE_CAT` (2), `CHARGE_TYPE` (3), and `DISCOUNT_TYPE` (2); none of the nine vehicle types or their fixtures are present.
 
 | Logical field | Column | Oracle type | Null? | Use on this page |
 |---|---|---|---|---|
@@ -139,7 +139,7 @@ The examples are only illustrations of the shape of the data. Nothing is inserte
 | Active flag | `LI_ACTIVE_YN` | VARCHAR2(1) | Nullable | Only `Y` items are offered for a new choice |
 | Audit columns | `LI_CR_BY`, `LI_CR_DT`, `LI_UP_BY`, `LI_UP_DT` | VARCHAR2 / DATE | Nullable | Not used; this page only reads the table |
 
-The API only reads `STD_LIST_ITEM`; it never writes it. Only the nine approved types may be requested, so a caller cannot read other list types through this page. Live metadata confirms `(LI_TYPE, LI_CODE)` is the primary key; `LI_DESC` is nullable, and only rows with `LI_ACTIVE_YN = 'Y'` are offered.
+The model-form options endpoint reads only active rows of the nine fixed vehicle types. A separate, explicit import workflow may insert new rows only for those types; it never updates or deletes existing rows. Live metadata confirms `(LI_TYPE, LI_CODE)` is the primary key; `LI_DESC` is nullable, and only rows with `LI_ACTIVE_YN = 'Y'` are offered.
 
 ### Schema Mapping Notes
 

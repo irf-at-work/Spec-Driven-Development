@@ -5,6 +5,15 @@ import { unsavedChangesGuard } from './shared/unsaved-changes.guard';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'vehicle-makes' },
   {
+    path: 'vehicle-model-options/import',
+    title: 'Import Vehicle Dropdown Choices',
+    data: { breadcrumb: 'vehicle-model-options-import' },
+    loadComponent: () =>
+      import('./features/vehicle-makes/vehicle-model-options-import.component').then(
+        (module) => module.VehicleModelOptionsImportComponent,
+      ),
+  },
+  {
     path: 'premium-adjustments/new',
     title: 'Add Premium Adjustment',
     data: { mode: 'create', breadcrumb: 'premium-adjustment-new' },

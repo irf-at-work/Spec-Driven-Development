@@ -97,5 +97,6 @@
 - **Rationale**: This is the clarified spec behavior and prevents accidental child-data loss.
 - **Alternatives considered**: Cascade-delete children or leave a raw Oracle constraint error. Rejected because cascade risks data loss and raw database errors violate the API error contract.
 - **Decision**: Load the nine fixed, active list types from `STD_LIST_ITEM` in one read-only, unpaged options response, ordered by English description. Reject newly selected codes that are inactive or belong to another list type; allow an existing inactive code to remain unchanged during an edit.
+- **Addendum (02-Nov-2026)**: Provide a separate, explicitly confirmed Excel import for the same nine fixed list types. It is insert-only, previews validation and existing keys, skips existing `(LI_TYPE, LI_CODE)` keys without updating them, and commits new rows atomically. The regular options endpoint remains read-only.
 - **Rationale**: The spec defines these fields as optional dropdowns and confirms unpaged lookup behavior. One fixed endpoint avoids repeated requests and prevents callers from selecting arbitrary list types.
 - **Alternatives considered**: Nine separate endpoints, caller-supplied list types, or paged options. Rejected because they add calls/configurable surface or conflict with the owner-approved lookup behavior. The B8 exception is recorded under C3.

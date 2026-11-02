@@ -8,6 +8,12 @@
     </div>
     <div class="header-actions">
       <app-icon-button
+        action="upload"
+        tooltip="Upload vehicle dropdown choices"
+        accessibleName="Upload vehicle dropdown choices"
+        (clicked)="importDropdowns()"
+      />
+      <app-icon-button
         action="add"
         tooltip="Add vehicle make"
         accessibleName="Add vehicle make"

@@ -247,7 +247,7 @@ public sealed class VehicleModelService(
 
     private async Task<List<ListItem>> LoadActiveItemsAsync(CancellationToken cancellationToken)
     {
-        // Read only: this feature never writes to the standard list table.
+        // The options lookup is read-only. The separate import service owns approved inserts into the list table.
         var rows = await database.StdListItems
             .AsNoTracking()
             .Where(item => VehicleModelListTypes.All.Contains(item.LiType) && item.LiActiveYn == VehicleMakeMapping.ActiveFlag)

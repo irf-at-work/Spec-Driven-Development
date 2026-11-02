@@ -26,7 +26,7 @@ Complete the vehicle-make master workflow and add vehicle-model maintenance on d
 
 **Constraints**: Filter Make Code, Make Name, Short Name and Status by column, with operators starts with, ends with, contains (default), equals and not equals (Status: equals and not equals only); filters are case-insensitive, combine with AND, treat typed characters as plain text, and apply to all records before paging. Models get the same filters but no sorting. Allow-list the sortable fields and the operators; default to Make Code ascending. Return shared `PaginatedResult<T>` for makes and models, supporting page sizes 10, 25, and 50 (default 10). Enforce validation on save. Use `ProblemDetails` for failures and generated API types only. Confirm permanent deletion; refuse make deletion while models remain. Keep lookup options unpaged only after the owner-approved constitution C3 exception is recorded. Authentication is out of scope under B9.
 
-**Scale/Scope**: One master-data workflow with make CRUD and model CRUD on dedicated pages; make/model lists are limited to 10 rows per page. Lookup options are small and returned in one unpaged response. No record-count, latency, throughput, or concurrent-user target is specified.
+**Scale/Scope**: One master-data workflow with make CRUD, model CRUD on dedicated pages, and an insert-only Excel import for the nine model dropdown lists. Make/model lists support 10, 25, or 50 rows per page. Lookup imports are limited to 1,000 rows and 5 MB; lookup options remain one unpaged response. No record-count, latency, throughput, or concurrent-user target is specified.
 
 ## Constitution Check
 

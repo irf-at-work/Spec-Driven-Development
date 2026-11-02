@@ -151,7 +151,7 @@ description: "Implementation tasks for the Vehicle Make Master feature"
 - [X] T038 [US5] Implement the original inline paged model list and typed reactive row editor baseline with read-only display, empty state, model Active status, fixed dropdown options, immutable make/model keys, independent row saves, and discard/delete confirmation while hiding models for a new make. The inline editor is superseded by T056; keep this completed task as implementation history.
 - [X] T039 [US5] Regenerate all model CRUD and options types into `Spec-Driven-Development/sdd-ui/src/app/generated/api-client.ts`; resolve OpenAPI/client/UI type errors without manual edits to generated output.
 
-**Checkpoint**: The original model API and inline UI baseline are in place. The dedicated-page migration and updated browser coverage remain in T055-T057. Fixture-dependent dropdown acceptance remains blocked until the owner loads the approved lookup fixtures.
+**Checkpoint**: The original model API and inline UI baseline are in place. The dedicated-page migration and updated browser coverage remain in T055-T057. Fixture-dependent dropdown checks can use owner-approved lookup rows loaded through the Excel import workflow.
 
 ---
 

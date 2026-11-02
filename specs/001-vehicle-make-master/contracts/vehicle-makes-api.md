@@ -90,6 +90,15 @@ Validation and normalisation use the same server rules as makes (code format and
 - Read-only. The list types are fixed in the server, never taken from the request.
 - Not paged: this is the owner-approved lookup exception in the spec. Record the exception under constitution C3 before implementation.
 
+### Vehicle model lookup import
+
+`POST /api/vehicle-model-options/import/preview` and `POST /api/vehicle-model-options/import`
+
+- Both accept `VehicleModelOptionsImportRequestDto` with a `rows` array containing Excel row number, `listType`, `code`, `description`, and `active` (`Y` or `N`). The API accepts only the nine fixed vehicle list types.
+- Preview normalizes type/code to capitals, checks required values and column lengths, reports duplicate keys inside the workbook, and marks keys already in `STD_LIST_ITEM` as existing. It performs no writes.
+- Import repeats validation and existence checks, inserts only new keys in one transaction, skips existing keys without changing them, and returns inserted and skipped counts. Invalid rows return `400 ProblemDetails`; a concurrent key insertion returns `409 ProblemDetails` and rolls back the import.
+- Maximum import size is 1,000 rows. The UI accepts `.xlsx` files up to 5 MB with a `STD_LIST_ITEM` worksheet and `LI_TYPE`, `LI_CODE`, `LI_DESC`, and `LI_ACTIVE_YN` headers.
+
 Model create/update/delete endpoints are independent of unsaved make changes. Deleting a make with models returns the `409` response described above. Verify that the Oracle make-model foreign key does not cascade deletes; the API must pre-check for models and map a concurrent foreign-key conflict to the same `409 ProblemDetails` response.
 
 ## Error Shape

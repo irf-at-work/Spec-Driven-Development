@@ -24,7 +24,7 @@ export class PremiumAdjustmentOptionsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "http://localhost:5115/";
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
     }
 
     /**
@@ -88,7 +88,7 @@ export class PremiumAdjustmentsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "http://localhost:5115/";
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
     }
 
     /**
@@ -464,7 +464,7 @@ export class VehicleMakesClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "http://localhost:5115/";
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
     }
 
     /**
@@ -802,7 +802,7 @@ export class VehicleModelOptionsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "http://localhost:5115/";
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
     }
 
     /**
@@ -854,6 +854,114 @@ export class VehicleModelOptionsClient {
         }
         return _observableOf(null as any);
     }
+
+    /**
+     * @return OK
+     */
+    previewImport(body: VehicleModelOptionsImportRequestDto): Observable<VehicleModelOptionsImportPreviewDto> {
+        let url_ = this.baseUrl + "/api/vehicle-model-options/import/preview";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processPreviewImport(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processPreviewImport(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelOptionsImportPreviewDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelOptionsImportPreviewDto>;
+        }));
+    }
+
+    protected processPreviewImport(response: HttpResponseBase): Observable<VehicleModelOptionsImportPreviewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelOptionsImportPreviewDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    import(body: VehicleModelOptionsImportRequestDto): Observable<VehicleModelOptionsImportResultDto> {
+        let url_ = this.baseUrl + "/api/vehicle-model-options/import";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processImport(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processImport(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelOptionsImportResultDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelOptionsImportResultDto>;
+        }));
+    }
+
+    protected processImport(response: HttpResponseBase): Observable<VehicleModelOptionsImportResultDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelOptionsImportResultDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 @Injectable({
@@ -866,7 +974,7 @@ export class VehicleModelsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "http://localhost:5115/";
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
     }
 
     /**
@@ -1209,7 +1317,7 @@ export class WeatherForecastClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "http://localhost:5115/";
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
     }
 
     /**
@@ -1513,6 +1621,29 @@ export interface VehicleModelDto {
     [key: string]: any;
 }
 
+export interface VehicleModelOptionImportPreviewRowDto {
+    rowNumber: number;
+    listType: string;
+    code: string;
+    description: string;
+    active: string;
+    alreadyExists: boolean;
+    errors: string[];
+    isValid?: boolean;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionImportRowDto {
+    rowNumber: number;
+    listType: string | null;
+    code: string | null;
+    description: string | null;
+    active: string | null;
+
+    [key: string]: any;
+}
+
 export interface VehicleModelOptionsDto {
     variants: LookupOptionDto[];
     vehicleTypes: LookupOptionDto[];
@@ -1523,6 +1654,26 @@ export interface VehicleModelOptionsDto {
     drivingTypes: LookupOptionDto[];
     bodyColours: LookupOptionDto[];
     categories: LookupOptionDto[];
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionsImportPreviewDto {
+    rows: VehicleModelOptionImportPreviewRowDto[];
+    errors: string[];
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionsImportRequestDto {
+    rows: VehicleModelOptionImportRowDto[] | null;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionsImportResultDto {
+    insertedCount: number;
+    skippedExistingCount: number;
 
     [key: string]: any;
 }

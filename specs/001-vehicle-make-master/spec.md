@@ -56,6 +56,10 @@
 
 - Opening a saved vehicle make enters edit mode immediately. Make Code remains locked; all other fields and model actions are available. There is no separate Edit control. Unsaved changes are confirmed when leaving the page.
 
+### Session 2026-11-02 (vehicle lookup import)
+
+- Add an Excel `.xlsx` import for the nine fixed vehicle-model lookup types in `STD_LIST_ITEM`. The workbook uses a `STD_LIST_ITEM` sheet with `LI_TYPE`, `LI_CODE`, `LI_DESC`, and `LI_ACTIVE_YN` columns. Preview validates rows and marks existing keys as skipped; importing is insert-only and never overwrites existing rows. The server revalidates and saves all new rows in one transaction.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Find and browse vehicle makes (Priority: P1)
@@ -153,6 +157,21 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 11. **Given** the model page is open for adding or editing, **When** the user opens a dropdown (variant, type, body type, fuel type, cylinders, doors, driving type, body colour or category), **Then** it offers the active items of that dropdown's list type, shown by their English description; choosing one stores its code, and the dropdown may be left empty because every one of them is optional.
 12. **Given** the add-model page opens, **When** it appears, **Then** Active is on by default and the user may turn it off before saving; **Given** a model is edited, **Then** its Active status can be turned off or on on the same page, and every model row in the list shows its Active status, with inactive models staying in the list.
 
+### User Story 6 - Import vehicle model dropdown choices (Priority: P2)
+
+As a master-data administrator, I want to upload vehicle dropdown choices from an Excel workbook so the model form can offer approved choices without manually inserting each row.
+
+**Independent Test**: Download the template, upload it with valid rows and duplicate keys, review validation and existing-row skips, confirm import, and verify new active options appear in their matching dropdowns.
+
+**Acceptance Scenarios**:
+
+1. **Given** the user opens the lookup import page, **When** they download the template, **Then** it contains a `STD_LIST_ITEM` sheet with `LI_TYPE`, `LI_CODE`, `LI_DESC`, and `LI_ACTIVE_YN` columns and example rows for the nine supported types.
+2. **Given** the user uploads an `.xlsx` workbook with the required sheet and columns, **When** the file is parsed, **Then** a preview shows each row's type, code, description, active flag, and validation status before any database writes occur.
+3. **Given** a workbook row has an unsupported type, missing or over-limit value, invalid active flag, or duplicate key within the workbook, **When** it is previewed, **Then** the row is marked invalid and the import cannot proceed while invalid rows remain.
+4. **Given** a valid row's `(LI_TYPE, LI_CODE)` key already exists, **When** it is previewed, **Then** it is marked as already existing and will be skipped; its stored data is never overwritten.
+5. **Given** the preview contains no invalid rows, **When** the user confirms import, **Then** new rows are inserted atomically, existing keys are skipped, and a summary reports inserted and skipped counts.
+6. **Given** the import is cancelled or a database error occurs, **When** the operation ends, **Then** no partial import is committed.
+
 ## Edge Cases
 
 - Filtering with no matches shows an empty-results state and does not imply that records were deleted.
@@ -164,6 +183,7 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 - The same Model Code may be used under different makes; it must be unique only within its own make. The primary key of `BRM_VEH_MODEL` is `VMOD_VMAK_CODE` plus `VMOD_CODE`, and `VMOD_VMAK_CODE` is also a foreign key to the make (owner-confirmed 29-Oct-2026).
 - Saving a model never saves or discards unsaved changes to the make's own details, and the reverse is also true.
 - A model whose make has been deleted by someone else is reported as not found; no stack trace or raw server message is shown.
+- Lookup imports accept `.xlsx` files up to 5 MB and 1,000 data rows. They are insert-only; existing lookup rows are skipped, never updated or deleted.
 
 ## Requirements *(mandatory)*
 
@@ -202,6 +222,9 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 - **FR-031**: Row and page actions (add, open, edit, delete and going back) MUST be shown as icons, and each icon MUST have a tooltip that names the action and an accessible name for screen readers.
 - **FR-032**: Text on every screen MUST be easy to read: body text MUST be at least 16px and table text at least 15px, with comfortable row spacing; Inter MUST be used for all English text and Noto Sans Arabic for Arabic text, and both MUST be available without an internet connection.
 - **FR-033**: Every page MUST show a breadcrumb trail beneath the header (Master Data › Vehicle Makes › the open make › the current page). Each step except the current page MUST be a link, the current page MUST be marked as such for screen readers, and following a link while a form has unsaved changes MUST ask for confirmation first.
+- **FR-034**: The system MUST provide an Excel `.xlsx` template and an import page for the nine fixed vehicle-model lookup types. The template MUST use a `STD_LIST_ITEM` sheet with `LI_TYPE`, `LI_CODE`, `LI_DESC`, and `LI_ACTIVE_YN` columns.
+- **FR-035**: Before import, the system MUST preview each workbook row and identify invalid values, duplicate keys in the workbook, and keys already in `STD_LIST_ITEM`. Invalid rows MUST block import. Existing database keys MUST be skipped and MUST NOT be overwritten.
+- **FR-036**: The server MUST revalidate uploaded lookup rows, allow only the nine fixed `LI_TYPE` values, enforce column lengths and `Y`/`N` active values, and insert valid new rows in one transaction only after explicit user confirmation. The import MUST be limited to 1,000 rows and 5 MB; failure MUST NOT leave a partial import.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -219,6 +242,7 @@ As an insurance broker, I want to see the models of a vehicle make on that make'
 - **SC-005**: Created and changed records show `admin` as the recorded user.
 - **SC-006**: A broker can add and change a model on its own page and remove it from that make's models list, and 100% of model deletions require explicit confirmation. No models section ever appears while a new make is being added.
 - **SC-007**: A broker can soft delete and restore a make or a model by turning Active off or on, in the add and edit views; Active is on by default when adding, and every list shows each record's Active status.
+- **SC-008**: An administrator can preview an Excel lookup workbook, correct invalid rows before import, and confirm an atomic insert-only import without overwriting existing lookup choices.
 
 ## Assumptions
 
