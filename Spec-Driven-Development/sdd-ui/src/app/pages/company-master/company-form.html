@@ -11,7 +11,9 @@
     Back to companies
   </a>
   <h1 id="company-form-title">
-    {{ editing() ? 'Edit company' : step() === 'basic' ? 'Add company' : 'Set up company structure' }}
+    {{
+      editing() ? 'Edit company' : step() === 'basic' ? 'Add company' : 'Set up company structure'
+    }}
   </h1>
 
   @if (!editing()) {
@@ -59,11 +61,27 @@
             {{ saving() ? 'Saving…' : 'Save' }}
           </button>
         } @else {
-          <button mat-button type="button" [disabled]="saving()" (click)="resetStep()">Reset</button>
-          <button mat-button type="button" [disabled]="saving()" (click)="save()">Save</button>
-          <button mat-button type="button" [disabled]="saving()" (click)="save()">Save and Exit</button>
-          <button mat-flat-button type="button" [disabled]="saving()" (click)="saveAndAddDivision()">
-            {{ saving() ? 'Saving…' : 'Save & Add Division' }}
+          @if (!companyCode()) {
+            <button mat-button type="button" [disabled]="saving()" (click)="resetStep()">
+              Reset
+            </button>
+          }
+          <button mat-button type="button" [disabled]="saving()" (click)="save()">
+            Save and Exit
+          </button>
+          <button
+            mat-flat-button
+            type="button"
+            [disabled]="saving()"
+            (click)="saveAndAddDivision()"
+          >
+            {{
+              saving()
+                ? 'Saving…'
+                : companyCode()
+                  ? 'Save & Return to Division'
+                  : 'Save & Add Division'
+            }}
           </button>
         }
       </div>
@@ -74,73 +92,108 @@
       @if (error(); as saveError) {
         <p class="error-message" role="alert">{{ saveError }}</p>
       }
-      <button mat-stroked-button type="button" (click)="addDivision()">Add new division</button>
+      <div class="form-actions setup-step-actions">
+        <button mat-button type="button" [disabled]="saving()" (click)="backToBasic()">
+          <mat-icon aria-hidden="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M20 12v-2H7.83l5.59-5.59L12 3 3 12l9 9 1.41-1.41L7.83 13H20z"
+        />
+      </svg>
+    </mat-icon>
+          Back to Basic details
+        </button>
+        <button mat-stroked-button type="button" (click)="addDivision()">Add new division</button>
+      </div>
 
       @for (division of divisionForms.controls; track $index; let index = $index) {
-        <article class="setup-card">
-          <header class="setup-card-heading">
-            <h3>{{ division.controls.name.value || 'New division' }}</h3>
-            <div class="setup-card-actions">
+        <mat-expansion-panel
+          class="setup-card"
+          [expanded]="!isDivisionCollapsed(index)"
+          (opened)="setDivisionCollapsed(index, false)"
+          (closed)="setDivisionCollapsed(index, true)"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ division.controls.name.value || 'New division' }}</mat-panel-title>
+            <div
+              class="setup-card-actions"
+              (click)="$event.stopPropagation()"
+              (keydown)="$event.stopPropagation()"
+            >
               <button
                 mat-button
                 type="button"
                 [attr.aria-expanded]="!isDivisionCollapsed(index)"
-                [attr.aria-label]="isDivisionCollapsed(index) ? 'Expand division' : 'Collapse division'"
+                [attr.aria-label]="
+                  isDivisionCollapsed(index) ? 'Expand division' : 'Collapse division'
+                "
                 (click)="toggleDivision(index)"
               >
-                {{ isDivisionCollapsed(index) ? 'Expand' : 'Collapse' }}
               </button>
               <button
                 mat-button
                 type="button"
+                class="destructive-action"
                 aria-label="Delete division card"
                 (click)="removeDivision(index)"
               >
+                <mat-icon aria-hidden="true">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M6 7h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7zm3-3h6l1 2h4v2H4V6h4l1-2zm2 5v7h2V9h-2zm4 0v7h2V9h-2z"
+                    />
+                  </svg>
+                </mat-icon>
                 Delete
               </button>
             </div>
-          </header>
-          @if (!isDivisionCollapsed(index)) {
-            <div class="structure-fields" [formGroup]="division">
-              <mat-form-field appearance="outline">
-                <mat-label>Division code</mat-label>
-                <input matInput formControlName="divisionCode" maxlength="12" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Division name</mat-label>
-                <input matInput formControlName="name" maxlength="100" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Short name</mat-label>
-                <input matInput formControlName="shortName" maxlength="30" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Address 1</mat-label>
-                <input matInput formControlName="address1" maxlength="100" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Address 2</mat-label>
-                <input matInput formControlName="address2" maxlength="100" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Address 3</mat-label>
-                <input matInput formControlName="address3" maxlength="100" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Division in charge</mat-label>
-                <input matInput formControlName="inCharge" maxlength="60" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Phone</mat-label>
-                <input matInput formControlName="phone" maxlength="20" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Email</mat-label>
-                <input matInput formControlName="email" maxlength="100" />
-              </mat-form-field>
-            </div>
-          }
-        </article>
+          </mat-expansion-panel-header>
+          <div class="structure-fields" [formGroup]="division">
+            <mat-form-field appearance="outline">
+              <mat-label>Division code</mat-label>
+              <input
+                matInput
+                formControlName="divisionCode"
+                maxlength="12"
+                [readonly]="isSavedDivision(index)"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Division name</mat-label>
+              <input matInput formControlName="name" maxlength="100" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Short name</mat-label>
+              <input matInput formControlName="shortName" maxlength="30" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Address 1</mat-label>
+              <input matInput formControlName="address1" maxlength="100" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Address 2</mat-label>
+              <input matInput formControlName="address2" maxlength="100" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Address 3</mat-label>
+              <input matInput formControlName="address3" maxlength="100" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Division in charge</mat-label>
+              <input matInput formControlName="inCharge" maxlength="60" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Phone</mat-label>
+              <input matInput formControlName="phone" maxlength="20" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" maxlength="100" />
+            </mat-form-field>
+          </div>
+        </mat-expansion-panel>
       } @empty {
         <p>No divisions have been added. Select Add new division to begin.</p>
       }
@@ -166,11 +219,52 @@
       @if (error(); as saveError) {
         <p class="error-message" role="alert">{{ saveError }}</p>
       }
-      <button mat-stroked-button type="button" (click)="addDepartment()">Add new department</button>
+      <div class="form-actions setup-step-actions">
+        <button mat-button type="button" (click)="backToDivision()">
+          <mat-icon aria-hidden="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M20 12v-2H7.83l5.59-5.59L12 3 3 12l9 9 1.41-1.41L7.83 13H20z"
+        />
+      </svg>
+    </mat-icon>
+          Back to Division
+        </button>
+        <button mat-stroked-button type="button" (click)="addDepartment()">
+          Add new department
+        </button>
+      </div>
 
       @for (department of departmentForms.controls; track $index; let index = $index) {
-        <article class="setup-card">
-          <h3>{{ department.controls.name.value || 'New department' }}</h3>
+        <mat-expansion-panel class="setup-card" [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{
+              department.controls.name.value || 'New department'
+            }}</mat-panel-title>
+            <div
+              class="setup-card-actions"
+              (click)="$event.stopPropagation()"
+              (keydown)="$event.stopPropagation()"
+            >
+              <button
+                mat-button
+                type="button"
+                class="destructive-action"
+                (click)="departmentForms.removeAt(index)"
+              >
+                <mat-icon aria-hidden="true">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M6 7h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7zm3-3h6l1 2h4v2H4V6h4l1-2zm2 5v7h2V9h-2zm4 0v7h2V9h-2z"
+                    />
+                  </svg>
+                </mat-icon>
+                Remove
+              </button>
+            </div>
+          </mat-expansion-panel-header>
           <div class="structure-fields" [formGroup]="department">
             <mat-form-field appearance="outline">
               <mat-label>Department code</mat-label>
@@ -195,17 +289,13 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <button mat-button type="button" (click)="departmentForms.removeAt(index)">
-            Remove department
-          </button>
-        </article>
+        </mat-expansion-panel>
       } @empty {
         <p>No departments have been added. Select Add new department to begin.</p>
       }
 
       <div class="form-actions">
         <button mat-button type="button" [disabled]="saving()" (click)="resetStep()">Reset</button>
-        <button mat-button type="button" (click)="backToDivision()">Back to Division</button>
         <button mat-flat-button type="button" [disabled]="saving()" (click)="saveDepartments()">
           {{ saving() ? 'Saving…' : 'Save' }}
         </button>

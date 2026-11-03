@@ -11,15 +11,24 @@ describe('FilterControl', () => {
 
     const select = fixture.nativeElement.querySelector(
       'select[aria-label="Company name operator"]',
-    );
+    ) as HTMLSelectElement | null;
     expect(select).not.toBeNull();
+    if (!select) {
+      throw new Error('Operator select was not rendered.');
+    }
     expect(select.value).toBe('');
+    expect(
+      Array.from(select.options).some((option) => option.textContent?.includes('Choose operator')),
+    ).toBe(false);
     expect(fixture.nativeElement.textContent).not.toContain('Company name operator');
     expect(
       fixture.nativeElement
         .querySelector('.operator-control')
         .classList.contains('operator-active'),
     ).toBe(false);
+    expect(
+      getComputedStyle(fixture.nativeElement.querySelector('.operator-control')).borderRadius,
+    ).toBe('0.5rem');
     expect(fixture.nativeElement.querySelector('.operator-control path').getAttribute('fill')).toBe(
       'none',
     );

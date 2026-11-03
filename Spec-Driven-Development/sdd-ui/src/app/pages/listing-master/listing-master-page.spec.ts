@@ -49,6 +49,10 @@ describe('ListingMasterPage', () => {
 
     const root = harness.routeNativeElement as HTMLElement;
     expect(root.querySelector('h1')?.textContent).toContain('List Item Master');
+    expect(root.querySelector('a[routerLink="/listing-master/new"] mat-icon svg')).not.toBeNull();
+    expect(
+      root.querySelector('a[routerLink="/listing-master/new"] mat-icon')?.textContent?.trim(),
+    ).toBe('');
     expect(root.textContent).toContain('United Arab Emirates');
     expect(root.textContent).toContain('COUNTRY');
     expect(root.textContent).toContain('AE');

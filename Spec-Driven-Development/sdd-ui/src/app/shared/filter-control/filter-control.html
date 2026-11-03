@@ -27,7 +27,7 @@
       [ngModelOptions]="{ standalone: true }"
       (ngModelChange)="emitOperator($event)"
     >
-      <option value="">Choose operator</option>
+      <option value="" hidden></option>
       @for (option of operators; track option.value) {
         <option [value]="option.value">{{ option.label }}</option>
       }

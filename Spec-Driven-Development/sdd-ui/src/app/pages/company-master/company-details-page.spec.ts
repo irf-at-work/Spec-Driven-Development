@@ -129,6 +129,14 @@ describe('CompanyDetailsPage structure', () => {
     expect(panels[0].querySelector('[aria-label="Delete division WEST"]')).not.toBeNull();
     expect(panels[0].querySelector('.destructive-action')).not.toBeNull();
     expect(root.querySelector('.details-heading .destructive-action')).not.toBeNull();
+    expect(root.querySelector('.details-actions button mat-icon svg')).not.toBeNull();
+    expect(root.querySelector('.details-heading .destructive-action mat-icon svg')).not.toBeNull();
+    expect(
+      panels[0].querySelector('[aria-label="Edit division WEST"] mat-icon svg'),
+    ).not.toBeNull();
+    expect(
+      panels[0].querySelector('[aria-label="Delete division WEST"] mat-icon svg'),
+    ).not.toBeNull();
     expect(root.textContent).not.toContain('Collapse');
     expect(root.textContent).not.toContain('Cancel edit');
 
@@ -222,7 +230,11 @@ describe('CompanyDetailsPage structure', () => {
         ],
       },
     });
-    expect(page.divisions().map((division) => division.divisionCode)).toContain('CENTRAL');
+    expect(page.divisions().map((division) => division.divisionCode)).toEqual([
+      'CENTRAL',
+      'WEST',
+      'EAST',
+    ]);
     expect(page.divisionDialogOpen()).toBe(false);
   });
 

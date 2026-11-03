@@ -24,6 +24,10 @@ form {
   flex-wrap: wrap;
 }
 
+.setup-step-actions {
+  justify-content: space-between;
+}
+
 .setup-progress {
   max-width: 76rem;
   margin: 1rem auto;
@@ -85,20 +89,27 @@ form {
 }
 
 .setup-card {
-  display: grid;
-  gap: 1rem;
-  padding: 1rem;
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   background: var(--color-page);
 }
 
-.setup-card-heading {
-  justify-content: space-between;
-}
-
 .setup-card-actions {
   flex-shrink: 0;
+}
+
+.setup-card-actions mat-icon {
+  margin-inline-end: 0.25rem;
+  vertical-align: middle;
+}
+
+.setup-card-actions .destructive-action {
+  color: var(--mat-sys-error, #b3261e);
+}
+
+:host ::ng-deep .setup-card .mat-expansion-panel-body {
+  display: grid;
+  gap: 1rem;
 }
 
 .structure-fields {
@@ -133,11 +144,6 @@ form {
     flex-direction: column;
     padding: 0.5rem;
     font-size: 0.8rem;
-  }
-
-  .setup-card-heading {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
   .setup-card-actions {

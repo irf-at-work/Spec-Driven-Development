@@ -1,5 +1,15 @@
 <section aria-labelledby="list-item-details-title">
-  <a mat-button routerLink="/listing-master" queryParamsHandling="preserve">Back to list items</a>
+  <a mat-button routerLink="/listing-master" queryParamsHandling="preserve">
+    <mat-icon aria-hidden="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M20 12v-2H7.83l5.59-5.59L12 3 3 12l9 9 1.41-1.41L7.83 13H20z"
+        />
+      </svg>
+    </mat-icon>
+    Back to list items
+  </a>
 
   @if (loading()) {
     <p role="status">Loading list item details…</p>
@@ -9,13 +19,22 @@
     <article class="details-panel">
       <header class="details-heading">
         <div>
-          <p class="eyebrow">List item configuration</p>
-          <h1 id="list-item-details-title">{{ current.description || current.liCode }}</h1>
+          <h1 id="list-item-details-title">List Item Master</h1>
           <p class="identity">{{ current.liType }} / {{ current.liCode }}</p>
         </div>
         @if (!editing()) {
           <div class="details-actions">
-            <button mat-flat-button type="button" (click)="startEditing()">Edit</button>
+            <button mat-flat-button type="button" (click)="startEditing()">
+              <mat-icon aria-hidden="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.42l-2.34-2.34a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+                  />
+                </svg>
+              </mat-icon>
+              Edit
+            </button>
             <button
               class="destructive-action"
               mat-button
@@ -23,6 +42,14 @@
               [disabled]="deleting()"
               (click)="deleteItem()"
             >
+              <mat-icon aria-hidden="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M6 7h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7zm3-3h6l1 2h4v2H4V6h4l1-2zm2 5v7h2V9h-2zm4 0v7h2V9h-2z"
+                  />
+                </svg>
+              </mat-icon>
               {{ deleting() ? 'Deleting…' : 'Delete' }}
             </button>
           </div>

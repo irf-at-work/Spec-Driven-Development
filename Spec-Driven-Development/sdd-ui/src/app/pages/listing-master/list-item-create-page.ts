@@ -7,10 +7,11 @@ import { catchError, EMPTY, finalize } from 'rxjs';
 import { ListItemService } from '../../api/generated/api/listItem.service';
 import { CreateListItemRequest } from '../../api/generated/model/createListItemRequest';
 import { LIST_ITEM_FORM_FIELDS, ListItemForm, ListItemFormValue } from './list-item-form';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ListItemForm, MatButtonModule, RouterLink],
+  imports: [ListItemForm, MatButtonModule, RouterLink, MatIcon],
   selector: 'app-list-item-create-page',
   styleUrl: './list-item-create-page.css',
   templateUrl: './list-item-create-page.html',

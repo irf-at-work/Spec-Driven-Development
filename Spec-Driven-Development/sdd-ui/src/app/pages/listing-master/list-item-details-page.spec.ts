@@ -55,6 +55,12 @@ describe('ListItemDetailsPage', () => {
     await harness.fixture.whenStable();
     const root = harness.routeNativeElement as HTMLElement;
 
+    expect(root.querySelector('#list-item-details-title')?.textContent?.trim()).toBe(
+      'List item master',
+    );
+    expect(root.querySelector('a[routerLink="/listing-master"] mat-icon svg')).not.toBeNull();
+    expect(root.querySelector('.details-actions button mat-icon svg')).not.toBeNull();
+    expect(root.querySelector('.details-actions .destructive-action mat-icon svg')).not.toBeNull();
     expect(root.textContent).toContain('United Arab Emirates');
     expect(root.textContent).toContain('الإمارات العربية المتحدة');
     expect(root.textContent).toContain('Extra 1');

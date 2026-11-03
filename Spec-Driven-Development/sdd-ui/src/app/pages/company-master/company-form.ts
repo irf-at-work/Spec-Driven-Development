@@ -19,18 +19,26 @@ import {
 } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import {
-  FormArray,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, concatMap, EMPTY, finalize, from, map, of, switchMap, tap, toArray } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  EMPTY,
+  finalize,
+  forkJoin,
+  from,
+  map,
+  type Observable,
+  of,
+  switchMap,
+  tap,
+  toArray,
+} from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
 import { CompanyStructureService } from '../../api/generated/api/companyStructure.service';
 import { CompanyDto } from '../../api/generated/model/companyDto';
@@ -161,6 +169,7 @@ class CompanyDateAdapter extends NativeDateAdapter {
   imports: [
     MatButtonModule,
     MatDatepickerModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -248,27 +257,27 @@ export class CompanyForm implements OnInit {
         this.shortNameEdited = true;
       });
 
-    this.route.queryParamMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        const requestedStep = params.get('step');
-        const companyCode = params.get('companyCode');
-        if (
-          !companyCode ||
-          (requestedStep !== 'division' && requestedStep !== 'department')
-        ) {
-          this.companyCode.set(null);
-          this.step.set('basic');
-          return;
-        }
-
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const requestedStep = params.get('step');
+      const companyCode = params.get('companyCode');
+      if (requestedStep === 'basic' && companyCode) {
         this.companyCode.set(companyCode);
-        this.step.set(requestedStep);
-        if (requestedStep === 'department' && this.departmentForms.length === 0) {
-          this.addDepartment();
-        }
-        this.loadDivisions(companyCode, requestedStep === 'division');
-      });
+        this.step.set('basic');
+        return;
+      }
+      if (!companyCode || (requestedStep !== 'division' && requestedStep !== 'department')) {
+        this.companyCode.set(null);
+        this.step.set('basic');
+        return;
+      }
+
+      this.companyCode.set(companyCode);
+      this.step.set(requestedStep);
+      if (requestedStep === 'department' && this.departmentForms.length === 0) {
+        this.addDepartment();
+      }
+      this.loadDivisions(companyCode, requestedStep === 'division');
+    });
 
     this.route.paramMap
       .pipe(
@@ -335,13 +344,15 @@ export class CompanyForm implements OnInit {
     }
 
     const value = this.form.getRawValue();
+    const setupCompanyCode = this.companyCode();
     this.saving.set(true);
-    const request = this.editing()
-      ? this.api.apiCompaniesCompanyCodePut({
-          companyCode: value.companyCode,
-          updateCompanyRequest: this.toUpdateRequest(value),
-        })
-      : this.api.apiCompaniesPost({ createCompanyRequest: this.toCreateRequest(value) });
+    const request =
+      this.editing() || setupCompanyCode
+        ? this.api.apiCompaniesCompanyCodePut({
+            companyCode: setupCompanyCode ?? value.companyCode,
+            updateCompanyRequest: this.toUpdateRequest(value),
+          })
+        : this.api.apiCompaniesPost({ createCompanyRequest: this.toCreateRequest(value) });
 
     request
       .pipe(
@@ -368,8 +379,15 @@ export class CompanyForm implements OnInit {
     }
 
     this.saving.set(true);
-    this.api
-      .apiCompaniesPost({ createCompanyRequest: this.toCreateRequest(this.form.getRawValue()) })
+    const value = this.form.getRawValue();
+    const companyCode = this.companyCode();
+    const request = companyCode
+      ? this.api.apiCompaniesCompanyCodePut({
+          companyCode,
+          updateCompanyRequest: this.toUpdateRequest(value),
+        })
+      : this.api.apiCompaniesPost({ createCompanyRequest: this.toCreateRequest(value) });
+    request
       .pipe(
         catchError((error: unknown) => {
           this.applyApiError(error);
@@ -414,31 +432,51 @@ export class CompanyForm implements OnInit {
   }
 
   addDivision(): void {
-    this.divisionForms.push(new FormGroup<DivisionFormControls>({
-      divisionCode: new FormControl('', {
-        nonNullable: true,
-        validators: [Validators.required, Validators.maxLength(12)],
+    this.divisionForms.push(
+      new FormGroup<DivisionFormControls>({
+        divisionCode: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.required, Validators.maxLength(12)],
+        }),
+        name: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.required, Validators.maxLength(100)],
+        }),
+        shortName: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.maxLength(30)],
+        }),
+        address1: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.maxLength(100)],
+        }),
+        address2: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.maxLength(100)],
+        }),
+        address3: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.maxLength(100)],
+        }),
+        inCharge: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.maxLength(60)],
+        }),
+        phone: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(20)] }),
+        email: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
       }),
-      name: new FormControl('', {
-        nonNullable: true,
-        validators: [Validators.required, Validators.maxLength(100)],
-      }),
-      shortName: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(30)] }),
-      address1: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
-      address2: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
-      address3: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
-      inCharge: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(60)] }),
-      phone: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(20)] }),
-      email: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
-    }));
+    );
     this.error.set(null);
   }
 
   removeDivision(index: number): void {
     const divisionCode = this.divisionForms.at(index).controls.divisionCode.value;
     if (this.savedDivisionCodes().has(divisionCode)) {
-      const confirmed = typeof window !== 'undefined' &&
-        window.confirm('Delete this saved division? The server will prevent deletion while departments remain assigned.');
+      const confirmed =
+        typeof window !== 'undefined' &&
+        window.confirm(
+          'Delete this saved division? The server will prevent deletion while departments remain assigned.',
+        );
       const companyCode = this.companyCode();
       if (!confirmed || !companyCode) {
         return;
@@ -455,6 +493,7 @@ export class CompanyForm implements OnInit {
         )
         .subscribe(() => {
           this.divisionForms.removeAt(index);
+          this.collapsedDivisions.set(new Set());
           this.divisionOptions.update((divisions) =>
             divisions.filter((division) => division.divisionCode !== divisionCode),
           );
@@ -467,7 +506,8 @@ export class CompanyForm implements OnInit {
       return;
     }
 
-    const confirmed = typeof window !== 'undefined' &&
+    const confirmed =
+      typeof window !== 'undefined' &&
       window.confirm('Delete this unsaved division card? Its entered details will be lost.');
     if (confirmed) {
       this.divisionForms.removeAt(index);
@@ -476,13 +516,17 @@ export class CompanyForm implements OnInit {
   }
 
   toggleDivision(index: number): void {
-    const collapsed = new Set(this.collapsedDivisions());
-    if (collapsed.has(index)) {
-      collapsed.delete(index);
+    this.setDivisionCollapsed(index, !this.isDivisionCollapsed(index));
+  }
+
+  setDivisionCollapsed(index: number, collapsed: boolean): void {
+    const collapsedDivisions = new Set(this.collapsedDivisions());
+    if (collapsed) {
+      collapsedDivisions.add(index);
     } else {
-      collapsed.add(index);
+      collapsedDivisions.delete(index);
     }
-    this.collapsedDivisions.set(collapsed);
+    this.collapsedDivisions.set(collapsedDivisions);
   }
 
   isDivisionCollapsed(index: number): boolean {
@@ -490,9 +534,7 @@ export class CompanyForm implements OnInit {
   }
 
   isSavedDivision(index: number): boolean {
-    return this.savedDivisionCodes().has(
-      this.divisionForms.at(index).controls.divisionCode.value,
-    );
+    return this.savedDivisionCodes().has(this.divisionForms.at(index).controls.divisionCode.value);
   }
 
   saveDivisionAndExit(): void {
@@ -508,21 +550,26 @@ export class CompanyForm implements OnInit {
   }
 
   addDepartment(): void {
-    this.departmentForms.push(new FormGroup<DepartmentFormControls>({
-      departmentCode: new FormControl('', {
-        nonNullable: true,
-        validators: [Validators.required, Validators.maxLength(12)],
+    this.departmentForms.push(
+      new FormGroup<DepartmentFormControls>({
+        departmentCode: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.required, Validators.maxLength(12)],
+        }),
+        name: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.required, Validators.maxLength(100)],
+        }),
+        shortName: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.maxLength(30)],
+        }),
+        divisionCodes: new FormControl([], {
+          nonNullable: true,
+          validators: [Validators.required],
+        }),
       }),
-      name: new FormControl('', {
-        nonNullable: true,
-        validators: [Validators.required, Validators.maxLength(100)],
-      }),
-      shortName: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(30)] }),
-      divisionCodes: new FormControl([], {
-        nonNullable: true,
-        validators: [Validators.required],
-      }),
-    }));
+    );
     this.error.set(null);
   }
 
@@ -591,26 +638,68 @@ export class CompanyForm implements OnInit {
       return;
     }
 
-    const divisions = this.divisionForms.getRawValue()
-      .filter((division) => !this.savedDivisionCodes().has(division.divisionCode))
+    const values = this.divisionForms.getRawValue();
+    const savedCodes = new Set(this.savedDivisionCodes());
+    const createDivisions = values
+      .filter((division) => !savedCodes.has(division.divisionCode))
       .map((division) => ({
-      divisionCode: division.divisionCode,
-      name: division.name,
-      shortName: division.shortName || null,
-      address1: division.address1 || null,
-      address2: division.address2 || null,
-      address3: division.address3 || null,
-      inCharge: division.inCharge || null,
-      phone: division.phone || null,
-      email: division.email || null,
+        divisionCode: division.divisionCode,
+        name: division.name,
+        shortName: division.shortName || null,
+        address1: division.address1 || null,
+        address2: division.address2 || null,
+        address3: division.address3 || null,
+        inCharge: division.inCharge || null,
+        phone: division.phone || null,
+        email: division.email || null,
       }));
+    const updateDivisions = values.filter((division) => savedCodes.has(division.divisionCode));
+    const saveRequests: Observable<unknown>[] = [];
+
+    if (createDivisions.length > 0) {
+      saveRequests.push(
+        this.structureApi
+          .apiCompaniesCompanyCodeDivisionsPost({
+            companyCode,
+            createDivisionsRequest: { divisions: createDivisions },
+          })
+          .pipe(map(() => undefined)),
+      );
+    }
+
+    for (const division of updateDivisions) {
+      saveRequests.push(
+        this.structureApi
+          .apiCompaniesCompanyCodeDivisionsDivisionCodePut({
+            companyCode,
+            divisionCode: division.divisionCode,
+            updateDivisionRequest: {
+              name: division.name,
+              shortName: division.shortName || null,
+              address1: division.address1 || null,
+              address2: division.address2 || null,
+              address3: division.address3 || null,
+              inCharge: division.inCharge || null,
+              phone: division.phone || null,
+              email: division.email || null,
+              active: 'Y',
+            },
+          })
+          .pipe(map(() => undefined)),
+      );
+    }
+
+    if (saveRequests.length === 0) {
+      if (destination === 'department') {
+        this.navigateToStep('department', companyCode);
+      } else {
+        this.navigateToCompanyDetails(companyCode);
+      }
+      return;
+    }
 
     this.saving.set(true);
-    this.structureApi
-      .apiCompaniesCompanyCodeDivisionsPost({
-        companyCode,
-        createDivisionsRequest: { divisions },
-      })
+    forkJoin(saveRequests)
       .pipe(
         catchError((error: unknown) => {
           this.applyStructureError(error);
@@ -620,12 +709,29 @@ export class CompanyForm implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
+        this.savedDivisionCodes.update((codes) => {
+          const next = new Set(codes);
+          for (const division of values) {
+            next.add(division.divisionCode);
+          }
+          return next;
+        });
         if (destination === 'department') {
           this.navigateToStep('department', companyCode);
         } else {
           this.navigateToCompanyDetails(companyCode);
         }
       });
+  }
+
+  backToBasic(): void {
+    const companyCode = this.companyCode();
+    this.step.set('basic');
+    this.error.set(null);
+    void this.router.navigate(['/company-master/new'], {
+      queryParams: { step: 'basic', companyCode },
+      queryParamsHandling: 'merge',
+    });
   }
 
   private navigateToCompanyDetails(companyCode: string): void {
@@ -848,7 +954,7 @@ export class CompanyForm implements OnInit {
       const body = error.error;
       if (isRecord(body) && isRecord(body['errors'])) {
         const messages = Object.values(body['errors'])
-          .flatMap((value) => Array.isArray(value) ? value : [])
+          .flatMap((value) => (Array.isArray(value) ? value : []))
           .filter((value): value is string => typeof value === 'string');
         if (messages.length > 0) {
           this.error.set(messages.join(' '));

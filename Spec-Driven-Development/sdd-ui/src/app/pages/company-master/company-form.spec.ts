@@ -35,7 +35,7 @@ describe('CompanyForm', () => {
       apiCompaniesPost: vi.fn(() => of(company)),
       apiCompaniesCompanyCodePut: vi.fn(() => of(company)),
     },
-    structureApi = {
+    structureApi: object = {
       apiCompaniesCompanyCodeDivisionsGet: vi.fn(() => of([])),
       apiCompaniesCompanyCodeDivisionsPost: vi.fn(() => of([])),
       apiCompaniesCompanyCodeDepartmentsPost: vi.fn(() => of({})),
@@ -188,6 +188,152 @@ describe('CompanyForm', () => {
     expect(form.step()).toBe('division');
     expect(form.divisionForms.at(0).controls.name.value).toBe('Western Office');
     expect(form.error()).toContain('could not be saved');
+  });
+
+  it('updates saved divisions and the company when returning to Basic details', async () => {
+    const api = {
+      apiCompaniesCompanyCodeGet: vi.fn(() => of(company)),
+      apiCompaniesPost: vi.fn(() => of(company)),
+      apiCompaniesCompanyCodePut: vi.fn(() => of(company)),
+    };
+    const structureApi = {
+      apiCompaniesCompanyCodeDivisionsGet: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDivisionsPost: vi.fn(({ createDivisionsRequest }) =>
+        of(createDivisionsRequest.divisions),
+      ),
+      apiCompaniesCompanyCodeDivisionsDivisionCodePut: vi.fn(({ updateDivisionRequest }) =>
+        of(updateDivisionRequest),
+      ),
+      apiCompaniesCompanyCodeDepartmentsPost: vi.fn(() => of({})),
+    };
+    const { harness } = await createForm(api, structureApi);
+    const form = await harness.navigateByUrl('/company-master/new', CompanyForm);
+    form.form.controls.companyCode.setValue('NORTH');
+    form.form.controls.companyName.setValue('North');
+    form.saveAndAddDivision();
+    await harness.fixture.whenStable();
+
+    form.addDivision();
+    form.divisionForms.at(0).controls.divisionCode.setValue('WEST');
+    form.divisionForms.at(0).controls.name.setValue('Western Office');
+    form.saveDivisionAndAddDepartment();
+    await harness.fixture.whenStable();
+    expect(form.savedDivisionCodes().has('WEST')).toBe(true);
+
+    form.backToDivision();
+    await harness.fixture.whenStable();
+    form.divisionForms.at(0).controls.name.setValue('Western Hub');
+    form.saveDivisionAndAddDepartment();
+    await harness.fixture.whenStable();
+
+    expect(structureApi.apiCompaniesCompanyCodeDivisionsPost).toHaveBeenCalledOnce();
+    expect(structureApi.apiCompaniesCompanyCodeDivisionsDivisionCodePut).toHaveBeenCalledWith(
+      expect.objectContaining({
+        companyCode: 'NORTH',
+        divisionCode: 'WEST',
+        updateDivisionRequest: expect.objectContaining({ name: 'Western Hub' }),
+      }),
+    );
+
+    const backToDivision = Array.from(
+      harness.routeNativeElement?.querySelectorAll('button') ?? [],
+    ).find((button) => button.textContent?.includes('Back to Division'));
+    if (!(backToDivision instanceof HTMLButtonElement)) {
+      throw new Error('Back to Division button was not rendered.');
+    }
+    backToDivision.click();
+    await harness.fixture.whenStable();
+
+    const backToBasic = Array.from(
+      harness.routeNativeElement?.querySelectorAll('button') ?? [],
+    ).find((button) => button.textContent?.includes('Back to Basic details'));
+    if (!(backToBasic instanceof HTMLButtonElement)) {
+      throw new Error('Back to Basic details button was not rendered.');
+    }
+    backToBasic.click();
+    await harness.fixture.whenStable();
+    expect(form.companyCode()).toBe('NORTH');
+    expect(form.divisionForms.length).toBe(1);
+    form.form.controls.shortName.setValue('North Mutual');
+    form.saveAndAddDivision();
+    await harness.fixture.whenStable();
+
+    expect(api.apiCompaniesPost).toHaveBeenCalledOnce();
+    expect(api.apiCompaniesCompanyCodePut).toHaveBeenCalledWith(
+      expect.objectContaining({
+        companyCode: 'NORTH',
+        updateCompanyRequest: expect.objectContaining({ shortName: 'North Mutual' }),
+      }),
+    );
+    expect(form.step()).toBe('division');
+  });
+
+  it('renders multiple Division and Department expansion panels open at once', async () => {
+    const structureApi = {
+      apiCompaniesCompanyCodeDivisionsGet: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDivisionsPost: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDepartmentsPost: vi.fn(() => of({})),
+    };
+    const { harness } = await createForm(undefined, structureApi);
+    const form = await harness.navigateByUrl(
+      '/company-master/new?step=division&companyCode=NORTH',
+      CompanyForm,
+    );
+    const addButton = (text: string): HTMLButtonElement => {
+      const button = Array.from(harness.routeNativeElement?.querySelectorAll('button') ?? []).find(
+        (candidate) => candidate.textContent?.trim() === text,
+      );
+      if (!(button instanceof HTMLButtonElement)) {
+        throw new Error(`${text} button was not rendered.`);
+      }
+      return button;
+    };
+
+    addButton('Add new division').click();
+    harness.fixture.detectChanges();
+    addButton('Add new division').click();
+    harness.fixture.detectChanges();
+
+    const divisionHeaders = harness.routeNativeElement?.querySelectorAll(
+      'mat-expansion-panel-header',
+    );
+    expect(divisionHeaders).toHaveLength(2);
+    expect(
+      Array.from(divisionHeaders ?? []).every(
+        (header) => header.getAttribute('aria-expanded') === 'true',
+      ),
+    ).toBe(true);
+    divisionHeaders?.[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    harness.fixture.detectChanges();
+    expect(divisionHeaders?.[0].getAttribute('aria-expanded')).toBe('false');
+    expect(divisionHeaders?.[1].getAttribute('aria-expanded')).toBe('true');
+
+    for (const division of form.divisionForms.controls) {
+      division.controls.divisionCode.setValue(
+        `CODE${form.divisionForms.controls.indexOf(division)}`,
+      );
+      division.controls.name.setValue('Division');
+    }
+    form.saveDivisionAndAddDepartment();
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+
+    addButton('Add new department').click();
+    harness.fixture.detectChanges();
+    const departmentHeaders = harness.routeNativeElement?.querySelectorAll(
+      'mat-expansion-panel-header',
+    );
+    expect(departmentHeaders?.length).toBeGreaterThan(1);
+    expect(
+      Array.from(departmentHeaders ?? []).every(
+        (header) => header.getAttribute('aria-expanded') === 'true',
+      ),
+    ).toBe(true);
+    expect(
+      harness.routeNativeElement?.querySelector(
+        'mat-expansion-panel-header .setup-card-actions .destructive-action',
+      ),
+    ).not.toBeNull();
   });
 
   it('loads one department entry form and the current company division options', async () => {

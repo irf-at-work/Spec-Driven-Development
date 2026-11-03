@@ -295,13 +295,11 @@ export class CompanyDetailsPage implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((createdDivisions) => {
-        const byCode = new Map(
-          this.divisions().map((existing) => [existing.divisionCode, existing]),
-        );
-        for (const created of createdDivisions) {
-          byCode.set(created.divisionCode, created);
-        }
-        this.divisions.set([...byCode.values()]);
+        const createdCodes = new Set(createdDivisions.map((division) => division.divisionCode));
+        this.divisions.set([
+          ...createdDivisions,
+          ...this.divisions().filter((existing) => !createdCodes.has(existing.divisionCode)),
+        ]);
         this.divisionDialogOpen.set(false);
       });
   }
