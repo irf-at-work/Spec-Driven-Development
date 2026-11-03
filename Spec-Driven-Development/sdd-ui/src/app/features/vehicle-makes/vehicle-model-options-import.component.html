@@ -1,0 +1,110 @@
+<section class="page">
+  <header class="page-header">
+    <div class="title-row">
+      <app-icon-button
+        action="back"
+        tooltip="Back to vehicle makes"
+        accessibleName="Back to vehicle makes"
+        (clicked)="back()"
+      />
+      <div>
+        <h1>Import Vehicle Dropdown Choices</h1>
+        <p class="subtitle">Upload approved choices for the vehicle model dropdowns.</p>
+      </div>
+    </div>
+    <button matButton="outlined" type="button" (click)="downloadTemplate()">Download Excel template</button>
+  </header>
+
+  <div class="card instructions">
+    <h2>Workbook format</h2>
+    <p>Use the <strong>STD_LIST_ITEM</strong> worksheet and the columns <code>LI_TYPE</code>, <code>LI_CODE</code>, <code>LI_DESC</code>, and <code>LI_ACTIVE_YN</code>.</p>
+    <p>Only the nine vehicle model list types are accepted. Active values must be <code>Y</code> or <code>N</code>. Existing codes are skipped and never overwritten.</p>
+    <p>Maximum file size: 5 MB. Maximum data rows: 1,000.</p>
+  </div>
+
+  <div class="card uploader">
+    <label for="lookup-workbook">Choose workbook (.xlsx)</label>
+    <input
+      id="lookup-workbook"
+      type="file"
+      accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      [disabled]="loading() || importing()"
+      (change)="onFileSelected($event)"
+    />
+    @if (fileName()) {
+      <p class="file-name">Selected: {{ fileName() }}</p>
+    }
+  </div>
+
+  @if (loading() || importing()) {
+    <mat-progress-bar mode="indeterminate" [attr.aria-label]="loading() ? 'Checking workbook' : 'Importing lookup rows'" />
+  }
+
+  @if (errorMessage()) {
+    <div class="message error" role="alert">{{ errorMessage() }}</div>
+  }
+  @if (resultMessage()) {
+    <div class="message success" role="status">{{ resultMessage() }}</div>
+  }
+
+  @if (preview(); as result) {
+    @if (result.errors.length > 0) {
+      <div class="message error" role="alert">
+        @for (error of result.errors; track error) {
+          <p>{{ error }}</p>
+        }
+      </div>
+    }
+    <section class="card preview" aria-labelledby="preview-heading">
+      <div class="preview-header">
+        <div>
+          <h2 id="preview-heading">Import preview</h2>
+          <p>{{ result.rows.length }} rows · {{ newRowCount() }} new · {{ existingRowCount() }} existing</p>
+        </div>
+        <button
+          matButton="filled"
+          type="button"
+          [disabled]="!canImport() || importing()"
+          (click)="importRows()"
+        >
+          Import valid rows
+        </button>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Excel row</th>
+              <th>LI_TYPE</th>
+              <th>LI_CODE</th>
+              <th>LI_DESC</th>
+              <th>Active</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of result.rows; track row.rowNumber) {
+              <tr>
+                <td>{{ row.rowNumber }}</td>
+                <td>{{ row.listType }}</td>
+                <td>{{ row.code }}</td>
+                <td>{{ row.description }}</td>
+                <td>{{ row.active }}</td>
+                <td>
+                  @if (!row.isValid) {
+                    <span class="invalid">Invalid: {{ row.errors.join(' ') }}</span>
+                  } @else if (row.alreadyExists) {
+                    <span class="skipped">Already exists; will skip</span>
+                  } @else {
+                    <span class="ready">Ready to insert</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</section>

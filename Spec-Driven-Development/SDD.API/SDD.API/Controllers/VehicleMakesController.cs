@@ -9,23 +9,53 @@ namespace SDD.API.Controllers;
 [Route("api/vehicle-makes")]
 public class VehicleMakesController(
     VehicleMakeService vehicleMakes,
+    MasterDataImportService imports,
     ILogger<VehicleMakesController> logger) : ControllerBase
 {
+    [HttpPost("import/preview")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public Task<VehicleMakeImportPreviewDto> PreviewImport(MasterDataImportRequest request, CancellationToken cancellationToken) =>
+        imports.PreviewMakesAsync(request.Rows.Select((row, index) => new VehicleMakeImportRowDto(index + 2, row.GetValueOrDefault("makeCode"), row.GetValueOrDefault("makeName"), row.GetValueOrDefault("shortName"), row.GetValueOrDefault("remarks"), row.GetValueOrDefault("arabicMakeName"), row.GetValueOrDefault("arabicShortName"), row.GetValueOrDefault("arabicRemarks"), ParseActive(row.GetValueOrDefault("active")), row.GetValueOrDefault("active"))).ToArray(), cancellationToken);
+
+    [HttpPost("import")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public async Task<ActionResult<MasterImportResultDto>> Import(MasterDataImportRequest request, CancellationToken cancellationToken)
+    {
+        try { return await imports.ImportMakesAsync(request.Rows.Select((row, index) => new VehicleMakeImportRowDto(index + 2, row.GetValueOrDefault("makeCode"), row.GetValueOrDefault("makeName"), row.GetValueOrDefault("shortName"), row.GetValueOrDefault("remarks"), row.GetValueOrDefault("arabicMakeName"), row.GetValueOrDefault("arabicShortName"), row.GetValueOrDefault("arabicRemarks"), ParseActive(row.GetValueOrDefault("active")), row.GetValueOrDefault("active"))).ToArray(), cancellationToken); }
+        catch (InvalidOperationException ex) { return BadRequest(new ProblemDetails { Title = "Vehicle make import could not be completed", Detail = ex.Message, Status = 400 }); }
+    }
+
+    private static bool? ParseActive(string? value) => value?.Trim().ToUpperInvariant() switch { "Y" => true, "N" => false, _ => null };
+
     [HttpGet]
     public async Task<ActionResult<PaginatedResult<VehicleMakeListItemDto>>> List(
         int page = 1,
-        string? search = null,
+        string? makeCode = null,
+        string? makeCodeOperator = null,
+        string? makeName = null,
+        string? makeNameOperator = null,
+        string? shortName = null,
+        string? shortNameOperator = null,
+        bool? active = null,
+        string? activeOperator = null,
         string? sortBy = null,
         string? sortDirection = null,
+        int pageSize = VehicleMakeListQuery.PageSize,
         CancellationToken cancellationToken = default)
     {
-        var errors = VehicleMakeListQuery.Validate(page, sortBy, sortDirection);
+        var filters = new ColumnFilters(
+            new TextFilter(makeCode, makeCodeOperator),
+            new TextFilter(makeName, makeNameOperator),
+            new TextFilter(shortName, shortNameOperator),
+            new StatusFilter(active, activeOperator));
+
+        var errors = VehicleMakeListQuery.Validate(page, filters, sortBy, sortDirection, pageSize);
         if (errors.Count > 0)
         {
             return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]>(errors)));
         }
 
-        return await vehicleMakes.ListAsync(page, search, sortBy, sortDirection, cancellationToken);
+        return await vehicleMakes.ListAsync(page, filters, sortBy, sortDirection, pageSize, cancellationToken);
     }
 
     [HttpGet("{makeCode}")]
@@ -58,12 +88,7 @@ public class VehicleMakesController(
         var created = await vehicleMakes.CreateAsync(values, cancellationToken);
         if (created is null)
         {
-            return ValidationProblem(new ValidationProblemDetails(
-                new Dictionary<string, string[]> { ["makeCode"] = ["This make code already exists."] })
-            {
-                Status = StatusCodes.Status409Conflict,
-                Title = "Make code already exists"
-            });
+            return ConflictProblem("Make code already exists", "This make code already exists.");
         }
 
         return created;
@@ -95,8 +120,17 @@ public class VehicleMakesController(
     [HttpDelete("{makeCode}")]
     public async Task<IActionResult> Delete(string makeCode, CancellationToken cancellationToken)
     {
-        var removed = await vehicleMakes.DeleteAsync(makeCode, cancellationToken);
-        if (!removed)
+        var outcome = await vehicleMakes.DeleteAsync(makeCode, cancellationToken);
+
+        if (outcome == VehicleMakeDeleteOutcome.HasModels)
+        {
+            // Keyed by makeCode so the screen can show this plain-English sentence without ever showing raw server text.
+            return ConflictProblem(
+                "Vehicle make still has models",
+                "This make still has models. Delete its models first, then delete the make.");
+        }
+
+        if (outcome == VehicleMakeDeleteOutcome.NotFound)
         {
             return NotFoundProblem();
         }
@@ -112,6 +146,14 @@ public class VehicleMakesController(
             action,
             makeCode,
             string.Join(", ", errors.Keys));
+
+    private ActionResult ConflictProblem(string title, string makeCodeMessage) =>
+        Conflict(new ValidationProblemDetails(
+            new Dictionary<string, string[]> { ["makeCode"] = [makeCodeMessage] })
+        {
+            Status = StatusCodes.Status409Conflict,
+            Title = title
+        });
 
     private ObjectResult NotFoundProblem() =>
         Problem(

@@ -14,21 +14,21 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProblem, isApiProblemError } from '../../core/api-problem';
 import { VehicleMakeDto, VehicleMakesClient } from '../../generated/api-client';
-import { openConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { NotificationService } from '../../shared/notifications/notification.service';
+import { IconButtonComponent } from '../../shared/icon-button/icon-button.component';
 import { LimitedTextFieldComponent } from '../../shared/limited-text-field/limited-text-field.component';
 import { HasUnsavedChanges } from '../../shared/unsaved-changes.guard';
 import { notBlank } from '../../shared/validators';
-
-const MESSAGE_DURATION_MS = 5000;
+import { readMakeCodeFromHistory } from '../../shared/navigation-state';
+import { VehicleModelListComponent } from './vehicle-model-list.component';
 
 // The same limits the API enforces (FR-004 to FR-007). The API stays the authority; these only help the user sooner.
 const LIMITS = {
@@ -51,21 +51,24 @@ interface FormValues {
   arabicMakeName: string;
   arabicShortName: string;
   arabicRemarks: string;
+  active: boolean;
 }
 
 /**
- * Adds a new vehicle make, or shows an existing one read-only with an Edit switch. It is one form for both
+ * Adds a new vehicle make, or opens an existing one in edit mode. It is one form for both
  * jobs (spec, User Stories 2 and 3), chosen by the route's data.
  */
 @Component({
   selector: 'app-vehicle-make-form',
   imports: [
+    IconButtonComponent,
     ReactiveFormsModule,
-    MatButton,
+    
     MatExpansionModule,
     MatProgressBar,
     MatSlideToggle,
     LimitedTextFieldComponent,
+    VehicleModelListComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './vehicle-make-form.component.html',
@@ -74,20 +77,20 @@ interface FormValues {
 export class VehicleMakeFormComponent implements HasUnsavedChanges {
   private readonly client = inject(VehicleMakesClient);
   private readonly router = inject(Router);
-  private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
+  
+  private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly editToggle = viewChild(MatSlideToggle);
+  private readonly modelList = viewChild(VehicleModelListComponent);
 
   protected readonly mode: 'create' | 'view' =
     inject(ActivatedRoute).snapshot.data['mode'] === 'view' ? 'view' : 'create';
   protected readonly heading = this.mode === 'create' ? 'Add vehicle make' : 'Vehicle make details';
   protected readonly limits = LIMITS;
 
-  protected readonly editing = signal(this.mode === 'create');
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly additionalOpen = signal(false);
+  protected readonly currentMakeCode = signal('');
 
   protected readonly form = new FormGroup({
     makeCode: new FormControl('', {
@@ -123,10 +126,9 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       nonNullable: true,
       validators: [Validators.maxLength(LIMITS.arabicRemarks)],
     }),
+    // On by default for a new make; turning it off retires the make without deleting it (FR-027).
+    active: new FormControl(true, { nonNullable: true }),
   });
-
-  // What was last saved or loaded, so turning Edit off can put the form back exactly as it was.
-  private savedValues: FormValues | null = null;
 
   constructor() {
     if (this.mode === 'view') {
@@ -142,44 +144,14 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
   }
 
   hasUnsavedChanges(): boolean {
-    return this.form.dirty;
+    return this.form.dirty || (this.modelList()?.hasUnsavedChanges() ?? false);
   }
 
   protected back(): void {
     void this.router.navigate(['/vehicle-makes']);
   }
-
-  protected onEditToggle(change: MatSlideToggleChange): void {
-    if (change.checked) {
-      this.editing.set(true);
-      this.applyEditState();
-      return;
-    }
-
-    if (!this.form.dirty) {
-      this.stopEditing();
-      return;
-    }
-
-    openConfirmDialog(this.dialog, {
-      title: 'Discard your changes?',
-      message: 'You have changes that have not been saved. Turning editing off will discard them.',
-      confirmLabel: 'Discard changes',
-      cancelLabel: 'Keep editing',
-      destructive: true,
-    })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((discard) => {
-        if (discard) {
-          this.stopEditing();
-          return;
-        }
-        // The switch has already moved, so put it back to match the form, which is still being edited.
-        const toggle = this.editToggle();
-        if (toggle) {
-          toggle.checked = true;
-        }
-      });
+  protected add(): void {
+    void this.router.navigate(['/vehicle-makes/new']);
   }
 
   protected save(): void {
@@ -197,6 +169,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       arabicMakeName: value.arabicMakeName,
       arabicShortName: value.arabicShortName,
       arabicRemarks: value.arabicRemarks,
+      active: value.active,
     };
 
     this.saving.set(true);
@@ -209,7 +182,7 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
           next: () => {
             this.saving.set(false);
             this.form.markAsPristine();
-            this.snackBar.open('Vehicle make saved.', 'Close', { duration: MESSAGE_DURATION_MS });
+            this.notifications.success('Vehicle make saved.');
             this.back();
           },
           error: (error: unknown) => this.onSaveFailed(error),
@@ -223,9 +196,8 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       .subscribe({
         next: (updated) => {
           this.saving.set(false);
-          this.editing.set(false);
           this.showMake(updated);
-          this.snackBar.open('Vehicle make updated.', 'Close', { duration: MESSAGE_DURATION_MS });
+          this.notifications.success('Vehicle make updated.');
         },
         error: (error: unknown) => this.onSaveFailed(error),
       });
@@ -256,10 +228,11 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       arabicMakeName: make.arabicMakeName ?? '',
       arabicShortName: make.arabicShortName ?? '',
       arabicRemarks: make.arabicRemarks ?? '',
+      active: make.active !== false,
     };
 
     this.form.reset(values);
-    this.savedValues = values;
+    this.currentMakeCode.set(values.makeCode);
     // FR-011: the optional section opens by itself when it holds anything, so nothing is hidden from the user.
     this.additionalOpen.set(
       values.remarks !== '' ||
@@ -270,23 +243,11 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
     this.applyEditState();
   }
 
-  private stopEditing(): void {
-    if (this.savedValues) {
-      this.form.reset(this.savedValues);
-    }
-    this.editing.set(false);
-    this.applyEditState();
-  }
-
-  // Create: everything is editable. Open: everything is locked until Edit is switched on, and then the code stays locked.
+  // Existing make codes remain immutable while the rest of the form is editable.
   private applyEditState(): void {
-    if (this.mode === 'create' || this.editing()) {
-      this.form.enable();
-      if (this.mode === 'view') {
-        this.form.controls.makeCode.disable();
-      }
-    } else {
-      this.form.disable();
+    this.form.enable();
+    if (this.mode === 'view') {
+      this.form.controls.makeCode.disable();
     }
   }
 
@@ -320,15 +281,4 @@ export class VehicleMakeFormComponent implements HasUnsavedChanges {
       this.additionalOpen.set(true);
     }
   }
-}
-
-// The code of the chosen make travels in the browser's navigation state, so it never appears in the address bar.
-// The state survives a page refresh, which is why it is read from the history entry.
-function readMakeCodeFromHistory(): string | null {
-  const state: unknown = history.state;
-  if (typeof state === 'object' && state !== null && 'makeCode' in state) {
-    const makeCode = state.makeCode;
-    return typeof makeCode === 'string' && makeCode.length > 0 ? makeCode : null;
-  }
-  return null;
 }

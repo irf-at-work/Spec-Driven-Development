@@ -11,7 +11,8 @@ public sealed record VehicleMakeValues(
     string? Remarks,
     string? ArabicMakeName,
     string? ArabicShortName,
-    string? ArabicRemarks);
+    string? ArabicRemarks,
+    bool? Active = null);
 
 /// <summary>
 /// The single home of the Vehicle Make text rules (FR-004 to FR-008, FR-015): cleaning up what the user typed,
@@ -35,7 +36,8 @@ public static class VehicleMakeInputRules
             NormaliseOptionalEnglishText(request.Remarks),
             KeepArabicExactly(request.ArabicMakeName),
             KeepArabicExactly(request.ArabicShortName),
-            KeepArabicExactly(request.ArabicRemarks));
+            KeepArabicExactly(request.ArabicRemarks),
+            request.Active);
 
     // The code comes from the web address, not the request body, because it can never be changed.
     public static VehicleMakeValues Normalise(string makeCode, UpdateVehicleMakeRequest request) =>
@@ -46,7 +48,8 @@ public static class VehicleMakeInputRules
             NormaliseOptionalEnglishText(request.Remarks),
             KeepArabicExactly(request.ArabicMakeName),
             KeepArabicExactly(request.ArabicShortName),
-            KeepArabicExactly(request.ArabicRemarks));
+            KeepArabicExactly(request.ArabicRemarks),
+            request.Active);
 
     public static string NormaliseMakeCode(string? makeCode) =>
         (makeCode ?? string.Empty).Trim().ToUpperInvariant();
@@ -74,18 +77,18 @@ public static class VehicleMakeInputRules
         return errors;
     }
 
-    private static string NormaliseEnglishName(string? value) =>
+    internal static string NormaliseEnglishName(string? value) =>
         CapitaliseWords(CollapseSpaces(value ?? string.Empty));
 
     // Remarks are free text, so only the spacing is tidied; line breaks and capitalisation are left as typed.
-    private static string? NormaliseOptionalEnglishText(string? value)
+    internal static string? NormaliseOptionalEnglishText(string? value)
     {
         var collapsed = CollapseSpaces(value ?? string.Empty);
         return collapsed.Length == 0 ? null : collapsed;
     }
 
     // Arabic text must come back exactly as typed, including its spacing. Only "nothing at all" becomes empty.
-    private static string? KeepArabicExactly(string? value) =>
+    internal static string? KeepArabicExactly(string? value) =>
         string.IsNullOrEmpty(value) ? null : value;
 
     private static string CollapseSpaces(string value)
@@ -143,10 +146,10 @@ public static class VehicleMakeInputRules
     }
 
     // The code has already been converted to capitals, so only capital letters need to be accepted.
-    private static bool IsAllowedMakeCodeCharacter(char character) =>
+    internal static bool IsAllowedMakeCodeCharacter(char character) =>
         character is (>= 'A' and <= 'Z') or (>= '0' and <= '9') or '-';
 
-    private static void AddIfInvalidRequiredText(
+    internal static void AddIfInvalidRequiredText(
         Dictionary<string, string[]> errors,
         string fieldName,
         string displayName,
@@ -163,7 +166,7 @@ public static class VehicleMakeInputRules
         }
     }
 
-    private static void AddIfTooLong(
+    internal static void AddIfTooLong(
         Dictionary<string, string[]> errors,
         string fieldName,
         string? value,
@@ -175,6 +178,6 @@ public static class VehicleMakeInputRules
         }
     }
 
-    private static string MaximumCharactersMessage(int maximumLength) =>
+    internal static string MaximumCharactersMessage(int maximumLength) =>
         $"Maximum {maximumLength} characters.";
 }

@@ -1,7 +1,15 @@
 <header class="app-header">
   <span class="brand">Broker Insurance</span>
-  <span class="section">Master Data</span>
+  <details #mastersMenu class="section-dropdown">
+    <summary class="section">Masters</summary>
+    <nav class="section-menu" aria-label="Masters">
+      <a routerLink="/vehicle-makes" (click)="mastersMenu.open = false">Vehicle Make</a>
+      <a routerLink="/premium-adjustments" (click)="mastersMenu.open = false">Premium Adjustments</a>
+    </nav>
+  </details>
 </header>
+
+<app-breadcrumb />
 
 <main class="app-content">
   <router-outlet />

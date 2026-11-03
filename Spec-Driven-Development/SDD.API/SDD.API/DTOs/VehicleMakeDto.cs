@@ -8,5 +8,6 @@ public sealed record VehicleMakeDto(
     string? ArabicMakeName,
     string? ArabicShortName,
     string? ArabicRemarks,
+    bool Active,
     string? CreatedBy,
     string? LastChangedBy);

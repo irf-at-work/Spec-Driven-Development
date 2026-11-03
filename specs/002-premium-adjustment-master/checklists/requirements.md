@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [x] No [NEEDS CLARIFICATION] markers remain
+- [ ] No [NEEDS CLARIFICATION] markers remain; the `STD_LIST_ITEM.LI_TYPE` mappings still require owner confirmation (see `data-model.md`)
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)

@@ -1,22 +1,22 @@
 # Implementation Plan: Vehicle Make Master
 
-**Branch**: `001-vehicle-make-master` | **Date**: 29-Oct-2026 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-vehicle-make-master` | **Date**: 29-Oct-2026 (revised 30-Oct-2026: column filters, model pages, icons, typography) | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `specs/001-vehicle-make-master/spec.md`
 
 ## Summary
 
-Build a trusted vehicle-make master list for insurance brokers. Brokers can find, add, view, edit, and permanently delete makes, with Make Code as the immutable unique key, data normalized and validated when saved, and all list filtering and sorting applied before pagination. In plain English, the Angular page sends typed requests to the .NET API; the API validates and normalizes entries, then reads or writes the approved Oracle master table. The API publishes its OpenAPI description and the UI client is generated from that description.
+Complete the vehicle-make master workflow and add vehicle-model maintenance on dedicated pages. Brokers can browse, add, view, edit, deactivate/reactivate, and permanently delete makes and models; make and model codes are immutable unique keys in their respective scopes. In plain English, the Angular page sends typed requests to the .NET API; the API validates and normalizes entries, then reads or writes the approved Oracle tables. Models belong to one make, and their nine optional coded fields use fixed lookup lists. Per-column filters (starts with, ends with, contains, equals, not equals; the single search box is removed), sorting and paging for makes, and per-column filters and paging for models, are applied on the server. The API publishes its OpenAPI description and the UI client is generated from that description.
 
 ## Technical Context
 
 **Language/Version**: C# / .NET 10; Angular 22 / TypeScript 6.0 (as already declared in the UI project; constitution v1.0.2 aligned to match)
 
-**Primary Dependencies**: Existing ASP.NET Core OpenAPI 10.0.14 and Prettier 3.8.1; proposed Oracle.EntityFrameworkCore 10.23.26400, Angular Material/CDK 22.2.5 (MIT), Angular ESLint schematics 22.6.0 (MIT), NSwag.MSBuild 14.7.1 for generated TypeScript API client, API test host, XUnit, and Playwright; package additions/updates require owner approval. Use the .NET SDK's built-in `dotnet format` for C# formatting.
+**Primary Dependencies**: Existing ASP.NET Core OpenAPI 10.0.14, Oracle.EntityFrameworkCore 10.23.26400, NSwag.MSBuild 14.7.1, Angular Material/CDK 22.2.5, Angular ESLint, Prettier, XUnit v3, ASP.NET Core test host, and Playwright Test 1.64.1. **Proposed new packages (owner approval and manual install required, constitution B4)**: `sweetalert2` (notifications and confirmations, wrapped in one shared service), `@fontsource/inter` and `@fontsource/noto-sans-arabic` (self-hosted typefaces, so they work offline), and one self-hosted icon-font package for Material icons (for example `@fontsource/material-symbols-outlined`; the owner confirms the choice). Exact versions and licences are recorded in `research.md` and `docs/decisions/vehicle-make-master.md` when the owner installs them. No other package is proposed. Any future package change still requires owner approval under constitution B4. Use the .NET SDK's built-in `dotnet format` for C# formatting.
 
-**Storage**: Oracle 19c, Database-First; existing database schema and connection are not present in the repository. No migrations; do not make DDL or data changes without owner approval.
+**Storage**: Oracle 19c, Database-First. The repository has an existing scaffold for `BRM_VEH_MAKE`; the `BRM_VEH_MODEL` and `STD_LIST_ITEM` mappings and their live constraints must be verified before use. No migrations; do not make DDL or data changes without owner approval.
 
-**Testing**: XUnit API/unit tests and Playwright end-to-end tests, neither test project nor Playwright setup is present yet. Proposed packages and versions are listed in research.md and require approval.
+**Testing**: An XUnit API test project and Angular tests exist; Playwright Test is installed, but feature end-to-end coverage and its complete local-run setup remain implementation work. Test every make/model acceptance flow at the API boundary and in the browser.
 
 **Target Platform**: Local machine; .NET 10 API, Angular browser UI, Oracle 19c database
 
@@ -24,9 +24,9 @@ Build a trusted vehicle-make master list for insurance brokers. Brokers can find
 
 **Performance Goals**: No latency or throughput target is specified. Queries must filter and sort the full matching record set in the database, then return a page of 10 records.
 
-**Constraints**: Search Make Code, Make Name, and Short Name; allow-list those sortable fields; default to Make Code ascending. Enforce all validation on save. Return the shared `PaginatedResult<T>`; non-success API responses use `ProblemDetails`. Generated API types only; no hand-authored duplicate models. Hard delete requires confirmation. No authentication or permission checks in this feature.
+**Constraints**: Filter Make Code, Make Name, Short Name and Status by column, with operators starts with, ends with, contains (default), equals and not equals (Status: equals and not equals only); filters are case-insensitive, combine with AND, treat typed characters as plain text, and apply to all records before paging. Models get the same filters but no sorting. Allow-list the sortable fields and the operators; default to Make Code ascending. Return shared `PaginatedResult<T>` for makes and models, supporting page sizes 10, 25, and 50 (default 10). Enforce validation on save. Use `ProblemDetails` for failures and generated API types only. Confirm permanent deletion; refuse make deletion while models remain. Keep lookup options unpaged only after the owner-approved constitution C3 exception is recorded. Authentication is out of scope under B9.
 
-**Scale/Scope**: One master-data workflow; 10 rows per page; no specified record-count or concurrent-user target. This phase implements vehicle-make CRUD only.
+**Scale/Scope**: One master-data workflow with make CRUD, model CRUD on dedicated pages, and an insert-only Excel import for the nine model dropdown lists. Make/model lists support 10, 25, or 50 rows per page. Lookup imports are limited to 1,000 rows and 5 MB; lookup options remain one unpaged response. No record-count, latency, throughput, or concurrent-user target is specified.
 
 ## Constitution Check
 
@@ -42,10 +42,12 @@ Build a trusted vehicle-make master list for insurance brokers. Brokers can find
 - [x] Formatter and linter gates are planned for C# and Angular/TypeScript, with Prettier used for formatting and Angular ESLint for linting.
 - [x] Timestamped success/failure logging, secret/privacy exclusions, and a technical decision record are covered by implementation tasks.
 - [x] **Framework version resolved.** Constitution amended to v1.0.2 (Angular 22), matching `sdd-ui/package.json` (Angular 22.2, TypeScript 6.0). No downgrade is needed.
-- [ ] **Implementation gate: package approval.** Oracle provider, Angular Material/CDK, Angular ESLint, OpenAPI client generation, API test host, XUnit, and Playwright dependencies are not all present. Purpose, alternatives, and license details are in `research.md`; obtain owner approval before adding/updating packages.
-- [ ] **Implementation gate: Oracle change approval and access.** Confirm access to the intended Oracle 19c schema and approve any required DDL before scaffolding. The owner has described table `BRM_VEH_make` (primary key `VMAK_CODE`); constraints, column defaults and character-versus-byte length semantics must still be confirmed against the live schema. Do not create or alter tables without approval.
+- [x] **Package scope (changed 30-Oct-2026).** The design now proposes `sweetalert2`, `@fontsource/inter`, `@fontsource/noto-sans-arabic` and an icon-font package. Owner approval and manual installation under B4 are required before the tasks that use them (T044 onwards).
+- [x] **Oracle schema inspection.** Owner-approved read-only inspection verified the make/model keys, non-cascading model foreign key, list-item key, defaults, audit behavior, and byte-based column lengths; no DDL or data changes were made. See `data-model.md`.
+- [ ] **Remaining Oracle/data gates.** Vehicle-model list fixtures are not loaded. The owner has confirmed the Arabic character limits remain 100/30/2000; propose a schema resolution and obtain separate explicit approval before any DDL. Do not claim full persisted Arabic-length support until the approved change is implemented and verified.
+- [x] **Implementation gate: constitution C3 exception.** The owner-approved exception for the unpaged model-options lookup is recorded in `.specify/memory/constitution.md` (C3).
 
-**Gate result**: The design follows the constitution, but implementation is not authorized until the two unchecked gates are resolved. No packages, database schema, or database data were changed during planning.
+**Gate result**: Schema inspection and the C3 exception are complete. Model dropdown acceptance remains fixture-dependent; persisted Arabic maximum-length acceptance remains blocked pending separate approval and verification of the schema resolution selected by the owner. Package approval/installation is separately gated by T044. Filter timing and typography values are confirmed in the spec. No database changes were made.
 
 ## Project Structure
 
@@ -66,19 +68,22 @@ specs/001-vehicle-make-master/
 Spec-Driven-Development/
 ├── SDD.API/SDD.API/
 │   ├── Controllers/VehicleMakesController.cs
-│   ├── DTOs/VehicleMake*.cs
-│   ├── Contracts/PaginatedResult<T>.cs    # shared list response required by constitution
-│   ├── Services/VehicleMakeService.cs
-│   └── [database-first context and entities generated after schema approval]
-├── SDD.API/SDD.API.Tests/                # new, after package approval
-├── sdd-ui/src/app/                       # list, detail/form, and routing
-├── sdd-ui/src/app/generated/             # generated API client; never hand-edit
-└── tests/vehicle-make-e2e/               # new Playwright tests, after approval
+│   ├── Controllers/VehicleModelsController.cs       # nested routes under a make
+│   ├── Controllers/VehicleModelOptionsController.cs
+│   ├── DTOs/VehicleMake*.cs and VehicleModel*.cs
+│   ├── Contracts/PaginatedResult<T>.cs
+│   ├── Services/VehicleMakeService.cs and VehicleModelService.cs
+│   └── Data/Scaffolded/                             # database-first entities; generated files stay untouched
+├── SDD.API/SDD.API.Tests/                           # existing XUnit project; extend with make/model coverage
+├── sdd-ui/src/app/features/vehicle-makes/           # existing list/form; model list on the make page; separate model add/edit page
+├── sdd-ui/src/app/shared/                           # column-filter control, notification service (wraps SweetAlert2)
+├── sdd-ui/src/app/generated/                        # generated API client; never hand-edit
+└── tests/vehicle-make-e2e/                          # Playwright acceptance coverage
 
 docs/decisions/vehicle-make-master.md     # significant technical decisions
 ```
 
-**Structure Decision**: Extend the existing two-project web application. Keep HTTP concerns in one controller, validation/query/normalization in one feature service, and persistence in the database-first context. Use request/response DTOs and the generated Angular client. Do not introduce a repository layer unless implementation proves one is necessary. Test projects and a single root test runner are new and should be added only after package approval.
+**Structure Decision**: Extend the existing API/UI projects and their test infrastructure. Use nested model routes so the make key comes from the route, keep model CRUD separate from unsaved make edits, and expose lookup options through one fixed, read-only endpoint. Use DTOs and the generated Angular client. Keep persistence in the database-first context and do not add a repository layer without demonstrated need. Column filters are one allow-listed filter definition per list (column, operator, text) turned into the database query on the server, never built from raw text. Models are added and edited on their own routes, which need a get-one-model endpoint so a page can load by key. All user messages and confirmations go through one notification service, so screens never call the SweetAlert2 library directly.
 
 ## Complexity Tracking
 
@@ -86,8 +91,9 @@ docs/decisions/vehicle-make-master.md     # significant technical decisions
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| None | No justified constitution exception is proposed. | Not applicable. |
+| B8 requires listings to be paged; the nine small model lookup lists are unpaged (owner-approved exception recorded under C3). | FR-021 requires dropdown choices from fixed list types. One small read-only response avoids nine requests and paging controls for lookup selections. | Paging each lookup would add UI and API complexity without a specified large lookup volume; the owner chose the unpaged behavior. |
+| B8 names Angular Material as the primary UI library; SweetAlert2 is added for notifications and confirmations (owner preference, 30-Oct-2026). | The owner wants one consistent notification and confirmation style across the app. | Restyling Material snackbars and dialogs would avoid a second library, but the owner prefers SweetAlert2. It is used only through one shared service and never with raw HTML. |
 
 ## Post-Design Constitution Check
 
-The Phase 1 model and contract preserve database-first scaffolding, API response typing, shared pagination, ProblemDetails errors, generated Angular types, user-confirmed hard deletion, automated tests, formatting/lint checks, timestamped error/action logging, and decision documentation. The package approval, Oracle provider/license and schema access, and any required DDL approval gates remain open. The authorization-scope conflict identified in analysis is intentionally unchanged and excluded from this remediation at the user's direction.
+The Phase 1 model and contract preserve database-first scaffolding, typed API responses, shared pagination for make/model browsing lists, `ProblemDetails`, generated Angular types, confirmed hard deletes, validation, automated tests, formatting/lint checks, timestamped logging, and decision documentation. The owner-approved unpaged options lookup exception is recorded under C3. Remaining gates are the fixture-dependent dropdown acceptance, separate approval and verification of the Arabic-storage schema resolution, and package approval in T044. Authentication remains out of scope under B9.

@@ -2,66 +2,119 @@
 
 ## Decisions
 
-### Decision: Package approvals required before implementation
+### Decision: No new packages
 
-**Decision**: The following packages require owner approval before any installation or update:
+**Decision**: Feature 002 proposes no new package. Everything it needs was installed for feature 001: Oracle.EntityFrameworkCore, NSwag.MSBuild, Angular Material/CDK, SweetAlert2 (through the shared notification service), `@fontsource/inter`, `@fontsource/noto-sans-arabic`, the Material Symbols icon font, Angular ESLint, Prettier, XUnit v3, the ASP.NET Core test host and Playwright Test.
 
-| Package | Purpose | Why existing platform/dependencies are insufficient | Version | License | Approval Required |
-|---------|---------|------------------------------------------------------|---------|---------|-------------------|
-| Oracle.EntityFrameworkCore | Oracle 19c access and Database-First provider | .NET built-in data providers do not supply the constitution-required Oracle EF Core provider or reverse scaffolding integration. | 10.23.26400 | Oracle Free Distribution, Hosting, and Use Terms | Yes |
-| Microsoft.EntityFrameworkCore.Design | EF design-time scaffolding support | Required by EF Core tooling to reverse-engineer the approved Oracle schema; not present in the API project. | 10.0.14 | MIT | Yes |
-| dotnet-ef | Command-line schema scaffolding tool | The SDK has no built-in command to scaffold EF Core entities from the approved Oracle schema. | 10.0.14 | MIT | Yes |
-| @angular/material / @angular/cdk | UI components and interaction primitives per constitution B8 | Native controls alone do not satisfy the mandated Angular Material UI library; CDK is its accessible interaction foundation. | 21.2.0 | MIT | Yes |
-| NSwag.MSBuild | Generate the typed Angular API client from OpenAPI | ASP.NET Core emits OpenAPI but does not generate a TypeScript client; handwritten API types violate constitution B7. | 14.7.1 | MIT | Yes |
-| xunit.v3 | API unit/integration tests per constitution B2/B5 | No API test framework or test project exists in the repository. | 4.0.2 | Apache-2.0 | Yes |
-| Microsoft.NET.Test.Sdk | Discover and run .NET tests | The API solution has no test runner integration or test project. | 18.11.0 | MIT | Yes |
-| Microsoft.AspNetCore.Mvc.Testing | Host the real API for integration tests | No existing test host is configured; a real in-memory ASP.NET Core test host validates routing and middleware without replacing the API with mocks. | 10.0.14 | MIT | Yes |
-| @playwright/test | Browser end-to-end testing per constitution B2 | No browser E2E tooling exists; unit tests cannot prove the broker workflows across UI and API. | 1.64.1 | Apache-2.0 | Yes |
+**Rationale**: Constitution B4 requires owner approval before adding, updating or removing a package. Nothing is being added, so no approval is needed. Article 2 (simplicity) favours reuse over new tools.
 
-**Rationale**: Constitution B4 requires owner approval before adding, updating, or removing any frontend or backend package. Each proposal must explain purpose, why standard library or existing dependencies are insufficient, and its license.
-
-**Alternatives considered**: Reusing existing dependencies is not possible for these capabilities because the relevant providers, generators, and test runners are absent. The Oracle EF provider is also explicitly mandated by the constitution. Package additions remain proposals, not authorization to install.
+**Alternatives considered**: None needed.
 
 ---
 
-### Decision: Angular version alignment
+### Decision: Angular version
 
-**Decision**: The constitution (B2) requires Angular 21, but the current UI project declares Angular 22.2 and TypeScript 6.0. Alignment requires owner approval under B4.
+**Decision**: Angular 22 and TypeScript 6.0, as already declared in `sdd-ui/package.json`.
 
-**Rationale**: Constitution B2 is a non-negotiable technology constraint. The UI project must be aligned to Angular 21 with a compatible TypeScript version before implementation.
+**Rationale**: Constitution v1.0.2 (B2, B8) was amended to Angular 22 on 29-Oct-2026 to match the existing UI project. Earlier drafts of this feature wrongly said Angular 21; no downgrade is needed.
 
-**Alternatives considered**: None — the constitution requirement is explicit and non-negotiable.
+**Alternatives considered**: Downgrading to Angular 21 was rejected because it would break the working feature 001 UI for no benefit.
 
 ---
 
 ### Decision: Oracle schema confirmation
 
-**Decision**: Before any implementation, confirm the approved Oracle 19c schema contains:
-- The adjustment code master table
-- Four standard-list tables (Code Type, Discount Type, Charges Type, Charges Category)
-- Connection access credentials
+**Decision**: With owner-approved read-only access, inspect the adjustment-code table and available dropdown types before implementation. This inspection was completed on 02-Nov-2026:
+- `IIRIS_RD_DEVP.BRM_MISC_CODES` has primary key `(MC_CODE, MC_COMP_CODE, MC_TYPE)`, BYTE-semantics VARCHAR2 fields, nullable Active and audit columns, no defaults, no Active Y/N check, and no triggers. Details are in `data-model.md`.
+- The configured `STD_LIST_ITEM` has active values in `CALC_TYPE` (4), `CHARGE_CAT` (2), `CHARGE_TYPE` (3) and `DISCOUNT_TYPE` (2). The owner confirmed Code Type=`CALC_TYPE`, Discount Type=`DISCOUNT_TYPE`, Charges Type=`CHARGE_TYPE`, and Charges Category=`CHARGE_CAT` on 02-Nov-2026.
 
-**Rationale**: Constitution B8 requires database changes to be made to tables and then scaffolded; no EF migrations; no schema or data changes without owner approval. Do not invent schema.
+**Rationale**: Constitution B8 says database changes are made to the tables and then scaffolded, with no EF migrations and no edits to scaffolded files. The read-only inspection does not authorize DDL. Because the adjustment fields use BYTE semantics, the owner must approve a resolution before full Arabic maximum-length persistence can be claimed.
 
-**Alternatives considered**: None — schema inspection is a prerequisite gate.
-
----
-
-### Decision: Test runner setup
-
-**Decision**: A single test runner (`test-all.ps1`) must execute API unit/integration tests, Angular tests, Playwright end-to-end tests, and production builds. The repository currently has no API test project or Playwright setup.
-
-**Rationale**: Constitution Article 4 requires tests to run with a single, documented command.
-
-**Alternatives considered**: None — single runner is constitutionally required.
+**Alternatives considered**: None. Schema inspection is a prerequisite.
 
 ---
 
-## Open Items (gated on owner approval)
+### Decision: Active flag as the soft delete
 
-1. Package installation/updates listed above
-2. Angular 21 alignment of the UI project
-3. Oracle 19c schema inspection and connection access
-4. Test project and Playwright setup
+**Decision**: Every adjustment code has an Active setting, on by default and changeable while adding and editing, stored as `Y`/`N`, with a null counted as Active. Inactive codes stay in the list and stay openable. Permanent deletion stays as well, with confirmation.
 
-No implementation, package change, or database access was performed during this research phase.
+**Rationale**: The owner decided on 29-Oct-2026 that the Active setting applies to every master page ("apply this to all specs and stories") and confirmed for feature 001 that permanent deletion stays alongside it. Feature 002's first draft listed soft delete as out of scope, which is no longer true.
+
+**Alternatives considered**: Removing permanent deletion. Rejected because the owner kept it for feature 001, and one pattern across master screens is simpler for brokers.
+
+---
+
+### Decision: One unpaged options endpoint for the dropdowns
+
+**Decision**: Return the four dropdown lists, active items only and ordered by description, from one read-only endpoint, `GET /api/premium-adjustment-options`, without paging. Each item is `{ code, description }`, the same shape feature 001 uses. The constitution C3 exception for it was recorded on 02-Nov-2026, like the one for `vehicle-model-options`.
+
+C3 row, as recorded in the constitution on 02-Nov-2026 (owner-approved):
+
+| Date | Article | Exception | Reason |
+| ---- | ------- | --------- | ------ |
+| 2026-11-02 | B8 (listing endpoints MUST be paged) | The read-only `GET /api/premium-adjustment-options` lookup returns the four `STD_LIST_ITEM` dropdown lists (Code Type, Discount Type, Charges Type, Charges Category) in one unpaged response (feature 002). | The lists are small, fixed lookups that fill dropdowns; paging them would add four requests, a loop through pages in the UI and paging controls with no benefit. Same reasoning as the feature 001 exception. |
+
+**Rationale**: It is the simplest design (Article 2), matches feature 001, and keeps the UI to a single request.
+
+**Alternatives considered**: Four paged lookup endpoints with the UI loading every page. This is compliant without an exception, but it adds four endpoints and page-loading code for lists that fit in one response. If the owner prefers it, the plan and contract revert to that design.
+
+---
+
+### Decision: Per-column filters instead of one search box
+
+**Decision**: The list uses the same per-column filter control and server-side filter rules as the Vehicle Make Master (starts with, ends with, contains, equals, not equals; Status: equals or not equals). The shared filter code in the API is generalised so each list declares its own filterable columns (six here, against four in feature 001). The Code Type filter matches the Code Type description.
+
+**Rationale**: Feature 001 replaced its search box with per-column filters on 30-Oct-2026. Using one pattern across master screens avoids two different ways of finding a record and avoids duplicate logic (Article 5). The owner confirmed this for 002 on 02-Nov-2026 (see the spec clarifications).
+
+**Alternatives considered**: A single search box plus a Code Type dropdown filter (the first draft). Rejected for inconsistency with feature 001.
+
+---
+
+### Decision: Case-insensitive sorting
+
+**Decision**: Sort keys are upper-cased in the database query, the same way the filters compare text. Ties are broken by a unique key so no record repeats or disappears between pages.
+
+**Rationale**: Oracle compares text letter by letter by default, so "BMW" would sort before "Bentley". Feature 001 fixed this on 02-Nov-2026; 002 starts with the fix and an API test for it.
+
+**Alternatives considered**: Sorting in the browser. Rejected because the list is paged and sorting must cover every record.
+
+---
+
+### Decision: Create answers 200, not 201
+
+**Decision**: `POST` returns 200 with the saved record.
+
+**Rationale**: Constitution B8 forbids `[ProducesResponseType]`, so the return type can only describe a 200 response, and the NSwag-generated Angular client treats any other success status as a failure. This is the same decision as feature 001. The first draft of the contract said 201.
+
+**Alternatives considered**: Adding response attributes (forbidden by B8) or hand-editing the generated client (forbidden by B7).
+
+---
+
+### Decision: Reuse feature 001's look and feel
+
+**Decision**: Icon buttons with tooltips and accessible names, the breadcrumb trail, the shared notification service, larger text with Inter and Noto Sans Arabic, and the unsaved-changes guard are reused from feature 001, not rebuilt. The open page receives the adjustment key through the navigation state, as the make page does.
+
+**Rationale**: The owner asked on 02-Nov-2026 that this feature follow feature 001 as it now stands. Reuse keeps the screens consistent and honours Article 5 (no duplicated logic).
+
+**Alternatives considered**: Building 002 first and aligning it later. Rejected because it would mean rewriting each screen twice.
+
+---
+
+### Decision: Test runner
+
+**Decision**: The single runner `Spec-Driven-Development/test-all.ps1` already exists for feature 001. Extend it to run this feature's API tests, Angular tests, Playwright tests, the linters (`npm run lint`, `dotnet format --verify-no-changes`) and the production builds.
+
+**Rationale**: Constitution Article 4 requires one documented command, and Article 5 requires an automatic formatter and linter.
+
+**Alternatives considered**: A separate runner for 002. Rejected because the owner should have one command for everything.
+
+---
+
+## Open Items (need owner action)
+
+1. ~~Approve the C3 exception for the unpaged options endpoint.~~ Done on 02-Nov-2026: the exception is recorded in the constitution (C3).
+2. Confirm Oracle access and approve scaffolding of the adjustment-code table. Provide its table and column names, or run the scaffold command yourself and tell me when it is done.
+3. A colleague is setting up `STD_LIST_ITEM` separately. Once that is done, confirm which list types fill Code Type, Discount Type, Charges Type and Charges Category.
+4. Approve the creation of `docs/decisions/premium-adjustment-master.md` as the decision record (no approval needed beyond normal review).
+
+No implementation, package change or database access was performed during this update.

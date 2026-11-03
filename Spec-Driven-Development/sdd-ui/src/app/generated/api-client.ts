@@ -17,33 +17,153 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 @Injectable({
     providedIn: 'root'
 })
-export class VehicleMakesClient {
+export class PremiumAdjustmentOptionsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
+    }
+
+    /**
+     * @return OK
+     */
+    get(): Observable<PremiumAdjustmentOptionsDto> {
+        let url_ = this.baseUrl + "/api/premium-adjustment-options";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PremiumAdjustmentOptionsDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PremiumAdjustmentOptionsDto>;
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<PremiumAdjustmentOptionsDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as PremiumAdjustmentOptionsDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class PremiumAdjustmentsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
     }
 
     /**
      * @param page (optional) 
-     * @param search (optional) 
+     * @param codeType (optional) 
+     * @param codeTypeOperator (optional) 
+     * @param code (optional) 
+     * @param codeOperator (optional) 
+     * @param companyCode (optional) 
+     * @param companyCodeOperator (optional) 
+     * @param name (optional) 
+     * @param nameOperator (optional) 
+     * @param shortName (optional) 
+     * @param shortNameOperator (optional) 
+     * @param active (optional) 
+     * @param activeOperator (optional) 
      * @param sortBy (optional) 
      * @param sortDirection (optional) 
+     * @param pageSize (optional) 
      * @return OK
      */
-    list(page: number | undefined, search: string | undefined, sortBy: string | undefined, sortDirection: string | undefined): Observable<PaginatedResultOfVehicleMakeListItemDto> {
-        let url_ = this.baseUrl + "/api/vehicle-makes?";
+    list(page: number | undefined, codeType: string | undefined, codeTypeOperator: string | undefined, code: string | undefined, codeOperator: string | undefined, companyCode: string | undefined, companyCodeOperator: string | undefined, name: string | undefined, nameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined, sortBy: string | undefined, sortDirection: string | undefined, pageSize: number | undefined): Observable<PaginatedResultOfAdjustmentCodeListItemDto> {
+        let url_ = this.baseUrl + "/api/premium-adjustments?";
         if (page === null)
             throw new globalThis.Error("The parameter 'page' cannot be null.");
         else if (page !== undefined)
             url_ += "page=" + encodeURIComponent("" + page) + "&";
-        if (search === null)
-            throw new globalThis.Error("The parameter 'search' cannot be null.");
-        else if (search !== undefined)
-            url_ += "search=" + encodeURIComponent("" + search) + "&";
+        if (codeType === null)
+            throw new globalThis.Error("The parameter 'codeType' cannot be null.");
+        else if (codeType !== undefined)
+            url_ += "codeType=" + encodeURIComponent("" + codeType) + "&";
+        if (codeTypeOperator === null)
+            throw new globalThis.Error("The parameter 'codeTypeOperator' cannot be null.");
+        else if (codeTypeOperator !== undefined)
+            url_ += "codeTypeOperator=" + encodeURIComponent("" + codeTypeOperator) + "&";
+        if (code === null)
+            throw new globalThis.Error("The parameter 'code' cannot be null.");
+        else if (code !== undefined)
+            url_ += "code=" + encodeURIComponent("" + code) + "&";
+        if (codeOperator === null)
+            throw new globalThis.Error("The parameter 'codeOperator' cannot be null.");
+        else if (codeOperator !== undefined)
+            url_ += "codeOperator=" + encodeURIComponent("" + codeOperator) + "&";
+        if (companyCode === null)
+            throw new globalThis.Error("The parameter 'companyCode' cannot be null.");
+        else if (companyCode !== undefined)
+            url_ += "companyCode=" + encodeURIComponent("" + companyCode) + "&";
+        if (companyCodeOperator === null)
+            throw new globalThis.Error("The parameter 'companyCodeOperator' cannot be null.");
+        else if (companyCodeOperator !== undefined)
+            url_ += "companyCodeOperator=" + encodeURIComponent("" + companyCodeOperator) + "&";
+        if (name === null)
+            throw new globalThis.Error("The parameter 'name' cannot be null.");
+        else if (name !== undefined)
+            url_ += "name=" + encodeURIComponent("" + name) + "&";
+        if (nameOperator === null)
+            throw new globalThis.Error("The parameter 'nameOperator' cannot be null.");
+        else if (nameOperator !== undefined)
+            url_ += "nameOperator=" + encodeURIComponent("" + nameOperator) + "&";
+        if (shortName === null)
+            throw new globalThis.Error("The parameter 'shortName' cannot be null.");
+        else if (shortName !== undefined)
+            url_ += "shortName=" + encodeURIComponent("" + shortName) + "&";
+        if (shortNameOperator === null)
+            throw new globalThis.Error("The parameter 'shortNameOperator' cannot be null.");
+        else if (shortNameOperator !== undefined)
+            url_ += "shortNameOperator=" + encodeURIComponent("" + shortNameOperator) + "&";
+        if (active === null)
+            throw new globalThis.Error("The parameter 'active' cannot be null.");
+        else if (active !== undefined)
+            url_ += "active=" + encodeURIComponent("" + active) + "&";
+        if (activeOperator === null)
+            throw new globalThis.Error("The parameter 'activeOperator' cannot be null.");
+        else if (activeOperator !== undefined)
+            url_ += "activeOperator=" + encodeURIComponent("" + activeOperator) + "&";
         if (sortBy === null)
             throw new globalThis.Error("The parameter 'sortBy' cannot be null.");
         else if (sortBy !== undefined)
@@ -52,6 +172,366 @@ export class VehicleMakesClient {
             throw new globalThis.Error("The parameter 'sortDirection' cannot be null.");
         else if (sortDirection !== undefined)
             url_ += "sortDirection=" + encodeURIComponent("" + sortDirection) + "&";
+        if (pageSize === null)
+            throw new globalThis.Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PaginatedResultOfAdjustmentCodeListItemDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PaginatedResultOfAdjustmentCodeListItemDto>;
+        }));
+    }
+
+    protected processList(response: HttpResponseBase): Observable<PaginatedResultOfAdjustmentCodeListItemDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as PaginatedResultOfAdjustmentCodeListItemDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    create(body: CreateAdjustmentCodeRequest): Observable<AdjustmentCodeDto> {
+        let url_ = this.baseUrl + "/api/premium-adjustments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AdjustmentCodeDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AdjustmentCodeDto>;
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<AdjustmentCodeDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AdjustmentCodeDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    get(codeType: string, code: string, companyCode: string): Observable<AdjustmentCodeDto> {
+        let url_ = this.baseUrl + "/api/premium-adjustments/{codeType}/{code}/{companyCode}";
+        if (codeType === undefined || codeType === null)
+            throw new globalThis.Error("The parameter 'codeType' must be defined.");
+        url_ = url_.replace("{codeType}", encodeURIComponent("" + codeType));
+        if (code === undefined || code === null)
+            throw new globalThis.Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
+        if (companyCode === undefined || companyCode === null)
+            throw new globalThis.Error("The parameter 'companyCode' must be defined.");
+        url_ = url_.replace("{companyCode}", encodeURIComponent("" + companyCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AdjustmentCodeDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AdjustmentCodeDto>;
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<AdjustmentCodeDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AdjustmentCodeDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    update(codeType: string, code: string, companyCode: string, body: UpdateAdjustmentCodeRequest): Observable<AdjustmentCodeDto> {
+        let url_ = this.baseUrl + "/api/premium-adjustments/{codeType}/{code}/{companyCode}";
+        if (codeType === undefined || codeType === null)
+            throw new globalThis.Error("The parameter 'codeType' must be defined.");
+        url_ = url_.replace("{codeType}", encodeURIComponent("" + codeType));
+        if (code === undefined || code === null)
+            throw new globalThis.Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
+        if (companyCode === undefined || companyCode === null)
+            throw new globalThis.Error("The parameter 'companyCode' must be defined.");
+        url_ = url_.replace("{companyCode}", encodeURIComponent("" + companyCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AdjustmentCodeDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AdjustmentCodeDto>;
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<AdjustmentCodeDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AdjustmentCodeDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    delete(codeType: string, code: string, companyCode: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/premium-adjustments/{codeType}/{code}/{companyCode}";
+        if (codeType === undefined || codeType === null)
+            throw new globalThis.Error("The parameter 'codeType' must be defined.");
+        url_ = url_.replace("{codeType}", encodeURIComponent("" + codeType));
+        if (code === undefined || code === null)
+            throw new globalThis.Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
+        if (companyCode === undefined || companyCode === null)
+            throw new globalThis.Error("The parameter 'companyCode' must be defined.");
+        url_ = url_.replace("{companyCode}", encodeURIComponent("" + companyCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class VehicleMakesClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
+    }
+
+    /**
+     * @param page (optional) 
+     * @param makeCode (optional) 
+     * @param makeCodeOperator (optional) 
+     * @param makeName (optional) 
+     * @param makeNameOperator (optional) 
+     * @param shortName (optional) 
+     * @param shortNameOperator (optional) 
+     * @param active (optional) 
+     * @param activeOperator (optional) 
+     * @param sortBy (optional) 
+     * @param sortDirection (optional) 
+     * @param pageSize (optional) 
+     * @return OK
+     */
+    list(page: number | undefined, makeCode: string | undefined, makeCodeOperator: string | undefined, makeName: string | undefined, makeNameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined, sortBy: string | undefined, sortDirection: string | undefined, pageSize: number | undefined): Observable<PaginatedResultOfVehicleMakeListItemDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes?";
+        if (page === null)
+            throw new globalThis.Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "page=" + encodeURIComponent("" + page) + "&";
+        if (makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' cannot be null.");
+        else if (makeCode !== undefined)
+            url_ += "makeCode=" + encodeURIComponent("" + makeCode) + "&";
+        if (makeCodeOperator === null)
+            throw new globalThis.Error("The parameter 'makeCodeOperator' cannot be null.");
+        else if (makeCodeOperator !== undefined)
+            url_ += "makeCodeOperator=" + encodeURIComponent("" + makeCodeOperator) + "&";
+        if (makeName === null)
+            throw new globalThis.Error("The parameter 'makeName' cannot be null.");
+        else if (makeName !== undefined)
+            url_ += "makeName=" + encodeURIComponent("" + makeName) + "&";
+        if (makeNameOperator === null)
+            throw new globalThis.Error("The parameter 'makeNameOperator' cannot be null.");
+        else if (makeNameOperator !== undefined)
+            url_ += "makeNameOperator=" + encodeURIComponent("" + makeNameOperator) + "&";
+        if (shortName === null)
+            throw new globalThis.Error("The parameter 'shortName' cannot be null.");
+        else if (shortName !== undefined)
+            url_ += "shortName=" + encodeURIComponent("" + shortName) + "&";
+        if (shortNameOperator === null)
+            throw new globalThis.Error("The parameter 'shortNameOperator' cannot be null.");
+        else if (shortNameOperator !== undefined)
+            url_ += "shortNameOperator=" + encodeURIComponent("" + shortNameOperator) + "&";
+        if (active === null)
+            throw new globalThis.Error("The parameter 'active' cannot be null.");
+        else if (active !== undefined)
+            url_ += "active=" + encodeURIComponent("" + active) + "&";
+        if (activeOperator === null)
+            throw new globalThis.Error("The parameter 'activeOperator' cannot be null.");
+        else if (activeOperator !== undefined)
+            url_ += "activeOperator=" + encodeURIComponent("" + activeOperator) + "&";
+        if (sortBy === null)
+            throw new globalThis.Error("The parameter 'sortBy' cannot be null.");
+        else if (sortBy !== undefined)
+            url_ += "sortBy=" + encodeURIComponent("" + sortBy) + "&";
+        if (sortDirection === null)
+            throw new globalThis.Error("The parameter 'sortDirection' cannot be null.");
+        else if (sortDirection !== undefined)
+            url_ += "sortDirection=" + encodeURIComponent("" + sortDirection) + "&";
+        if (pageSize === null)
+            throw new globalThis.Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -315,6 +795,521 @@ export class VehicleMakesClient {
 @Injectable({
     providedIn: 'root'
 })
+export class VehicleModelOptionsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
+    }
+
+    /**
+     * @return OK
+     */
+    get(): Observable<VehicleModelOptionsDto> {
+        let url_ = this.baseUrl + "/api/vehicle-model-options";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelOptionsDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelOptionsDto>;
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<VehicleModelOptionsDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelOptionsDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    previewImport(body: VehicleModelOptionsImportRequestDto): Observable<VehicleModelOptionsImportPreviewDto> {
+        let url_ = this.baseUrl + "/api/vehicle-model-options/import/preview";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processPreviewImport(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processPreviewImport(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelOptionsImportPreviewDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelOptionsImportPreviewDto>;
+        }));
+    }
+
+    protected processPreviewImport(response: HttpResponseBase): Observable<VehicleModelOptionsImportPreviewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelOptionsImportPreviewDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    import(body: VehicleModelOptionsImportRequestDto): Observable<VehicleModelOptionsImportResultDto> {
+        let url_ = this.baseUrl + "/api/vehicle-model-options/import";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processImport(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processImport(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelOptionsImportResultDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelOptionsImportResultDto>;
+        }));
+    }
+
+    protected processImport(response: HttpResponseBase): Observable<VehicleModelOptionsImportResultDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelOptionsImportResultDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class VehicleModelsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
+    }
+
+    /**
+     * @param page (optional) 
+     * @param modelCode (optional) 
+     * @param modelCodeOperator (optional) 
+     * @param modelName (optional) 
+     * @param modelNameOperator (optional) 
+     * @param shortName (optional) 
+     * @param shortNameOperator (optional) 
+     * @param active (optional) 
+     * @param activeOperator (optional) 
+     * @param pageSize (optional) 
+     * @return OK
+     */
+    list(makeCode: string, page: number | undefined, modelCode: string | undefined, modelCodeOperator: string | undefined, modelName: string | undefined, modelNameOperator: string | undefined, shortName: string | undefined, shortNameOperator: string | undefined, active: boolean | undefined, activeOperator: string | undefined, pageSize: number | undefined): Observable<PaginatedResultOfVehicleModelDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models?";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        if (page === null)
+            throw new globalThis.Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "page=" + encodeURIComponent("" + page) + "&";
+        if (modelCode === null)
+            throw new globalThis.Error("The parameter 'modelCode' cannot be null.");
+        else if (modelCode !== undefined)
+            url_ += "modelCode=" + encodeURIComponent("" + modelCode) + "&";
+        if (modelCodeOperator === null)
+            throw new globalThis.Error("The parameter 'modelCodeOperator' cannot be null.");
+        else if (modelCodeOperator !== undefined)
+            url_ += "modelCodeOperator=" + encodeURIComponent("" + modelCodeOperator) + "&";
+        if (modelName === null)
+            throw new globalThis.Error("The parameter 'modelName' cannot be null.");
+        else if (modelName !== undefined)
+            url_ += "modelName=" + encodeURIComponent("" + modelName) + "&";
+        if (modelNameOperator === null)
+            throw new globalThis.Error("The parameter 'modelNameOperator' cannot be null.");
+        else if (modelNameOperator !== undefined)
+            url_ += "modelNameOperator=" + encodeURIComponent("" + modelNameOperator) + "&";
+        if (shortName === null)
+            throw new globalThis.Error("The parameter 'shortName' cannot be null.");
+        else if (shortName !== undefined)
+            url_ += "shortName=" + encodeURIComponent("" + shortName) + "&";
+        if (shortNameOperator === null)
+            throw new globalThis.Error("The parameter 'shortNameOperator' cannot be null.");
+        else if (shortNameOperator !== undefined)
+            url_ += "shortNameOperator=" + encodeURIComponent("" + shortNameOperator) + "&";
+        if (active === null)
+            throw new globalThis.Error("The parameter 'active' cannot be null.");
+        else if (active !== undefined)
+            url_ += "active=" + encodeURIComponent("" + active) + "&";
+        if (activeOperator === null)
+            throw new globalThis.Error("The parameter 'activeOperator' cannot be null.");
+        else if (activeOperator !== undefined)
+            url_ += "activeOperator=" + encodeURIComponent("" + activeOperator) + "&";
+        if (pageSize === null)
+            throw new globalThis.Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PaginatedResultOfVehicleModelDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PaginatedResultOfVehicleModelDto>;
+        }));
+    }
+
+    protected processList(response: HttpResponseBase): Observable<PaginatedResultOfVehicleModelDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as PaginatedResultOfVehicleModelDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    create(makeCode: string, body: CreateVehicleModelRequest): Observable<VehicleModelDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelDto>;
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<VehicleModelDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    get(makeCode: string, modelCode: string): Observable<VehicleModelDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models/{modelCode}";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        if (modelCode === undefined || modelCode === null)
+            throw new globalThis.Error("The parameter 'modelCode' must be defined.");
+        url_ = url_.replace("{modelCode}", encodeURIComponent("" + modelCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelDto>;
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<VehicleModelDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    update(makeCode: string, modelCode: string, body: UpdateVehicleModelRequest): Observable<VehicleModelDto> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models/{modelCode}";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        if (modelCode === undefined || modelCode === null)
+            throw new globalThis.Error("The parameter 'modelCode' must be defined.");
+        url_ = url_.replace("{modelCode}", encodeURIComponent("" + modelCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VehicleModelDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VehicleModelDto>;
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<VehicleModelDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VehicleModelDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    delete(makeCode: string, modelCode: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/vehicle-makes/{makeCode}/models/{modelCode}";
+        if (makeCode === undefined || makeCode === null)
+            throw new globalThis.Error("The parameter 'makeCode' must be defined.");
+        url_ = url_.replace("{makeCode}", encodeURIComponent("" + makeCode));
+        if (modelCode === undefined || modelCode === null)
+            throw new globalThis.Error("The parameter 'modelCode' must be defined.");
+        url_ = url_.replace("{modelCode}", encodeURIComponent("" + modelCode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
 export class WeatherForecastClient {
     private http: HttpClient;
     private baseUrl: string;
@@ -322,7 +1317,7 @@ export class WeatherForecastClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7246/";
+        this.baseUrl = baseUrl ?? "http://localhost:5127/";
     }
 
     /**
@@ -376,6 +1371,57 @@ export class WeatherForecastClient {
     }
 }
 
+export interface AdjustmentCodeDto {
+    codeType: string;
+    codeTypeDescription: string;
+    code: string;
+    companyCode: string;
+    name: string;
+    shortName: string;
+    discountType: string | null;
+    chargesType: string | null;
+    chargesCategory: string | null;
+    remarks: string | null;
+    arabicName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    active: boolean;
+    createdBy: string | null;
+    lastChangedBy: string | null;
+
+    [key: string]: any;
+}
+
+export interface AdjustmentCodeListItemDto {
+    codeType: string;
+    codeTypeDescription: string;
+    code: string;
+    companyCode: string;
+    name: string;
+    shortName: string;
+    active: boolean;
+
+    [key: string]: any;
+}
+
+export interface CreateAdjustmentCodeRequest {
+    codeType: string | null;
+    code: string | null;
+    companyCode: string | null;
+    name: string | null;
+    shortName: string | null;
+    discountType: string | null;
+    chargesType: string | null;
+    chargesCategory: string | null;
+    remarks: string | null;
+    arabicName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    active?: boolean | null;
+
+    [key: string]: any;
+}
+
 export interface CreateVehicleMakeRequest {
     makeCode: string | null;
     makeName: string | null;
@@ -384,6 +1430,53 @@ export interface CreateVehicleMakeRequest {
     arabicMakeName: string | null;
     arabicShortName: string | null;
     arabicRemarks: string | null;
+    active?: boolean | null;
+
+    [key: string]: any;
+}
+
+export interface CreateVehicleModelRequest {
+    modelCode: string | null;
+    modelName: string | null;
+    shortName: string | null;
+    remarks: string | null;
+    arabicModelName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    variant: string | null;
+    vehicleType: string | null;
+    weight: string | null;
+    loadCapacity: string | null;
+    bodyType: string | null;
+    fuelType: string | null;
+    engineCapacity: number | null;
+    cylinders: string | null;
+    seats: number | null;
+    passengers: number | null;
+    drivers: number | null;
+    doors: string | null;
+    makeYear: number | null;
+    drivingType: string | null;
+    bodyColour: string | null;
+    value: number | null;
+    category: string | null;
+    active?: boolean | null;
+
+    [key: string]: any;
+}
+
+export interface LookupOptionDto {
+    code: string;
+    description: string;
+
+    [key: string]: any;
+}
+
+export interface PaginatedResultOfAdjustmentCodeListItemDto {
+    items: AdjustmentCodeListItemDto[];
+    page: number;
+    pageSize: number;
+    totalCount: number;
 
     [key: string]: any;
 }
@@ -397,6 +1490,39 @@ export interface PaginatedResultOfVehicleMakeListItemDto {
     [key: string]: any;
 }
 
+export interface PaginatedResultOfVehicleModelDto {
+    items: VehicleModelDto[];
+    page: number;
+    pageSize: number;
+    totalCount: number;
+
+    [key: string]: any;
+}
+
+export interface PremiumAdjustmentOptionsDto {
+    codeTypes: LookupOptionDto[];
+    discountTypes: LookupOptionDto[];
+    chargesTypes: LookupOptionDto[];
+    chargesCategories: LookupOptionDto[];
+
+    [key: string]: any;
+}
+
+export interface UpdateAdjustmentCodeRequest {
+    name: string | null;
+    shortName: string | null;
+    discountType: string | null;
+    chargesType: string | null;
+    chargesCategory: string | null;
+    remarks: string | null;
+    arabicName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    active?: boolean | null;
+
+    [key: string]: any;
+}
+
 export interface UpdateVehicleMakeRequest {
     makeName: string | null;
     shortName: string | null;
@@ -404,6 +1530,36 @@ export interface UpdateVehicleMakeRequest {
     arabicMakeName: string | null;
     arabicShortName: string | null;
     arabicRemarks: string | null;
+    active?: boolean | null;
+
+    [key: string]: any;
+}
+
+export interface UpdateVehicleModelRequest {
+    modelName: string | null;
+    shortName: string | null;
+    remarks: string | null;
+    arabicModelName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    variant: string | null;
+    vehicleType: string | null;
+    weight: string | null;
+    loadCapacity: string | null;
+    bodyType: string | null;
+    fuelType: string | null;
+    engineCapacity: number | null;
+    cylinders: string | null;
+    seats: number | null;
+    passengers: number | null;
+    drivers: number | null;
+    doors: string | null;
+    makeYear: number | null;
+    drivingType: string | null;
+    bodyColour: string | null;
+    value: number | null;
+    category: string | null;
+    active?: boolean | null;
 
     [key: string]: any;
 }
@@ -416,6 +1572,7 @@ export interface VehicleMakeDto {
     arabicMakeName: string | null;
     arabicShortName: string | null;
     arabicRemarks: string | null;
+    active: boolean;
     createdBy: string | null;
     lastChangedBy: string | null;
 
@@ -426,6 +1583,97 @@ export interface VehicleMakeListItemDto {
     makeCode: string;
     makeName: string;
     shortName: string;
+    active: boolean;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelDto {
+    makeCode: string;
+    modelCode: string;
+    modelName: string;
+    shortName: string;
+    remarks: string | null;
+    arabicModelName: string | null;
+    arabicShortName: string | null;
+    arabicRemarks: string | null;
+    variant: string | null;
+    vehicleType: string | null;
+    weight: string | null;
+    loadCapacity: string | null;
+    bodyType: string | null;
+    fuelType: string | null;
+    engineCapacity: number | null;
+    cylinders: string | null;
+    seats: number | null;
+    passengers: number | null;
+    drivers: number | null;
+    doors: string | null;
+    makeYear: number | null;
+    drivingType: string | null;
+    bodyColour: string | null;
+    value: number | null;
+    category: string | null;
+    active: boolean;
+    createdBy: string | null;
+    lastChangedBy: string | null;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionImportPreviewRowDto {
+    rowNumber: number;
+    listType: string;
+    code: string;
+    description: string;
+    active: string;
+    alreadyExists: boolean;
+    errors: string[];
+    isValid?: boolean;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionImportRowDto {
+    rowNumber: number;
+    listType: string | null;
+    code: string | null;
+    description: string | null;
+    active: string | null;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionsDto {
+    variants: LookupOptionDto[];
+    vehicleTypes: LookupOptionDto[];
+    bodyTypes: LookupOptionDto[];
+    fuelTypes: LookupOptionDto[];
+    cylinders: LookupOptionDto[];
+    doors: LookupOptionDto[];
+    drivingTypes: LookupOptionDto[];
+    bodyColours: LookupOptionDto[];
+    categories: LookupOptionDto[];
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionsImportPreviewDto {
+    rows: VehicleModelOptionImportPreviewRowDto[];
+    errors: string[];
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionsImportRequestDto {
+    rows: VehicleModelOptionImportRowDto[] | null;
+
+    [key: string]: any;
+}
+
+export interface VehicleModelOptionsImportResultDto {
+    insertedCount: number;
+    skippedExistingCount: number;
 
     [key: string]: any;
 }

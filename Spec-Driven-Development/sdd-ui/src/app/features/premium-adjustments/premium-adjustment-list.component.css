@@ -1,0 +1,58 @@
+.page {
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--sdd-text);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--sdd-muted);
+}
+
+.table-card {
+  overflow: hidden;
+  border: 1px solid var(--sdd-border);
+  border-radius: 8px;
+  background: var(--sdd-surface);
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.actions-column {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.state {
+  margin: 0;
+  padding: 32px 16px;
+  color: var(--sdd-muted);
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .page-header {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,32 @@
+namespace SDD.API.DTOs;
+
+/// <summary>A vehicle model as shown on its make's page. The nine dropdown fields carry the list item's code only.</summary>
+public sealed record VehicleModelDto(
+    string MakeCode,
+    string ModelCode,
+    string ModelName,
+    string ShortName,
+    string? Remarks,
+    string? ArabicModelName,
+    string? ArabicShortName,
+    string? ArabicRemarks,
+    string? Variant,
+    string? VehicleType,
+    string? Weight,
+    string? LoadCapacity,
+    string? BodyType,
+    string? FuelType,
+    int? EngineCapacity,
+    string? Cylinders,
+    int? Seats,
+    int? Passengers,
+    int? Drivers,
+    string? Doors,
+    int? MakeYear,
+    string? DrivingType,
+    string? BodyColour,
+    decimal? Value,
+    string? Category,
+    bool Active,
+    string? CreatedBy,
+    string? LastChangedBy);
