@@ -83,7 +83,7 @@ public sealed class PremiumAdjustmentCrudApiTests(OracleApiFactory factory)
                 await updated.Content.ReadAsStreamAsync(Cancellation),
                 cancellationToken: Cancellation);
             Assert.Equal("ZT_INACTIVE", body.RootElement.GetProperty("discountType").GetString());
-            Assert.Equal("Updated legacy", body.RootElement.GetProperty("name").GetString());
+            Assert.Equal("Updated Legacy", body.RootElement.GetProperty("name").GetString());
             Assert.False(body.RootElement.GetProperty("active").GetBoolean());
             Assert.Equal("admin", body.RootElement.GetProperty("lastChangedBy").GetString());
 

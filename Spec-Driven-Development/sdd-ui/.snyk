@@ -1,0 +1,15 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-INFLIGHT-6095116:
+    - '*':
+        reason: Client-side only / transitive via exceljs
+        expires: 2026-12-03T09:39:36.409Z
+        created: 2026-11-03T09:39:36.414Z
+  SNYK-JS-PICOMATCH-21248802:
+    - '*':
+        reason: Build-time devDependency only (vite); no upstream patch available yet
+        expires: 2026-12-03T09:43:12.481Z
+        created: 2026-11-03T09:43:12.485Z
+patch: {}
