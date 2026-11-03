@@ -3,7 +3,7 @@
 
 
 /**
- * Data column or record creation date to sort; Actions is not sortable.
+ * Data column to sort; Actions is not sortable.
  */
-export type CodeSortColumn = 'Code' | 'CodeDescription' | 'CodeType' | 'Value1' | 'Value2' | 'CreatedDate';
+export type CodeSortColumn = 'Code' | 'CodeDescription' | 'CodeType' | 'Value1' | 'Value2';
 

@@ -8,6 +8,16 @@
   box-shadow: 0 0.25rem 0.85rem rgb(48 39 31 / 5%);
 }
 
+.codes-add-breadcrumb {
+  max-width: 76rem;
+  margin: 0 auto 1.25rem;
+  padding: 0 clamp(1.25rem, 3vw, 2.25rem);
+}
+
+.codes-add-breadcrumb li + li::before {
+  content: '>';
+}
+
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -67,6 +77,10 @@
     border-radius: 0.75rem;
   }
 
+  .codes-add-breadcrumb {
+    padding: 0 1rem;
+  }
+
   .page-header {
     align-items: flex-start;
     flex-direction: column;
@@ -76,5 +90,4 @@
   .page-header-actions {
     align-self: flex-end;
   }
-
 }

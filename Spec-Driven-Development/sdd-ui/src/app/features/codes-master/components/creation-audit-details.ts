@@ -1,6 +1,14 @@
 import { Component, computed, input, signal } from '@angular/core';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
-import { CodeRecord } from '../../../api/generated/models/code-record';
+
+interface AuditRecord {
+  code?: string;
+  docCode?: string;
+  createdBy?: string | null;
+  createdDate?: string | null;
+  updatedBy?: string | null;
+  updatedDate?: string | null;
+}
 
 @Component({
   selector: 'app-creation-audit-details',
@@ -10,7 +18,7 @@ import { CodeRecord } from '../../../api/generated/models/code-record';
   templateUrl: './creation-audit-details.html',
 })
 export class CreationAuditDetails {
-  readonly record = input.required<CodeRecord>();
+  readonly record = input.required<AuditRecord>();
   protected readonly isOpen = signal(false);
   protected readonly overlayPositions: ConnectedPosition[] = [
     { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom', offsetY: -8 },
@@ -24,6 +32,9 @@ export class CreationAuditDetails {
     const updatedDate = this.formatDisplayDate(record.updatedDate);
     return `Created By: ${creator}; Created Date: ${createdDate}; Updated By: ${updater}; Updated Date: ${updatedDate}`;
   });
+  protected readonly ariaLabel = computed(
+    () => `Audit details for ${this.record().code ?? this.record().docCode ?? 'record'}`,
+  );
 
   private closeTimer: ReturnType<typeof setTimeout> | null = null;
 

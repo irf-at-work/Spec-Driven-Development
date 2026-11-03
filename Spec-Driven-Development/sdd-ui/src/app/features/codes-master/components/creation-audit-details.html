@@ -8,7 +8,7 @@
   <button
     type="button"
     class="audit-button"
-    [attr.aria-label]="'Creation audit for ' + record().code"
+    [attr.aria-label]="ariaLabel()"
     [attr.aria-expanded]="isOpen()"
     (focus)="open()"
     (blur)="scheduleClose()"

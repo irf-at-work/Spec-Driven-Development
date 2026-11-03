@@ -4,7 +4,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CodeFormFields } from '../components/code-form-fields';
+import { CreationAuditDetails } from '../components/creation-audit-details';
 import { codeFields, createCodeForm, toCodeWrite } from '../forms/code-form';
+import { CodeRecord } from '../../../api/generated/models/code-record';
 import { CodesApiService } from '../services/codes-api.service';
 import { codeFieldErrors } from '../services/codes-api-errors';
 import { CodesFeedbackService } from '../services/codes-feedback.service';
@@ -12,7 +14,7 @@ import { CodesFeedbackService } from '../services/codes-feedback.service';
 @Component({
   selector: 'app-code-edit-page',
   standalone: true,
-  imports: [CodeFormFields, MatButtonModule, RouterLink],
+  imports: [CodeFormFields, CreationAuditDetails, MatButtonModule, RouterLink],
   styleUrl: './code-edit-page.css',
   templateUrl: './code-edit-page.html',
 })
@@ -33,6 +35,7 @@ export class CodeEditPage implements OnInit {
   private codeType = '';
   private originalFormValue = this.form.getRawValue();
   protected readonly recordLoaded = signal(false);
+  protected readonly loadedRecord = signal<CodeRecord | null>(null);
 
   constructor() {
     this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -130,6 +133,7 @@ export class CodeEditPage implements OnInit {
   private async loadRecord(): Promise<void> {
     try {
       const record = await this.codesApi.get(this.code, this.codeType);
+      this.loadedRecord.set(record);
       this.form.patchValue(record);
       this.originalFormValue = this.form.getRawValue();
       this.form.markAsPristine();

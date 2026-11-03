@@ -1,6 +1,55 @@
 import { Routes } from '@angular/router';
+import { unsavedChangesGuard } from './features/document-setup/guards/unsaved-changes.guard';
 
 export const routes: Routes = [
+  {
+    path: 'document-setups/add/applicable-modules/add',
+    loadComponent: () =>
+      import('./features/document-setup/pages/applicable-module-form-page').then(
+        (page) => page.ApplicableModuleFormPage,
+      ),
+    data: { parentDraft: true },
+    canDeactivate: [unsavedChangesGuard],
+  },
+  {
+    path: 'document-setups/add',
+    loadComponent: () =>
+      import('./features/document-setup/pages/document-setup-add-page').then(
+        (page) => page.DocumentSetupAddPage,
+      ),
+    canDeactivate: [unsavedChangesGuard],
+  },
+  {
+    path: 'document-setups/:docCode/applicable-modules/:damodUid/edit',
+    loadComponent: () =>
+      import('./features/document-setup/pages/applicable-module-form-page').then(
+        (page) => page.ApplicableModuleFormPage,
+      ),
+    canDeactivate: [unsavedChangesGuard],
+  },
+  {
+    path: 'document-setups/:docCode/applicable-modules/add',
+    loadComponent: () =>
+      import('./features/document-setup/pages/applicable-module-form-page').then(
+        (page) => page.ApplicableModuleFormPage,
+      ),
+    canDeactivate: [unsavedChangesGuard],
+  },
+  {
+    path: 'document-setups/:docCode/edit',
+    loadComponent: () =>
+      import('./features/document-setup/pages/document-setup-edit-page').then(
+        (page) => page.DocumentSetupEditPage,
+      ),
+    canDeactivate: [unsavedChangesGuard],
+  },
+  {
+    path: 'document-setups',
+    loadComponent: () =>
+      import('./features/document-setup/pages/document-setups-list-page').then(
+        (page) => page.DocumentSetupsListPage,
+      ),
+  },
   {
     path: 'codes/add',
     loadComponent: () =>

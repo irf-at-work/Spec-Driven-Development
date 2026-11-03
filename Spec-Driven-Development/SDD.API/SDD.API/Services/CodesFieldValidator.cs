@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using SDD.API.Contracts;
 
@@ -6,8 +5,6 @@ namespace SDD.API.Services;
 
 public sealed class CodesFieldValidator
 {
-    private static readonly Encoding OracleEncoding = CreateOracleEncoding();
-
     public IReadOnlyDictionary<string, string[]> Validate(CodeWriteRequest request)
     {
         var errors = new Dictionary<string, List<string>>();
@@ -46,15 +43,6 @@ public sealed class CodesFieldValidator
         }
     }
 
-    private static Encoding CreateOracleEncoding()
-    {
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        return Encoding.GetEncoding(
-            1256,
-            EncoderFallback.ExceptionFallback,
-            DecoderFallback.ExceptionFallback);
-    }
-
     private static void AddRequiredError(
         IDictionary<string, List<string>> errors,
         string field,
@@ -77,16 +65,13 @@ public sealed class CodesFieldValidator
             return;
         }
 
-        try
-        {
-            if (OracleEncoding.GetByteCount(value) > maximumBytes)
-            {
-                AddError(errors, field, $"This field cannot exceed {maximumBytes} bytes.");
-            }
-        }
-        catch (EncoderFallbackException)
+        if (!OracleDatabaseEncoding.TryGetByteCount(value, out var byteCount))
         {
             AddError(errors, field, "This field contains characters not supported by the database.");
+        }
+        else if (byteCount > maximumBytes)
+        {
+            AddError(errors, field, $"This field cannot exceed {maximumBytes} bytes.");
         }
     }
 

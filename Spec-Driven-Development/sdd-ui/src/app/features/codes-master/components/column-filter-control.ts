@@ -2,7 +2,25 @@ import { Component, HostListener, computed, effect, input, output, signal } from
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { CodeFilterOperator } from '../../../api/generated/models/code-filter-operator';
 
-export type CodeFilterColumn = 'code' | 'codeDescription' | 'codeType' | 'value1' | 'value2';
+export type CodeFilterColumn =
+  | 'code'
+  | 'codeDescription'
+  | 'codeType'
+  | 'value1'
+  | 'value2'
+  | 'docCode'
+  | 'docName'
+  | 'docDescription'
+  | 'setupFor'
+  | 'applicableFor'
+  | 'productFrom'
+  | 'productTo'
+  | 'pcmFrom'
+  | 'pcmTo'
+  | 'ccmFrom'
+  | 'ccmTo'
+  | 'mandatoryYn'
+  | 'activeYn';
 
 export interface CodeColumnFilterValue {
   operator: CodeFilterOperator;

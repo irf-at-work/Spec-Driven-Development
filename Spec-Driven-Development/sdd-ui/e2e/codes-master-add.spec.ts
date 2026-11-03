@@ -82,6 +82,23 @@ test('shows fields in order and preserves More values while collapsed', async ({
   ).toHaveCSS('text-align', 'right');
 });
 
+test('shows the Codes Master Add breadcrumb with a greater-than separator', async ({ page }) => {
+  await page.goto('/codes/add');
+
+  const breadcrumbs = page.getByRole('navigation', { name: 'Breadcrumb' });
+  expect(await breadcrumbs.evaluate((element) => element.closest('.form-page'))).toBeNull();
+  await expect(breadcrumbs.getByRole('link', { name: 'Codes Master' })).toHaveAttribute(
+    'href',
+    '/codes',
+  );
+  await expect(breadcrumbs.locator('[aria-current="page"]')).toHaveText('Add Code');
+  await expect
+    .poll(() =>
+      breadcrumbs.locator('li + li').evaluate((item) => getComputedStyle(item, '::before').content),
+    )
+    .toBe('">"');
+});
+
 test('keeps the Add form readable and free of horizontal overflow on small screens', async ({
   page,
 }) => {
@@ -185,9 +202,7 @@ test('validates required fields before sending a create request', async ({ page 
   expect(requests).toBe(0);
 });
 
-test('Add on the Add page starts a fresh form without submitting it', async ({
-  page,
-}) => {
+test('Add on the Add page starts a fresh form without submitting it', async ({ page }) => {
   let requests = 0;
   await page.route('**/api/codes**', async (route) => {
     if (route.request().method() === 'POST') {
@@ -214,9 +229,7 @@ test('Add on the Add page starts a fresh form without submitting it', async ({
   await expect(page.getByRole('textbox', { name: 'Code Type', exact: true })).toHaveValue('');
   await page.getByRole('button', { name: 'More' }).click();
   await expect(page.getByRole('switch', { name: 'Active Y/N' })).toBeChecked();
-  await expect(page.getByRole('textbox', { name: 'Desc In Arabic', exact: true })).toHaveValue(
-    '',
-  );
+  await expect(page.getByRole('textbox', { name: 'Desc In Arabic', exact: true })).toHaveValue('');
   expect(requests).toBe(0);
 });
 

@@ -1,0 +1,328 @@
+<nav
+  class="page-breadcrumb document-setup-breadcrumb document-setup-add-breadcrumb"
+  aria-label="Breadcrumb"
+>
+  <ol>
+    <li><a routerLink="/document-setups">Document Setups</a></li>
+    <li aria-current="page">Add Document Setup</li>
+  </ol>
+</nav>
+<section class="document-setup-form-page" aria-labelledby="add-document-setup-heading">
+  <header class="page-header">
+    <h1 id="add-document-setup-heading">Document Setup</h1>
+    <div class="page-header-actions">
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSubmitting()"
+        (click)="addModule()"
+      >
+        Add
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSubmitting()"
+        (click)="leavePage()"
+      >
+        Back
+      </button>
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <p class="error-message" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    @if (createdParent()) {
+      <p role="status">
+        The document setup has been created. Save any remaining Applicable Modules below.
+      </p>
+    }
+
+    <div class="form-grid primary-fields">
+      <mat-form-field appearance="outline">
+        <mat-label>Doc Code</mat-label>
+        <input matInput formControlName="docCode" maxlength="12" autocomplete="off" />
+        @if (form.controls.docCode.hasError('required') && form.controls.docCode.touched) {
+          <mat-error>Doc Code is required.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Doc Name</mat-label>
+        <input matInput formControlName="docName" maxlength="100" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Doc Description</mat-label>
+        <textarea matInput formControlName="docDescription" maxlength="2000" rows="1"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Doc Setup For</mat-label>
+        <mat-select formControlName="docSetupFor" [disabled]="isLoadingSetupForCodes()">
+          @for (code of setupForCodes(); track code.code) {
+            <mat-option [value]="code.code">
+              {{ code.code }} — {{ code.codeDescription || 'No description' }}
+            </mat-option>
+          }
+        </mat-select>
+        @if (form.controls.docSetupFor.hasError('required') && form.controls.docSetupFor.touched) {
+          <mat-error>Doc Setup For is required.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Flex 1</mat-label>
+        <input matInput formControlName="flex1" maxlength="60" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Flex 2</mat-label>
+        <input matInput formControlName="flex2" maxlength="60" />
+      </mat-form-field>
+    </div>
+
+    <section class="more-section">
+      <button
+        mat-button
+        class="more-toggle"
+        type="button"
+        [attr.aria-expanded]="moreExpanded()"
+        aria-controls="document-setup-more-fields"
+        (click)="toggleMore()"
+      >
+        More
+      </button>
+      @if (moreExpanded()) {
+        <div id="document-setup-more-fields" class="form-grid more-fields">
+          <mat-form-field appearance="outline">
+            <mat-label>Name in Arabic</mat-label>
+            <input matInput formControlName="nameInArabic" maxlength="100" dir="rtl" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Description in Arabic</mat-label>
+            <textarea
+              matInput
+              formControlName="descriptionInArabic"
+              maxlength="2000"
+              rows="1"
+              dir="rtl"
+            ></textarea>
+          </mat-form-field>
+          <div class="toggle-field">
+            <mat-slide-toggle formControlName="activeYn">Active Y/N</mat-slide-toggle>
+          </div>
+        </div>
+      }
+    </section>
+
+    <div class="form-actions">
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="
+          isSubmitting() ||
+          isLoadingSetupForCodes() ||
+          setupForCodesError() !== '' ||
+          setupForCodes().length === 0 ||
+          (createdParent() !== null && pendingModules().length === 0)
+        "
+      >
+        {{ isSubmitting() ? 'Saving…' : createdParent() ? 'Save Applicable Modules' : 'Save' }}
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSubmitting() || createdParent() !== null"
+        (click)="resetForm()"
+      >
+        Reset
+      </button>
+    </div>
+  </form>
+
+  @if (setupForCodesError()) {
+    <p class="error-message" role="alert">
+      {{ setupForCodesError() }}
+      @if (setupForCodesError().includes('could not be loaded')) {
+        <button mat-button type="button" (click)="loadSetupForCodes()">Retry</button>
+      }
+    </p>
+  }
+
+  <section class="modules-section" aria-labelledby="applicable-modules-heading">
+    <header class="modules-header">
+      <h2 id="applicable-modules-heading">Applicable Modules</h2>
+      @if (hasModuleFilters()) {
+        <button mat-button type="button" (click)="clearModuleFilters()">Clear all filters</button>
+      }
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSubmitting()"
+        (click)="addModule()"
+      >
+        Add
+      </button>
+    </header>
+
+    @if (rangeCodesError()) {
+      <p class="error-message" role="alert">{{ rangeCodesError() }}</p>
+    }
+
+    @if (listedModules().length > 0) {
+      <div class="table-container">
+        <table aria-label="Applicable Modules">
+          <thead>
+            <tr>
+              <th scope="col">
+                <span>Applicable For</span>
+                <app-column-filter-control
+                  [column]="'applicableFor'"
+                  [label]="'Applicable For'"
+                  [filter]="moduleFilter('applicableFor')"
+                  [draftValue]="moduleFilterDraft('applicableFor')"
+                  (filterChange)="onModuleFilterChange('applicableFor', $event)"
+                  (draftValueChange)="onModuleFilterDraftChange('applicableFor', $event)"
+                />
+              </th>
+              <th scope="col">
+                <span>Product From</span>
+                <app-column-filter-control
+                  [column]="'productFrom'"
+                  [label]="'Product From'"
+                  [filter]="moduleFilter('productFrom')"
+                  [draftValue]="moduleFilterDraft('productFrom')"
+                  (filterChange)="onModuleFilterChange('productFrom', $event)"
+                  (draftValueChange)="onModuleFilterDraftChange('productFrom', $event)"
+                />
+              </th>
+              <th scope="col">
+                <span>Product To</span>
+                <app-column-filter-control
+                  [column]="'productTo'"
+                  [label]="'Product To'"
+                  [filter]="moduleFilter('productTo')"
+                  [draftValue]="moduleFilterDraft('productTo')"
+                  (filterChange)="onModuleFilterChange('productTo', $event)"
+                  (draftValueChange)="onModuleFilterDraftChange('productTo', $event)"
+                />
+              </th>
+              <th scope="col">
+                <span>PCM From</span>
+                <app-column-filter-control
+                  [column]="'pcmFrom'"
+                  [label]="'PCM From'"
+                  [filter]="moduleFilter('pcmFrom')"
+                  [draftValue]="moduleFilterDraft('pcmFrom')"
+                  (filterChange)="onModuleFilterChange('pcmFrom', $event)"
+                  (draftValueChange)="onModuleFilterDraftChange('pcmFrom', $event)"
+                />
+              </th>
+              <th scope="col">
+                <span>PCM To</span>
+                <app-column-filter-control
+                  [column]="'pcmTo'"
+                  [label]="'PCM To'"
+                  [filter]="moduleFilter('pcmTo')"
+                  [draftValue]="moduleFilterDraft('pcmTo')"
+                  (filterChange)="onModuleFilterChange('pcmTo', $event)"
+                  (draftValueChange)="onModuleFilterDraftChange('pcmTo', $event)"
+                />
+              </th>
+              <th scope="col">
+                <span>CCM From</span>
+                <app-column-filter-control
+                  [column]="'ccmFrom'"
+                  [label]="'CCM From'"
+                  [filter]="moduleFilter('ccmFrom')"
+                  [draftValue]="moduleFilterDraft('ccmFrom')"
+                  (filterChange)="onModuleFilterChange('ccmFrom', $event)"
+                  (draftValueChange)="onModuleFilterDraftChange('ccmFrom', $event)"
+                />
+              </th>
+              <th scope="col">
+                <span>CCM To</span>
+                <app-column-filter-control
+                  [column]="'ccmTo'"
+                  [label]="'CCM To'"
+                  [filter]="moduleFilter('ccmTo')"
+                  [draftValue]="moduleFilterDraft('ccmTo')"
+                  (filterChange)="onModuleFilterChange('ccmTo', $event)"
+                  (draftValueChange)="onModuleFilterDraftChange('ccmTo', $event)"
+                />
+              </th>
+              <th scope="col">Mandatory</th>
+              <th scope="col">Active</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (module of filteredModules(); track $index; let index = $index) {
+              <tr>
+                <td>{{ module.applicableFor }}</td>
+                <td>{{ rangeValue(module.applicableFor, module.productFrom, productCodes()) }}</td>
+                <td>{{ rangeValue(module.applicableFor, module.productTo, productCodes()) }}</td>
+                <td>{{ rangeValue(module.applicableFor, module.pcmFrom, pcmCodes()) }}</td>
+                <td>{{ rangeValue(module.applicableFor, module.pcmTo, pcmCodes()) }}</td>
+                <td>{{ rangeValue(module.applicableFor, module.ccmFrom, ccmCodes()) }}</td>
+                <td>{{ rangeValue(module.applicableFor, module.ccmTo, ccmCodes()) }}</td>
+                <td>{{ module.mandatoryYn }}</td>
+                <td>{{ module.activeYn }}</td>
+                <td class="actions-cell">
+                  @if (module.persisted) {
+                    <span>Saved</span>
+                  } @else {
+                    <button
+                      class="icon-action edit-action"
+                      type="button"
+                      [disabled]="isSubmitting()"
+                      [attr.aria-label]="'Applicable Module ' + ((module.pendingIndex ?? 0) + 1)"
+                      title="Applicable Module"
+                      (click)="editPendingModule(module.pendingIndex ?? 0)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      class="icon-action delete-action"
+                      type="button"
+                      [disabled]="isSubmitting()"
+                      [attr.aria-label]="
+                        'Remove Applicable Module ' + ((module.pendingIndex ?? 0) + 1)
+                      "
+                      title="Remove Applicable Module"
+                      (click)="removePendingModule(module.pendingIndex ?? 0)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                        />
+                      </svg>
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (filteredModules().length === 0) {
+        <p class="empty-modules" role="status">No Applicable Modules match the applied filters.</p>
+      }
+    } @else {
+      <p class="empty-modules" role="status">No Applicable Modules have been added.</p>
+    }
+  </section>
+</section>

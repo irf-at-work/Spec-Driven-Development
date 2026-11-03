@@ -20,12 +20,12 @@ export type CodeRecord = CodeWrite & {
 'createdDate'?: (string | null);
 
 /**
- * Update actor stored in CC_UP_BY; ordinary edits leave it NULL.
+ * Maximum 12 Oracle database-encoded bytes.
  */
 'updatedBy'?: (string | null);
 
 /**
- * Update time stored in CC_UP_DT; ordinary edits leave it NULL.
+ * Stored Oracle DATE calendar value; displayed as DD-MMM-YYYY without timezone conversion.
  */
 'updatedDate'?: (string | null);
 };

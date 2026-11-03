@@ -37,9 +37,9 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="wide-field">
+    <mat-form-field appearance="outline">
       <mat-label>Long Description</mat-label>
-      <textarea matInput rows="3" formControlName="longDescription"></textarea>
+      <textarea matInput rows="1" formControlName="longDescription"></textarea>
       @if (fieldError('longDescription'); as error) {
         <mat-error>{{ error }}</mat-error>
       }
@@ -106,11 +106,11 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="wide-field">
+      <mat-form-field appearance="outline">
         <mat-label>Long Description In Arabic</mat-label>
         <textarea
           matInput
-          rows="3"
+          rows="1"
           formControlName="longDescriptionInArabic"
           dir="rtl"
           class="arabic-input"

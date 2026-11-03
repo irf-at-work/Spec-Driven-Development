@@ -1,0 +1,396 @@
+<nav
+  class="page-breadcrumb document-setup-breadcrumb document-setup-edit-breadcrumb"
+  aria-label="Breadcrumb"
+>
+  <ol>
+    <li><a routerLink="/document-setups">Document Setups</a></li>
+    <li aria-current="page">{{ docCode || 'Document Setup' }}</li>
+  </ol>
+</nav>
+<section class="document-setup-edit-page" aria-labelledby="edit-document-setup-heading">
+  <header class="page-header">
+    <div>
+      <h1 id="edit-document-setup-heading">Document Setup</h1>
+      @if (loadedRecord(); as record) {
+        <p>
+          Doc Code: <strong>{{ record.docCode }}</strong>
+        </p>
+      }
+    </div>
+    <div class="page-header-actions">
+      @if (loadedRecord(); as record) {
+        <app-creation-audit-details [record]="record" />
+      }
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSaving()"
+        (click)="addModule()"
+      >
+        Add
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSaving()"
+        (click)="leavePage()"
+      >
+        Back
+      </button>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <p role="status">Loading document setup…</p>
+  } @else {
+    @if (errorMessage()) {
+      <p class="error-message" role="alert">{{ errorMessage() }}</p>
+    }
+
+    @if (loadedRecord(); as record) {
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-grid primary-fields">
+          <mat-form-field appearance="outline">
+            <mat-label>Doc Code</mat-label>
+            <input matInput formControlName="docCode" readonly maxlength="12" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Doc Name</mat-label>
+            <input matInput formControlName="docName" maxlength="100" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Doc Description</mat-label>
+            <textarea
+              matInput
+              formControlName="docDescription"
+              maxlength="2000"
+              rows="1"
+            ></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Doc Setup For</mat-label>
+            <mat-select formControlName="docSetupFor" [disabled]="isLoadingSetupForCodes()">
+              @for (code of setupForCodes(); track code.code) {
+                <mat-option [value]="code.code">
+                  {{ code.code }} — {{ code.codeDescription || 'No description' }}
+                </mat-option>
+              }
+            </mat-select>
+            @if (
+              form.controls.docSetupFor.hasError('required') && form.controls.docSetupFor.touched
+            ) {
+              <mat-error>Doc Setup For is required.</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Flex 1</mat-label>
+            <input matInput formControlName="flex1" maxlength="60" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Flex 2</mat-label>
+            <input matInput formControlName="flex2" maxlength="60" />
+          </mat-form-field>
+        </div>
+        @if (setupForCodesError()) {
+          <p class="error-message" role="alert">
+            {{ setupForCodesError() }}
+            <button mat-button type="button" (click)="loadSetupForCodes()">Retry</button>
+          </p>
+        }
+
+        <section class="more-section">
+          <button
+            mat-button
+            class="more-toggle"
+            type="button"
+            [attr.aria-expanded]="moreExpanded()"
+            aria-controls="document-setup-more-fields"
+            (click)="toggleMore()"
+          >
+            More
+          </button>
+          @if (moreExpanded()) {
+            <div id="document-setup-more-fields" class="form-grid more-fields">
+              <mat-form-field appearance="outline">
+                <mat-label>Name in Arabic</mat-label>
+                <input matInput formControlName="nameInArabic" maxlength="100" dir="rtl" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Description in Arabic</mat-label>
+                <textarea
+                  matInput
+                  formControlName="descriptionInArabic"
+                  maxlength="2000"
+                  rows="1"
+                  dir="rtl"
+                ></textarea>
+              </mat-form-field>
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="activeYn">Active Y/N</mat-slide-toggle>
+              </div>
+            </div>
+          }
+        </section>
+
+        <div class="form-actions">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="
+              isSaving() ||
+              isLoadingSetupForCodes() ||
+              setupForCodesError() !== '' ||
+              setupForCodes().length === 0
+            "
+          >
+            {{ isSaving() ? 'Saving…' : 'Save' }}
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            [disabled]="isSaving()"
+            (click)="resetForm()"
+          >
+            Reset
+          </button>
+        </div>
+      </form>
+
+      <section class="modules-section" aria-labelledby="applicable-modules-heading">
+        <header class="modules-header">
+          <h2 id="applicable-modules-heading">Applicable Modules</h2>
+          <div class="modules-actions">
+            @if (hasModuleFilters()) {
+              <button mat-button type="button" (click)="clearModuleFilters()">
+                Clear all filters
+              </button>
+            }
+            <button mat-flat-button color="primary" type="button" (click)="addModule()">Add</button>
+          </div>
+        </header>
+
+        @if (rangeCodesError()) {
+          <p class="error-message" role="alert">{{ rangeCodesError() }}</p>
+        }
+
+        @if (moduleErrorMessage()) {
+          <p class="error-message" role="alert">
+            {{ moduleErrorMessage() }}
+            <button mat-button type="button" (click)="loadModules(page())">Retry</button>
+          </p>
+        } @else if (isLoadingModules()) {
+          <p role="status">Loading Applicable Modules…</p>
+        } @else if (modules().length === 0 && !hasModuleFilters()) {
+          <p class="empty-modules" role="status">No Applicable Modules have been added.</p>
+        } @else {
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="modules()"
+              matSort
+              matSortDisableClear
+              [matSortActive]="sortActive()"
+              [matSortDirection]="sortDirection()"
+              (matSortChange)="onModulesSortChange($event)"
+              aria-label="Applicable Modules"
+            >
+              <ng-container matColumnDef="applicableFor">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading" mat-sort-header="applicableFor"
+                      >Applicable For</span
+                    >
+                    <app-column-filter-control
+                      [column]="'applicableFor'"
+                      [label]="'Applicable For'"
+                      [filter]="moduleFilter('applicableFor')"
+                      [draftValue]="moduleFilterDraft('applicableFor')"
+                      (filterChange)="onModuleFilterChange('applicableFor', $event)"
+                      (draftValueChange)="onModuleFilterDraftChange('applicableFor', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let module">{{ module.applicableFor }}</td>
+              </ng-container>
+              <ng-container matColumnDef="productFrom">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading" mat-sort-header="productFrom">Product From</span>
+                    <app-column-filter-control
+                      [column]="'productFrom'"
+                      [label]="'Product From'"
+                      [filter]="moduleFilter('productFrom')"
+                      [draftValue]="moduleFilterDraft('productFrom')"
+                      (filterChange)="onModuleFilterChange('productFrom', $event)"
+                      (draftValueChange)="onModuleFilterDraftChange('productFrom', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let module">
+                  {{ rangeValue(module, module.productFrom, 'PRODUCT') }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="productTo">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading" mat-sort-header="productTo">Product To</span>
+                    <app-column-filter-control
+                      [column]="'productTo'"
+                      [label]="'Product To'"
+                      [filter]="moduleFilter('productTo')"
+                      [draftValue]="moduleFilterDraft('productTo')"
+                      (filterChange)="onModuleFilterChange('productTo', $event)"
+                      (draftValueChange)="onModuleFilterDraftChange('productTo', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let module">
+                  {{ rangeValue(module, module.productTo, 'PRODUCT') }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="pcmFrom">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading" mat-sort-header="pcmFrom">PCM From</span>
+                    <app-column-filter-control
+                      [column]="'pcmFrom'"
+                      [label]="'PCM From'"
+                      [filter]="moduleFilter('pcmFrom')"
+                      [draftValue]="moduleFilterDraft('pcmFrom')"
+                      (filterChange)="onModuleFilterChange('pcmFrom', $event)"
+                      (draftValueChange)="onModuleFilterDraftChange('pcmFrom', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let module">
+                  {{ rangeValue(module, module.pcmFrom, 'PCM') }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="pcmTo">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading" mat-sort-header="pcmTo">PCM To</span>
+                    <app-column-filter-control
+                      [column]="'pcmTo'"
+                      [label]="'PCM To'"
+                      [filter]="moduleFilter('pcmTo')"
+                      [draftValue]="moduleFilterDraft('pcmTo')"
+                      (filterChange)="onModuleFilterChange('pcmTo', $event)"
+                      (draftValueChange)="onModuleFilterDraftChange('pcmTo', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let module">
+                  {{ rangeValue(module, module.pcmTo, 'PCM') }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="ccmFrom">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading" mat-sort-header="ccmFrom">CCM From</span>
+                    <app-column-filter-control
+                      [column]="'ccmFrom'"
+                      [label]="'CCM From'"
+                      [filter]="moduleFilter('ccmFrom')"
+                      [draftValue]="moduleFilterDraft('ccmFrom')"
+                      (filterChange)="onModuleFilterChange('ccmFrom', $event)"
+                      (draftValueChange)="onModuleFilterDraftChange('ccmFrom', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let module">
+                  {{ rangeValue(module, module.ccmFrom, 'CCM') }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="ccmTo">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading" mat-sort-header="ccmTo">CCM To</span>
+                    <app-column-filter-control
+                      [column]="'ccmTo'"
+                      [label]="'CCM To'"
+                      [filter]="moduleFilter('ccmTo')"
+                      [draftValue]="moduleFilterDraft('ccmTo')"
+                      (filterChange)="onModuleFilterChange('ccmTo', $event)"
+                      (draftValueChange)="onModuleFilterDraftChange('ccmTo', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let module">
+                  {{ rangeValue(module, module.ccmTo, 'CCM') }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="mandatoryYn">
+                <th mat-header-cell *matHeaderCellDef>
+                  <span mat-sort-header="mandatoryYn">Mandatory</span>
+                </th>
+                <td mat-cell *matCellDef="let module">{{ module.mandatoryYn ?? '' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="activeYn">
+                <th mat-header-cell *matHeaderCellDef>
+                  <span mat-sort-header="activeYn">Active</span>
+                </th>
+                <td mat-cell *matCellDef="let module">{{ module.activeYn ?? '' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef><strong>Actions</strong></th>
+                <td mat-cell *matCellDef="let module" class="actions-cell">
+                  <button
+                    class="icon-action edit-action"
+                    type="button"
+                    [disabled]="deletingUid() !== null"
+                    [attr.aria-label]="'Applicable Module ' + module.damodUid"
+                    title="Applicable Module"
+                    (click)="editModule(module)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="icon-action delete-action"
+                    type="button"
+                    [disabled]="deletingUid() !== null"
+                    [attr.aria-label]="'Delete Applicable Module ' + module.damodUid"
+                    title="Delete Applicable Module"
+                    (click)="deleteModule(module)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="columns"></tr>
+              <tr mat-row *matRowDef="let row; columns: columns"></tr>
+            </table>
+          </div>
+
+          @if (modules().length === 0) {
+            <p class="empty-modules" role="status">
+              No Applicable Modules match the applied filter.
+            </p>
+          }
+
+          <mat-paginator
+            [length]="totalCount()"
+            [pageIndex]="page() - 1"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="pageSizes"
+            [disabled]="isLoadingModules() || deletingUid() !== null"
+            aria-label="Applicable Module pagination"
+            (page)="onModulePageChange($event)"
+          />
+        }
+      </section>
+    }
+  }
+</section>

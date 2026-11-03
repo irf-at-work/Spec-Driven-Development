@@ -51,6 +51,10 @@ test('loads by both key values, keeps identity immutable, and updates the record
   });
 
   await page.goto('/codes/edit?code=EDIT&codeType=GENERAL');
+  const auditButton = page.getByRole('button', { name: 'Audit details for EDIT' });
+  await expect(auditButton).toBeVisible();
+  await auditButton.hover();
+  await expect(page.getByRole('tooltip')).toContainText('Created By: ADMIN');
   await expect(page.locator('.form-page')).toHaveCSS('background-color', 'rgb(255, 253, 251)');
   await expect(page.getByRole('textbox', { name: 'Code', exact: true })).toHaveValue('EDIT');
   await expect(page.getByRole('textbox', { name: 'Code', exact: true })).toHaveAttribute(

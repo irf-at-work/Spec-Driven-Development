@@ -2,9 +2,11 @@
   <header class="page-header">
     <div>
       <h1 id="edit-code-heading">Codes Master</h1>
-     
     </div>
     <div class="page-header-actions">
+      @if (loadedRecord(); as record) {
+        <app-creation-audit-details [record]="record" />
+      }
       <a mat-flat-button color="primary" routerLink="/codes/add"> Add </a>
       <button
         mat-flat-button

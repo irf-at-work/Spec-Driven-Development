@@ -2,7 +2,7 @@ import { DestroyRef, Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CodeFormFields } from '../components/code-form-fields';
 import { codeFields, createCodeForm, toCodeWrite } from '../forms/code-form';
 import { CodesApiService } from '../services/codes-api.service';
@@ -12,7 +12,7 @@ import { CodesFeedbackService } from '../services/codes-feedback.service';
 @Component({
   selector: 'app-code-add-page',
   standalone: true,
-  imports: [CodeFormFields, MatButtonModule],
+  imports: [CodeFormFields, MatButtonModule, RouterLink],
   styleUrl: './code-add-page.css',
   templateUrl: './code-add-page.html',
 })

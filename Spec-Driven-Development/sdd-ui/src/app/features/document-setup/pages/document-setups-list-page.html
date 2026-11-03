@@ -1,0 +1,171 @@
+<section class="document-setups-page" aria-labelledby="document-setups-heading">
+  <nav class="page-breadcrumb document-setup-breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li aria-current="page"></li>
+    </ol>
+  </nav>
+  <header class="page-header">
+    <h1 id="document-setups-heading">Document Setup</h1>
+    <div class="page-actions">
+      @if (hasActiveFilters()) {
+        <button mat-button type="button" (click)="clearAllFilters()">Clear all filters</button>
+      }
+      <a mat-flat-button color="primary" routerLink="/document-setups/add">Add</a>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <p class="state-message" role="status">Loading document setups…</p>
+  } @else if (hasError()) {
+    <div class="state-message error-message" role="alert">
+      <p>The document setups could not be loaded. Please try again.</p>
+      <button mat-button type="button" (click)="loadPage(page())">Retry</button>
+    </div>
+  } @else if (records().length === 0 && !hasActiveFilters()) {
+    <p class="state-message" role="status">No document setups are available.</p>
+  } @else {
+    <div class="table-container">
+      <table
+        mat-table
+        [dataSource]="records()"
+        matSort
+        matSortDisableClear
+        [matSortActive]="sortActive()"
+        [matSortDirection]="sortDirection()"
+        (matSortChange)="onSortChange($event)"
+        aria-label="Document Setup records"
+      >
+        <colgroup>
+          <col class="doc-code-column" />
+          <col class="doc-name-column" />
+          <col class="description-column" />
+          <col class="setup-for-column" />
+          <col class="active-column" />
+          <col class="actions-column" />
+        </colgroup>
+        <ng-container matColumnDef="docCode">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <span class="column-heading" mat-sort-header="docCode">Doc Code</span>
+              <app-column-filter-control
+                [column]="'docCode'"
+                [label]="'Doc Code'"
+                [filter]="filters().docCode ?? null"
+                [draftValue]="filterDraftValues().docCode ?? filters().docCode?.value ?? ''"
+                (filterChange)="onFilterChange('docCode', $event)"
+                (draftValueChange)="onFilterDraftChange('docCode', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ record.docCode }}</td>
+        </ng-container>
+        <ng-container matColumnDef="docName">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <span class="column-heading" mat-sort-header="docName">Doc Name</span>
+              <app-column-filter-control
+                [column]="'docName'"
+                [label]="'Doc Name'"
+                [filter]="filters().docName ?? null"
+                [draftValue]="filterDraftValues().docName ?? filters().docName?.value ?? ''"
+                (filterChange)="onFilterChange('docName', $event)"
+                (draftValueChange)="onFilterDraftChange('docName', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ record.docName ?? '' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <span class="column-heading" mat-sort-header="description">Description</span>
+              <app-column-filter-control
+                [column]="'docDescription'"
+                [label]="'Description'"
+                [filter]="filters().docDescription ?? null"
+                [draftValue]="
+                  filterDraftValues().docDescription ?? filters().docDescription?.value ?? ''
+                "
+                (filterChange)="onFilterChange('docDescription', $event)"
+                (draftValueChange)="onFilterDraftChange('docDescription', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ record.docDescription ?? '' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="setupFor">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <span class="column-heading" mat-sort-header="setupFor">Setup For</span>
+              <app-column-filter-control
+                [column]="'setupFor'"
+                [label]="'Setup For'"
+                [filter]="filters().setupFor ?? null"
+                [draftValue]="filterDraftValues().setupFor ?? filters().setupFor?.value ?? ''"
+                (filterChange)="onFilterChange('setupFor', $event)"
+                (draftValueChange)="onFilterDraftChange('setupFor', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ setupForLabel(record.docSetupFor) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="activeYn">
+          <th mat-header-cell *matHeaderCellDef>
+            <span class="column-heading" mat-sort-header="activeYn">Active Y/N</span>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ record.activeYn ?? '' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="column-heading">Actions</span></th>
+          <td mat-cell *matCellDef="let record" class="actions-cell">
+            <app-creation-audit-details [record]="record" />
+            <a
+              class="icon-action"
+              [routerLink]="['/document-setups', record.docCode, 'edit']"
+              [attr.aria-label]="'Edit ' + record.docCode"
+              title="Edit"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66z"
+                />
+              </svg>
+            </a>
+            <button
+              class="icon-action delete-action"
+              type="button"
+              [disabled]="deletingCode() !== null"
+              [attr.aria-label]="'Delete ' + record.docCode"
+              [attr.title]="deletingCode() === record.docCode ? 'Deleting…' : 'Delete'"
+              (click)="deleteRecord(record)"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                />
+              </svg>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let record; columns: columns"></tr>
+      </table>
+    </div>
+
+    @if (records().length === 0) {
+      <p class="state-message" role="status">No document setups match the applied filters.</p>
+    }
+
+    @if (totalCount() > 0) {
+      <mat-paginator
+        [length]="totalCount()"
+        [pageIndex]="page() - 1"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="pageSizeOptions"
+        [disabled]="isLoading()"
+        aria-label="Document Setup pagination"
+        (page)="onPageChange($event)"
+      />
+    }
+  }
+</section>

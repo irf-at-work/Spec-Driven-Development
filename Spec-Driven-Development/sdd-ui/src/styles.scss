@@ -25,15 +25,17 @@ $warm-palette: map.merge(
   )
 );
 
-$theme: mat.define-theme((
-  color: (
-    theme-type: light,
-    primary: $warm-palette,
-  ),
-  density: (
-    scale: 0,
-  ),
-));
+$theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: $warm-palette,
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
 
 html {
   @include mat.all-component-themes($theme);
@@ -62,4 +64,54 @@ body {
   color: var(--app-text);
   background: var(--app-canvas);
   font-family: Roboto, 'Segoe UI', sans-serif;
+}
+
+mat-paginator {
+  --mat-paginator-container-background-color: var(--app-surface);
+  --mat-paginator-container-text-color: var(--app-text);
+}
+
+.mat-mdc-paginator .mat-mdc-paginator-container {
+  justify-content: space-between;
+  color: var(--app-text);
+  background-color: var(--app-surface);
+}
+
+.mat-mdc-paginator .mat-mdc-paginator-page-size {
+  margin-right: auto;
+}
+
+.page-breadcrumb {
+  margin-bottom: 1.25rem;
+  color: var(--app-text);
+  font-size: 0.9rem;
+}
+
+.page-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page-breadcrumb li + li::before {
+  margin-right: 0.5rem;
+  color: var(--app-muted);
+  content: '/';
+}
+
+.page-breadcrumb.document-setup-breadcrumb li + li::before {
+  content: '>';
+}
+
+.page-breadcrumb a {
+  color: var(--app-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.page-breadcrumb [aria-current='page'] {
+  font-weight: 600;
 }

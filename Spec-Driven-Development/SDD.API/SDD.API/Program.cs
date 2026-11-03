@@ -41,6 +41,12 @@ builder.Services.AddDbContext<CodesMasterContext>(options =>
 builder.Services.AddScoped<ICodesRepository, CodesRepository>();
 builder.Services.AddScoped<ICodesService, CodesService>();
 builder.Services.AddSingleton<CodesFieldValidator>();
+builder.Services.AddScoped<IDocumentSetupsRepository, DocumentSetupsRepository>();
+builder.Services.AddScoped<IDocumentSetupsService, DocumentSetupsService>();
+builder.Services.AddScoped<IApplicableModulesRepository, ApplicableModulesRepository>();
+builder.Services.AddScoped<IApplicableModulesService, ApplicableModulesService>();
+builder.Services.AddSingleton<ApplicableModuleValidator>();
+builder.Services.AddSingleton<DocumentSetupValidator>();
 
 // Exception Handling
 builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();

@@ -1,0 +1,175 @@
+<section class="applicable-module-form-page" aria-labelledby="applicable-module-heading">
+  <nav class="page-breadcrumb document-setup-breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a routerLink="/document-setups">Document Setups</a></li>
+      <li>
+        <a [routerLink]="parentRoute">{{ documentLabel }}</a>
+      </li>
+      <li aria-current="page">{{ heading }}</li>
+    </ol>
+  </nav>
+  <header class="page-header">
+    <div>
+      <h1 id="applicable-module-heading">{{ heading }}</h1>
+      
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="isSaving()"
+      (click)="leavePage()"
+    >
+      Back
+    </button>
+  </header>
+
+  @if (isLoading()) {
+    <p role="status">Loading Applicable Module…</p>
+  } @else {
+    @if (errorMessage()) {
+      <p class="error-message" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Applicable For</mat-label>
+          <mat-select
+            formControlName="applicableFor"
+            [disabled]="isLoadingApplicableForCodes() || applicableForCodes().length === 0"
+          >
+            @for (option of applicableForCodes(); track option.code) {
+              <mat-option [value]="option.code">
+                {{ option.code }}{{ option.codeDescription ? ' — ' + option.codeDescription : '' }}
+              </mat-option>
+            }
+          </mat-select>
+          @if (
+            form.controls.applicableFor.hasError('required') && form.controls.applicableFor.touched
+          ) {
+            <mat-error>Applicable For is required.</mat-error>
+          }
+        </mat-form-field>
+        @if (isLoadingApplicableForCodes()) {
+          <p role="status">Loading Applicable Module codes…</p>
+        } @else if (applicableForCodesError()) {
+          <p class="error-message" role="alert">{{ applicableForCodesError() }}</p>
+        }
+      </div>
+
+      @if (isFixedAssetSelected()) {
+        <section class="range-section" aria-labelledby="range-heading">
+          <h2 id="range-heading">Applicable Ranges</h2>
+          @if (isLoadingRangeCodes()) {
+            <p role="status">Loading Product, PCM, and CCM codes…</p>
+          } @else if (rangeCodesError()) {
+            <p class="error-message" role="alert">{{ rangeCodesError() }}</p>
+          }
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Product From</mat-label>
+              <mat-select formControlName="productFrom" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="ALL">ALL</mat-option>
+                @for (option of productCodes(); track option.code) {
+                  <mat-option [value]="option.code">{{
+                    formatCodeOption(option.code, productCodes())
+                  }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Product To</mat-label>
+              <mat-select formControlName="productTo" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="ALL">ALL</mat-option>
+                @for (option of productCodes(); track option.code) {
+                  <mat-option [value]="option.code">{{
+                    formatCodeOption(option.code, productCodes())
+                  }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>PCM From</mat-label>
+              <mat-select formControlName="pcmFrom" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="ALL">ALL</mat-option>
+                @for (option of pcmCodes(); track option.code) {
+                  <mat-option [value]="option.code">{{
+                    formatCodeOption(option.code, pcmCodes())
+                  }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>PCM To</mat-label>
+              <mat-select formControlName="pcmTo" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="ALL">ALL</mat-option>
+                @for (option of pcmCodes(); track option.code) {
+                  <mat-option [value]="option.code">{{
+                    formatCodeOption(option.code, pcmCodes())
+                  }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>CCM From</mat-label>
+              <mat-select formControlName="ccmFrom" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="ALL">ALL</mat-option>
+                @for (option of ccmCodes(); track option.code) {
+                  <mat-option [value]="option.code">{{
+                    formatCodeOption(option.code, ccmCodes())
+                  }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>CCM To</mat-label>
+              <mat-select formControlName="ccmTo" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="ALL">ALL</mat-option>
+                @for (option of ccmCodes(); track option.code) {
+                  <mat-option [value]="option.code">{{
+                    formatCodeOption(option.code, ccmCodes())
+                  }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </section>
+      }
+
+      <div class="toggles">
+        <mat-slide-toggle formControlName="mandatoryYn">Mandatory Y/N</mat-slide-toggle>
+        <mat-slide-toggle formControlName="activeYn">Active Y/N</mat-slide-toggle>
+      </div>
+
+      <div class="form-actions">
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="
+            isSaving() ||
+            isLoading() ||
+            isLoadingApplicableForCodes() ||
+            isLoadingRangeCodes() ||
+            !!applicableForCodesError() ||
+            (isFixedAssetSelected() && !!rangeCodesError()) ||
+            (isPersistedEditing && loadedRecord() === null) ||
+            (isEditingDraft && draftModule() === null)
+          "
+        >
+          {{ isSaving() ? 'Saving…' : 'Save' }}
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="isSaving() || isLoading()"
+          (click)="resetForm()"
+        >
+          Reset
+        </button>
+      </div>
+    </form>
+  }
+</section>

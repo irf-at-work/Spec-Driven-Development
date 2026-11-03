@@ -192,8 +192,364 @@ paths:
           $ref: "#/components/responses/Problem"
         "500":
           $ref: "#/components/responses/Problem"
+  /document-setups:
+    get:
+      operationId: listDocumentSetups
+      summary: List document setups
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: sortBy
+          in: query
+          schema:
+            $ref: "#/components/schemas/DocumentSetupSortColumn"
+        - name: sortDirection
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeSortDirection"
+        - name: docCodeOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: docCodeValue
+          in: query
+          schema:
+            type: string
+        - name: docNameOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: docNameValue
+          in: query
+          schema:
+            type: string
+        - name: docDescriptionOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: docDescriptionValue
+          in: query
+          schema:
+            type: string
+        - name: setupForOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: setupForValue
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A page of document setups.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedDocumentSetupResult"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    post:
+      operationId: createDocumentSetup
+      summary: Create a document setup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentSetupWrite"
+      responses:
+        "201":
+          description: The document setup was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentSetupRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+  /document-setups/{docCode}:
+    parameters:
+      - $ref: "#/components/parameters/DocumentCode"
+    get:
+      operationId: getDocumentSetup
+      summary: Retrieve a document setup
+      responses:
+        "200":
+          description: The requested document setup.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentSetupRecord"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    put:
+      operationId: updateDocumentSetup
+      summary: Update a document setup without changing its code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentSetupUpdate"
+      responses:
+        "200":
+          description: The updated document setup.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentSetupRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    delete:
+      operationId: deleteDocumentSetup
+      summary: Delete a document setup only when it has no applicable modules
+      parameters:
+        - $ref: "#/components/parameters/ExpectedVersion"
+      responses:
+        "204":
+          description: The document setup was deleted.
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+  /document-setups/{docCode}/applicable-modules:
+    parameters:
+      - $ref: "#/components/parameters/DocumentCode"
+    get:
+      operationId: listApplicableModules
+      summary: List applicable modules for a document
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: sortBy
+          in: query
+          schema:
+            $ref: "#/components/schemas/ApplicableModuleSortColumn"
+        - name: sortDirection
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeSortDirection"
+        - name: applicableForOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: applicableForValue
+          in: query
+          schema:
+            type: string
+        - name: productFromOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: productFromValue
+          in: query
+          schema:
+            type: string
+        - name: productToOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: productToValue
+          in: query
+          schema:
+            type: string
+        - name: pcmFromOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: pcmFromValue
+          in: query
+          schema:
+            type: string
+        - name: pcmToOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: pcmToValue
+          in: query
+          schema:
+            type: string
+        - name: ccmFromOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: ccmFromValue
+          in: query
+          schema:
+            type: string
+        - name: ccmToOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: ccmToValue
+          in: query
+          schema:
+            type: string
+        - name: mandatoryYnOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: mandatoryYnValue
+          in: query
+          schema:
+            type: string
+        - name: activeYnOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: activeYnValue
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A page of applicable modules associated with the document.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedApplicableModuleResult"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    post:
+      operationId: createApplicableModule
+      summary: Create an applicable module for a document
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicableModuleWrite"
+      responses:
+        "201":
+          description: The applicable module was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicableModuleRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+  /document-setups/{docCode}/applicable-modules/{damodUid}:
+    parameters:
+      - $ref: "#/components/parameters/DocumentCode"
+      - $ref: "#/components/parameters/ApplicableModuleUid"
+    get:
+      operationId: getApplicableModule
+      summary: Retrieve an applicable module associated with a document
+      responses:
+        "200":
+          description: The requested applicable module.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicableModuleRecord"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    put:
+      operationId: updateApplicableModule
+      summary: Update an applicable module without changing its identity or parent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicableModuleUpdate"
+      responses:
+        "200":
+          description: The updated applicable module.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicableModuleRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    delete:
+      operationId: deleteApplicableModule
+      summary: Delete an applicable module
+      parameters:
+        - $ref: "#/components/parameters/ExpectedVersion"
+      responses:
+        "204":
+          description: The applicable module was deleted.
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
 components:
   parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        enum: [10, 15, 20, 50]
+        default: 10
+    DocumentCode:
+      name: docCode
+      in: path
+      required: true
+      schema:
+        type: string
+        maxLength: 12
+      description: Immutable document code; maximum 12 Oracle database-encoded bytes.
+    ApplicableModuleUid:
+      name: damodUid
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^\d+(\.\d+)?$'
+      description: Decimal string representation of the Oracle NUMBER child key.
+    ExpectedVersion:
+      name: expectedVersion
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Opaque version token from the record being deleted.
     Code:
       name: code
       in: query
@@ -223,6 +579,14 @@ components:
     CodeSortDirection:
       type: string
       enum: [Ascending, Descending]
+    DocumentSetupSortColumn:
+      type: string
+      enum: [DocCode, DocName, DocDescription, SetupFor, ActiveYn]
+      description: Data column to sort; Actions is not sortable.
+    ApplicableModuleSortColumn:
+      type: string
+      enum: [DamodUid, ApplicableFor, ProductFrom, ProductTo, PcmFrom, PcmTo, CcmFrom, CcmTo, MandatoryYn, ActiveYn]
+      description: Data column to sort; Actions is not sortable.
     CodeFilterOperator:
       type: string
       enum:
@@ -232,6 +596,254 @@ components:
         - DoesNotContain
         - EqualTo
         - NotEqualTo
+    DocumentSetupWrite:
+      type: object
+      required:
+        - docCode
+        - docSetupFor
+      properties:
+        docCode:
+          type: string
+          maxLength: 12
+          description: Immutable key; maximum 12 Oracle database-encoded bytes.
+        docName:
+          type: [string, "null"]
+          maxLength: 100
+        nameInArabic:
+          type: [string, "null"]
+          maxLength: 100
+        docDescription:
+          type: [string, "null"]
+          maxLength: 2000
+        descriptionInArabic:
+          type: [string, "null"]
+          maxLength: 2000
+        docSetupFor:
+          type: string
+          maxLength: 12
+          description: Code from Codes Master with codeType DOC_SETUP_FOR.
+        flex1:
+          type: [string, "null"]
+          maxLength: 60
+        flex2:
+          type: [string, "null"]
+          maxLength: 60
+        activeYn:
+          type: [string, "null"]
+          maxLength: 1
+      description: Audit values are API-managed. Active defaults to Y on create.
+    DocumentSetupUpdate:
+      allOf:
+        - $ref: "#/components/schemas/DocumentSetupWrite"
+        - type: object
+          required:
+            - expectedVersion
+          properties:
+            expectedVersion:
+              type: string
+              description: Opaque version token returned by the record read.
+    DocumentSetupSummary:
+      type: object
+      required: [docCode, version]
+      properties:
+        docCode:
+          type: string
+        docName:
+          type: [string, "null"]
+        docDescription:
+          type: [string, "null"]
+        docSetupFor:
+          type: [string, "null"]
+        activeYn:
+          type: [string, "null"]
+        version:
+          type: string
+        createdBy:
+          type: [string, "null"]
+        createdDate:
+          type: [string, "null"]
+          format: date-time
+        updatedBy:
+          type: [string, "null"]
+        updatedDate:
+          type: [string, "null"]
+          format: date-time
+    DocumentSetupRecord:
+      type: object
+      required: [docCode, version]
+      properties:
+        docCode:
+          type: string
+          maxLength: 12
+        docName:
+          type: [string, "null"]
+          maxLength: 100
+        nameInArabic:
+          type: [string, "null"]
+          maxLength: 100
+        docDescription:
+          type: [string, "null"]
+          maxLength: 2000
+        descriptionInArabic:
+          type: [string, "null"]
+          maxLength: 2000
+        docSetupFor:
+          type: [string, "null"]
+          maxLength: 12
+        flex1:
+          type: [string, "null"]
+          maxLength: 60
+        flex2:
+          type: [string, "null"]
+          maxLength: 60
+        activeYn:
+          type: [string, "null"]
+          maxLength: 1
+        createdBy:
+          type: [string, "null"]
+          readOnly: true
+          maxLength: 12
+        createdDate:
+          type: [string, "null"]
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: [string, "null"]
+          readOnly: true
+          maxLength: 12
+        updatedDate:
+          type: [string, "null"]
+          format: date-time
+          readOnly: true
+        version:
+          type: string
+    ApplicableModuleWrite:
+      type: object
+      required: [applicableFor]
+      properties:
+        applicableFor:
+          type: string
+        productFrom:
+          type: [string, "null"]
+          maxLength: 12
+        productTo:
+          type: [string, "null"]
+          maxLength: 12
+        pcmFrom:
+          type: [string, "null"]
+          maxLength: 12
+        pcmTo:
+          type: [string, "null"]
+          maxLength: 12
+        ccmFrom:
+          type: [string, "null"]
+          maxLength: 12
+        ccmTo:
+          type: [string, "null"]
+          maxLength: 12
+        mandatoryYn:
+          type: [string, "null"]
+          maxLength: 1
+        activeYn:
+          type: [string, "null"]
+          maxLength: 1
+      description: Range controls default to ALL when no code is selected; ASR stores ALL in all six range fields.
+    ApplicableModuleUpdate:
+      allOf:
+        - $ref: "#/components/schemas/ApplicableModuleWrite"
+        - type: object
+          required: [expectedVersion]
+          properties:
+            expectedVersion:
+              type: string
+              description: Opaque version token returned by the record read.
+    ApplicableModuleSummary:
+      type: object
+      required: [damodUid, applicableFor, version]
+      properties:
+        damodUid:
+          type: string
+          pattern: '^\d+(\.\d+)?$'
+          description: Oracle NUMBER key represented as a decimal string.
+        applicableFor:
+          type: string
+        productFrom:
+          type: [string, "null"]
+        productTo:
+          type: [string, "null"]
+        pcmFrom:
+          type: [string, "null"]
+        pcmTo:
+          type: [string, "null"]
+        ccmFrom:
+          type: [string, "null"]
+        ccmTo:
+          type: [string, "null"]
+        mandatoryYn:
+          type: [string, "null"]
+        activeYn:
+          type: [string, "null"]
+        version:
+          type: string
+    ApplicableModuleRecord:
+      allOf:
+        - $ref: "#/components/schemas/ApplicableModuleSummary"
+        - type: object
+          required: [damodDocCode]
+          properties:
+            damodDocCode:
+              type: string
+              maxLength: 12
+            createdBy:
+              type: [string, "null"]
+              readOnly: true
+              maxLength: 12
+            createdDate:
+              type: [string, "null"]
+              format: date-time
+              readOnly: true
+            updatedBy:
+              type: [string, "null"]
+              readOnly: true
+              maxLength: 12
+            updatedDate:
+              type: [string, "null"]
+              format: date-time
+              readOnly: true
+    PaginatedDocumentSetupResult:
+      type: object
+      required: [items, page, pageSize, totalCount]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentSetupSummary"
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        totalCount:
+          type: integer
+          minimum: 0
+    PaginatedApplicableModuleResult:
+      type: object
+      required: [items, page, pageSize, totalCount]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApplicableModuleSummary"
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        totalCount:
+          type: integer
+          minimum: 0
     CodeWrite:
       type: object
       required:
@@ -300,6 +912,15 @@ components:
               readOnly: true
               description: Maximum 12 Oracle database-encoded bytes.
             createdDate:
+              type: [string, "null"]
+              format: date-time
+              readOnly: true
+              description: Stored Oracle DATE calendar value; displayed as DD-MMM-YYYY without timezone conversion.
+            updatedBy:
+              type: [string, "null"]
+              readOnly: true
+              description: Maximum 12 Oracle database-encoded bytes.
+            updatedDate:
               type: [string, "null"]
               format: date-time
               readOnly: true

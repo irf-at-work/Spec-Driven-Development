@@ -12,6 +12,8 @@ public partial class CodesMasterContext : DbContext
     }
 
     public virtual DbSet<STD_CODES> STD_CODES { get; set; }
+    public virtual DbSet<STD_DOCUMENT> STD_DOCUMENT { get; set; }
+    public virtual DbSet<STD_DOC_APPL_MODULE> STD_DOC_APPL_MODULE { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

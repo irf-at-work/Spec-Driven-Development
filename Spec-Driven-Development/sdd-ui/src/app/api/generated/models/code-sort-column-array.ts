@@ -11,6 +11,5 @@ export const CODE_SORT_COLUMN: CodeSortColumn[] = [
   'CodeDescription',
   'CodeType',
   'Value1',
-  'Value2',
-  'CreatedDate'
+  'Value2'
 ];

@@ -24,6 +24,7 @@
   border: 1px solid var(--app-border-strong);
   border-radius: 0.25rem;
   font: inherit;
+  font-weight: var(--filter-font-weight, inherit);
 }
 
 .filter-trigger {
