@@ -46,6 +46,7 @@ OUT OF SCOPE: sign-in and permissions, checks for codes used by other records, e
 
 - The list filters, icon actions, typography, breadcrumb, shared notification style, and unsaved-changes confirmation follow feature 001.
 - Active is the reversible way to retire and restore a record; permanent deletion remains available only with confirmation. These are stated once in the feature behavior and requirements above.
+- The Premium Adjustments list provides an Excel `.xlsx` template/import. Its `IMPORT` sheet includes code type, code, company code, descriptions, classification lookup codes, optional remarks/Arabic text and active flag. Preview validates fields and active lookup values; duplicate keys in the workbook block import, existing database keys are skipped, and new rows are inserted atomically after confirmation (maximum 1,000 rows and 5 MB).
 
 ## User Scenarios & Testing *(mandatory)*
 

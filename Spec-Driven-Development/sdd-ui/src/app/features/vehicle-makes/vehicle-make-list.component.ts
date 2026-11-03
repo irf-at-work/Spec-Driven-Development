@@ -149,6 +149,8 @@ export class VehicleMakeListComponent {
     void this.router.navigate(['/vehicle-model-options/import']);
   }
 
+  protected importMakes(): void { void this.router.navigate(['/vehicle-makes/import']); }
+
   protected open(make: VehicleMakeListItemDto): void {
     void this.router.navigate(['/vehicle-makes/view'], { state: { makeCode: make.makeCode } });
   }

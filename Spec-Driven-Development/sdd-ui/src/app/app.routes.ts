@@ -5,6 +5,18 @@ import { unsavedChangesGuard } from './shared/unsaved-changes.guard';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'vehicle-makes' },
   {
+    path: 'vehicle-makes/import',
+    title: 'Import Vehicle Makes',
+    data: { breadcrumb: 'make-import', kind: 'vehicle' },
+    loadComponent: () => import('./features/master-data-import.component').then((module) => module.MasterDataImportComponent),
+  },
+  {
+    path: 'premium-adjustments/import',
+    title: 'Import Premium Adjustments',
+    data: { breadcrumb: 'premium-adjustment-import', kind: 'premium' },
+    loadComponent: () => import('./features/master-data-import.component').then((module) => module.MasterDataImportComponent),
+  },
+  {
     path: 'vehicle-model-options/import',
     title: 'Import Vehicle Dropdown Choices',
     data: { breadcrumb: 'vehicle-model-options-import' },

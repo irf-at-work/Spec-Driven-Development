@@ -17,7 +17,9 @@ export type BreadcrumbPage =
   | 'premium-adjustments'
   | 'premium-adjustment-new'
   | 'premium-adjustment-view'
-  | 'vehicle-model-options-import';
+  | 'vehicle-model-options-import'
+  | 'make-import'
+  | 'premium-adjustment-import';
 
 export interface BreadcrumbContext {
   readonly makeCode: string | null;
@@ -35,6 +37,8 @@ const PAGES: readonly string[] = [
   'premium-adjustment-new',
   'premium-adjustment-view',
   'vehicle-model-options-import',
+  'make-import',
+  'premium-adjustment-import',
 ];
 
 export function isBreadcrumbPage(value: unknown): value is BreadcrumbPage {
@@ -85,5 +89,9 @@ export function buildTrail(page: BreadcrumbPage, context: BreadcrumbContext): re
       ];
     case 'vehicle-model-options-import':
       return [MASTER_DATA, VEHICLE_MAKES_LINK, { label: 'Import dropdown choices' }];
+    case 'make-import':
+      return [MASTER_DATA, VEHICLE_MAKES_LINK, { label: 'Import vehicle makes' }];
+    case 'premium-adjustment-import':
+      return [MASTER_DATA, { label: 'Premium Adjustments', link: ['/premium-adjustments'] }, { label: 'Import premium adjustments' }];
   }
 }

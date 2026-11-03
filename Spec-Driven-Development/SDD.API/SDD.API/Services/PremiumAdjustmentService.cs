@@ -334,6 +334,10 @@ public sealed class PremiumAdjustmentService(
         return errors;
     }
 
+    public Task<IReadOnlyDictionary<string, string[]>> ValidateImportOptionsAsync(
+        PremiumAdjustmentValues values, CancellationToken cancellationToken) =>
+        FindInvalidOptionsAsync(values, current: null, cancellationToken);
+
     private async Task<AdjustmentCodeDto> ToDtoAsync(BrmMiscCode entity, CancellationToken cancellationToken)
     {
         var description = await database.StdListItems

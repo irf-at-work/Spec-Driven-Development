@@ -82,4 +82,10 @@ Records saved earlier without Discount Type, Charges Type, or Charges Category m
 
 ## Error Shape
 
+### Excel Import
+
+`POST /api/premium-adjustments/import/preview` and `POST /api/premium-adjustments/import` accept a `rows` array of adjustment fields. Preview validates required fields, lengths, active classification options, repeated `(codeType, code, companyCode)` keys, and existing keys without writing. Import repeats validation and inserts only new keys in one transaction; existing keys are skipped and never overwritten. The `.xlsx` UI template uses an `IMPORT` sheet and is limited to 1,000 rows and 5 MB. Invalid workbooks return `400 ProblemDetails` and leave no partial writes.
+
+## Error Shape
+
 Use standard `ProblemDetails` fields (`type`, `title`, `status`, `detail`, and optional `instance`/extensions). Do not expose raw exception details. Client-facing messages use British/Indian English, do not reveal raw server messages, and explain the next action where applicable.

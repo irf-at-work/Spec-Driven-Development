@@ -59,6 +59,7 @@
 ### Session 2026-11-02 (vehicle lookup import)
 
 - Add an Excel `.xlsx` import for the nine fixed vehicle-model lookup types in `STD_LIST_ITEM`. The workbook uses a `STD_LIST_ITEM` sheet with `LI_TYPE`, `LI_CODE`, `LI_DESC`, and `LI_ACTIVE_YN` columns. Preview validates rows and marks existing keys as skipped; importing is insert-only and never overwrites existing rows. The server revalidates and saves all new rows in one transaction.
+- Add a separate Excel `.xlsx` import for vehicle makes using the `IMPORT` sheet and fields `MAKE_CODE`, `MAKE_NAME`, `SHORT_NAME`, `REMARKS`, `ARABIC_MAKE_NAME`, `ARABIC_SHORT_NAME`, `ARABIC_REMARKS`, and `ACTIVE`. Existing make codes are skipped; new makes are validated and inserted atomically.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -225,6 +226,7 @@ As a master-data administrator, I want to upload vehicle dropdown choices from a
 - **FR-034**: The system MUST provide an Excel `.xlsx` template and an import page for the nine fixed vehicle-model lookup types. The template MUST use a `STD_LIST_ITEM` sheet with `LI_TYPE`, `LI_CODE`, `LI_DESC`, and `LI_ACTIVE_YN` columns.
 - **FR-035**: Before import, the system MUST preview each workbook row and identify invalid values, duplicate keys in the workbook, and keys already in `STD_LIST_ITEM`. Invalid rows MUST block import. Existing database keys MUST be skipped and MUST NOT be overwritten.
 - **FR-036**: The server MUST revalidate uploaded lookup rows, allow only the nine fixed `LI_TYPE` values, enforce column lengths and `Y`/`N` active values, and insert valid new rows in one transaction only after explicit user confirmation. The import MUST be limited to 1,000 rows and 5 MB; failure MUST NOT leave a partial import.
+- **FR-037**: The vehicle make list MUST provide an Excel template and import page. The server MUST validate all make fields using the normal make rules, detect duplicate workbook codes, skip existing make codes without changing them, and insert new makes atomically after confirmation. The import MUST accept at most 1,000 rows and 5 MB.
 
 ### Key Entities *(include if feature involves data)*
 

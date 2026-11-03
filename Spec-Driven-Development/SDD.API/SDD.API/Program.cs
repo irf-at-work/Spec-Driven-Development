@@ -57,6 +57,7 @@ builder.Services.AddScoped<PremiumAdjustmentService>();
 builder.Services.AddScoped<VehicleMakeService>();
 builder.Services.AddScoped<VehicleModelService>();
 builder.Services.AddScoped<VehicleModelOptionsImportService>();
+builder.Services.AddScoped<MasterDataImportService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy => policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod()));

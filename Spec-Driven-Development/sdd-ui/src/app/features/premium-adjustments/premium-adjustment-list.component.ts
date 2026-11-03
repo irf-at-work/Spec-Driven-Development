@@ -166,6 +166,8 @@ export class PremiumAdjustmentListComponent {
     void this.router.navigate(['/premium-adjustments/new']);
   }
 
+  protected importAdjustments(): void { void this.router.navigate(['/premium-adjustments/import']); }
+
   protected open(item: AdjustmentCodeListItemDto): void {
     void this.router.navigate(['/premium-adjustments/view'], {
       state: { codeType: item.codeType, code: item.code, companyCode: item.companyCode },

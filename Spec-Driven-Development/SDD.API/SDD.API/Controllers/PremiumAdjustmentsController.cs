@@ -9,8 +9,24 @@ namespace SDD.API.Controllers;
 [Route("api/premium-adjustments")]
 public sealed class PremiumAdjustmentsController(
     PremiumAdjustmentService adjustments,
+    MasterDataImportService imports,
     ILogger<PremiumAdjustmentsController> logger) : ControllerBase
 {
+    [HttpPost("import/preview")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public Task<PremiumAdjustmentImportPreviewDto> PreviewImport(MasterDataImportRequest request, CancellationToken cancellationToken) =>
+        imports.PreviewAdjustmentsAsync(MapRows(request), cancellationToken);
+
+    [HttpPost("import")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public async Task<ActionResult<MasterImportResultDto>> Import(MasterDataImportRequest request, CancellationToken cancellationToken)
+    {
+        try { return await imports.ImportAdjustmentsAsync(MapRows(request), cancellationToken); }
+        catch (InvalidOperationException ex) { return BadRequest(new ProblemDetails { Title = "Premium adjustment import could not be completed", Detail = ex.Message, Status = 400 }); }
+    }
+
+    private static PremiumAdjustmentImportRowDto[] MapRows(MasterDataImportRequest request) => request.Rows.Select((row,index) => new PremiumAdjustmentImportRowDto(index+2,row.GetValueOrDefault("codeType"),row.GetValueOrDefault("code"),row.GetValueOrDefault("companyCode"),row.GetValueOrDefault("name"),row.GetValueOrDefault("shortName"),row.GetValueOrDefault("discountType"),row.GetValueOrDefault("chargesType"),row.GetValueOrDefault("chargesCategory"),row.GetValueOrDefault("remarks"),row.GetValueOrDefault("arabicName"),row.GetValueOrDefault("arabicShortName"),row.GetValueOrDefault("arabicRemarks"),row.GetValueOrDefault("active")?.Trim().ToUpperInvariant() switch { "Y"=>true,"N"=>false,_=>null },row.GetValueOrDefault("active"))).ToArray();
+
     [HttpGet]
     public async Task<ActionResult<PaginatedResult<AdjustmentCodeListItemDto>>> List(
         int page = 1,

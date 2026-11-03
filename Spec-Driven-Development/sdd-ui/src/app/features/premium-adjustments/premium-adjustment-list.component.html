@@ -4,12 +4,10 @@
       <h1>Premium Adjustment Master</h1>
       <p class="subtitle">Find and maintain premium adjustment codes.</p>
     </div>
-    <app-icon-button
-      action="add"
-      tooltip="Add premium adjustment"
-      accessibleName="Add premium adjustment"
-      (clicked)="add()"
-    />
+    <div class="header-actions">
+      <app-icon-button action="upload" tooltip="Import premium adjustments" accessibleName="Import premium adjustments" (clicked)="importAdjustments()" />
+      <app-icon-button action="add" tooltip="Add premium adjustment" accessibleName="Add premium adjustment" (clicked)="add()" />
+    </div>
   </header>
 
   <div class="table-card">

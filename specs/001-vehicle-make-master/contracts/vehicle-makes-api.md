@@ -99,6 +99,8 @@ Validation and normalisation use the same server rules as makes (code format and
 - Import repeats validation and existence checks, inserts only new keys in one transaction, skips existing keys without changing them, and returns inserted and skipped counts. Invalid rows return `400 ProblemDetails`; a concurrent key insertion returns `409 ProblemDetails` and rolls back the import.
 - Maximum import size is 1,000 rows. The UI accepts `.xlsx` files up to 5 MB with a `STD_LIST_ITEM` worksheet and `LI_TYPE`, `LI_CODE`, `LI_DESC`, and `LI_ACTIVE_YN` headers.
 
+`POST /api/vehicle-makes/import/preview` and `POST /api/vehicle-makes/import` accept vehicle make rows. Preview applies make validation, detects repeated make codes and marks existing codes. Import repeats validation and inserts only new makes in one transaction; existing codes are skipped without changes. The UI template uses an `IMPORT` sheet and is limited to 1,000 rows and 5 MB.
+
 Model create/update/delete endpoints are independent of unsaved make changes. Deleting a make with models returns the `409` response described above. Verify that the Oracle make-model foreign key does not cascade deletes; the API must pre-check for models and map a concurrent foreign-key conflict to the same `409 ProblemDetails` response.
 
 ## Error Shape

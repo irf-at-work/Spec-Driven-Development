@@ -9,8 +9,24 @@ namespace SDD.API.Controllers;
 [Route("api/vehicle-makes")]
 public class VehicleMakesController(
     VehicleMakeService vehicleMakes,
+    MasterDataImportService imports,
     ILogger<VehicleMakesController> logger) : ControllerBase
 {
+    [HttpPost("import/preview")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public Task<VehicleMakeImportPreviewDto> PreviewImport(MasterDataImportRequest request, CancellationToken cancellationToken) =>
+        imports.PreviewMakesAsync(request.Rows.Select((row, index) => new VehicleMakeImportRowDto(index + 2, row.GetValueOrDefault("makeCode"), row.GetValueOrDefault("makeName"), row.GetValueOrDefault("shortName"), row.GetValueOrDefault("remarks"), row.GetValueOrDefault("arabicMakeName"), row.GetValueOrDefault("arabicShortName"), row.GetValueOrDefault("arabicRemarks"), ParseActive(row.GetValueOrDefault("active")), row.GetValueOrDefault("active"))).ToArray(), cancellationToken);
+
+    [HttpPost("import")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public async Task<ActionResult<MasterImportResultDto>> Import(MasterDataImportRequest request, CancellationToken cancellationToken)
+    {
+        try { return await imports.ImportMakesAsync(request.Rows.Select((row, index) => new VehicleMakeImportRowDto(index + 2, row.GetValueOrDefault("makeCode"), row.GetValueOrDefault("makeName"), row.GetValueOrDefault("shortName"), row.GetValueOrDefault("remarks"), row.GetValueOrDefault("arabicMakeName"), row.GetValueOrDefault("arabicShortName"), row.GetValueOrDefault("arabicRemarks"), ParseActive(row.GetValueOrDefault("active")), row.GetValueOrDefault("active"))).ToArray(), cancellationToken); }
+        catch (InvalidOperationException ex) { return BadRequest(new ProblemDetails { Title = "Vehicle make import could not be completed", Detail = ex.Message, Status = 400 }); }
+    }
+
+    private static bool? ParseActive(string? value) => value?.Trim().ToUpperInvariant() switch { "Y" => true, "N" => false, _ => null };
+
     [HttpGet]
     public async Task<ActionResult<PaginatedResult<VehicleMakeListItemDto>>> List(
         int page = 1,
