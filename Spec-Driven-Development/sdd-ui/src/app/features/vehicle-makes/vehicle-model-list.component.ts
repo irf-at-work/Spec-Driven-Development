@@ -158,6 +158,10 @@ export class VehicleModelListComponent {
     void this.router.navigate(['/vehicle-makes', this.makeCode(), 'models', 'new']);
   }
 
+  protected importModels(): void {
+    void this.router.navigate(['/vehicle-makes', this.makeCode(), 'models', 'import']);
+  }
+
   protected editModel(model: VehicleModelDto): void {
     void this.router.navigate(['/vehicle-makes', this.makeCode(), 'models', model.modelCode, 'edit']);
   }

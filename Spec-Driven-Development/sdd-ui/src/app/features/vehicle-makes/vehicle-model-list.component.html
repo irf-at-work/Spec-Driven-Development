@@ -3,6 +3,7 @@
     <h2>Vehicle Models</h2>
     @if (makeEditable()) {
       <div class="header-actions">
+        <app-icon-button action="upload" tooltip="Import vehicle models" accessibleName="Import vehicle models" (clicked)="importModels()" />
         <app-icon-button
           action="add"
           tooltip="Add model"

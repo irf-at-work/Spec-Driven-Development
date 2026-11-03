@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: 8627d67f-0bdb-470c-8e7c-c2ac71e01067
+
+localResources:
+  specs:
+    - ../Spec-Driven-Development/SDD.API/SDD.API/obj/Debug/net10.0/EndpointInfo/SDD.API.json

@@ -14,3 +14,5 @@ public sealed record PremiumAdjustmentImportPreviewRowDto(int RowNumber, string 
 }
 public sealed record PremiumAdjustmentImportPreviewDto(IReadOnlyList<PremiumAdjustmentImportPreviewRowDto> Rows, IReadOnlyList<string> Errors);
 public sealed record MasterImportResultDto(int InsertedCount, int SkippedExistingCount);
+public sealed record VehicleModelImportPreviewRowDto(int RowNumber, string ModelCode, string ModelName, bool AlreadyExists, IReadOnlyList<string> Errors) { public bool IsValid => Errors.Count == 0; }
+public sealed record VehicleModelImportPreviewDto(IReadOnlyList<VehicleModelImportPreviewRowDto> Rows, IReadOnlyList<string> Errors);

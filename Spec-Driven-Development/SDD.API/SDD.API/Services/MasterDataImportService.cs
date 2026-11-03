@@ -4,9 +4,50 @@ using SDD.API.DTOs;
 
 namespace SDD.API.Services;
 
-public sealed class MasterDataImportService(SddDbContext db, VehicleMakeService makes, PremiumAdjustmentService adjustments)
+public sealed class MasterDataImportService(SddDbContext db, VehicleMakeService makes, PremiumAdjustmentService adjustments, VehicleModelService models)
 {
     public const int MaximumRows = 1000;
+
+    public async Task<VehicleModelImportPreviewDto> PreviewModelsAsync(string makeCode, IReadOnlyList<Dictionary<string,string?>>? rows, CancellationToken ct)
+    {
+        if(rows is null||rows.Count==0)return new([], ["The workbook contains no data rows."]);
+        if(rows.Count>MaximumRows)return new([],[$"The workbook can contain no more than {MaximumRows} data rows."]);
+        makeCode=VehicleMakeInputRules.NormaliseMakeCode(makeCode);
+        var makeExists=await db.BrmVehMakes.CountAsync(x=>x.VmakCode==makeCode,ct)>0;
+        var normalized=rows.Select((r,i)=> {
+            var errors=new List<string>();
+            int? Number(string key,string label,int? max=null) { var text=r.GetValueOrDefault(key)?.Trim(); if(string.IsNullOrEmpty(text))return null; if(!int.TryParse(text,System.Globalization.NumberStyles.Integer,System.Globalization.CultureInfo.InvariantCulture,out var n)){errors.Add($"{label} must be a whole number.");return null;} if(max is not null&&(n<0||n>max)){errors.Add($"{label} must be from 0 to {max}.");return null;} if(max is null&&n<0){errors.Add($"{label} must be zero or more.");return null;} return n; }
+            decimal? Value() { var text=r.GetValueOrDefault("value")?.Trim();if(string.IsNullOrEmpty(text))return null;if(!decimal.TryParse(text,System.Globalization.NumberStyles.Number,System.Globalization.CultureInfo.InvariantCulture,out var n)||n<0){errors.Add("Value must be a number of zero or more.");return null;}return n; }
+            bool? Active() { var text=r.GetValueOrDefault("active")?.Trim();if(string.IsNullOrEmpty(text))return null;if(text.Equals("Y",StringComparison.OrdinalIgnoreCase))return true;if(text.Equals("N",StringComparison.OrdinalIgnoreCase))return false;errors.Add("Active must be Y or N.");return null; }
+            var request=new CreateVehicleModelRequest(r.GetValueOrDefault("modelCode"),r.GetValueOrDefault("modelName"),r.GetValueOrDefault("shortName"),r.GetValueOrDefault("remarks"),r.GetValueOrDefault("arabicModelName"),r.GetValueOrDefault("arabicShortName"),r.GetValueOrDefault("arabicRemarks"),r.GetValueOrDefault("variant"),r.GetValueOrDefault("vehicleType"),r.GetValueOrDefault("weight"),r.GetValueOrDefault("loadCapacity"),r.GetValueOrDefault("bodyType"),r.GetValueOrDefault("fuelType"),Number("engineCapacity","Engine capacity"),r.GetValueOrDefault("cylinders"),Number("seats","Seats",999),Number("passengers","Passengers",999),Number("drivers","Drivers",999),r.GetValueOrDefault("doors"),Number("makeYear","Make year",9999),r.GetValueOrDefault("drivingType"),r.GetValueOrDefault("bodyColour"),Value(),r.GetValueOrDefault("category"),Active());
+            var values=VehicleModelInputRules.Normalise(makeCode,request); errors.AddRange(VehicleModelInputRules.Validate(values,true).Values.SelectMany(x=>x));
+            return (Index: i+2, Raw: r, Values: values, Errors: errors);
+        }).ToArray();
+        var dupes=normalized.GroupBy(x=>x.Values.ModelCode,StringComparer.OrdinalIgnoreCase).Where(g=>g.Key.Length>0&&g.Count()>1).SelectMany(g=>g).Select(x=>x.Index).ToHashSet();
+        if(!makeExists)return new([],[$"Vehicle make {makeCode} does not exist."]);
+        var codes=normalized.Select(x=>x.Values.ModelCode).Where(x=>x.Length>0).Distinct().ToArray();
+        var existing=(await db.BrmVehModels.AsNoTracking().Where(x=>x.VmodVmakCode==makeCode&&codes.Contains(x.VmodCode)).Select(x=>x.VmodCode).ToListAsync(ct)).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var activeOptions=(await db.StdListItems.AsNoTracking().Where(x=>x.LiActiveYn=="Y"&&VehicleModelListTypes.All.Contains(x.LiType)).Select(x=>new{x.LiType,x.LiCode}).ToListAsync(ct)).Select(x=>$"{x.LiType}\u001f{x.LiCode}").ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var output=new List<VehicleModelImportPreviewRowDto>();
+        foreach(var x in normalized){var errors=x.Errors.ToList();if(dupes.Contains(x.Index))errors.Add("This model code appears more than once in the workbook.");var exists=existing.Contains(x.Values.ModelCode);if(!exists){var vals=new[]{(VehicleModelListTypes.Variant,x.Values.Variant),(VehicleModelListTypes.VehicleType,x.Values.VehicleType),(VehicleModelListTypes.BodyType,x.Values.BodyType),(VehicleModelListTypes.FuelType,x.Values.FuelType),(VehicleModelListTypes.Cylinders,x.Values.Cylinders),(VehicleModelListTypes.Doors,x.Values.Doors),(VehicleModelListTypes.DrivingType,x.Values.DrivingType),(VehicleModelListTypes.BodyColour,x.Values.BodyColour),(VehicleModelListTypes.Category,x.Values.Category)};foreach(var (type,code) in vals)if(code is not null&&!activeOptions.Contains($"{type}\u001f{code}"))errors.Add($"{code} is not an active option for {type}.");}output.Add(new(x.Index,x.Values.ModelCode,x.Values.ModelName,exists,errors));}
+        return new(output,[]);
+    }
+
+    public async Task<MasterImportResultDto> ImportModelsAsync(string makeCode,IReadOnlyList<Dictionary<string,string?>>? rows,CancellationToken ct)
+    {
+        var preview=await PreviewModelsAsync(makeCode,rows,ct);if(preview.Errors.Count>0||preview.Rows.Any(x=>!x.IsValid))throw new InvalidOperationException("Import contains invalid rows. Preview the workbook and correct them.");
+        var inserted=0;await using var tx=await db.Database.BeginTransactionAsync(ct);
+        for(var i=0;i<rows!.Count;i++){if(preview.Rows[i].AlreadyExists)continue;var raw=rows[i];var values=VehicleModelInputRules.Normalise(makeCode,BuildModelRequest(raw));var result=await models.CreateAsync(values,ct);if(result.Outcome!=VehicleModelOutcome.Saved)throw new InvalidOperationException("A model key or dropdown option changed during import. Retry the preview.");inserted++;}
+        await tx.CommitAsync(ct);return new(inserted,preview.Rows.Count-inserted);
+    }
+
+    private static CreateVehicleModelRequest BuildModelRequest(Dictionary<string,string?> r)
+    {
+        int? N(string key)=>int.TryParse(r.GetValueOrDefault(key),System.Globalization.NumberStyles.Integer,System.Globalization.CultureInfo.InvariantCulture,out var n)?n:null;
+        decimal? D(string key)=>decimal.TryParse(r.GetValueOrDefault(key),System.Globalization.NumberStyles.Number,System.Globalization.CultureInfo.InvariantCulture,out var n)?n:null;
+        bool? A()=>r.GetValueOrDefault("active")?.Trim().ToUpperInvariant() switch{"Y"=>true,"N"=>false,_=>null};
+        return new(r.GetValueOrDefault("modelCode"),r.GetValueOrDefault("modelName"),r.GetValueOrDefault("shortName"),r.GetValueOrDefault("remarks"),r.GetValueOrDefault("arabicModelName"),r.GetValueOrDefault("arabicShortName"),r.GetValueOrDefault("arabicRemarks"),r.GetValueOrDefault("variant"),r.GetValueOrDefault("vehicleType"),r.GetValueOrDefault("weight"),r.GetValueOrDefault("loadCapacity"),r.GetValueOrDefault("bodyType"),r.GetValueOrDefault("fuelType"),N("engineCapacity"),r.GetValueOrDefault("cylinders"),N("seats"),N("passengers"),N("drivers"),r.GetValueOrDefault("doors"),N("makeYear"),r.GetValueOrDefault("drivingType"),r.GetValueOrDefault("bodyColour"),D("value"),r.GetValueOrDefault("category"),A());
+    }
 
     public async Task<VehicleMakeImportPreviewDto> PreviewMakesAsync(IReadOnlyList<VehicleMakeImportRowDto>? rows, CancellationToken ct)
     {

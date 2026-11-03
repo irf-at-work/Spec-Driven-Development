@@ -85,6 +85,12 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'vehicle-makes/:makeCode/models/import',
+    title: 'Import Vehicle Models',
+    data: { breadcrumb: 'model-import', kind: 'model' },
+    loadComponent: () => import('./features/master-data-import.component').then((module) => module.MasterDataImportComponent),
+  },
+  {
     path: 'vehicle-makes/:makeCode/models/new',
     title: 'Add vehicle model',
     data: { breadcrumb: 'model-new' },

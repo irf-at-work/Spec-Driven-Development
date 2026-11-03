@@ -21,7 +21,8 @@ export const apiErrorInterceptor: HttpInterceptorFn = (request, next) => {
 
       return from(readProblem(error)).pipe(
         switchMap((problem) => {
-          if (!isShownBesideFields(problem)) {
+          const isImportRequest = request.url.includes('/import');
+          if (!isShownBesideFields(problem) && !isImportRequest) {
             notifications.error(plainMessageFor(problem.status));
           }
           return throwError(() => new ApiProblemError(problem));

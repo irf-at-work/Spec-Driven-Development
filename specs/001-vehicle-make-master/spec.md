@@ -60,6 +60,7 @@
 
 - Add an Excel `.xlsx` import for the nine fixed vehicle-model lookup types in `STD_LIST_ITEM`. The workbook uses a `STD_LIST_ITEM` sheet with `LI_TYPE`, `LI_CODE`, `LI_DESC`, and `LI_ACTIVE_YN` columns. Preview validates rows and marks existing keys as skipped; importing is insert-only and never overwrites existing rows. The server revalidates and saves all new rows in one transaction.
 - Add a separate Excel `.xlsx` import for vehicle makes using the `IMPORT` sheet and fields `MAKE_CODE`, `MAKE_NAME`, `SHORT_NAME`, `REMARKS`, `ARABIC_MAKE_NAME`, `ARABIC_SHORT_NAME`, `ARABIC_REMARKS`, and `ACTIVE`. Existing make codes are skipped; new makes are validated and inserted atomically.
+- Add an Excel `.xlsx` import for vehicle models from the open make's Vehicle Models section. The `IMPORT` sheet contains one model per row, with the model's fields (the parent make code comes from the route). Preview validates model fields, numeric values and active lookup choices; duplicate model codes block the import and existing model codes are skipped.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -227,6 +228,7 @@ As a master-data administrator, I want to upload vehicle dropdown choices from a
 - **FR-035**: Before import, the system MUST preview each workbook row and identify invalid values, duplicate keys in the workbook, and keys already in `STD_LIST_ITEM`. Invalid rows MUST block import. Existing database keys MUST be skipped and MUST NOT be overwritten.
 - **FR-036**: The server MUST revalidate uploaded lookup rows, allow only the nine fixed `LI_TYPE` values, enforce column lengths and `Y`/`N` active values, and insert valid new rows in one transaction only after explicit user confirmation. The import MUST be limited to 1,000 rows and 5 MB; failure MUST NOT leave a partial import.
 - **FR-037**: The vehicle make list MUST provide an Excel template and import page. The server MUST validate all make fields using the normal make rules, detect duplicate workbook codes, skip existing make codes without changing them, and insert new makes atomically after confirmation. The import MUST accept at most 1,000 rows and 5 MB.
+- **FR-038**: The models section for a saved make MUST provide an Excel template and import page for vehicle models. The parent make MUST be supplied by the route. The server MUST validate model fields and active lookup codes, block duplicate model codes within the workbook, skip existing model codes without changing them, and insert new models atomically after confirmation. The import MUST accept at most 1,000 rows and 5 MB.
 
 ### Key Entities *(include if feature involves data)*
 

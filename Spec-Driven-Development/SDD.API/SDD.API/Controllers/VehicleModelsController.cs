@@ -10,8 +10,22 @@ namespace SDD.API.Controllers;
 [Route("api/vehicle-makes/{makeCode}/models")]
 public class VehicleModelsController(
     VehicleModelService vehicleModels,
+    MasterDataImportService imports,
     ILogger<VehicleModelsController> logger) : ControllerBase
 {
+    [HttpPost("import/preview")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public Task<VehicleModelImportPreviewDto> PreviewImport(string makeCode, MasterDataImportRequest request, CancellationToken cancellationToken) =>
+        imports.PreviewModelsAsync(makeCode, request.Rows, cancellationToken);
+
+    [HttpPost("import")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public async Task<ActionResult<MasterImportResultDto>> Import(string makeCode, MasterDataImportRequest request, CancellationToken cancellationToken)
+    {
+        try { return await imports.ImportModelsAsync(makeCode, request.Rows, cancellationToken); }
+        catch (InvalidOperationException ex) { return BadRequest(new ProblemDetails { Title = "Vehicle model import could not be completed", Detail = ex.Message, Status = 400 }); }
+    }
+
     [HttpGet]
     public async Task<ActionResult<PaginatedResult<VehicleModelDto>>> List(
         string makeCode,

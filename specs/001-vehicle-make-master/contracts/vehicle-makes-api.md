@@ -101,6 +101,8 @@ Validation and normalisation use the same server rules as makes (code format and
 
 `POST /api/vehicle-makes/import/preview` and `POST /api/vehicle-makes/import` accept vehicle make rows. Preview applies make validation, detects repeated make codes and marks existing codes. Import repeats validation and inserts only new makes in one transaction; existing codes are skipped without changes. The UI template uses an `IMPORT` sheet and is limited to 1,000 rows and 5 MB.
 
+`POST /api/vehicle-makes/{makeCode}/models/import/preview` and `POST /api/vehicle-makes/{makeCode}/models/import` accept vehicle model rows for the make in the route. Preview validates model fields, numeric values, active dropdown choices, repeated model codes and existing codes. Import repeats validation and inserts only new models in one transaction; existing models are skipped without changes. The UI template uses an `IMPORT` sheet and is limited to 1,000 rows and 5 MB.
+
 Model create/update/delete endpoints are independent of unsaved make changes. Deleting a make with models returns the `409` response described above. Verify that the Oracle make-model foreign key does not cascade deletes; the API must pre-check for models and map a concurrent foreign-key conflict to the same `409 ProblemDetails` response.
 
 ## Error Shape
