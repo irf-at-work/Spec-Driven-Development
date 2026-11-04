@@ -2,33 +2,55 @@
 
 :root {
   color-scheme: light;
-  --color-primary-900: #184f49;
-  --color-primary-700: #23685f;
-  --color-primary-600: #2e7b70;
-  --color-primary-100: #dcebe5;
-  --color-accent-700: #9a5d20;
-  --color-accent-100: #f5e7d0;
-  --color-surface: #fffefa;
-  --color-page: #f5f1e8;
-  --color-text: #263331;
-  --color-muted: #5d6b65;
-  --color-border: #d7d1c4;
-  --color-focus: #9a5d20;
-  --mat-sys-primary: #184f49;
-  --mat-sys-on-primary: #fffefa;
-  --mat-sys-primary-container: #dcebe5;
-  --mat-sys-on-primary-container: #173a35;
-  --mat-sys-secondary: #9a5d20;
-  --mat-sys-on-secondary: #fffefa;
-  --mat-sys-secondary-container: #f5e7d0;
-  --mat-sys-on-secondary-container: #482d13;
-  --mat-sys-surface: #fffefa;
-  --mat-sys-surface-container: #f1ede4;
-  --mat-sys-surface-container-low: #faf8f2;
-  --mat-sys-on-surface: #263331;
-  --mat-sys-on-surface-variant: #5d6b65;
-  --mat-sys-outline: #746d62;
-  --mat-sys-outline-variant: #d7d1c4;
+  --color-primary: #172b4d;
+  --color-secondary: #475569;
+  --color-accent: #c49a50;
+  --color-primary-900: var(--color-primary);
+  --color-primary-700: #29466b;
+  --color-primary-600: #345783;
+  --color-primary-100: #e8eef5;
+  --color-accent-700: #805d25;
+  --color-accent-100: #f5ecd9;
+  --color-surface: #ffffff;
+  --color-page: #f8fafc;
+  --color-text: #172033;
+  --color-muted: var(--color-secondary);
+  --color-border: #e5e7eb;
+  --color-focus: #2563eb;
+  --color-success: #166534;
+  --color-warning: #92400e;
+  --color-info: #1d4ed8;
+  --color-error: #b42318;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --content-max-width: 1200px;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --shadow-card: 0 0.5rem 1.5rem rgb(23 43 77 / 7%);
+  --shadow-float: 0 0.75rem 2rem rgb(23 43 77 / 12%);
+  --motion-fast: 140ms ease;
+  --mat-sys-primary: #172b4d;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #e8eef5;
+  --mat-sys-on-primary-container: #172b4d;
+  --mat-sys-secondary: #475569;
+  --mat-sys-on-secondary: #ffffff;
+  --mat-sys-secondary-container: #e9edf2;
+  --mat-sys-on-secondary-container: #172033;
+  --mat-sys-surface: #ffffff;
+  --mat-sys-surface-container: #f1f4f8;
+  --mat-sys-surface-container-low: #f8fafc;
+  --mat-sys-on-surface: #172033;
+  --mat-sys-on-surface-variant: #475569;
+  --mat-sys-outline: #64748b;
+  --mat-sys-outline-variant: #e5e7eb;
+  --mat-sys-error: #b42318;
+  --mat-sys-on-error: #ffffff;
   font-family: Inter, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
 }
 
@@ -49,6 +71,28 @@ body {
   line-height: 1.5;
 }
 
+.mat-mdc-button-base,
+.mat-mdc-form-field,
+.mat-mdc-menu-item,
+.mat-mdc-cell,
+.mat-mdc-header-cell,
+.mat-mdc-paginator,
+.mat-expansion-panel,
+.mat-expansion-panel-header,
+.mat-toolbar {
+  font-family: inherit;
+}
+
+::selection {
+  color: var(--color-primary);
+  background: var(--color-primary-100);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
 button,
 input,
 select,
@@ -65,12 +109,59 @@ p {
 h1 {
   margin-bottom: 0.75rem;
   color: var(--color-primary-900);
-  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  font-weight: 700;
   line-height: 1.2;
 }
 
 h2 {
   margin-bottom: 0.5rem;
   color: var(--color-primary-900);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 650;
+}
+
+.company-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.company-details .audit-pair {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-page);
+}
+
+.audit-pair > div {
+  min-width: 0;
+}
+
+.audit-pair dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .company-details .audit-pair {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

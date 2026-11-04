@@ -29,6 +29,13 @@ public sealed class ListItemListAndDetailsE2ETests(DashboardUiFixture dashboard)
             "/listing-master?page=2&pageSize=10&sortBy=liType&sortDirection=desc&liType=COUNTRY&liTypeOperator=Equals"
         ).ToString());
 
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
+        await Page.SetViewportSizeAsync(1280, 800);
+
         foreach (var column in new[] { "List type", "List code", "Description", "Short description", "Value", "Active", "History" })
         {
             await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = column }).First).ToBeVisibleAsync();
@@ -47,7 +54,7 @@ public sealed class ListItemListAndDetailsE2ETests(DashboardUiFixture dashboard)
         await Expect(Page).ToHaveURLAsync(new Regex("page=2"));
 
         await Page.GetByText("United Arab Emirates", new() { Exact = true }).ClickAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "United Arab Emirates" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "List Item Master" })).ToBeVisibleAsync();
         await Expect(Page.GetByText("Flexible one", new() { Exact = true })).ToBeVisibleAsync();
         await Expect(Page.GetByText("02-01-2024", new() { Exact = true })).ToBeVisibleAsync();
         var history = Page.GetByText("Reviewer", new() { Exact = true });
@@ -58,6 +65,17 @@ public sealed class ListItemListAndDetailsE2ETests(DashboardUiFixture dashboard)
         await Expect(Page).ToHaveURLAsync(new Regex("sortBy=description"));
         await Expect(Page).ToHaveURLAsync(new Regex("page=2"));
         Assert.NotEmpty(listRequests);
+
+        var table = Page.Locator(".table-container");
+        Assert.True(await table.EvaluateAsync<bool>("element => element.scrollWidth > element.clientWidth"));
+        await table.EvaluateAsync("element => element.scrollLeft = element.scrollWidth");
+        await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = "History" }).First).ToBeVisibleAsync();
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+            await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = "History" }).First).ToBeVisibleAsync();
+        }
     }
 
     [Fact]

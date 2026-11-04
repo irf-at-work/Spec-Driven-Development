@@ -31,6 +31,12 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         });
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/new").ToString());
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
+        await Page.SetViewportSizeAsync(1280, 800);
         await Page.GetByLabel("Company code").FillAsync("NEWCO");
         var companyName = "A company name that exceeds thirty characters";
         await Page.GetByLabel("Company name").FillAsync(companyName);
@@ -48,12 +54,17 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Expect(incorporationDate).ToHaveValueAsync(new Regex("^\\d{2}-\\d{2}-\\d{4}$"));
 
         await incorporationDate.FillAsync("09-01-2024");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save", Exact = true }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save and Exit", Exact = true }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/company-master/NEWCO$"));
 
         using var request = JsonDocument.Parse(createRequest);
         Assert.Equal("2024-01-09", request.RootElement.GetProperty("incorporationDate").GetString());
         Assert.Equal("New Company", request.RootElement.GetProperty("shortName").GetString());
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
     }
 
     [Fact]
@@ -92,7 +103,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/new").ToString());
         await Page.GetByLabel("Company code").FillAsync("NORTH");
         await Page.GetByLabel("Company name").FillAsync("North Insurance");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save", Exact = true }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save and Exit", Exact = true }).ClickAsync();
         await Expect(Page.GetByText("This company code already exists.")).ToBeVisibleAsync();
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH/edit").ToString());
@@ -147,6 +158,12 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         var companyName = Page.GetByLabel("Company name");
         await companyName.FillAsync("Unsaved name");
         await Page.GetByLabel("Address 1").FillAsync("Unsaved address");
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
+        await Page.SetViewportSizeAsync(1280, 800);
         await Page.GetByRole(AriaRole.Button, new() { Name = "Cancel" }).ClickAsync();
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "North Insurance" })).ToBeVisibleAsync();
         await Expect(viewFieldLabels).ToHaveCountAsync(14);

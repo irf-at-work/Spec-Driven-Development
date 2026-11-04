@@ -56,7 +56,7 @@ describe('ListItemDetailsPage', () => {
     const root = harness.routeNativeElement as HTMLElement;
 
     expect(root.querySelector('#list-item-details-title')?.textContent?.trim()).toBe(
-      'List item master',
+      'List Item Master',
     );
     expect(root.querySelector('a[routerLink="/listing-master"] mat-icon svg')).not.toBeNull();
     expect(root.querySelector('.details-actions button mat-icon svg')).not.toBeNull();

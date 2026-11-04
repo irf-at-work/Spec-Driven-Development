@@ -66,13 +66,32 @@ describe('CompanyMasterPage', () => {
     expect(page.textContent).toContain('Licence expiry date');
     expect(page.querySelector('[aria-label="Filter by licence expiry date"]')).toBeNull();
     expect(page.textContent).toContain('Email');
+    expect(
+      Array.from(page.querySelectorAll('.column-header-row th')).map((header) =>
+        header.textContent?.trim(),
+      ),
+    ).toEqual([
+      'Company name',
+      'Short name',
+      'Primary address',
+      'Incorporation date',
+      'Reference number',
+      'Licence issue date',
+      'Licence expiry date',
+      'Company in charge',
+      'Phone',
+      'Email',
+      'Website',
+      'Actions',
+    ]);
     expect(page.querySelector('.column-header-row')).not.toBeNull();
     const actionsHeader = page.querySelector('.column-header-row th.mat-column-actions');
     expect(actionsHeader).not.toBeNull();
     expect(actionsHeader?.textContent?.trim()).toBe('Actions');
     expect(getComputedStyle(actionsHeader!).width).toBe('88px');
     expect(getComputedStyle(actionsHeader!).borderLeftWidth).toBe('1px');
-    expect(getComputedStyle(actionsHeader!).boxShadow).toContain('rgb(38 51 49 / 8%)');
+    expect(getComputedStyle(actionsHeader!).boxShadow).toContain('rgb(23 43 77 / 8%)');
+    expect(page.querySelectorAll('.resize-handle[role="separator"]')).toHaveLength(11);
     expect(actionsHeader?.classList.contains('mat-column-actions')).toBe(true);
     expect(page.querySelector('.filter-row')).not.toBeNull();
     expect(getComputedStyle(page.querySelector('.column-header-row')!).position).toBe('sticky');

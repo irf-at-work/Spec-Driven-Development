@@ -2,14 +2,14 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 2.5rem auto;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
   min-width: 12rem;
 }
 
 .filter-value {
   width: 100%;
   min-width: 0;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
 }
 
 .operator-control {
@@ -19,9 +19,13 @@
   height: 2.5rem;
   place-items: center;
   border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   color: var(--color-muted);
   background: var(--color-surface);
+  transition:
+    border-color var(--motion-fast),
+    background-color var(--motion-fast),
+    color var(--motion-fast);
 }
 
 .operator-control.operator-active {
@@ -31,9 +35,8 @@
 }
 
 .operator-control:focus-within {
-  outline: 2px solid color-mix(in srgb, var(--color-focus) 24%, transparent);
+  outline: 2px solid var(--color-focus);
   outline-offset: 1px;
-  border-radius: 0.35rem;
 }
 
 .operator-control select {
@@ -50,6 +53,12 @@
   height: 2rem;
   margin: 0;
   color: var(--color-muted);
+  border-radius: 50%;
+}
+
+.clear-filter:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-100);
 }
 
 @media (max-width: 850px) {

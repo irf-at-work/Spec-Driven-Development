@@ -16,8 +16,19 @@ public sealed class SharedPresentationTests(DashboardUiFixture dashboard) : Page
         var header = Page.GetByRole(AriaRole.Banner);
         var headerPosition = await header.EvaluateAsync<string>("element => getComputedStyle(element).position");
         Assert.Equal("sticky", headerPosition);
+        await Page.Keyboard.PressAsync("Tab");
+        var brand = header.GetByRole(AriaRole.Link, new() { Name = "Broker Portal home" });
+        await Expect(brand).ToBeFocusedAsync();
+        Assert.Equal("solid", await brand.EvaluateAsync<string>("element => getComputedStyle(element).outlineStyle"));
+        Assert.Equal("3px", await brand.EvaluateAsync<string>("element => getComputedStyle(element).outlineWidth"));
+
+        await Page.EmulateMediaAsync(new PageEmulateMediaOptions { ReducedMotion = ReducedMotion.Reduce });
+        var masters = header.GetByRole(AriaRole.Button, new() { Name = "Masters" });
+        var transitionSeconds = await masters.EvaluateAsync<double>(
+            "element => parseFloat(getComputedStyle(element).transitionDuration)");
+        Assert.True(transitionSeconds <= 0.00001);
         Assert.Equal(
-            "#23685f",
+            "#29466b",
             await Page.EvaluateAsync<string>(
                 "() => getComputedStyle(document.documentElement).getPropertyValue('--color-primary-700').trim()"));
 

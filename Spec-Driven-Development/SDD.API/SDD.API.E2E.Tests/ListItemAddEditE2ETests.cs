@@ -47,6 +47,12 @@ public sealed class ListItemAddEditE2ETests(DashboardUiFixture dashboard) : Page
         });
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/listing-master/new").ToString());
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
+        await Page.SetViewportSizeAsync(1280, 800);
         await Page.GetByLabel("List type").FillAsync("COUNTRY");
         await Page.GetByLabel("List code").FillAsync("AE");
         await Page.GetByLabel("Description", new() { Exact = true }).FillAsync(description);
@@ -54,6 +60,7 @@ public sealed class ListItemAddEditE2ETests(DashboardUiFixture dashboard) : Page
         await Expect(Page.GetByRole(AriaRole.Alert)).ToContainTextAsync("already exists");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Create list item" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/listing-master/COUNTRY/AE$"));
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "List Item Master" })).ToBeVisibleAsync();
 
         using (var request = JsonDocument.Parse(createRequest))
         {
@@ -68,18 +75,30 @@ public sealed class ListItemAddEditE2ETests(DashboardUiFixture dashboard) : Page
         await Expect(codeInput).ToHaveAttributeAsync("readonly", "true");
         var descriptionInput = Page.GetByLabel("Description", new() { Exact = true });
         await descriptionInput.FillAsync("Unsaved description");
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
+        await Page.SetViewportSizeAsync(1280, 800);
         await Page.GetByRole(AriaRole.Button, new() { Name = "Cancel" }).ClickAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "United Arab Emirates" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "List Item Master" })).ToBeVisibleAsync();
 
         await Page.GetByRole(AriaRole.Button, new() { Name = "Edit", Exact = true }).ClickAsync();
         await Page.GetByLabel("Description", new() { Exact = true }).FillAsync("United Arab Emirates (Updated)");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Save changes" }).ClickAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "United Arab Emirates (Updated)" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "List Item Master" })).ToBeVisibleAsync();
+        await Expect(Page.GetByText("United Arab Emirates (Updated)", new() { Exact = true })).ToBeVisibleAsync();
 
         using var update = JsonDocument.Parse(updateRequest);
         Assert.False(update.RootElement.TryGetProperty("liType", out _));
         Assert.False(update.RootElement.TryGetProperty("liCode", out _));
         Assert.Equal("United Arab Emirates (Updated)", update.RootElement.GetProperty("description").GetString());
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
     }
 
     private static object ListItem(string description) => new

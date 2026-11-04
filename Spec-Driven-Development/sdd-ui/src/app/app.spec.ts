@@ -21,6 +21,7 @@ describe('DashboardLayout', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('header')).not.toBeNull();
     expect(compiled.querySelector('router-outlet')).not.toBeNull();
+    expect(compiled.querySelector('a[aria-label="Broker Portal home"]')).not.toBeNull();
     expect(compiled.querySelector('[aria-label="Masters"]')).not.toBeNull();
   });
 

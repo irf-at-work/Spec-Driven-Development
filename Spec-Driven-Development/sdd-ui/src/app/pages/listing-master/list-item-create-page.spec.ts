@@ -30,6 +30,10 @@ describe('ListItemCreatePage', () => {
     await harness.fixture.whenStable();
 
     const inputs = harness.routeNativeElement?.querySelectorAll('input') ?? [];
+    expect(harness.routeNativeElement?.textContent).toContain('Add list item');
+    expect(
+      Array.from(inputs).map((input) => (input as HTMLInputElement).getAttribute('formControlName')),
+    ).toEqual(expect.arrayContaining(['liType', 'liCode', 'description']));
     const setInput = (name: string, value: string) => {
       const input = harness.routeNativeElement?.querySelector(
         `input[formControlName="${name}"]`,

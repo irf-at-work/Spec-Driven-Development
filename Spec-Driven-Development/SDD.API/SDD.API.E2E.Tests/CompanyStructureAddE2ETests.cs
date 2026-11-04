@@ -61,17 +61,35 @@ public sealed class CompanyStructureAddE2ETests(DashboardUiFixture dashboard) : 
         });
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/new").ToString());
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
+        await Page.SetViewportSizeAsync(1280, 800);
         await Expect(Page.Locator("[data-step]")).ToHaveCountAsync(3);
         await Page.GetByLabel("Company code").FillAsync("NORTH");
         await Page.GetByLabel("Company name").FillAsync("North Insurance");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Save & Add Division" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/company-master/new\\?.*step=division"));
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
+        await Page.SetViewportSizeAsync(1280, 800);
 
         await Page.GetByRole(AriaRole.Button, new() { Name = "Add new division" }).ClickAsync();
         await Page.GetByLabel("Division code").FillAsync("WEST");
         await Page.GetByLabel("Division name").FillAsync("Western Office");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Save & Add Department" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("/company-master/new\\?.*step=department"));
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
+        await Page.SetViewportSizeAsync(1280, 800);
         Assert.Contains("\"divisionCode\":\"WEST\"", divisionRequest);
         Assert.Contains("Add new department", await Page.Locator("body").InnerTextAsync());
 

@@ -28,7 +28,7 @@ describe('FilterControl', () => {
     ).toBe(false);
     expect(
       getComputedStyle(fixture.nativeElement.querySelector('.operator-control')).borderRadius,
-    ).toBe('0.5rem');
+    ).toBe('var(--radius-sm)');
     expect(fixture.nativeElement.querySelector('.operator-control path').getAttribute('fill')).toBe(
       'none',
     );

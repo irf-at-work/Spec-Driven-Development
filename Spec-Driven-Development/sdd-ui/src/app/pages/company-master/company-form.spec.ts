@@ -156,7 +156,11 @@ describe('CompanyForm', () => {
     form.form.controls.companyName.setValue('North');
 
     expect(form.step()).toBe('basic');
-    expect(harness.routeNativeElement?.querySelectorAll('[data-step]').length).toBe(3);
+    expect(
+      Array.from(harness.routeNativeElement?.querySelectorAll('[data-step]') ?? []).map((step) =>
+        step.textContent?.trim().replace(/\s+/g, ' '),
+      ),
+    ).toEqual(['1 Basic details', '2 Division', '3 Department']);
     form.saveAndAddDivision();
     await harness.fixture.whenStable();
 

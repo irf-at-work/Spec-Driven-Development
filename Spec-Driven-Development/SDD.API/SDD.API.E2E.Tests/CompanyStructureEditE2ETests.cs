@@ -82,13 +82,13 @@ public sealed class CompanyStructureEditE2ETests(DashboardUiFixture dashboard) :
         });
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH").ToString());
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Edit division WEST" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Edit division WEST", Exact = true }).ClickAsync();
         await Page.GetByLabel("Division name", new() { Exact = true }).FillAsync("Western Hub");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Save division" }).ClickAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Western Hub" })).ToBeVisibleAsync();
+        await Expect(Page.Locator(".division-panel mat-panel-title").First).ToContainTextAsync("Western Hub");
         Assert.Contains("\"name\":\"Western Hub\"", updateRequest);
 
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Edit division WEST" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Edit division WEST", Exact = true }).ClickAsync();
         await Page.GetByRole(AriaRole.Button, new() { Name = "Add new department" }).ClickAsync();
         await Page.GetByLabel("Department code").FillAsync("OPS");
         await Page.GetByLabel("Department name").FillAsync("Operations");
@@ -109,25 +109,17 @@ public sealed class CompanyStructureEditE2ETests(DashboardUiFixture dashboard) :
             requests);
         Assert.Contains("\"departmentCodes\":[\"HR\"]", linkedDepartmentRequest);
 
-        var actionColumn = Page.Locator("article.division-card")
-            .Filter(new() { Has = Page.GetByRole(AriaRole.Heading, new() { Name = "Western Hub" }) })
-            .Locator(".department-action-column")
-            .First;
+        var westPanel = Page.Locator(".division-panel").Nth(0);
+        var actionColumn = westPanel.Locator(".department-action-column").First;
         await Expect(actionColumn).ToBeVisibleAsync();
         Assert.Equal("sticky", await actionColumn.EvaluateAsync<string>("element => getComputedStyle(element).position"));
 
         Page.Dialog += async (_, dialog) => await dialog.AcceptAsync();
         await Page.GetByRole(AriaRole.Button, new() { Name = "Remove Finance from Western Hub" }).ClickAsync();
-        await Expect(
-            Page.Locator("article.division-card")
-                .Filter(new() { Has = Page.GetByRole(AriaRole.Heading, new() { Name = "Western Hub" }) })
-                .GetByText("Finance", new() { Exact = true })
-        ).ToHaveCountAsync(0);
-        await Expect(
-            Page.Locator("article.division-card")
-                .Filter(new() { Has = Page.GetByRole(AriaRole.Heading, new() { Name = "Eastern Office" }) })
-                .GetByText("Finance", new() { Exact = true })
-        ).ToBeVisibleAsync();
+        await Expect(westPanel.GetByText("Finance", new() { Exact = true })).ToHaveCountAsync(0);
+        var eastPanel = Page.Locator(".division-panel").Nth(1);
+        await eastPanel.Locator("mat-expansion-panel-header").ClickAsync();
+        await Expect(eastPanel.GetByText("Finance", new() { Exact = true })).ToBeVisibleAsync();
     }
 
     [Fact]
@@ -153,9 +145,9 @@ public sealed class CompanyStructureEditE2ETests(DashboardUiFixture dashboard) :
         Page.Dialog += async (_, dialog) => await dialog.DismissAsync();
 
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH").ToString());
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Delete division WEST" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Delete division WEST", Exact = true }).ClickAsync();
 
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Western Office" })).ToBeVisibleAsync();
+        await Expect(Page.Locator(".division-panel mat-panel-title").First).ToContainTextAsync("Western Office");
     }
 
     private static object CompanyDetails() => new

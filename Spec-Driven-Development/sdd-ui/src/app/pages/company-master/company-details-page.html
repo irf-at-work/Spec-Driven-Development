@@ -81,24 +81,28 @@
       }
       <section class="detail-section" aria-labelledby="company-audit-heading">
         <h2 id="company-audit-heading">Audit history</h2>
-        <dl class="company-details">
-          <div>
-            <dt>Created by</dt>
-            <dd>{{ item.createdBy || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Created date (GST)</dt>
-            <dd>{{ formatAuditDate(item.createdAt) || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Last updated by</dt>
-            <dd>{{ item.lastUpdatedBy || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Last updated date (GST)</dt>
-            <dd>{{ formatAuditDate(item.lastUpdatedAt) || '—' }}</dd>
-          </div>
-        </dl>
+        <div class="company-details">
+          <dl class="audit-pair">
+            <div>
+              <dt>Created by</dt>
+              <dd>{{ item.createdBy || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Created date (GST)</dt>
+              <dd>{{ formatAuditDate(item.createdAt) || '—' }}</dd>
+            </div>
+          </dl>
+          <dl class="audit-pair">
+            <div>
+              <dt>Last updated by</dt>
+              <dd>{{ item.lastUpdatedBy || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Last updated date (GST)</dt>
+              <dd>{{ formatAuditDate(item.lastUpdatedAt) || '—' }}</dd>
+            </div>
+          </dl>
+        </div>
       </section>
       <section class="detail-section division-section" aria-labelledby="divisions-heading">
         <div class="details-heading">

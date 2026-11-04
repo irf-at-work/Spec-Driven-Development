@@ -37,14 +37,23 @@ public sealed class CompanyStructureDetailsE2ETests(DashboardUiFixture dashboard
 
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "North Insurance" })).ToBeVisibleAsync();
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Divisions" })).ToBeVisibleAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Western Office" })).ToBeVisibleAsync();
+        var westPanel = Page.Locator(".division-panel").Nth(0);
+        var eastPanel = Page.Locator(".division-panel").Nth(1);
+        await Expect(westPanel.Locator("mat-expansion-panel-header")).ToContainTextAsync("Western Office");
+        await Expect(eastPanel.Locator("mat-expansion-panel-header")).ToContainTextAsync("Eastern Office");
+        await westPanel.Locator("mat-expansion-panel-header").ClickAsync();
         await Expect(Page.GetByText("Finance", new() { Exact = true })).ToBeVisibleAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Eastern Office" })).ToBeVisibleAsync();
+        await eastPanel.Locator("mat-expansion-panel-header").ClickAsync();
         await Expect(Page.GetByText("Information Technology", new() { Exact = true })).ToBeVisibleAsync();
-
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Collapse division WEST" }).ClickAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Western Office" })).ToBeVisibleAsync();
+        await westPanel.Locator("mat-expansion-panel-header").ClickAsync();
         await Expect(Page.GetByText("Finance", new() { Exact = true })).ToBeHiddenAsync();
+
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            await Expect(Page.GetByRole(AriaRole.Button, new() { Name = "Add division" })).ToBeVisibleAsync();
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
     }
 
     [Fact]
@@ -67,6 +76,12 @@ public sealed class CompanyStructureDetailsE2ETests(DashboardUiFixture dashboard
         await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH").ToString());
 
         await Expect(Page.GetByText("No divisions have been added to this company yet.")).ToBeVisibleAsync();
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            await Expect(Page.GetByText("No divisions have been added to this company yet.")).ToBeVisibleAsync();
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+        }
     }
 
     private static object CompanyDetails() => new

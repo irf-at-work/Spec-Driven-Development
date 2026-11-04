@@ -1,9 +1,9 @@
 .company-fields {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.5rem;
   padding: clamp(0.9rem, 2vw, 1.35rem);
   border: 1px solid var(--color-border);
-  border-radius: 0.8rem;
+  border-radius: var(--radius-md);
   background: var(--color-surface);
 }
 
@@ -12,21 +12,22 @@
 }
 
 .field-group + .field-group {
-  padding-top: 1.25rem;
+  padding-top: 1.5rem;
   border-top: 1px solid var(--color-border);
 }
 
 .field-group h2 {
-  margin: 0 0 0.9rem;
+  margin: 0 0 1rem;
   color: var(--color-primary-900);
-  font-size: 1rem;
+  font-size: 1.05rem;
+  font-weight: 650;
   letter-spacing: 0.01em;
 }
 
 .field-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.35rem 1rem;
+  gap: 0.5rem 1.25rem;
 }
 
 .field-grid mat-form-field {
@@ -39,23 +40,23 @@
   min-height: 3.5rem;
   flex-direction: column;
   justify-content: center;
-  gap: 0.2rem;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid color-mix(in srgb, var(--color-border) 72%, transparent);
-  border-radius: 0.55rem;
-  background: color-mix(in srgb, var(--color-page) 66%, var(--color-surface));
+  gap: 0.25rem;
+  padding: 0.55rem 0.2rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .read-field span {
   color: var(--color-muted);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .read-field strong {
   overflow-wrap: anywhere;
-  font-size: 0.92rem;
-  font-weight: 500;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 550;
 }
 
 @media (max-width: 850px) {

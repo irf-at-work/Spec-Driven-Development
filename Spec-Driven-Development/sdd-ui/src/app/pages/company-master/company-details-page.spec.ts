@@ -114,6 +114,21 @@ describe('CompanyDetailsPage structure', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Finance');
   });
 
+  it('keeps audit actors paired with their GST dates', async () => {
+    const { harness } = await createPage();
+    await harness.navigateByUrl('/company-master/NORTH', CompanyDetailsPage);
+    await harness.fixture.whenStable();
+
+    const auditPairs = Array.from(
+      (harness.routeNativeElement as HTMLElement).querySelectorAll('.company-details .audit-pair'),
+    );
+    expect(auditPairs).toHaveLength(2);
+    expect(auditPairs[0].textContent).toContain('Created by');
+    expect(auditPairs[0].textContent).toContain('Created date (GST)');
+    expect(auditPairs[1].textContent).toContain('Last updated by');
+    expect(auditPairs[1].textContent).toContain('Last updated date (GST)');
+  });
+
   it('renders divisions as collapsed Material expansion panels by default', async () => {
     const { harness } = await createPage();
     const page = await harness.navigateByUrl('/company-master/NORTH', CompanyDetailsPage);

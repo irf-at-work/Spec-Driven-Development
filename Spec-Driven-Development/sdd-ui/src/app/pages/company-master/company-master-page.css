@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .page-heading h1 {
@@ -22,8 +22,9 @@ section[aria-labelledby='company-master-title'] {
   min-height: 10rem;
   overflow: auto;
   border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: var(--color-surface);
+  box-shadow: var(--shadow-card);
   isolation: isolate;
 }
 
@@ -38,7 +39,7 @@ table {
 th,
 td {
   border-bottom: 1px solid var(--color-border);
-  border-right: 1px solid color-mix(in srgb, var(--color-border) 62%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--color-border) 72%, transparent);
   padding: 0.6rem 0.75rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -64,7 +65,7 @@ th {
   border-left-width: 1px;
   border-left-style: solid;
   border-left-color: var(--color-border);
-  box-shadow: -0.35rem 0 0.55rem rgb(38 51 49 / 8%);
+  box-shadow: -0.35rem 0 0.55rem rgb(23 43 77 / 8%);
 }
 
 .resize-handle {
@@ -89,7 +90,7 @@ th {
 .resize-handle:hover::after,
 .resize-handle:focus-visible::after {
   width: 2px;
-  background: var(--color-accent-700);
+  background: var(--color-focus);
 }
 
 th[mat-header-cell] {
@@ -100,7 +101,7 @@ th[mat-header-cell][stickyEnd],
 td[mat-cell][stickyEnd] {
   z-index: 4;
   background: var(--color-surface);
-  box-shadow: -0.35rem 0 0.55rem rgb(38 51 49 / 8%);
+  box-shadow: -0.35rem 0 0.55rem rgb(23 43 77 / 8%);
 }
 
 .column-header-row {
@@ -123,7 +124,7 @@ td[mat-cell][stickyEnd] {
   position: sticky;
   top: var(--company-table-header-height);
   z-index: 2;
-  box-shadow: 0 0.35rem 0.55rem rgb(20 54 88 / 8%);
+  box-shadow: 0 0.35rem 0.55rem rgb(23 43 77 / 8%);
 }
 
 .filter-row mat-form-field {
@@ -153,14 +154,14 @@ td[mat-cell][stickyEnd] {
 }
 
 .company-row:focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--color-focus);
   outline-offset: -2px;
 }
 
 :host ::ng-deep .mat-mdc-paginator {
-  margin-top: 0.55rem;
+  margin-top: 0.65rem;
   border: 1px solid var(--color-border);
-  border-radius: 0.65rem;
+  border-radius: var(--radius-md);
   background: var(--color-surface);
 }
 
@@ -169,6 +170,14 @@ td[mat-cell][stickyEnd] {
 }
 
 .empty-state {
-  padding: 1rem;
+  padding: 1.5rem;
+  color: var(--color-muted);
   text-align: center;
+}
+
+@media (max-width: 600px) {
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

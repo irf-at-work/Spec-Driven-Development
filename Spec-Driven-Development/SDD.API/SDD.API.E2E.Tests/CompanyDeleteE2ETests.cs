@@ -110,6 +110,13 @@ public sealed class CompanyDeleteE2ETests(DashboardUiFixture dashboard) : PageTe
                 return;
             }
 
+            if (string.Equals(route.Request.Method, "GET", StringComparison.OrdinalIgnoreCase) &&
+                new Uri(route.Request.Url).AbsolutePath.EndsWith("/divisions", StringComparison.OrdinalIgnoreCase))
+            {
+                await FulfillJsonAsync(route, Array.Empty<object>(), 200);
+                return;
+            }
+
             await handleRequest(route);
         });
     }

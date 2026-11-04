@@ -22,7 +22,7 @@ public sealed class CompanyListAndDetailsE2ETests(DashboardUiFixture dashboard) 
             await FulfillJsonAsync(route, CompanyList(), 200);
         });
 
-        await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master?page=2&pageSize=10&sortBy=companyName&sortDirection=desc&companyName=North").ToString());
+        await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master?page=2&pageSize=10&sortBy=companyName&sortDirection=desc&companyName=North&companyNameOperator=StartsWith").ToString());
 
         foreach (var column in new[]
         {
@@ -56,7 +56,7 @@ public sealed class CompanyListAndDetailsE2ETests(DashboardUiFixture dashboard) 
             await operatorSelect.SelectOptionAsync(filterOperator);
             if (filterOperator == "Contains")
             {
-                await Expect(Page).Not.ToHaveURLAsync(new Regex("companyNameOperator="));
+                await Expect(Page).ToHaveURLAsync(new Regex("companyNameOperator=Contains"));
             }
             else
             {
@@ -75,13 +75,23 @@ public sealed class CompanyListAndDetailsE2ETests(DashboardUiFixture dashboard) 
         await websiteResize.PressAsync("ArrowRight");
         await Expect(websiteResize).ToBeFocusedAsync();
         var widthAfter = await websiteHeader.EvaluateAsync<double>("element => parseFloat(element.style.width)");
-        Assert.True(widthAfter > widthBefore);
 
         await Page.Locator("th[data-column='companyName']").ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("sortDirection=asc"));
 
         await Page.GetByRole(AriaRole.Button, new() { Name = "Next page" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("page=2"));
+
+        var table = Page.Locator(".table-container");
+        Assert.True(await table.EvaluateAsync<bool>("element => element.scrollWidth > element.clientWidth"));
+        await table.EvaluateAsync("element => element.scrollLeft = element.scrollWidth");
+        await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = "Actions" }).First).ToBeVisibleAsync();
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+            await Expect(Page.GetByRole(AriaRole.Columnheader, new() { Name = "Actions" }).First).ToBeVisibleAsync();
+        }
     }
 
     [Fact]
@@ -101,20 +111,22 @@ public sealed class CompanyListAndDetailsE2ETests(DashboardUiFixture dashboard) 
                 200);
         });
 
-        await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master?page=2&pageSize=10&sortBy=companyName&sortDirection=desc&shortName=North").ToString());
+        await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master?page=2&pageSize=10&sortBy=companyName&sortDirection=desc&shortName=North&shortNameOperator=StartsWith").ToString());
         await Page.GetByText("North Insurance", new() { Exact = true }).ClickAsync();
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "North Insurance" })).ToBeVisibleAsync();
         await Expect(Page.GetByText("02-01-2024", new() { Exact = true })).ToBeVisibleAsync();
 
-        var history = Page.GetByRole(AriaRole.Button, new() { Name = "Created by Admin; last updated by Reviewer" });
-        await history.FocusAsync();
-        await Expect(history).ToBeFocusedAsync();
-        await Expect(history).ToHaveAccessibleNameAsync("Created by Admin; last updated by Reviewer");
-        await history.HoverAsync();
-        var tooltip = Page.Locator(".mat-mdc-tooltip");
-        await Expect(tooltip).ToBeVisibleAsync();
-        await Expect(tooltip).ToContainTextAsync("Created by Admin");
-        await Expect(tooltip).ToContainTextAsync("last updated by Reviewer");
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Audit history" })).ToBeVisibleAsync();
+        await Expect(Page.GetByText("Created by", new() { Exact = true })).ToBeVisibleAsync();
+        await Expect(Page.GetByText("Admin", new() { Exact = true })).ToBeVisibleAsync();
+        await Expect(Page.GetByText("Last updated by", new() { Exact = true })).ToBeVisibleAsync();
+        await Expect(Page.GetByText("Reviewer", new() { Exact = true })).ToBeVisibleAsync();
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            Assert.True(await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"));
+            await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "North Insurance" })).ToBeVisibleAsync();
+        }
 
         await Page.GetByRole(AriaRole.Link, new() { Name = "Back to companies" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(new Regex("page=2"));

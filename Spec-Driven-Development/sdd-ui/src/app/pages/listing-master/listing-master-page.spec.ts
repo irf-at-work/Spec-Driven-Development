@@ -58,6 +58,19 @@ describe('ListingMasterPage', () => {
     expect(root.textContent).toContain('AE');
     expect(root.textContent).toContain('971');
     expect(root.textContent).toContain('Active');
+    expect(
+      Array.from(root.querySelectorAll('.column-header-row th')).map((header) =>
+        header.textContent?.trim(),
+      ),
+    ).toEqual([
+      'List type',
+      'List code',
+      'Description',
+      'Short description',
+      'Value',
+      'Active',
+      'History',
+    ]);
     expect(root.querySelector('[aria-label*="Created by Admin"]')).not.toBeNull();
   });
 
