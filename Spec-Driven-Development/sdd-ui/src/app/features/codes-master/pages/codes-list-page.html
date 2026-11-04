@@ -15,7 +15,7 @@
     <p class="error-message" role="alert">{{ deleteError() }}</p>
   }
 
-  @if (isLoading()) {
+  @if (isLoading() && records().length === 0) {
     <p class="state-message" role="status">Loading codes…</p>
   } @else if (hasError()) {
     <div class="state-message error-message" role="alert">

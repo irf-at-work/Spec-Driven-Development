@@ -296,7 +296,7 @@ test('shows creation audit details when its row control is hovered', async ({ pa
   });
 
   await page.goto('/codes');
-  await page.getByRole('button', { name: 'Creation audit for CODE-1' }).hover();
+  await page.getByRole('button', { name: 'Audit details for CODE-1' }).hover();
   await expect(page.getByRole('tooltip')).toContainText('Created By: ADMIN');
   await expect(page.getByRole('tooltip')).toContainText('Created Date: 15-Jan-2025');
   await expect(page.getByRole('tooltip')).toContainText('Updated By: EDITOR');
@@ -321,7 +321,7 @@ test('shows NULL creation audit values as not recorded after pointer activation'
   });
 
   await page.goto('/codes');
-  await page.getByRole('button', { name: 'Creation audit for CODE-1' }).click();
+  await page.getByRole('button', { name: 'Audit details for CODE-1' }).click();
 
   await expect(page.getByRole('tooltip')).toContainText('Created By: Not recorded');
   await expect(page.getByRole('tooltip')).toContainText('Created Date: Not recorded');

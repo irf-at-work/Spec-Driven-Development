@@ -237,14 +237,15 @@ test('filters staged Applicable Modules across every displayed column', async ({
   );
 });
 
-test('shows a breadcrumb on the Document Setup Add page', async ({ page }) => {
+test('header Add resets the unsaved Document Setup and stays on its page', async ({ page }) => {
   await page.goto('/document-setups/add');
 
   const headerActions = page.locator('.page-header-actions');
   await expect(headerActions.getByRole('button', { name: 'Add', exact: true })).toBeVisible();
+  await page.getByRole('textbox', { name: 'Doc Code' }).fill('UNSAVED');
   await headerActions.getByRole('button', { name: 'Add', exact: true }).click();
-  await expect(page).toHaveURL('/document-setups/add/applicable-modules/add');
-  await page.goto('/document-setups/add');
+  await expect(page).toHaveURL('/document-setups/add');
+  await expect(page.getByRole('textbox', { name: 'Doc Code' })).toHaveValue('');
 
   const breadcrumbs = page.getByRole('navigation', { name: 'Breadcrumb' });
   expect(

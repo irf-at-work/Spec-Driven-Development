@@ -142,14 +142,15 @@ test('shows a breadcrumb on the Document Setup Edit page', async ({ page }) => {
   await expect(breadcrumbs.locator('[aria-current="page"]')).toHaveText('DOC-EDIT');
 });
 
-test('adds an Applicable Module from the Document Setup header', async ({ page }) => {
+test('header Add opens the Add Document Setup page', async ({ page }) => {
   await mockParentPage(page);
   await page.goto('/document-setups/DOC-EDIT/edit');
 
   const headerActions = page.locator('.page-header-actions');
-  await expect(headerActions.getByRole('button', { name: 'Add', exact: true })).toBeVisible();
-  await headerActions.getByRole('button', { name: 'Add', exact: true }).click();
-  await expect(page).toHaveURL('/document-setups/DOC-EDIT/applicable-modules/add');
+  await expect(headerActions.getByRole('link', { name: 'Add', exact: true })).toBeVisible();
+  await headerActions.getByRole('link', { name: 'Add', exact: true }).click();
+  await expect(page).toHaveURL('/document-setups/add');
+  await expect(page.getByRole('heading', { name: 'Add Document Setup' })).toBeVisible();
 });
 
 test('loads Doc Setup For choices from Codes Master on Edit', async ({ page }) => {
@@ -280,7 +281,7 @@ test('loads parent audit values and child range columns, and Reset restores the 
 
   await expect(page.getByRole('heading', { name: 'Document Setup' })).toBeVisible();
   await expect(
-    page.locator('.page-header-actions').getByRole('button', { name: 'Add' }),
+    page.locator('.page-header-actions').getByRole('link', { name: 'Add' }),
   ).toBeVisible();
   const auditButton = page.getByRole('button', { name: 'Audit details for DOC-EDIT' });
   await expect(auditButton).toBeVisible();
@@ -668,7 +669,7 @@ test('dirty child form asks before leaving and can be reset', async ({ page }) =
   });
   await page.goto('/document-setups/DOC-EDIT/applicable-modules/add');
   await page.getByRole('combobox', { name: 'Applicable For' }).click();
-  await page.getByRole('option', { name: 'ASSET' }).click();
+  await page.getByRole('option', { name: 'ASSET — Asset' }).click();
   await page.getByRole('button', { name: 'Reset' }).click();
   await expect(page.getByRole('combobox', { name: 'Product From' })).toHaveCount(0);
 

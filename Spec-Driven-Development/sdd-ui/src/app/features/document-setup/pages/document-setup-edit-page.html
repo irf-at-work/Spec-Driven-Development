@@ -10,7 +10,7 @@
 <section class="document-setup-edit-page" aria-labelledby="edit-document-setup-heading">
   <header class="page-header">
     <div>
-      <h1 id="edit-document-setup-heading">Document Setup</h1>
+      <h1 id="edit-document-setup-heading">Edit Document Setup</h1>
       @if (loadedRecord(); as record) {
         <p>
           Doc Code: <strong>{{ record.docCode }}</strong>
@@ -21,15 +21,7 @@
       @if (loadedRecord(); as record) {
         <app-creation-audit-details [record]="record" />
       }
-      <button
-        mat-flat-button
-        color="primary"
-        type="button"
-        [disabled]="isSaving()"
-        (click)="addModule()"
-      >
-        Add
-      </button>
+      <a mat-flat-button color="primary" routerLink="/document-setups/add">Add</a>
       <button
         mat-flat-button
         color="primary"

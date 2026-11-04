@@ -1,7 +1,7 @@
 <section class="document-setups-page" aria-labelledby="document-setups-heading">
   <nav class="page-breadcrumb document-setup-breadcrumb" aria-label="Breadcrumb">
     <ol>
-      <li aria-current="page"></li>
+      <li aria-current="page">Document Setup</li>
     </ol>
   </nav>
   <header class="page-header">
@@ -14,7 +14,7 @@
     </div>
   </header>
 
-  @if (isLoading()) {
+  @if (isLoading() && records().length === 0 && !hasActiveFilters()) {
     <p class="state-message" role="status">Loading document setups…</p>
   } @else if (hasError()) {
     <div class="state-message error-message" role="alert">
