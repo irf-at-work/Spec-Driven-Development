@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, EMPTY, finalize, map, switchMap, tap } from 'rxjs';
 import { ListItemService } from '../../api/generated/api/listItem.service';
@@ -18,7 +19,7 @@ import { LIST_ITEM_FORM_FIELDS, ListItemForm, ListItemFormValue } from './list-i
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ListItemForm, MatButtonModule, MatIconModule, RouterLink],
+  imports: [ListItemForm, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
   selector: 'app-list-item-details-page',
   styleUrl: './list-item-details-page.css',
   templateUrl: './list-item-details-page.html',

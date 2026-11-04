@@ -134,6 +134,41 @@ public sealed class CompanyListAndDetailsE2ETests(DashboardUiFixture dashboard) 
         await Expect(Page.GetByLabel("Filter by short name")).ToHaveValueAsync("North");
     }
 
+    [Fact]
+    public async Task Company_details_with_long_name_stay_within_the_viewport_and_details_panel()
+    {
+        await Page.RouteAsync("**/api/companies**", async route =>
+        {
+            if (await FulfillPreflightAsync(route))
+            {
+                return;
+            }
+
+            var path = new Uri(route.Request.Url).AbsolutePath;
+            var body = path.EndsWith("/NORTH", StringComparison.OrdinalIgnoreCase)
+                ? CompanyDetails(new string('N', 100))
+                : path.EndsWith("/divisions", StringComparison.OrdinalIgnoreCase)
+                    ? Array.Empty<object>()
+                    : CompanyList();
+            await FulfillJsonAsync(route, body, 200);
+        });
+
+        await Page.GotoAsync(new Uri(dashboard.BaseAddress, "/company-master/NORTH").ToString());
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = new string('N', 100) })).ToBeVisibleAsync();
+
+        foreach (var width in new[] { 320, 768, 1024, 1440 })
+        {
+            await Page.SetViewportSizeAsync(width, 800);
+            var layout = await Page.EvaluateAsync<string>(
+                "() => JSON.stringify({ viewport: window.innerWidth, document: document.documentElement.scrollWidth, overflowing: [...document.querySelectorAll('body *')].map(element => ({ element: element.tagName.toLowerCase(), className: typeof element.className === 'string' ? element.className : '', left: Math.round(element.getBoundingClientRect().left), right: Math.round(element.getBoundingClientRect().right), width: Math.round(element.getBoundingClientRect().width) })).filter(element => element.right > window.innerWidth || element.left < 0).slice(0, 12) })");
+            Assert.True(
+                await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= window.innerWidth"),
+                layout);
+            Assert.True(await Page.EvaluateAsync<bool>(
+                "() => { const fields = document.querySelector('app-company-fields .company-fields'); const panel = document.querySelector('.details-panel'); return fields && panel && fields.getBoundingClientRect().right <= panel.getBoundingClientRect().right; }"));
+        }
+    }
+
     private static object CompanyList() => new
     {
         items = new[]
@@ -161,10 +196,10 @@ public sealed class CompanyListAndDetailsE2ETests(DashboardUiFixture dashboard) 
         totalCount = 30,
     };
 
-    private static object CompanyDetails() => new
+    private static object CompanyDetails(string companyName = "North Insurance") => new
     {
         companyCode = "NORTH",
-        companyName = "North Insurance",
+        companyName,
         shortName = "North",
         address1 = "Bay Road",
         address2 = "Tower 2",

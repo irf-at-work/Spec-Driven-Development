@@ -78,35 +78,45 @@
           <dl class="details-grid">
             <div>
               <dt>List type</dt>
-              <dd>{{ current.liType }}</dd>
+              <dd [matTooltip]="current.liType">{{ current.liType }}</dd>
             </div>
             <div>
               <dt>List code</dt>
-              <dd>{{ current.liCode }}</dd>
+              <dd [matTooltip]="current.liCode">{{ current.liCode }}</dd>
             </div>
             <div>
               <dt>Description</dt>
-              <dd>{{ current.description || '—' }}</dd>
+              <dd [matTooltip]="current.description || '—'">{{ current.description || '—' }}</dd>
             </div>
             <div>
               <dt>Description (L2)</dt>
-              <dd>{{ current.descriptionL2 || '—' }}</dd>
+              <dd [matTooltip]="current.descriptionL2 || '—'">
+                {{ current.descriptionL2 || '—' }}
+              </dd>
             </div>
             <div>
               <dt>Short description</dt>
-              <dd>{{ current.shortDescription || '—' }}</dd>
+              <dd [matTooltip]="current.shortDescription || '—'">
+                {{ current.shortDescription || '—' }}
+              </dd>
             </div>
             <div>
               <dt>Short description (L2)</dt>
-              <dd>{{ current.shortDescriptionL2 || '—' }}</dd>
+              <dd [matTooltip]="current.shortDescriptionL2 || '—'">
+                {{ current.shortDescriptionL2 || '—' }}
+              </dd>
             </div>
             <div>
               <dt>Value</dt>
-              <dd>{{ current.value || '—' }}</dd>
+              <dd [matTooltip]="current.value || '—'">{{ current.value || '—' }}</dd>
             </div>
             <div>
               <dt>Active status</dt>
-              <dd>
+              <dd
+                [matTooltip]="
+                  current.activeYn === 'Y' ? 'Active' : current.activeYn === 'N' ? 'Inactive' : '—'
+                "
+              >
                 {{
                   current.activeYn === 'Y' ? 'Active' : current.activeYn === 'N' ? 'Inactive' : '—'
                 }}
@@ -114,11 +124,11 @@
             </div>
             <div>
               <dt>Flex 01</dt>
-              <dd>{{ current.flex01 || '—' }}</dd>
+              <dd [matTooltip]="current.flex01 || '—'">{{ current.flex01 || '—' }}</dd>
             </div>
             <div>
               <dt>Flex 02</dt>
-              <dd>{{ current.flex02 || '—' }}</dd>
+              <dd [matTooltip]="current.flex02 || '—'">{{ current.flex02 || '—' }}</dd>
             </div>
           </dl>
         </section>
@@ -129,19 +139,25 @@
         <dl class="details-grid">
           <div>
             <dt>Created by</dt>
-            <dd>{{ current.createdBy || '—' }}</dd>
+            <dd [matTooltip]="current.createdBy || '—'">{{ current.createdBy || '—' }}</dd>
           </div>
           <div>
             <dt>Created date (GST)</dt>
-            <dd>{{ formatAuditDate(current.createdAt) || '—' }}</dd>
+            <dd [matTooltip]="formatAuditDate(current.createdAt) || '—'">
+              {{ formatAuditDate(current.createdAt) || '—' }}
+            </dd>
           </div>
           <div>
             <dt>Last updated by</dt>
-            <dd>{{ current.lastUpdatedBy || '—' }}</dd>
+            <dd [matTooltip]="current.lastUpdatedBy || '—'">
+              {{ current.lastUpdatedBy || '—' }}
+            </dd>
           </div>
           <div>
             <dt>Last updated date (GST)</dt>
-            <dd>{{ formatAuditDate(current.lastUpdatedAt) || '—' }}</dd>
+            <dd [matTooltip]="formatAuditDate(current.lastUpdatedAt) || '—'">
+              {{ formatAuditDate(current.lastUpdatedAt) || '—' }}
+            </dd>
           </div>
         </dl>
       </section>

@@ -56,6 +56,12 @@ th {
   min-width: 12rem;
 }
 
+.filter-row th.mat-column-filter-actions {
+  width: 5.5rem;
+  min-width: 5.5rem;
+  max-width: 5.5rem;
+}
+
 .mat-column-actions,
 .mat-column-filter-actions {
   width: 5.5rem;

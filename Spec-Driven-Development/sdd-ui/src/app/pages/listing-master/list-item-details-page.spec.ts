@@ -67,6 +67,10 @@ describe('ListItemDetailsPage', () => {
     expect(root.textContent).toContain('02-01-2024');
     expect(root.textContent).toContain('03-02-2024');
     expect(root.querySelector('app-list-item-form')).toBeNull();
+    expect(root.querySelectorAll('.details-grid dd.mat-mdc-tooltip-trigger')).toHaveLength(14);
+    expect(getComputedStyle(root.querySelector('.details-grid')!).gridTemplateColumns).toBe(
+      'repeat(3, minmax(0, 1fr))',
+    );
   });
 
   it('edits on the same page, keeps identity read-only, saves changes, and supports cancel', async () => {

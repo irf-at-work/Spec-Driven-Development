@@ -116,7 +116,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Expect(fieldLabels).ToHaveTextAsync(["Company information", "Address", "Licensing", "Contact"]);
         var companyFieldNames = await Page.Locator("app-company-fields mat-form-field mat-label").AllTextContentsAsync();
         Assert.Equal(
-            ["Company name", "Short name", "Address 1", "Address 2", "Address 3", "Incorporation date", "Reference number", "Licence issue date", "Licence expiry date", "Company in charge", "Phone", "Email", "Website"],
+            ["Company name", "Short name", "Address Line 1", "Address Line 2", "Address Line 3", "Incorporation date", "Reference number", "Licence issue date", "Licence expiry date", "Company in charge", "Phone", "Email", "Website"],
             companyFieldNames.Select(label => label.Trim()));
         await companyName.FillAsync("North Mutual");
         await Page.GetByLabel("Short name").FillAsync("Updated North");
@@ -157,7 +157,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
         await Page.GetByRole(AriaRole.Button, new() { Name = "Edit", Exact = true }).ClickAsync();
         var companyName = Page.GetByLabel("Company name");
         await companyName.FillAsync("Unsaved name");
-        await Page.GetByLabel("Address 1").FillAsync("Unsaved address");
+        await Page.GetByLabel("Address Line 1").FillAsync("Unsaved address");
         foreach (var width in new[] { 320, 768, 1024, 1440 })
         {
             await Page.SetViewportSizeAsync(width, 800);
@@ -175,7 +175,7 @@ public sealed class CompanyAddEditE2ETests(DashboardUiFixture dashboard) : PageT
             .InnerTextAsync();
         Assert.Equal("North Insurance", restoredName);
         var restoredAddress = await Page.Locator("app-company-fields .read-field")
-            .Filter(new() { HasText = "Address 1" })
+            .Filter(new() { HasText = "Address Line 1" })
             .Locator("strong")
             .InnerTextAsync();
         Assert.Equal("Bay Road", restoredAddress);

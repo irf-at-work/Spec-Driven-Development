@@ -114,19 +114,36 @@ describe('CompanyDetailsPage structure', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Finance');
   });
 
-  it('keeps audit actors paired with their GST dates', async () => {
+  it('renders all four audit fields together and keeps actors paired with their GST dates', async () => {
     const { harness } = await createPage();
     await harness.navigateByUrl('/company-master/NORTH', CompanyDetailsPage);
     await harness.fixture.whenStable();
 
-    const auditPairs = Array.from(
-      (harness.routeNativeElement as HTMLElement).querySelectorAll('.company-details .audit-pair'),
+    const auditFields = Array.from(
+      (harness.routeNativeElement as HTMLElement).querySelectorAll('.company-details .audit-field'),
     );
-    expect(auditPairs).toHaveLength(2);
-    expect(auditPairs[0].textContent).toContain('Created by');
-    expect(auditPairs[0].textContent).toContain('Created date (GST)');
-    expect(auditPairs[1].textContent).toContain('Last updated by');
-    expect(auditPairs[1].textContent).toContain('Last updated date (GST)');
+    expect(auditFields).toHaveLength(4);
+    expect(auditFields.map((field) => field.querySelector('dt')?.textContent?.trim())).toEqual([
+      'Created by',
+      'Created date (GST)',
+      'Last updated by',
+      'Last updated date (GST)',
+    ]);
+    expect(getComputedStyle(auditFields[0].parentElement!).gridTemplateColumns).toBe(
+      'repeat(4, minmax(0, 1fr))',
+    );
+  });
+
+  it('truncates the displayed company name while retaining its full text and tooltip', async () => {
+    const { harness } = await createPage();
+    const page = await harness.navigateByUrl('/company-master/NORTH', CompanyDetailsPage);
+    await harness.fixture.whenStable();
+    page.company.update((item) => (item ? { ...item, companyName: 'N'.repeat(100) } : item));
+    harness.fixture.detectChanges();
+
+    const title = harness.routeNativeElement?.querySelector('#company-details-title');
+    expect(title?.textContent?.trim()).toBe('N'.repeat(100));
+    expect(title?.classList.contains('mat-mdc-tooltip-trigger')).toBe(true);
   });
 
   it('renders divisions as collapsed Material expansion panels by default', async () => {
@@ -181,9 +198,9 @@ describe('CompanyDetailsPage structure', () => {
       'Division name',
       'Division code',
       'Short name',
-      'Address 1',
-      'Address 2',
-      'Address 3',
+      'Address Line 1',
+      'Address Line 2',
+      'Address Line 3',
       'Commercial registration number',
       'Licence issue date',
       'Licence expiry date',
@@ -195,6 +212,14 @@ describe('CompanyDetailsPage structure', () => {
       'Remarks',
       'Active',
     ]);
+    const firstPanel = harness.routeNativeElement?.querySelector('mat-expansion-panel');
+    expect(
+      firstPanel?.querySelectorAll('.division-details dd.mat-mdc-tooltip-trigger'),
+    ).toHaveLength(16);
+    expect(firstPanel?.querySelector('mat-panel-title.mat-mdc-tooltip-trigger')).not.toBeNull();
+    expect(
+      firstPanel?.querySelectorAll('.department-table-wrapper td.mat-mdc-tooltip-trigger'),
+    ).toHaveLength(4);
   });
 
   it('hides the division Edit action while that division is being edited', async () => {
@@ -227,6 +252,20 @@ describe('CompanyDetailsPage structure', () => {
     ).find((button) => button.textContent?.trim() === 'Add division') as HTMLButtonElement;
     addButton.click();
     harness.fixture.detectChanges();
+    expect(
+      harness.routeNativeElement?.querySelector('.division-dialog-heading h3')?.textContent,
+    ).toContain('Add division');
+    expect(
+      harness.routeNativeElement?.querySelector('[aria-label="Close add division dialog"]'),
+    ).not.toBeNull();
+    expect(
+      harness.routeNativeElement?.querySelectorAll('.division-dialog-fields mat-form-field'),
+    ).toHaveLength(16);
+    expect(
+      getComputedStyle(
+        harness.routeNativeElement?.querySelector('.division-dialog-fields') as HTMLElement,
+      ).gridTemplateColumns,
+    ).toBe('repeat(3, minmax(0, 1fr))');
     page.newDivisionForm.controls.divisionCode.setValue('CENTRAL');
     page.newDivisionForm.controls.name.setValue('Central Office');
     page.newDivisionForm.controls.fax.setValue('555-0103');
@@ -251,6 +290,26 @@ describe('CompanyDetailsPage structure', () => {
       'EAST',
     ]);
     expect(page.divisionDialogOpen()).toBe(false);
+  });
+
+  it('closes the Add division dialog from its sticky heading button', async () => {
+    const { harness, structureApi } = await createPage();
+    const page = await harness.navigateByUrl('/company-master/NORTH', CompanyDetailsPage);
+    await harness.fixture.whenStable();
+    page.openNewDivision();
+    harness.fixture.detectChanges();
+
+    const closeButton = harness.routeNativeElement?.querySelector(
+      '[aria-label="Close add division dialog"]',
+    ) as HTMLButtonElement;
+    expect(getComputedStyle(closeButton.closest('.division-dialog-heading')!).position).toBe(
+      'sticky',
+    );
+    closeButton.click();
+    harness.fixture.detectChanges();
+
+    expect(page.divisionDialogOpen()).toBe(false);
+    expect(structureApi.apiCompaniesCompanyCodeDivisionsPost).not.toHaveBeenCalled();
   });
 
   it('removes a department when its final division assignment is deleted', async () => {

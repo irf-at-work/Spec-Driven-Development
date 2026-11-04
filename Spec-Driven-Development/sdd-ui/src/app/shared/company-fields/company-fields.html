@@ -4,7 +4,10 @@
     <div class="field-grid">
       @if (mode() === 'view' || !form().get('companyCode')) {
         <div class="read-field">
-          <span>Company code</span><strong>{{ company()['companyCode'] || '—' }}</strong>
+          <span>Company code</span
+          ><strong [matTooltip]="company()['companyCode'] || '—'">{{
+            company()['companyCode'] || '—'
+          }}</strong>
         </div>
       } @else {
         <mat-form-field appearance="outline"
@@ -17,7 +20,10 @@
       }
       @if (mode() === 'view') {
         <div class="read-field">
-          <span>Company name</span><strong>{{ company()['companyName'] || '—' }}</strong>
+          <span>Company name</span
+          ><strong [matTooltip]="company()['companyName'] || '—'">{{
+            company()['companyName'] || '—'
+          }}</strong>
         </div>
       } @else {
         <mat-form-field appearance="outline"
@@ -30,7 +36,10 @@
       }
       @if (mode() === 'view') {
         <div class="read-field">
-          <span>Short name</span><strong>{{ company()['shortName'] || '—' }}</strong>
+          <span>Short name</span
+          ><strong [matTooltip]="company()['shortName'] || '—'">{{
+            company()['shortName'] || '—'
+          }}</strong>
         </div>
       } @else {
         <mat-form-field appearance="outline"
@@ -51,7 +60,9 @@
         @if (mode() === 'view') {
           <div class="read-field">
             <span>{{ field.label }}</span
-            ><strong>{{ company()[field.name] || '—' }}</strong>
+            ><strong [matTooltip]="company()[field.name] || '—'">{{
+              company()[field.name] || '—'
+            }}</strong>
           </div>
         } @else {
           <mat-form-field appearance="outline"
@@ -72,7 +83,9 @@
       @if (mode() === 'view') {
         <div class="read-field">
           <span>Incorporation date</span
-          ><strong>{{ formatDate()(company()['incorporationDate']) || '—' }}</strong>
+          ><strong [matTooltip]="formatDate()(company()['incorporationDate']) || '—'">{{
+            formatDate()(company()['incorporationDate']) || '—'
+          }}</strong>
         </div>
       } @else if (datePickerMode()) {
         <mat-form-field appearance="outline"
@@ -100,7 +113,10 @@
       }
       @if (mode() === 'view') {
         <div class="read-field">
-          <span>Reference number</span><strong>{{ company()['referenceNumber'] || '—' }}</strong>
+          <span>Reference number</span
+          ><strong [matTooltip]="company()['referenceNumber'] || '—'">{{
+            company()['referenceNumber'] || '—'
+          }}</strong>
         </div>
       } @else {
         <mat-form-field appearance="outline"
@@ -114,7 +130,9 @@
       @if (mode() === 'view') {
         <div class="read-field">
           <span>Licence issue date</span
-          ><strong>{{ formatDate()(company()['licenceIssueDate']) || '—' }}</strong>
+          ><strong [matTooltip]="formatDate()(company()['licenceIssueDate']) || '—'">{{
+            formatDate()(company()['licenceIssueDate']) || '—'
+          }}</strong>
         </div>
       } @else if (datePickerMode()) {
         <mat-form-field appearance="outline"
@@ -143,7 +161,9 @@
       @if (mode() === 'view') {
         <div class="read-field">
           <span>Licence expiry date</span
-          ><strong>{{ formatDate()(company()['licenceExpiryDate']) || '—' }}</strong>
+          ><strong [matTooltip]="formatDate()(company()['licenceExpiryDate']) || '—'">{{
+            formatDate()(company()['licenceExpiryDate']) || '—'
+          }}</strong>
         </div>
       } @else if (datePickerMode()) {
         <mat-form-field appearance="outline"
@@ -179,7 +199,9 @@
         @if (mode() === 'view') {
           <div class="read-field">
             <span>{{ field.label }}</span
-            ><strong>{{ company()[field.name] || '—' }}</strong>
+            ><strong [matTooltip]="company()[field.name] || '—'">{{
+              company()[field.name] || '—'
+            }}</strong>
           </div>
         } @else {
           <mat-form-field appearance="outline"

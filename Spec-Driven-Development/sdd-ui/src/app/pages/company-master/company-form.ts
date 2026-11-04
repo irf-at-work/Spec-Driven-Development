@@ -364,9 +364,7 @@ export class CompanyForm implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((company) => {
-        void this.router.navigate(['/company-master', company.companyCode], {
-          queryParamsHandling: 'preserve',
-        });
+        this.navigateToCompanyDetails(company.companyCode);
       });
   }
 
@@ -539,6 +537,19 @@ export class CompanyForm implements OnInit {
 
   saveDivisionAndExit(): void {
     this.saveDivisions('exit');
+  }
+
+  exitDepartments(): void {
+    const companyCode = this.companyCode();
+    if (!companyCode) {
+      this.error.set(
+        'Company details could not be opened because the company code is unavailable.',
+      );
+      return;
+    }
+
+    this.error.set(null);
+    this.navigateToCompanyDetails(companyCode);
   }
 
   saveDivisionAndAddDepartment(): void {
@@ -767,6 +778,9 @@ export class CompanyForm implements OnInit {
             this.savedDivisionCodes.set(
               new Set(divisions.map((division) => division.divisionCode)),
             );
+            if (divisions.length === 0) {
+              this.addDivision();
+            }
           }
           if (this.step() === 'department' && this.departmentForms.length === 0) {
             this.addDepartment();

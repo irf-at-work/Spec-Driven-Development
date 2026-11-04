@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, EMPTY, finalize, map, switchMap, tap } from 'rxjs';
@@ -36,6 +37,7 @@ import { CompanyFields } from '../../shared/company-fields/company-fields';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     RouterLink,
     CompanyFields,

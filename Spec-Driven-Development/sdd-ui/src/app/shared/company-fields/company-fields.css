@@ -1,5 +1,12 @@
+:host {
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+
 .company-fields {
   display: grid;
+  min-width: 0;
   gap: 1.5rem;
   padding: clamp(0.9rem, 2vw, 1.35rem);
   border: 1px solid var(--color-border);
@@ -53,10 +60,13 @@
 }
 
 .read-field strong {
-  overflow-wrap: anywhere;
+  min-width: 0;
+  overflow: hidden;
   color: var(--color-text);
   font-size: 0.95rem;
   font-weight: 550;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 850px) {

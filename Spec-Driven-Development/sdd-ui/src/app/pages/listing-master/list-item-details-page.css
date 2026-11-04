@@ -53,17 +53,15 @@ h1 {
 
 .details-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem 1.25rem;
   margin: 0;
 }
 
 .details-grid > div {
   min-width: 0;
-  padding: 0.75rem 0.9rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-page);
+  padding: 0.55rem 0.2rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 dt {
@@ -74,8 +72,11 @@ dt {
 }
 
 dd {
+  display: block;
+  overflow: hidden;
   margin: 0;
-  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .destructive-action {
@@ -92,5 +93,17 @@ dd {
   .details-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 850px) {
+  .details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .details-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

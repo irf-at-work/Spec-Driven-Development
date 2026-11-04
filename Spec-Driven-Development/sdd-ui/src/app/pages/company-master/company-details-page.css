@@ -1,5 +1,6 @@
 .details-panel {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
   margin-top: 1rem;
   padding: clamp(1rem, 3vw, 2rem);
@@ -17,8 +18,14 @@
 }
 
 .details-heading {
+  min-width: 0;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.company-title {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .company-title > p:first-child {
@@ -38,11 +45,14 @@
 .company-title h1 {
   display: block;
   width: min(100%, 42rem);
+  overflow: hidden;
   margin: 0 0 0.5rem;
   color: var(--color-primary-900);
   font-size: clamp(1.75rem, 2.5vw, 2.25rem);
   font-weight: 700;
   line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .details-actions {
@@ -59,7 +69,6 @@
 }
 
 .division-panel,
-.division-details > div,
 .division-edit-fields,
 .department-table-wrapper,
 .department-dialog {
@@ -93,6 +102,13 @@
   font-weight: 700;
 }
 
+.division-panel mat-panel-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .division-panel-actions {
   gap: 0.25rem;
   margin-inline-end: 0.5rem;
@@ -110,16 +126,15 @@
 
 .division-details {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem 1.25rem;
   margin: 0;
 }
 
 .division-details > div {
   min-width: 0;
-  padding: 0.75rem 0.9rem;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  padding: 0.55rem 0.2rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .division-details dt,
@@ -131,13 +146,35 @@
 }
 
 .division-details dt {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
+}
+
+.division-details dd,
+.company-details dd,
+.company-details dt {
+  min-width: 0;
 }
 
 .division-details dd,
 .company-details dd {
+  display: block;
+  overflow: hidden;
   margin: 0;
-  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.company-details {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+}
+
+.company-details > div {
+  min-width: 0;
+  padding: 0.55rem 0.2rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .division-edit-fields {
@@ -216,9 +253,43 @@
   box-shadow: var(--shadow-float);
 }
 
+.division-dialog {
+  width: min(56rem, calc(100vw - 2rem));
+}
+
 .department-dialog > div {
   display: grid;
   gap: 0.75rem;
+}
+
+.division-dialog-heading {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -0.25rem 0 0;
+  background: var(--color-surface);
+}
+
+.division-dialog-heading h3 {
+  margin: 0;
+}
+
+.division-dialog-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem 0.75rem;
+}
+
+.division-dialog-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin: 0;
+  padding-top: 0.5rem;
+  background: var(--color-surface);
 }
 
 .company-details dt {
@@ -254,5 +325,26 @@
     gap: 0;
     margin-inline-end: 0;
   }
+}
 
+@media (max-width: 850px) {
+  .division-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .company-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .division-dialog-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .division-details,
+  .company-details,
+  .division-dialog-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

@@ -1,7 +1,12 @@
 <section aria-labelledby="company-master-title">
   <header class="page-heading">
     <h1 id="company-master-title">Company Master</h1>
-    <a mat-flat-button routerLink="/company-master/new" queryParamsHandling="preserve">
+    <a
+      mat-flat-button
+      routerLink="/company-master/new"
+      [queryParams]="{ step: null, companyCode: null }"
+      queryParamsHandling="merge"
+    >
       <mat-icon aria-hidden="true">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />

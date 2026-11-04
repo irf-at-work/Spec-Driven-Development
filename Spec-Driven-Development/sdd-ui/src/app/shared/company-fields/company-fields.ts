@@ -3,10 +3,17 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDatepickerModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+  imports: [
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
+  ],
   selector: 'app-company-fields',
   styleUrl: './company-fields.css',
   templateUrl: './company-fields.html',
@@ -20,9 +27,9 @@ export class CompanyFields {
   readonly formatDate = input<(value: string | null | undefined) => string>((value) => value ?? '');
 
   readonly addressFields = [
-    { name: 'address1', label: 'Address 1', maxLength: 100 },
-    { name: 'address2', label: 'Address 2', maxLength: 100 },
-    { name: 'address3', label: 'Address 3', maxLength: 100 },
+    { name: 'address1', label: 'Address Line 1', maxLength: 100 },
+    { name: 'address2', label: 'Address Line 2', maxLength: 100 },
+    { name: 'address3', label: 'Address Line 3', maxLength: 100 },
   ];
   readonly dateFields = [
     { name: 'incorporationDate', label: 'Incorporation date' },

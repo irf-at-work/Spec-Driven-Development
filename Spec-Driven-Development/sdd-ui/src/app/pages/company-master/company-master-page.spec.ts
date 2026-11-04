@@ -1,10 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { of, Subject, throwError } from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
 import { CompanyMasterPage } from './company-master-page';
+import { Component } from '@angular/core';
 
+@Component({ standalone: true, template: '<h1>Add company stub</h1>' })
+class AddCompanyStub {}
 describe('CompanyMasterPage', () => {
   const response = {
     items: [
@@ -34,7 +37,10 @@ describe('CompanyMasterPage', () => {
     await TestBed.configureTestingModule({
       imports: [CompanyMasterPage],
       providers: [
-        provideRouter([{ path: 'company-master', component: CompanyMasterPage }]),
+        provideRouter([
+          { path: 'company-master', component: CompanyMasterPage },
+          { path: 'company-master/new', component: AddCompanyStub },
+        ]),
         { provide: CompanyService, useValue: api },
       ],
     }).compileComponents();
@@ -89,6 +95,9 @@ describe('CompanyMasterPage', () => {
     expect(actionsHeader).not.toBeNull();
     expect(actionsHeader?.textContent?.trim()).toBe('Actions');
     expect(getComputedStyle(actionsHeader!).width).toBe('88px');
+    const filterActionsHeader = page.querySelector('.filter-row th.mat-column-filter-actions');
+    expect(filterActionsHeader).not.toBeNull();
+    expect(getComputedStyle(filterActionsHeader!).width).toBe('88px');
     expect(getComputedStyle(actionsHeader!).borderLeftWidth).toBe('1px');
     expect(getComputedStyle(actionsHeader!).boxShadow).toContain('rgb(23 43 77 / 8%)');
     expect(page.querySelectorAll('.resize-handle[role="separator"]')).toHaveLength(11);
@@ -102,6 +111,24 @@ describe('CompanyMasterPage', () => {
       expect(icon.querySelector('svg')).not.toBeNull();
       expect(icon.textContent?.trim()).toBe('');
     }
+  });
+
+  it('clears stale company setup parameters when starting a new company', async () => {
+    const { harness } = await createPage();
+    await harness.navigateByUrl(
+      '/company-master?page=2&step=department&companyCode=NORTH',
+      CompanyMasterPage,
+    );
+    await harness.fixture.whenStable();
+
+    const addCompanyLink = harness.routeNativeElement?.querySelector(
+      'a[routerLink="/company-master/new"]',
+    ) as HTMLAnchorElement;
+    addCompanyLink.click();
+    await harness.fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/company-master/new?page=2');
+    expect(harness.routeNativeElement?.textContent).toContain('Add company stub');
   });
 
   it('restores explicit operators and clears both filter parameters', async () => {

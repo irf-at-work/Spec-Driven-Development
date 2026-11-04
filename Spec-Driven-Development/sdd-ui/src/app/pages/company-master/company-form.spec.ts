@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { CompanyService } from '../../api/generated/api/company.service';
@@ -10,6 +10,9 @@ import { CompanyForm } from './company-form';
 
 @Component({ standalone: true, template: '<h1>Company listing</h1>' })
 class CompanyListStub {}
+
+@Component({ standalone: true, template: '<h1>Company details destination</h1>' })
+class CompanyDetailsStub {}
 
 describe('CompanyForm', () => {
   const company = {
@@ -47,6 +50,7 @@ describe('CompanyForm', () => {
         provideRouter([
           { path: 'company-master', component: CompanyListStub },
           { path: 'company-master/new', component: CompanyForm },
+          { path: 'company-master/:companyCode', component: CompanyDetailsStub },
         ]),
         { provide: CompanyService, useValue: api },
         { provide: CompanyStructureService, useValue: structureApi },
@@ -182,7 +186,6 @@ describe('CompanyForm', () => {
       '/company-master/new?step=division&companyCode=NORTH',
       CompanyForm,
     );
-    form.addDivision();
     form.divisionForms.at(0).controls.divisionCode.setValue('WEST');
     form.divisionForms.at(0).controls.name.setValue('Western Office');
 
@@ -217,7 +220,6 @@ describe('CompanyForm', () => {
     form.saveAndAddDivision();
     await harness.fixture.whenStable();
 
-    form.addDivision();
     form.divisionForms.at(0).controls.divisionCode.setValue('WEST');
     form.divisionForms.at(0).controls.name.setValue('Western Office');
     form.saveDivisionAndAddDepartment();
@@ -283,6 +285,13 @@ describe('CompanyForm', () => {
       '/company-master/new?step=division&companyCode=NORTH',
       CompanyForm,
     );
+    await harness.fixture.whenStable();
+    expect(form.divisionForms.length).toBe(1);
+    expect(
+      harness.routeNativeElement
+        ?.querySelector('mat-expansion-panel-header')
+        ?.getAttribute('aria-expanded'),
+    ).toBe('true');
     const addButton = (text: string): HTMLButtonElement => {
       const button = Array.from(harness.routeNativeElement?.querySelectorAll('button') ?? []).find(
         (candidate) => candidate.textContent?.trim() === text,
@@ -301,7 +310,7 @@ describe('CompanyForm', () => {
     const divisionHeaders = harness.routeNativeElement?.querySelectorAll(
       'mat-expansion-panel-header',
     );
-    expect(divisionHeaders).toHaveLength(2);
+    expect(divisionHeaders).toHaveLength(3);
     expect(
       Array.from(divisionHeaders ?? []).every(
         (header) => header.getAttribute('aria-expanded') === 'true',
@@ -311,6 +320,7 @@ describe('CompanyForm', () => {
     harness.fixture.detectChanges();
     expect(divisionHeaders?.[0].getAttribute('aria-expanded')).toBe('false');
     expect(divisionHeaders?.[1].getAttribute('aria-expanded')).toBe('true');
+    expect(divisionHeaders?.[2].getAttribute('aria-expanded')).toBe('true');
 
     for (const division of form.divisionForms.controls) {
       division.controls.divisionCode.setValue(
@@ -338,6 +348,55 @@ describe('CompanyForm', () => {
         'mat-expansion-panel-header .setup-card-actions .destructive-action',
       ),
     ).not.toBeNull();
+  });
+
+  it('discards unsaved department data and navigates to company details on Exit', async () => {
+    const api = {
+      apiCompaniesCompanyCodeGet: vi.fn(() => of(company)),
+      apiCompaniesPost: vi.fn(() => of(company)),
+      apiCompaniesCompanyCodePut: vi.fn(() => of(company)),
+    };
+    const structureApi = {
+      apiCompaniesCompanyCodeDivisionsGet: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDivisionsPost: vi.fn(() => of([])),
+      apiCompaniesCompanyCodeDepartmentsPost: vi.fn(() => of({})),
+    };
+    const { harness } = await createForm(api, structureApi);
+    const form = await harness.navigateByUrl(
+      '/company-master/new?step=department&companyCode=NORTH',
+      CompanyForm,
+    );
+    await harness.fixture.whenStable();
+    form.departmentForms.at(0).controls.departmentCode.setValue('OPS');
+    form.departmentForms.at(0).controls.name.setValue('Unsaved Operations');
+
+    const exitButton = Array.from(
+      harness.routeNativeElement?.querySelectorAll('button') ?? [],
+    ).find((button) => button.textContent?.trim() === 'Exit') as HTMLButtonElement;
+    exitButton.click();
+    await harness.fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/company-master/NORTH');
+    expect(harness.routeNativeElement?.textContent).toContain('Company details destination');
+    expect(structureApi.apiCompaniesCompanyCodeDepartmentsPost).not.toHaveBeenCalled();
+  });
+
+  it('clears setup parameters when returning from company setup to the grid', async () => {
+    const { harness } = await createForm();
+    await harness.navigateByUrl(
+      '/company-master/new?step=department&companyCode=NORTH&page=2',
+      CompanyForm,
+    );
+    await harness.fixture.whenStable();
+
+    const backLink = harness.routeNativeElement?.querySelector(
+      'a[routerLink="/company-master"]',
+    ) as HTMLAnchorElement;
+    backLink.click();
+    await harness.fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/company-master?page=2');
+    expect(harness.routeNativeElement?.textContent).toContain('Company listing');
   });
 
   it('loads one department entry form and the current company division options', async () => {
