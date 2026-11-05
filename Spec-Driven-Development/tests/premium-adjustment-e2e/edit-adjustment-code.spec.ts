@@ -70,15 +70,15 @@ async function openAdjustment(page: Page): Promise<void> {
   await page.getByRole("button", { name: `Open ${key.code}` }).click();
 }
 
-test("opens read-only, edits immutable-key fields, and saves an active-state change", async ({
+test("opens with the key fields locked, edits the rest, and saves an active-state change", async ({
   page,
 }) => {
   await openAdjustment(page);
 
-  await expect(page.getByLabel("Name", { exact: true })).toBeDisabled();
+  await expect(page.getByLabel("Name", { exact: true })).toBeEnabled();
   await expect(page.getByLabel("Code", { exact: true })).toBeDisabled();
   await expect(page.getByLabel("Company Code")).toBeDisabled();
-  await expect(page.getByRole("switch", { name: "Active" })).toBeDisabled();
+  await expect(page.getByRole("switch", { name: "Active" })).toBeEnabled();
   await expect(page.getByLabel("Remarks", { exact: true })).toHaveValue(
     "Existing notes",
   );
@@ -87,10 +87,6 @@ test("opens read-only, edits immutable-key fields, and saves an active-state cha
     "INACTIVE (inactive)",
   );
 
-  await page.getByRole("switch", { name: "Edit" }).click();
-  await expect(page.getByLabel("Name", { exact: true })).toBeEnabled();
-  await expect(page.getByLabel("Code", { exact: true })).toBeDisabled();
-  await expect(page.getByRole("switch", { name: "Active" })).toBeEnabled();
   await page.getByLabel("Name", { exact: true }).fill("Changed name");
   await page.getByRole("switch", { name: "Active" }).click();
 
@@ -99,7 +95,7 @@ test("opens read-only, edits immutable-key fields, and saves an active-state cha
       request.method() === "PUT" &&
       request.url().includes("/api/premium-adjustments/"),
   );
-  await page.getByRole("button", { name: "Save" }).click();
+  await page.getByRole("button", { name: "Save changes" }).click();
   const request = await update;
   expect(new URL(request.url()).pathname).toContain(
     `/${key.codeType}/${key.code}/${key.companyCode}`,
@@ -109,10 +105,10 @@ test("opens read-only, edits immutable-key fields, and saves an active-state cha
     discountType: "INACTIVE",
     active: false,
   });
-  await expect(page.getByRole("switch", { name: "Edit" })).not.toBeChecked();
+  await expect(page.getByText("Premium adjustment updated.")).toBeVisible();
 });
 
-test("requires missing legacy classifications and asks before discarding edit changes", async ({
+test("requires missing legacy classifications and asks before discarding changes", async ({
   page,
 }) => {
   await page.route("**/api/premium-adjustments**", async (route) => {
@@ -164,15 +160,18 @@ test("requires missing legacy classifications and asks before discarding edit ch
   });
   await page.goto("/premium-adjustments");
   await page.getByRole("button", { name: `Open ${key.code}` }).click();
-  await page.getByRole("switch", { name: "Edit" }).click();
-  await page.getByLabel("Name", { exact: true }).fill("Unsaved");
-  await page.getByRole("switch", { name: "Edit" }).click();
+
+  const name = page.getByLabel("Name", { exact: true });
+  await name.fill("Unsaved");
+  await page
+    .getByRole("button", { name: "Back to premium adjustments" })
+    .click();
   await expect(
     page.getByRole("dialog", { name: "Discard your changes?" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Keep editing" }).click();
-  await expect(page.getByRole("switch", { name: "Edit" })).toBeChecked();
+  await expect(name).toHaveValue("Unsaved");
 
-  await page.getByRole("button", { name: "Save" }).click();
+  await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page.getByText("Discount Type is required.")).toBeVisible();
 });

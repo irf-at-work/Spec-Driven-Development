@@ -178,13 +178,22 @@
           [disabled]="saving() || loading() || optionsLoading()"
         /> -->
         <button
-        mat-flat-button
-        type="submit"
-         [disabled]="saving() || loading() || optionsLoading()"
-        style="border-radius: 15px; padding: 15px;color: white; background-color: var(--mat-sys-on-primary-fixed-variant); border: 0; display: flex; justify-content: end; align-items: end;"
-      >
-        {{ mode === 'create' ? 'Save vehicle make' : 'Save changes' }}
-      </button>
+          mat-flat-button
+          type="submit"
+          [disabled]="saving() || loading() || optionsLoading()"
+          style="
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            background-color: var(--mat-sys-on-primary-fixed-variant);
+            border: 0;
+            display: flex;
+            justify-content: end;
+            align-items: end;
+          "
+        >
+          {{ mode === 'create' ? 'Save premium adjustment' : 'Save changes' }}
+        </button>
       </div>
     </form>
   }

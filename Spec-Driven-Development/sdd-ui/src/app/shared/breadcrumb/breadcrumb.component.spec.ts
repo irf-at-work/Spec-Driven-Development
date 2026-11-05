@@ -34,7 +34,9 @@ describe('BreadcrumbComponent', () => {
   it('shows the trail for the page, with every step but the last as a link', async () => {
     const page = await showTrailFor('/vehicle-makes/TOY/models/new');
 
-    const text = Array.from(page.querySelectorAll('li')).map((item) => item.textContent?.replace('›', '').trim());
+    const text = Array.from(page.querySelectorAll('li')).map((item) =>
+      item.textContent?.replace('›', '').trim(),
+    );
     expect(text).toEqual(['Master Data', 'Vehicle Makes', 'TOY', 'Add model']);
 
     const links = Array.from(page.querySelectorAll('a')).map((link) => link.textContent?.trim());

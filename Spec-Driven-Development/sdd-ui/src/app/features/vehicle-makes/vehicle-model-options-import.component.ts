@@ -47,15 +47,19 @@ export class VehicleModelOptionsImportComponent {
   protected readonly resultMessage = signal('');
   protected readonly canImport = computed(() => {
     const current = this.preview();
-    return !!current && current.errors.length === 0 && current.rows.length > 0 &&
+    return (
+      !!current &&
+      current.errors.length === 0 &&
+      current.rows.length > 0 &&
       current.rows.every((row) => row.isValid) &&
-      current.rows.some((row) => !row.alreadyExists);
+      current.rows.some((row) => !row.alreadyExists)
+    );
   });
-  protected readonly newRowCount = computed(() =>
-    this.preview()?.rows.filter((row) => row.isValid && !row.alreadyExists).length ?? 0,
+  protected readonly newRowCount = computed(
+    () => this.preview()?.rows.filter((row) => row.isValid && !row.alreadyExists).length ?? 0,
   );
-  protected readonly existingRowCount = computed(() =>
-    this.preview()?.rows.filter((row) => row.alreadyExists).length ?? 0,
+  protected readonly existingRowCount = computed(
+    () => this.preview()?.rows.filter((row) => row.alreadyExists).length ?? 0,
   );
 
   protected back(): void {
@@ -181,7 +185,9 @@ export class VehicleModelOptionsImportComponent {
       },
       error: () => {
         this.importing.set(false);
-        this.errorMessage.set('The import could not be confirmed. The preview is being refreshed; check row statuses before retrying.');
+        this.errorMessage.set(
+          'The import could not be confirmed. The preview is being refreshed; check row statuses before retrying.',
+        );
         this.optionsClient.previewImport(request).subscribe({
           next: (updatedPreview) => this.preview.set(updatedPreview),
         });

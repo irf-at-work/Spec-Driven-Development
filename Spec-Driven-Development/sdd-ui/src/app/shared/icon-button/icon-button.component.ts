@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-export type IconButtonAction = 'add' | 'open' | 'edit' | 'delete' | 'back' | 'save' | 'cancel' | 'clear' | 'upload';
+export type IconButtonAction =
+  'add' | 'open' | 'edit' | 'delete' | 'back' | 'save' | 'cancel' | 'clear' | 'upload';
 
 @Component({
   selector: 'app-icon-button',

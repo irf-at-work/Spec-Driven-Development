@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   createMakeThroughApi,
+  filterByCode,
   newMakeCode,
   openMake,
   removeMakeThroughApi,
@@ -35,7 +36,7 @@ test.describe("Add a vehicle make", () => {
     await page.getByRole("button", { name: "Save vehicle make" }).click();
 
     await expect(page.getByText("Vehicle make saved.")).toBeVisible();
-    await page.getByLabel("Search by code, name or short name").fill(makeCode);
+    await filterByCode(page, makeCode);
     const row = page.locator("tr.mat-mdc-row").filter({ hasText: makeCode });
     await expect(row).toContainText("Toyota Motor");
     await expect(row).toContainText("Active");

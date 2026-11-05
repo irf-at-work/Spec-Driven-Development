@@ -14,11 +14,11 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { VehicleModelDto, VehicleModelsClient } from '../../generated/api-client';
 import {
-  VehicleModelDto,
-  VehicleModelsClient,
-} from '../../generated/api-client';
-import { ColumnFilterChange, ColumnFilterComponent } from '../../shared/column-filter/column-filter.component';
+  ColumnFilterChange,
+  ColumnFilterComponent,
+} from '../../shared/column-filter/column-filter.component';
 import { IconButtonComponent } from '../../shared/icon-button/icon-button.component';
 import { NotificationService } from '../../shared/notifications/notification.service';
 
@@ -52,10 +52,22 @@ export class VehicleModelListComponent {
   protected readonly loading = signal(false);
 
   // Column filters state (Model Code, Model Name, Short Name, Status)
-  protected readonly modelCodeFilter = signal<{ value: string; operator: string }>({ value: '', operator: 'contains' });
-  protected readonly modelNameFilter = signal<{ value: string; operator: string }>({ value: '', operator: 'contains' });
-  protected readonly shortNameFilter = signal<{ value: string; operator: string }>({ value: '', operator: 'contains' });
-  protected readonly statusFilter = signal<{ value: string; operator: string }>({ value: '', operator: 'equals' });
+  protected readonly modelCodeFilter = signal<{ value: string; operator: string }>({
+    value: '',
+    operator: 'contains',
+  });
+  protected readonly modelNameFilter = signal<{ value: string; operator: string }>({
+    value: '',
+    operator: 'contains',
+  });
+  protected readonly shortNameFilter = signal<{ value: string; operator: string }>({
+    value: '',
+    operator: 'contains',
+  });
+  protected readonly statusFilter = signal<{ value: string; operator: string }>({
+    value: '',
+    operator: 'equals',
+  });
 
   protected readonly columns = computed(() => {
     return this.makeEditable()
@@ -138,7 +150,10 @@ export class VehicleModelListComponent {
       });
   }
 
-  protected onFilterChange(column: 'modelCode' | 'modelName' | 'shortName' | 'status', change: ColumnFilterChange): void {
+  protected onFilterChange(
+    column: 'modelCode' | 'modelName' | 'shortName' | 'status',
+    change: ColumnFilterChange,
+  ): void {
     if (column === 'modelCode') this.modelCodeFilter.set(change);
     else if (column === 'modelName') this.modelNameFilter.set(change);
     else if (column === 'shortName') this.shortNameFilter.set(change);
@@ -163,7 +178,13 @@ export class VehicleModelListComponent {
   }
 
   protected editModel(model: VehicleModelDto): void {
-    void this.router.navigate(['/vehicle-makes', this.makeCode(), 'models', model.modelCode, 'edit']);
+    void this.router.navigate([
+      '/vehicle-makes',
+      this.makeCode(),
+      'models',
+      model.modelCode,
+      'edit',
+    ]);
   }
 
   protected async deleteModel(model: VehicleModelDto): Promise<void> {

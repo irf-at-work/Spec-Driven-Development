@@ -4,14 +4,16 @@
       <div style="display: flex; flex-direction: row; justify-content: space-between">
         <h1>{{ pageTitle() }}</h1>
         <app-icon-button
-        action="back"
-        tooltip="Back to make"
-        accessibleName="Back to make"
-        (clicked)="back()"
-      />
+          action="back"
+          tooltip="Back to make"
+          accessibleName="Back to make"
+          (clicked)="back()"
+        />
       </div>
-      
-      <p class="subtitle">Enter the details for this vehicle model. Fields marked * are required.</p>
+
+      <p class="subtitle">
+        Enter the details for this vehicle model. Fields marked * are required.
+      </p>
     </div>
   </header>
 
@@ -205,7 +207,13 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Make Year</mat-label>
-          <input matInput type="number" min="1900" max="9999" [formControl]="form.controls.makeYear" />
+          <input
+            matInput
+            type="number"
+            min="1900"
+            max="9999"
+            [formControl]="form.controls.makeYear"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -215,7 +223,13 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Passengers</mat-label>
-          <input matInput type="number" min="0" max="999" [formControl]="form.controls.passengers" />
+          <input
+            matInput
+            type="number"
+            min="0"
+            max="999"
+            [formControl]="form.controls.passengers"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -231,7 +245,6 @@
     </mat-expansion-panel>
 
     <div class="actions">
-      
       <!-- <app-icon-button
         action="save"
         type="submit"
@@ -240,17 +253,23 @@
         [disabled]="saving() || loading()"
       /> -->
 
-
-
-       <button
+      <button
         mat-flat-button
         type="submit"
         [disabled]="saving() || loading()"
-        style="border-radius: 15px; padding: 15px;color: white; background-color: var(--mat-sys-on-primary-fixed-variant); border: 0; display: flex; justify-content: end; align-items: end;"
+        style="
+          border-radius: 15px;
+          padding: 15px;
+          color: white;
+          background-color: var(--mat-sys-on-primary-fixed-variant);
+          border: 0;
+          display: flex;
+          justify-content: end;
+          align-items: end;
+        "
       >
-        {{ mode() === 'create' ? 'Save vehicle make' : 'Save changes' }}
+        {{ mode() === 'create' ? 'Save vehicle model' : 'Save changes' }}
       </button>
-
     </div>
   </form>
 </section>

@@ -7,7 +7,8 @@ import {
   removeMakeThroughApi,
 } from "./helpers";
 
-test.describe("Manage vehicle models inline", () => {
+// Models are added and edited on their own pages, opened from the make's page.
+test.describe("Manage vehicle models", () => {
   let makeCode = "";
   let createdModelCodes: string[] = [];
 
@@ -30,11 +31,11 @@ test.describe("Manage vehicle models inline", () => {
     await removeMakeThroughApi(request, makeCode);
   });
 
-  test("shows existing models read-only and leaves model controls off a new-make form", async ({
+  test("lists a make's models with their controls, and has no models section on a new-make form", async ({
     page,
     request,
   }) => {
-    const modelCode = "READ-ONLY";
+    const modelCode = "LISTED-1";
     createdModelCodes.push(modelCode);
     await createModelThroughApi(request, makeCode, modelCode);
 
@@ -42,11 +43,13 @@ test.describe("Manage vehicle models inline", () => {
 
     const row = page.locator("tr.mat-mdc-row").filter({ hasText: modelCode });
     await expect(row).toContainText("Model Test");
-    await expect(row.getByRole("button", { name: "Edit" })).toHaveCount(0);
-    await expect(row.getByRole("button", { name: "Delete" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Add model" })).toHaveCount(
-      0,
-    );
+    await expect(
+      row.getByRole("button", { name: `Edit ${modelCode}` }),
+    ).toBeVisible();
+    await expect(
+      row.getByRole("button", { name: `Delete ${modelCode}` }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Add model" })).toBeVisible();
 
     await page.goto("/vehicle-makes/new");
     await expect(
@@ -57,7 +60,7 @@ test.describe("Manage vehicle models inline", () => {
     ).toHaveCount(0);
   });
 
-  test("creates, edits, deactivates, restores and permanently deletes a model", async ({
+  test("creates, edits and permanently deletes a model on its own pages", async ({
     page,
     request,
   }) => {
@@ -65,10 +68,16 @@ test.describe("Manage vehicle models inline", () => {
     createdModelCodes.push(modelCode);
 
     await openMake(page, makeCode);
-    await page.getByRole("switch", { name: "Edit" }).click();
-    await expect(page.getByText("This make has no models yet.")).toBeVisible();
+    await expect(
+      page.getByText(/No models have been added for this make yet/),
+    ).toBeVisible();
     await page.getByRole("button", { name: "Add model" }).click();
 
+    await expect(
+      page.getByRole("heading", {
+        name: `Add Vehicle Model for Make ${makeCode}`,
+      }),
+    ).toBeVisible();
     await expect(page.getByRole("switch", { name: "Active" })).toBeChecked();
     await page
       .getByLabel("Model Code", { exact: true })
@@ -95,8 +104,9 @@ test.describe("Manage vehicle models inline", () => {
       .click();
 
     await page.getByRole("switch", { name: "Active" }).click();
-    await page.getByRole("button", { name: "Save model" }).click();
+    await page.getByRole("button", { name: "Save vehicle model" }).click();
 
+    await expect(page.getByText("Vehicle model created.")).toBeVisible();
     const row = page.locator("tr.mat-mdc-row").filter({ hasText: modelCode });
     await expect(row).toContainText("Inactive");
     let response = await request.get(
@@ -115,11 +125,12 @@ test.describe("Manage vehicle models inline", () => {
     expect(stored.modelCode).toBe(modelCode);
     expect(stored.variant).toBe(variant?.code ?? null);
 
-    await row.getByRole("button", { name: "Edit" }).click();
+    await row.getByRole("button", { name: `Edit ${modelCode}` }).click();
     await expect(page.getByLabel("Model Code", { exact: true })).toBeDisabled();
     await page.getByLabel("Model Name", { exact: true }).fill("updated model");
     await page.getByRole("switch", { name: "Active" }).click();
     await page.getByRole("button", { name: "Save changes" }).click();
+    await expect(page.getByText("Vehicle model updated.")).toBeVisible();
     await expect(row).toContainText("Updated Model");
     await expect(row).toContainText("Active");
 
@@ -137,59 +148,39 @@ test.describe("Manage vehicle models inline", () => {
     }
     expect(stored.modelCode).toBe(modelCode);
 
-    await row.getByRole("button", { name: "Delete" }).click();
+    await row.getByRole("button", { name: `Delete ${modelCode}` }).click();
     await expect(
-      page.getByRole("heading", { name: "Delete this vehicle model?" }),
+      page.getByRole("heading", { name: "Delete vehicle model" }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Delete permanently" }).click();
+    await expect(page.getByText("Vehicle model deleted.")).toBeVisible();
     await expect(
       page.locator("tr.mat-mdc-row").filter({ hasText: modelCode }),
     ).toHaveCount(0);
     createdModelCodes = createdModelCodes.filter((code) => code !== modelCode);
   });
 
-  test("confirms discarding an unsaved model row and keeps make changes independent", async ({
-    page,
-  }) => {
+  test("asks before discarding an unsaved model", async ({ page }) => {
     const modelCode = "UNSAVED-1";
 
     await openMake(page, makeCode);
-    await page.getByRole("switch", { name: "Edit" }).click();
-    await page
-      .getByLabel("Make Name", { exact: true })
-      .fill("Unsaved make change");
     await page.getByRole("button", { name: "Add model" }).click();
     await page.getByLabel("Model Code", { exact: true }).fill(modelCode);
 
-    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+    await page.getByRole("button", { name: "Back to make" }).click();
     await expect(
-      page.getByRole("heading", { name: "Discard this model row?" }),
+      page.getByRole("heading", { name: "Discard your changes?" }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Keep editing" }).click();
     await expect(page.getByLabel("Model Code", { exact: true })).toHaveValue(
       modelCode,
     );
 
-    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+    await page.getByRole("button", { name: "Back to make" }).click();
     await page.getByRole("button", { name: "Discard changes" }).click();
-    await expect(page.getByRole("button", { name: "Add model" })).toBeVisible();
-    await expect(page.getByLabel("Make Name", { exact: true })).toHaveValue(
-      "Unsaved make change",
-    );
-
-    await page.getByRole("button", { name: "Add model" }).click();
-    createdModelCodes.push("SAVE-ROW");
-    await page.getByLabel("Model Code", { exact: true }).fill("SAVE-ROW");
-    await page.getByLabel("Model Name", { exact: true }).fill("Saved row");
-    await page.getByLabel("Short Name", { exact: true }).fill("Row");
-    await page.getByRole("button", { name: "Save model" }).click();
-
-    await expect(page.getByLabel("Make Name", { exact: true })).toHaveValue(
-      "Unsaved make change",
-    );
-    await expect(page.getByRole("switch", { name: "Edit" })).toBeChecked();
-    await page.getByRole("button", { name: "Save changes" }).click();
-    await expect(page.getByText("Vehicle make updated.")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Vehicle make details" }),
+    ).toBeVisible();
   });
 });
 

@@ -12,13 +12,21 @@
         <p class="subtitle">Upload approved choices for the vehicle model dropdowns.</p>
       </div>
     </div>
-    <button matButton="outlined" type="button" (click)="downloadTemplate()">Download Excel template</button>
+    <button matButton="outlined" type="button" (click)="downloadTemplate()">
+      Download Excel template
+    </button>
   </header>
 
   <div class="card instructions">
     <h2>Workbook format</h2>
-    <p>Use the <strong>STD_LIST_ITEM</strong> worksheet and the columns <code>LI_TYPE</code>, <code>LI_CODE</code>, <code>LI_DESC</code>, and <code>LI_ACTIVE_YN</code>.</p>
-    <p>Only the nine vehicle model list types are accepted. Active values must be <code>Y</code> or <code>N</code>. Existing codes are skipped and never overwritten.</p>
+    <p>
+      Use the <strong>STD_LIST_ITEM</strong> worksheet and the columns <code>LI_TYPE</code>,
+      <code>LI_CODE</code>, <code>LI_DESC</code>, and <code>LI_ACTIVE_YN</code>.
+    </p>
+    <p>
+      Only the nine vehicle model list types are accepted. Active values must be <code>Y</code> or
+      <code>N</code>. Existing codes are skipped and never overwritten.
+    </p>
     <p>Maximum file size: 5 MB. Maximum data rows: 1,000.</p>
   </div>
 
@@ -37,7 +45,10 @@
   </div>
 
   @if (loading() || importing()) {
-    <mat-progress-bar mode="indeterminate" [attr.aria-label]="loading() ? 'Checking workbook' : 'Importing lookup rows'" />
+    <mat-progress-bar
+      mode="indeterminate"
+      [attr.aria-label]="loading() ? 'Checking workbook' : 'Importing lookup rows'"
+    />
   }
 
   @if (errorMessage()) {
@@ -59,7 +70,10 @@
       <div class="preview-header">
         <div>
           <h2 id="preview-heading">Import preview</h2>
-          <p>{{ result.rows.length }} rows · {{ newRowCount() }} new · {{ existingRowCount() }} existing</p>
+          <p>
+            {{ result.rows.length }} rows · {{ newRowCount() }} new ·
+            {{ existingRowCount() }} existing
+          </p>
         </div>
         <button
           matButton="filled"

@@ -7,7 +7,7 @@
 
     Needs the environment variable SDD_TEST_ORACLE_CONNECTION to hold the connection string of the owner-approved Oracle
     TEST schema. The tests create and delete rows whose codes start with ZT. The value is never printed.
-    The browser tests start the API on https://localhost:7246 by themselves and stop it again at the end.
+    The browser tests start the API on http://localhost:5114 (the address the Angular app calls) by themselves and stop it again at the end.
 #>
 $ErrorActionPreference = 'Stop'
 
@@ -18,7 +18,7 @@ $apiTestProject = Join-Path $projectRoot 'SDD.API\SDD.API.Tests\SDD.API.Tests.cs
 $apiTestOutput = 'obj\FeatureApiTests\'
 $apiTestAssembly = Join-Path $projectRoot 'SDD.API\SDD.API\obj\FeatureApiTests\SDD.API.dll'
 $uiFolder = Join-Path $projectRoot 'sdd-ui'
-$apiPort = 7246
+$apiPort = 5114
 
 if ([string]::IsNullOrWhiteSpace($env:SDD_TEST_ORACLE_CONNECTION)) {
     throw 'Set SDD_TEST_ORACLE_CONNECTION to the connection string of the approved Oracle TEST schema, then run this again.'
@@ -69,8 +69,9 @@ try {
 
     $env:ConnectionStrings__SddOracle = $env:SDD_TEST_ORACLE_CONNECTION
     $env:ASPNETCORE_ENVIRONMENT = 'Development'
+    $env:SDD_API_URL = "http://localhost:$apiPort"
     $api = Start-Process -FilePath 'dotnet' `
-        -ArgumentList @($apiTestAssembly, '--urls', "https://localhost:$apiPort") `
+        -ArgumentList @($apiTestAssembly, '--urls', "http://localhost:$apiPort") `
         -PassThru -WindowStyle Hidden -WorkingDirectory (Split-Path $apiProject)
     try {
         Wait-ForPort -Port $apiPort

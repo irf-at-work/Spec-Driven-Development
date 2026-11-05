@@ -14,7 +14,10 @@ import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { isApiProblemError } from '../../core/api-problem';
 import { VehicleMakeListItemDto, VehicleMakesClient } from '../../generated/api-client';
-import { ColumnFilterChange, ColumnFilterComponent } from '../../shared/column-filter/column-filter.component';
+import {
+  ColumnFilterChange,
+  ColumnFilterComponent,
+} from '../../shared/column-filter/column-filter.component';
 import { IconButtonComponent } from '../../shared/icon-button/icon-button.component';
 import { NotificationService } from '../../shared/notifications/notification.service';
 
@@ -47,10 +50,22 @@ export class VehicleMakeListComponent {
   protected readonly pageIndex = signal(0);
 
   // Column filters state
-  protected readonly makeCodeFilter = signal<{ value: string; operator: string }>({ value: '', operator: 'contains' });
-  protected readonly makeNameFilter = signal<{ value: string; operator: string }>({ value: '', operator: 'contains' });
-  protected readonly shortNameFilter = signal<{ value: string; operator: string }>({ value: '', operator: 'contains' });
-  protected readonly statusFilter = signal<{ value: string; operator: string }>({ value: '', operator: 'equals' });
+  protected readonly makeCodeFilter = signal<{ value: string; operator: string }>({
+    value: '',
+    operator: 'contains',
+  });
+  protected readonly makeNameFilter = signal<{ value: string; operator: string }>({
+    value: '',
+    operator: 'contains',
+  });
+  protected readonly shortNameFilter = signal<{ value: string; operator: string }>({
+    value: '',
+    operator: 'contains',
+  });
+  protected readonly statusFilter = signal<{ value: string; operator: string }>({
+    value: '',
+    operator: 'equals',
+  });
 
   protected readonly sortColumn = signal('makeCode');
   protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
@@ -112,7 +127,10 @@ export class VehicleMakeListComponent {
       });
   }
 
-  protected onFilterChange(column: 'makeCode' | 'makeName' | 'shortName' | 'status', change: ColumnFilterChange): void {
+  protected onFilterChange(
+    column: 'makeCode' | 'makeName' | 'shortName' | 'status',
+    change: ColumnFilterChange,
+  ): void {
     if (column === 'makeCode') this.makeCodeFilter.set(change);
     else if (column === 'makeName') this.makeNameFilter.set(change);
     else if (column === 'shortName') this.shortNameFilter.set(change);
@@ -149,7 +167,9 @@ export class VehicleMakeListComponent {
     void this.router.navigate(['/vehicle-model-options/import']);
   }
 
-  protected importMakes(): void { void this.router.navigate(['/vehicle-makes/import']); }
+  protected importMakes(): void {
+    void this.router.navigate(['/vehicle-makes/import']);
+  }
 
   protected open(make: VehicleMakeListItemDto): void {
     void this.router.navigate(['/vehicle-makes/view'], { state: { makeCode: make.makeCode } });
@@ -180,9 +200,10 @@ export class VehicleMakeListComponent {
         error: (err: unknown) => {
           if (isApiProblemError(err) && err.problem.status === 409) {
             const makeErrors = err.problem.fieldErrors['makeCode'];
-            const message = Array.isArray(makeErrors) && makeErrors.length > 0
-              ? makeErrors[0]
-              : 'This make still has models. Delete its models first.';
+            const message =
+              Array.isArray(makeErrors) && makeErrors.length > 0
+                ? makeErrors[0]
+                : 'This make still has models. Delete its models first.';
             this.notifications.error(message, 'Cannot delete make');
           } else {
             this.notifications.error('The vehicle make could not be deleted.', 'Delete failed');

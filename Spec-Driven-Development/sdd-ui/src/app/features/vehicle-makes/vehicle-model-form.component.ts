@@ -125,7 +125,9 @@ export class VehicleModelFormComponent implements HasUnsavedChanges {
   protected readonly bodyColourOptions = signal<LookupOptionDto[]>([]);
   protected readonly categoryOptions = signal<LookupOptionDto[]>([]);
 
-  protected readonly initialInactiveSelections = signal<Partial<Record<DropdownField, LookupOptionDto>>>({});
+  protected readonly initialInactiveSelections = signal<
+    Partial<Record<DropdownField, LookupOptionDto>>
+  >({});
 
   protected readonly form = new FormGroup({
     modelCode: new FormControl('', {
@@ -377,7 +379,9 @@ export class VehicleModelFormComponent implements HasUnsavedChanges {
 
   private handleError(err: unknown): void {
     if (isApiProblemError(err) && err.problem.status === 409) {
-      const codeError = err.problem.fieldErrors['modelCode']?.[0] ?? 'This model code already exists for this make.';
+      const codeError =
+        err.problem.fieldErrors['modelCode']?.[0] ??
+        'This model code already exists for this make.';
       this.form.controls.modelCode.setErrors({ server: codeError });
       this.notifications.error(codeError, 'Duplicate Model Code');
     } else {
@@ -391,15 +395,24 @@ export class VehicleModelFormComponent implements HasUnsavedChanges {
 
   protected optionsFor(field: DropdownField): LookupOptionDto[] {
     switch (field) {
-      case 'variant': return this.variantOptions();
-      case 'vehicleType': return this.typeOptions();
-      case 'bodyType': return this.bodyTypeOptions();
-      case 'fuelType': return this.fuelTypeOptions();
-      case 'cylinders': return this.cylinderOptions();
-      case 'doors': return this.doorOptions();
-      case 'drivingType': return this.drivingTypeOptions();
-      case 'bodyColour': return this.bodyColourOptions();
-      case 'category': return this.categoryOptions();
+      case 'variant':
+        return this.variantOptions();
+      case 'vehicleType':
+        return this.typeOptions();
+      case 'bodyType':
+        return this.bodyTypeOptions();
+      case 'fuelType':
+        return this.fuelTypeOptions();
+      case 'cylinders':
+        return this.cylinderOptions();
+      case 'doors':
+        return this.doorOptions();
+      case 'drivingType':
+        return this.drivingTypeOptions();
+      case 'bodyColour':
+        return this.bodyColourOptions();
+      case 'category':
+        return this.categoryOptions();
     }
   }
 }

@@ -58,8 +58,12 @@ test.describe("Find and browse vehicle makes", () => {
     await searchFor(page, runId);
     await expect(page.locator("tr.mat-mdc-row")).toHaveCount(10);
 
-    await page.getByRole("columnheader", { name: "Make Name" }).click();
-    await page.getByRole("columnheader", { name: "Make Name" }).click();
+    // Click the sort label itself: the middle of the header cell is the filter box.
+    const makeNameSort = page
+      .locator("[mat-sort-header]")
+      .filter({ hasText: "Make Name" });
+    await makeNameSort.click();
+    await makeNameSort.click();
 
     await expect(page.locator("tr.mat-mdc-row").first()).toContainText(
       "Browse Make 11",
@@ -72,13 +76,17 @@ test.describe("Find and browse vehicle makes", () => {
     await page.goto("/vehicle-makes");
     await searchFor(page, runId);
 
-    await expect(page.locator("tr.mat-mdc-row").first()).toContainText(
-      "Active",
-    );
+    const rows = page.locator("tr.mat-mdc-row");
+    // Wait for the debounced code filter to finish before changing pages. Otherwise
+    // its response can reset the paginator after the click and leave us on page one.
+    await expect(rows).toHaveCount(10);
+    await expect(rows.first()).toContainText(codes[0]);
+    await expect(rows.first()).toContainText("Active");
+
     await page.getByRole("button", { name: "Next page" }).click();
-    await expect(page.locator("tr.mat-mdc-row").first()).toContainText(
-      "Inactive",
-    );
+    await expect(rows).toHaveCount(1);
+    await expect(rows.first()).toContainText(codes[10]);
+    await expect(rows.first()).toContainText("Inactive");
   });
 
   test("says so when nothing matches the search", async ({ page }) => {
@@ -86,11 +94,13 @@ test.describe("Find and browse vehicle makes", () => {
     await searchFor(page, newMakeCode());
 
     await expect(
-      page.getByText("No vehicle makes match your search."),
+      page.getByText("No vehicle makes match your filters."),
     ).toBeVisible();
   });
 
-  test("opens a make read-only with its code locked", async ({ page }) => {
+  test("opens a make with its code locked and the rest editable", async ({
+    page,
+  }) => {
     await openMake(page, codes[0]);
 
     await expect(
@@ -100,11 +110,11 @@ test.describe("Find and browse vehicle makes", () => {
       codes[0],
     );
     await expect(page.getByLabel("Make Code", { exact: true })).toBeDisabled();
-    await expect(page.getByLabel("Make Name", { exact: true })).toBeDisabled();
-    await expect(page.getByLabel("Short Name", { exact: true })).toBeDisabled();
-    await expect(page.getByRole("switch", { name: "Active" })).toBeDisabled();
+    await expect(page.getByLabel("Make Name", { exact: true })).toBeEnabled();
+    await expect(page.getByLabel("Short Name", { exact: true })).toBeEnabled();
+    await expect(page.getByRole("switch", { name: "Active" })).toBeEnabled();
     await expect(
       page.getByRole("button", { name: "Save changes" }),
-    ).toHaveCount(0);
+    ).toBeVisible();
   });
 });

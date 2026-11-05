@@ -63,7 +63,7 @@ interface FormValues {
   imports: [
     IconButtonComponent,
     ReactiveFormsModule,
-    
+
     MatExpansionModule,
     MatProgressBar,
     MatSlideToggle,
@@ -77,7 +77,7 @@ interface FormValues {
 export class VehicleMakeFormComponent implements HasUnsavedChanges {
   private readonly client = inject(VehicleMakesClient);
   private readonly router = inject(Router);
-  
+
   private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly modelList = viewChild(VehicleModelListComponent);

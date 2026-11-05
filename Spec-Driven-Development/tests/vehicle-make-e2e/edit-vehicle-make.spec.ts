@@ -23,11 +23,8 @@ test.describe("Open and edit a vehicle make", () => {
     await removeMakeThroughApi(request, makeCode);
   });
 
-  test("saves a valid change after Edit is switched on, and the code stays locked", async ({
-    page,
-  }) => {
+  test("saves a valid change, and the code stays locked", async ({ page }) => {
     await openMake(page, makeCode);
-    await page.getByRole("switch", { name: "Edit" }).click();
 
     await expect(page.getByLabel("Make Code", { exact: true })).toBeDisabled();
     await page.getByLabel("Make Name", { exact: true }).fill("renamed make");
@@ -37,14 +34,13 @@ test.describe("Open and edit a vehicle make", () => {
     await expect(page.getByLabel("Make Name", { exact: true })).toHaveValue(
       "Renamed Make",
     );
-    await expect(page.getByLabel("Make Name", { exact: true })).toBeDisabled();
+    await expect(page.getByLabel("Make Code", { exact: true })).toBeDisabled();
   });
 
   test("shows what is wrong and saves nothing when a change is invalid", async ({
     page,
   }) => {
     await openMake(page, makeCode);
-    await page.getByRole("switch", { name: "Edit" }).click();
 
     await page.getByLabel("Make Name", { exact: true }).fill("");
     await page.getByRole("button", { name: "Save changes" }).click();
@@ -78,7 +74,6 @@ test.describe("Open and edit a vehicle make", () => {
     page,
   }) => {
     await openMake(page, makeCode);
-    await page.getByRole("switch", { name: "Edit" }).click();
     await page.getByRole("switch", { name: "Active" }).click();
     await page.getByRole("button", { name: "Save changes" }).click();
     await expect(page.getByText("Vehicle make updated.")).toBeVisible();
@@ -86,10 +81,15 @@ test.describe("Open and edit a vehicle make", () => {
       page.getByRole("switch", { name: "Active" }),
     ).not.toBeChecked();
 
-    await page.getByRole("switch", { name: "Edit" }).click();
     await page.getByRole("switch", { name: "Active" }).click();
+    const restored = page.waitForResponse(
+      (response) =>
+        response.request().method() === "PUT" &&
+        response.url().includes(`/api/vehicle-makes/${makeCode}`),
+    );
     await page.getByRole("button", { name: "Save changes" }).click();
 
+    expect((await restored).ok()).toBeTruthy();
     await expect(page.getByRole("switch", { name: "Active" })).toBeChecked();
   });
 
@@ -97,10 +97,9 @@ test.describe("Open and edit a vehicle make", () => {
     page,
   }) => {
     await openMake(page, makeCode);
-    await page.getByRole("switch", { name: "Edit" }).click();
     await page.getByLabel("Make Name", { exact: true }).fill("Unsaved Name");
 
-    await page.getByRole("switch", { name: "Edit" }).click();
+    await page.getByRole("button", { name: "Back to list" }).click();
     await expect(
       page.getByRole("heading", { name: "Discard your changes?" }),
     ).toBeVisible();
@@ -108,13 +107,11 @@ test.describe("Open and edit a vehicle make", () => {
     await expect(page.getByLabel("Make Name", { exact: true })).toHaveValue(
       "Unsaved Name",
     );
-    await expect(page.getByLabel("Make Name", { exact: true })).toBeEnabled();
 
-    await page.getByRole("switch", { name: "Edit" }).click();
+    await page.getByRole("button", { name: "Back to list" }).click();
     await page.getByRole("button", { name: "Discard changes" }).click();
-    await expect(page.getByLabel("Make Name", { exact: true })).toHaveValue(
-      "Edit Me",
-    );
-    await expect(page.getByLabel("Make Name", { exact: true })).toBeDisabled();
+    await expect(
+      page.getByRole("heading", { name: "Vehicle Make Master" }),
+    ).toBeVisible();
   });
 });

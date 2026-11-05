@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 // The only addresses these tests may talk to: the local Angular app and the local API (plan.md, hosting is the local machine).
 // Both can be changed with environment variables if a port is already taken.
-process.env['SDD_API_URL'] ??= 'https://localhost:7246';
+// The API address must match API_BASE_URL_VALUE in src/app/core/app-config.ts, because the browser calls the API there.
+process.env['SDD_API_URL'] ??= 'http://localhost:5114';
 process.env['SDD_UI_URL'] ??= 'http://localhost:4200';
 const uiUrl = process.env['SDD_UI_URL'] ?? 'http://localhost:4200';
 

@@ -1,6 +1,7 @@
 import { APIRequestContext, Page } from "@playwright/test";
 
-export const apiUrl = process.env["SDD_API_URL"] ?? "https://localhost:7246";
+// Must match API_BASE_URL_VALUE in sdd-ui/src/app/core/app-config.ts, because the browser calls the API at that address.
+export const apiUrl = process.env["SDD_API_URL"] ?? "http://localhost:5114";
 
 export interface NewMake {
   readonly makeCode: string;
@@ -38,7 +39,11 @@ export async function removeMakeThroughApi(
 }
 
 export async function filterByCode(page: Page, text: string): Promise<void> {
-  await page.getByPlaceholder("Code...").first().fill(text);
+  // The placeholder is also set on the <app-column-filter> wrapper, so aim at the real input inside it.
+  await page
+    .locator('app-column-filter input[placeholder="Code..."]')
+    .first()
+    .fill(text);
 }
 
 // Backwards-compatible alias for existing tests

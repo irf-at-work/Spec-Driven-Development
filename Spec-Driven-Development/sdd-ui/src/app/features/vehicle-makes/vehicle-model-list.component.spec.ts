@@ -62,7 +62,8 @@ describe('VehicleModelListComponent', () => {
   // Icon buttons have no visible text; they are named by their aria-label.
   function findButton(name: string): HTMLButtonElement | undefined {
     return Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('button')).find(
-      (candidate) => (candidate.getAttribute('aria-label') ?? candidate.textContent?.trim()) === name,
+      (candidate) =>
+        (candidate.getAttribute('aria-label') ?? candidate.textContent?.trim()) === name,
     );
   }
 

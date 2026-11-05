@@ -8,13 +8,19 @@ export const routes: Routes = [
     path: 'vehicle-makes/import',
     title: 'Import Vehicle Makes',
     data: { breadcrumb: 'make-import', kind: 'vehicle' },
-    loadComponent: () => import('./features/master-data-import.component').then((module) => module.MasterDataImportComponent),
+    loadComponent: () =>
+      import('./features/master-data-import.component').then(
+        (module) => module.MasterDataImportComponent,
+      ),
   },
   {
     path: 'premium-adjustments/import',
     title: 'Import Premium Adjustments',
     data: { breadcrumb: 'premium-adjustment-import', kind: 'premium' },
-    loadComponent: () => import('./features/master-data-import.component').then((module) => module.MasterDataImportComponent),
+    loadComponent: () =>
+      import('./features/master-data-import.component').then(
+        (module) => module.MasterDataImportComponent,
+      ),
   },
   {
     path: 'vehicle-model-options/import',
@@ -88,7 +94,10 @@ export const routes: Routes = [
     path: 'vehicle-makes/:makeCode/models/import',
     title: 'Import Vehicle Models',
     data: { breadcrumb: 'model-import', kind: 'model' },
-    loadComponent: () => import('./features/master-data-import.component').then((module) => module.MasterDataImportComponent),
+    loadComponent: () =>
+      import('./features/master-data-import.component').then(
+        (module) => module.MasterDataImportComponent,
+      ),
   },
   {
     path: 'vehicle-makes/:makeCode/models/new',

@@ -29,7 +29,9 @@ test.describe("Permanently delete a vehicle make", () => {
       .getByRole("button", { name: `Delete ${makeCode}`, exact: true })
       .click();
 
-    await expect(page.getByText("This cannot be undone.")).toBeVisible();
+    await expect(
+      page.getByText("This deletion is permanent and cannot be undone."),
+    ).toBeVisible();
     await page.getByRole("button", { name: "Cancel" }).click();
 
     await expect(

@@ -12,22 +12,46 @@
         <p class="subtitle">Upload and review records before importing them.</p>
       </div>
     </div>
-    <button matButton="outlined" type="button" (click)="downloadTemplate()">Download Excel template</button>
+    <button matButton="outlined" type="button" (click)="downloadTemplate()">
+      Download Excel template
+    </button>
   </header>
 
   <div class="card instructions">
     <h2>Workbook format</h2>
     <p>Use the <strong>IMPORT</strong> worksheet and keep the template column headers unchanged.</p>
     @if (layout().title === 'Vehicle Models') {
-      <p>Models will be added under make <strong>{{ currentMakeCode() }}</strong>. Do not add a make-code column.</p>
-      <p><strong>MODEL_CODE</strong>, <strong>MODEL_NAME</strong>, and <strong>SHORT_NAME</strong> are required. Other model fields are optional. Any dropdown codes you provide must be active options.</p>
-      <p>Active may be <code>Y</code> or <code>N</code>; blank defaults to <code>Y</code>. Existing model codes are skipped and never overwritten.</p>
+      <p>
+        Models will be added under make <strong>{{ currentMakeCode() }}</strong
+        >. Do not add a make-code column.
+      </p>
+      <p>
+        <strong>MODEL_CODE</strong>, <strong>MODEL_NAME</strong>, and
+        <strong>SHORT_NAME</strong> are required. Other model fields are optional. Any dropdown
+        codes you provide must be active options.
+      </p>
+      <p>
+        Active may be <code>Y</code> or <code>N</code>; blank defaults to <code>Y</code>. Existing
+        model codes are skipped and never overwritten.
+      </p>
     } @else if (layout().title === 'Vehicle Makes') {
-      <p><strong>MAKE_CODE</strong>, <strong>MAKE_NAME</strong>, and <strong>SHORT_NAME</strong> are required. Remarks and Arabic fields are optional.</p>
-      <p>Active may be <code>Y</code> or <code>N</code>; blank defaults to <code>Y</code>. Existing make codes are skipped and never overwritten.</p>
+      <p>
+        <strong>MAKE_CODE</strong>, <strong>MAKE_NAME</strong>, and <strong>SHORT_NAME</strong> are
+        required. Remarks and Arabic fields are optional.
+      </p>
+      <p>
+        Active may be <code>Y</code> or <code>N</code>; blank defaults to <code>Y</code>. Existing
+        make codes are skipped and never overwritten.
+      </p>
     } @else {
-      <p>Enter the adjustment key, required names, and active classification codes. Optional remarks and Arabic fields may be left blank.</p>
-      <p>Active may be <code>Y</code> or <code>N</code>; blank defaults to <code>Y</code>. Existing adjustment keys are skipped and never overwritten.</p>
+      <p>
+        Enter the adjustment key, required names, and active classification codes. Optional remarks
+        and Arabic fields may be left blank.
+      </p>
+      <p>
+        Active may be <code>Y</code> or <code>N</code>; blank defaults to <code>Y</code>. Existing
+        adjustment keys are skipped and never overwritten.
+      </p>
     }
     <p>Maximum file size: 5 MB. Maximum data rows: 1,000.</p>
   </div>
@@ -47,7 +71,10 @@
   </div>
 
   @if (busy()) {
-    <mat-progress-bar mode="indeterminate" [attr.aria-label]="'Checking or importing ' + layout().title" />
+    <mat-progress-bar
+      mode="indeterminate"
+      [attr.aria-label]="'Checking or importing ' + layout().title"
+    />
   }
   @if (error()) {
     <div class="message error" role="alert">{{ error() }}</div>
@@ -63,7 +90,12 @@
           <h2 id="preview-heading">Import preview</h2>
           <p>{{ rows().length }} rows · {{ newCount() }} new · {{ skippedCount() }} existing</p>
         </div>
-        <button matButton="filled" type="button" [disabled]="!canImport() || busy()" (click)="importRows()">
+        <button
+          matButton="filled"
+          type="button"
+          [disabled]="!canImport() || busy()"
+          (click)="importRows()"
+        >
           Import valid rows
         </button>
       </div>
