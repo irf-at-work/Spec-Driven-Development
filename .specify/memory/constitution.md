@@ -1,7 +1,7 @@
 
 # Broker Insurance Constitution
 
-**Version:** 1.0.2 | **Ratified:** 2026-10-28 | **Last amended:** 2026-10-29
+**Version:** 1.1.0 | **Ratified:** 2026-10-28 | **Last amended:** 2026-11-05
 **Based on template:** v1.1.0
 
 > This constitution sets the non-negotiable rules for this project. Every
@@ -201,10 +201,13 @@ the authority.
 - Handle HTTP errors in one global interceptor; do not swallow errors or show raw server messages. 
 - Do not use `innerHTML` or `bypassSecurityTrust*`.
 
-
 ### B9 — Out of scope
 
 - Authentication does not need to be handled
+
+### B10 — Page navigation alignment
+
+- All page-level Back buttons MUST be aligned to the right side of the page header.
 
 ---
 
@@ -244,3 +247,4 @@ the authority.
 | 1.0.0   | 2026-10-28 | Initial ratification from template v1.1.0           | —      |
 | 1.0.1   | 2026-10-28 | Angular and Oracle Version updated  (Manual change) | —      |
 | 1.0.2   | 2026-10-29 | Frontend version changed from Angular 21 to Angular 22 (B2, B8) | Existing UI project is already on Angular 22.2; avoids a downgrade |
+| 1.1.0   | 2026-11-05 | Added B10 page navigation alignment convention | Keeps page-level Back buttons consistently positioned on the right side of page headers; current routes and feature specs were checked for conflicts and none were found |
