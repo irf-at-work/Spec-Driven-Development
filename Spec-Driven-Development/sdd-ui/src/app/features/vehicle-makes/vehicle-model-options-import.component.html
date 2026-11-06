@@ -1,20 +1,22 @@
 <section class="page">
   <header class="page-header">
     <div class="title-row">
+      <div>
+        <h1>Import Vehicle Dropdown Choices</h1>
+        <p class="subtitle">Upload approved choices for the vehicle model dropdowns.</p>
+      </div>
+    </div>
+    <div class="header-actions">
       <app-icon-button
         action="back"
         tooltip="Back to vehicle makes"
         accessibleName="Back to vehicle makes"
         (clicked)="back()"
       />
-      <div>
-        <h1>Import Vehicle Dropdown Choices</h1>
-        <p class="subtitle">Upload approved choices for the vehicle model dropdowns.</p>
-      </div>
+      <button matButton="outlined" type="button" (click)="downloadTemplate()">
+        Download Excel template
+      </button>
     </div>
-    <button matButton="outlined" type="button" (click)="downloadTemplate()">
-      Download Excel template
-    </button>
   </header>
 
   <div class="card instructions">

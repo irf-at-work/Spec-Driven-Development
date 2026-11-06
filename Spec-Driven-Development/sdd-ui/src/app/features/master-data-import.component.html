@@ -1,20 +1,22 @@
 <section class="page">
   <header class="page-header">
     <div class="title-row">
+      <div>
+        <h1>Import {{ layout().title }}</h1>
+        <p class="subtitle">Upload and review records before importing them.</p>
+      </div>
+    </div>
+    <div class="header-actions">
       <app-icon-button
         action="back"
         [tooltip]="'Back to ' + layout().title"
         [accessibleName]="'Back to ' + layout().title"
         (clicked)="back()"
       />
-      <div>
-        <h1>Import {{ layout().title }}</h1>
-        <p class="subtitle">Upload and review records before importing them.</p>
-      </div>
+      <button matButton="outlined" type="button" (click)="downloadTemplate()">
+        Download Excel template
+      </button>
     </div>
-    <button matButton="outlined" type="button" (click)="downloadTemplate()">
-      Download Excel template
-    </button>
   </header>
 
   <div class="card instructions">
