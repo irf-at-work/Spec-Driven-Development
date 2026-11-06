@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
@@ -11,6 +10,7 @@ import { CodeSortColumn } from '../../../api/generated/models/code-sort-column';
 import { CodesApiService } from '../services/codes-api.service';
 import { CodesFeedbackService } from '../services/codes-feedback.service';
 import { CreationAuditDetails } from '../components/creation-audit-details';
+import { PageNumberNavigation } from '../../../shared/page-number-navigation';
 import {
   CodeColumnFilterValue,
   CodeFilterColumn,
@@ -24,9 +24,9 @@ import {
     ColumnFilterControl,
     CreationAuditDetails,
     MatButtonModule,
-    MatPaginatorModule,
     MatSortModule,
     MatTableModule,
+    PageNumberNavigation,
     RouterLink,
   ],
   styleUrl: './codes-list-page.css',
@@ -43,10 +43,10 @@ export class CodesListPage implements OnInit {
   protected readonly records = signal<CodeRecord[]>([]);
   protected readonly page = signal(1);
   protected readonly pageSize = signal(10);
-  protected readonly pageSizeOptions = [10, 15, 20, 50];
   protected readonly sortActive = signal('code');
   protected readonly sortDirection = signal<SortDirection>('asc');
   protected readonly totalCount = signal(0);
+  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize()));
   protected readonly isLoading = signal(true);
   protected readonly hasError = signal(false);
   protected readonly deleteError = signal('');
@@ -79,8 +79,8 @@ export class CodesListPage implements OnInit {
     }
   }
 
-  protected onPageChange(event: PageEvent): void {
-    void this.loadPage(event.pageIndex + 1, event.pageSize);
+  protected onPageNumberChange(page: number): void {
+    void this.loadPage(page);
   }
 
   protected onSortChange(sort: Sort): void {

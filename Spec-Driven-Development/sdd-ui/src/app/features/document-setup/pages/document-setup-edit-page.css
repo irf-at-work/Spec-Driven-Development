@@ -261,15 +261,6 @@ th {
   color: var(--app-error);
 }
 
-mat-paginator {
-  margin-top: 0.75rem;
-  overflow: hidden;
-  color: var(--app-text);
-  background: var(--app-surface);
-  border: 1px solid var(--app-border);
-  border-radius: 0.65rem;
-}
-
 @media (max-width: 760px) {
   .page-header,
   .modules-header {

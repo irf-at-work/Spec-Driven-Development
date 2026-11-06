@@ -76,7 +76,7 @@ export function formatCodeOption(code: string, codes: CodeRecord[]): string {
   return record?.codeDescription ? `${code} — ${record.codeDescription}` : code;
 }
 
-export function isFixedAssetApplicableFor(
+export function requiresApplicableRanges(
   code: string | null | undefined,
   codes: CodeRecord[],
 ): boolean {
@@ -89,7 +89,12 @@ export function isFixedAssetApplicableFor(
   }
 
   const record = codes.find((option) => option.code === code);
-  return /\b(?:FIXED[\s_-]+)?ASSETS?\b/i.test(
-    `${record?.code ?? code} ${record?.codeDescription ?? ''}`,
+  const label = `${record?.code ?? code} ${record?.codeDescription ?? ''}`.replace(
+    /[^a-z0-9]+/gi,
+    ' ',
+  );
+  return (
+    /\b(?:FIXED\s+)?ASSETS?\b/i.test(label) ||
+    /\b(?:POLIC(?:Y|IES)|CLAIMS?)\b/i.test(label)
   );
 }

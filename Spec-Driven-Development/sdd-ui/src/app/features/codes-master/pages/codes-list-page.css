@@ -195,14 +195,6 @@ app-column-filter-control {
   cursor: not-allowed;
 }
 
-mat-paginator {
-  margin-top: 0.75rem;
-  overflow: hidden;
-  background: var(--app-surface);
-  border: 1px solid var(--app-border);
-  border-radius: 0.65rem;
-}
-
 @media (max-width: 640px) {
   .codes-page {
     padding: 1rem;

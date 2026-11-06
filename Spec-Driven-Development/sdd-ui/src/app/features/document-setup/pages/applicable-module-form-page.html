@@ -13,15 +13,28 @@
       <h1 id="applicable-module-heading">{{ heading }}</h1>
       <p>Doc Code: <strong>{{ documentLabel }}</strong></p>
     </div>
-    <button
-      mat-flat-button
-      color="primary"
-      type="button"
-      [disabled]="isSaving()"
-      (click)="leavePage()"
-    >
-      Back
-    </button>
+    <div class="page-header-actions">
+      @if (isEditing || isParentDraft) {
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="isSaving() || isLoading()"
+          (click)="addAnother()"
+        >
+          Add
+        </button>
+      }
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSaving()"
+        (click)="leavePage()"
+      >
+        Back
+      </button>
+    </div>
   </header>
 
   @if (isLoading()) {

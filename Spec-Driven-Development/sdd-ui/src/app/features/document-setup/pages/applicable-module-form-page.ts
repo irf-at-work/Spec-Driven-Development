@@ -33,7 +33,7 @@ import {
   DocumentSetupOptionsError,
   DocumentSetupOptionsService,
   formatCodeOption,
-  isFixedAssetApplicableFor,
+  requiresApplicableRanges,
 } from '../services/document-setup-options.service';
 
 @Component({
@@ -98,7 +98,7 @@ export class ApplicableModuleFormPage implements OnInit {
       .subscribe((value) => {
         if (
           !this.isLoadingApplicableForCodes() &&
-          !isFixedAssetApplicableFor(value, this.applicableForCodes())
+          !requiresApplicableRanges(value, this.applicableForCodes())
         ) {
           this.clearRanges();
         }
@@ -151,8 +151,38 @@ export class ApplicableModuleFormPage implements OnInit {
     );
   }
 
+  protected async addAnother(): Promise<void> {
+    if (this.isSaving() || this.isLoading()) {
+      return;
+    }
+
+    if (this.isParentDraft && !this.isEditingDraft) {
+      if (!this.form.pristine && !(await this.feedback.confirmDiscardChanges())) {
+        return;
+      }
+
+      this.resetForm();
+      return;
+    }
+
+    if (this.isParentDraft) {
+      const navigatedToParent = await this.router.navigate(['/document-setups/add']);
+      if (navigatedToParent) {
+        await this.router.navigate(['/document-setups/add/applicable-modules/add']);
+      }
+      return;
+    }
+
+    await this.router.navigate([
+      '/document-setups',
+      this.docCode,
+      'applicable-modules',
+      'add',
+    ]);
+  }
+
   protected isFixedAssetSelected(): boolean {
-    return isFixedAssetApplicableFor(
+    return requiresApplicableRanges(
       this.form.controls.applicableFor.value,
       this.applicableForCodes(),
     );
@@ -231,6 +261,7 @@ export class ApplicableModuleFormPage implements OnInit {
     try {
       const write = toApplicableModuleWrite(this.form, this.isFixedAssetSelected());
       const record = this.loadedRecord();
+      const isCreating = !this.isEditing;
       if (this.isParentDraft) {
         if (this.isEditingDraft) {
           if (this.draftEditIndex === null || this.draftModule() === null) {
@@ -239,6 +270,7 @@ export class ApplicableModuleFormPage implements OnInit {
           this.addDraft.updateModule(this.draftEditIndex, write);
         } else {
           this.addDraft.addModule(write);
+          this.feedback.showSuccess('Applicable Module added to the document setup draft.');
         }
       } else if (record && this.damodUid !== null) {
         const body: ApplicableModuleUpdate = {
@@ -254,9 +286,13 @@ export class ApplicableModuleFormPage implements OnInit {
 
       this.form.markAsPristine();
       this.isSaving.set(false);
-      await this.router.navigate(
-        this.isParentDraft ? ['/document-setups/add'] : ['/document-setups', this.docCode, 'edit'],
-      );
+      if (!isCreating) {
+        await this.router.navigate(
+          this.isParentDraft
+            ? ['/document-setups/add']
+            : ['/document-setups', this.docCode, 'edit'],
+        );
+      }
     } catch (error: unknown) {
       if (!(error instanceof HttpErrorResponse)) {
         throw error;

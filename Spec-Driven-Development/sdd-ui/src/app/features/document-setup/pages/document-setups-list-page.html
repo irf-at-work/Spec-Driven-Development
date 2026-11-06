@@ -157,15 +157,15 @@
     }
 
     @if (totalCount() > 0) {
-      <mat-paginator
-        [length]="totalCount()"
-        [pageIndex]="page() - 1"
-        [pageSize]="pageSize()"
-        [pageSizeOptions]="pageSizeOptions"
-        [disabled]="isLoading()"
-        aria-label="Document Setup pagination"
-        (page)="onPageChange($event)"
-      />
+      <div class="pagination-row">
+        <app-page-number-navigation
+          [page]="page()"
+          [totalPages]="totalPages()"
+          [label]="'Document Setup page selection'"
+          [disabled]="isLoading()"
+          (pageChange)="onPageNumberChange($event)"
+        />
+      </div>
     }
   }
 </section>

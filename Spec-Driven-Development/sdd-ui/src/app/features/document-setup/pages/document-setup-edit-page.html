@@ -10,7 +10,7 @@
 <section class="document-setup-edit-page" aria-labelledby="edit-document-setup-heading">
   <header class="page-header">
     <div>
-      <h1 id="edit-document-setup-heading">Edit Document Setup</h1>
+      <h1 id="edit-document-setup-heading"> Document Setup</h1>
       @if (loadedRecord(); as record) {
         <p>
           Doc Code: <strong>{{ record.docCode }}</strong>
@@ -372,15 +372,15 @@
             </p>
           }
 
-          <mat-paginator
-            [length]="totalCount()"
-            [pageIndex]="page() - 1"
-            [pageSize]="pageSize()"
-            [pageSizeOptions]="pageSizes"
-            [disabled]="isLoadingModules() || deletingUid() !== null"
-            aria-label="Applicable Module pagination"
-            (page)="onModulePageChange($event)"
-          />
+          <div class="pagination-row">
+            <app-page-number-navigation
+              [page]="page()"
+              [totalPages]="totalPages()"
+              [label]="'Applicable Module page selection'"
+              [disabled]="isLoadingModules() || deletingUid() !== null"
+              (pageChange)="onModulePageNumberChange($event)"
+            />
+          </div>
         }
       </section>
     }

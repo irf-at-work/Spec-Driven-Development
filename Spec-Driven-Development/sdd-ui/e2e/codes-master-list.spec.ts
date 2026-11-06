@@ -26,6 +26,12 @@ function createRecords(start: number, count: number) {
   });
 }
 
+test('shows the hard-coded company name in the application toolbar', async ({ page }) => {
+  await page.goto('/codes');
+
+  await expect(page.locator('.application-name')).toHaveText('ABC Broker Insurance');
+});
+
 async function applyColumnFilter(
   page: import('@playwright/test').Page,
   column: string,
@@ -133,12 +139,12 @@ test('keeps the table headings visible while scrolling through rows', async ({ p
   const tableContainer = page.locator('.table-container');
   const firstHeader = page.getByRole('columnheader').first();
   await expect
-    .poll(() =>
-      tableContainer.evaluate((element) => element.scrollHeight > element.clientHeight),
-    )
+    .poll(() => tableContainer.evaluate((element) => element.scrollHeight > element.clientHeight))
     .toBe(true);
 
-  const containerTop = await tableContainer.evaluate((element) => element.getBoundingClientRect().top);
+  const containerTop = await tableContainer.evaluate(
+    (element) => element.getBoundingClientRect().top,
+  );
   await tableContainer.evaluate((element) => {
     element.scrollTop = 200;
   });
@@ -224,7 +230,7 @@ test('sorts every data column in ascending and descending order', async ({ page 
   }
 });
 
-test('allows page sizes 10, 15, 20, and 50 and requests the selected size', async ({ page }) => {
+test('shows compact pagination controls and uses a page size of 10', async ({ page }) => {
   const requests: URL[] = [];
   await page.route('**/api/codes**', async (route) => {
     const url = new URL(route.request().url());
@@ -242,13 +248,11 @@ test('allows page sizes 10, 15, 20, and 50 and requests the selected size', asyn
   });
 
   await page.goto('/codes');
-  const pageSizeSelect = page.locator('.mat-mdc-paginator-page-size-select');
-  await pageSizeSelect.click();
-  await expect(page.getByRole('option')).toHaveText(['10', '15', '20', '50']);
-  await page.getByRole('option', { name: '15', exact: true }).click();
-
-  await expect.poll(() => requests.at(-1)?.searchParams.get('pageSize')).toBe('15');
-  expect(requests.at(-1)?.searchParams.get('page')).toBe('1');
+  const pagination = page.getByRole('navigation', { name: 'Codes Master page selection' });
+  await expect(pagination.getByRole('button')).toHaveCount(6);
+  await expect(pagination.getByRole('button', { name: 'Page 1' })).toBeVisible();
+  await expect(page.locator('.mat-mdc-paginator-page-size')).toHaveCount(0);
+  await expect.poll(() => requests.at(-1)?.searchParams.get('pageSize')).toBe('10');
 });
 
 test('distinguishes an empty listing from an error', async ({ page }) => {
@@ -432,7 +436,11 @@ test('filters all records case-insensitively with the selected column operator',
     await expect(page.getByRole('cell', { name: 'CODE-12', exact: true })).toBeVisible();
   }
 
-  await expect(page.getByText(/1\s*–\s*1 of 1/)).toBeVisible();
+  await expect(
+    page.getByRole('navigation', { name: 'Codes Master page selection' }).getByRole('button', {
+      name: 'Page 1',
+    }),
+  ).toBeDisabled();
 });
 
 test('filters each visible data column', async ({ page }) => {
@@ -468,6 +476,78 @@ test('filters each visible data column', async ({ page }) => {
       .toBe('Contains');
     expect(requests.at(-1)?.searchParams.get(`${column.parameter}Value`)).toBe('match');
   }
+});
+
+test('navigates with first, previous, current, next, and last controls', async ({ page }) => {
+  const requests: URL[] = [];
+  await page.route('**/api/codes**', async (route) => {
+    const url = new URL(route.request().url());
+    requests.push(url);
+    const requestedPage = Number(url.searchParams.get('page') ?? 1);
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        items: createRecords((requestedPage - 1) * 10 + 1, 10),
+        page: requestedPage,
+        pageSize: 10,
+        totalCount: 52,
+      },
+    });
+  });
+
+  await page.goto('/codes');
+  const pagination = page.getByRole('navigation', { name: 'Codes Master page selection' });
+  const paginationRow = page.locator('.pagination-row');
+  const rowBox = await paginationRow.boundingBox();
+  const controlsBox = await pagination.boundingBox();
+  expect(rowBox).not.toBeNull();
+  expect(controlsBox).not.toBeNull();
+  expect(controlsBox!.x + controlsBox!.width).toBeCloseTo(rowBox!.x + rowBox!.width, 0);
+  await expect(pagination.getByRole('button', { name: 'Page 1' })).toHaveCSS(
+    'background-color',
+    'rgb(96, 68, 47)',
+  );
+  for (const pageNumber of [1, 2, 3, 4, 5]) {
+    await expect(pagination.getByRole('button', { name: `Page ${pageNumber}` })).toBeVisible();
+  }
+
+  await pagination.getByRole('button', { name: 'Last page' }).click();
+  await expect(pagination.getByRole('button', { name: 'Page 6' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'CODE-51', exact: true })).toBeVisible();
+  await expect.poll(() => requests.at(-1)?.searchParams.get('page')).toBe('6');
+
+  await pagination.getByRole('button', { name: 'Previous page' }).click();
+  await expect(pagination.getByRole('button', { name: 'Page 5' })).toBeVisible();
+  await expect.poll(() => requests.at(-1)?.searchParams.get('page')).toBe('5');
+  await pagination.getByRole('button', { name: 'First page' }).click();
+  await expect(pagination.getByRole('button', { name: 'Page 1' })).toBeVisible();
+  await pagination.getByRole('button', { name: 'Page 2' }).click();
+  await expect(pagination.getByRole('button', { name: 'Page 2' })).toBeVisible();
+  await expect(pagination.getByRole('button', { name: 'Page 1' })).toHaveCount(0);
+  for (const pageNumber of [2, 3, 4, 5, 6]) {
+    await expect(pagination.getByRole('button', { name: `Page ${pageNumber}` })).toBeVisible();
+  }
+  await expect.poll(() => requests.at(-1)?.searchParams.get('page')).toBe('2');
+});
+
+test('disables the currently selected page number', async ({ page }) => {
+  await page.route('**/api/codes**', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        items: createRecords(1, 10),
+        page: 1,
+        pageSize: 10,
+        totalCount: 52,
+      },
+    });
+  });
+  await page.goto('/codes');
+  await expect(
+    page.getByRole('navigation', { name: 'Codes Master page selection' }).getByRole('button', {
+      name: 'Page 1',
+    }),
+  ).toBeDisabled();
 });
 
 test('combines column filters and clears one without clearing the others', async ({ page }) => {

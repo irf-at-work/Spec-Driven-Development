@@ -1,0 +1,59 @@
+@if (totalPages() > 0) {
+  <nav class="page-number-navigation" [attr.aria-label]="label()">
+    <ol>
+      <li>
+        <button
+          type="button"
+          aria-label="First page"
+          [disabled]="disabled() || page() <= 1"
+          (click)="pageChange.emit(1)"
+        >
+          «
+        </button>
+      </li>
+      <li>
+        <button
+          type="button"
+          aria-label="Previous page"
+          [disabled]="disabled() || page() <= 1"
+          (click)="pageChange.emit(page() - 1)"
+        >
+          ‹
+        </button>
+      </li>
+      @for (pageNumber of pageNumbers(); track pageNumber) {
+        <li>
+          <button
+            type="button"
+            [attr.aria-label]="'Page ' + pageNumber"
+            [attr.aria-current]="pageNumber === page() ? 'page' : null"
+            [disabled]="disabled() || pageNumber === page()"
+            (click)="pageChange.emit(pageNumber)"
+          >
+            {{ pageNumber }}
+          </button>
+        </li>
+      }
+      <li>
+        <button
+          type="button"
+          aria-label="Next page"
+          [disabled]="disabled() || page() >= totalPages()"
+          (click)="pageChange.emit(page() + 1)"
+        >
+          ›
+        </button>
+      </li>
+      <li>
+        <button
+          type="button"
+          aria-label="Last page"
+          [disabled]="disabled() || page() >= totalPages()"
+          (click)="pageChange.emit(totalPages())"
+        >
+          »
+        </button>
+      </li>
+    </ol>
+  </nav>
+}

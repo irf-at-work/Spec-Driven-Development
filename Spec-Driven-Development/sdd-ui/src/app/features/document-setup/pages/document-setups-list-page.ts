@@ -8,7 +8,6 @@ import {
   signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
@@ -16,6 +15,7 @@ import { DocumentSetupSortColumn } from '../../../api/generated/models/document-
 import { DocumentSetupSummary } from '../../../api/generated/models/document-setup-summary';
 import { ListDocumentSetups$Params } from '../../../api/generated/fn/operations/list-document-setups';
 import { CreationAuditDetails } from '../../codes-master/components/creation-audit-details';
+import { PageNumberNavigation } from '../../../shared/page-number-navigation';
 import {
   DocumentSetupApiService,
   DocumentSetupPageSize,
@@ -39,9 +39,9 @@ function isDocumentSetupPageSize(value: number): value is DocumentSetupPageSize 
     ColumnFilterControl,
     CreationAuditDetails,
     MatButtonModule,
-    MatPaginatorModule,
     MatSortModule,
     MatTableModule,
+    PageNumberNavigation,
     RouterLink,
   ],
   styleUrl: './document-setups-list-page.css',
@@ -67,8 +67,8 @@ export class DocumentSetupsListPage implements OnInit {
   protected readonly pageSize = signal<DocumentSetupPageSize>(10);
   protected readonly sortActive = signal('docCode');
   protected readonly sortDirection = signal<SortDirection>('asc');
-  protected readonly pageSizeOptions: DocumentSetupPageSize[] = [10, 15, 20, 50];
   protected readonly totalCount = signal(0);
+  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize()));
   protected readonly isLoading = signal(true);
   protected readonly hasError = signal(false);
   protected readonly deletingCode = signal<string | null>(null);
@@ -140,12 +140,8 @@ export class DocumentSetupsListPage implements OnInit {
     }
   }
 
-  protected onPageChange(event: PageEvent): void {
-    if (!isDocumentSetupPageSize(event.pageSize)) {
-      throw new RangeError(`Unsupported page size: ${event.pageSize}.`);
-    }
-
-    void this.loadPage(event.pageIndex + 1, event.pageSize);
+  protected onPageNumberChange(page: number): void {
+    void this.loadPage(page);
   }
 
   protected onSortChange(sort: Sort): void {

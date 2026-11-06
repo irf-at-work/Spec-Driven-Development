@@ -1,10 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -15,6 +21,7 @@ import { ApplicableModuleSortColumn } from '../../../api/generated/models/applic
 import { DocumentSetupRecord } from '../../../api/generated/models/document-setup-record';
 import { DocumentSetupUpdate } from '../../../api/generated/models/document-setup-update';
 import { CreationAuditDetails } from '../../codes-master/components/creation-audit-details';
+import { PageNumberNavigation } from '../../../shared/page-number-navigation';
 import {
   DocumentSetupForm,
   createDocumentSetupForm,
@@ -60,13 +67,13 @@ type ApplicableModuleFilterColumn = Extract<
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatPaginatorModule,
     MatSortModule,
     MatSelectModule,
     MatSlideToggleModule,
     MatTableModule,
     CreationAuditDetails,
     ColumnFilterControl,
+    PageNumberNavigation,
     ReactiveFormsModule,
     RouterLink,
   ],
@@ -104,7 +111,6 @@ export class DocumentSetupEditPage implements OnInit, UnsavedChangesAware {
     'activeYn',
     'actions',
   ];
-  protected readonly pageSizes: DocumentSetupPageSize[] = [10, 15, 20, 50];
   protected readonly page = signal(1);
   protected readonly pageSize = signal<DocumentSetupPageSize>(10);
   protected readonly sortActive = signal('applicableFor');
@@ -116,6 +122,7 @@ export class DocumentSetupEditPage implements OnInit, UnsavedChangesAware {
     Partial<Record<ApplicableModuleFilterColumn, string>>
   >({});
   protected readonly totalCount = signal(0);
+  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize()));
   protected readonly isLoading = signal(true);
   protected readonly isLoadingModules = signal(false);
   protected readonly isSaving = signal(false);
@@ -286,12 +293,8 @@ export class DocumentSetupEditPage implements OnInit, UnsavedChangesAware {
     }
   }
 
-  protected onModulePageChange(event: PageEvent): void {
-    if (!this.isPageSize(event.pageSize)) {
-      throw new RangeError(`Unsupported page size: ${event.pageSize}.`);
-    }
-
-    void this.loadModules(event.pageIndex + 1, event.pageSize);
+  protected onModulePageNumberChange(page: number): void {
+    void this.loadModules(page);
   }
 
   protected onModulesSortChange(sort: Sort): void {

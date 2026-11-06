@@ -45,6 +45,18 @@ test.beforeEach(async ({ page }) => {
         { code: 'ASR', codeType: 'APPLICABLE_FOR', codeDescription: 'ASR', companyCode: '101' },
         { code: 'ASSET', codeType: 'APPLICABLE_FOR', codeDescription: 'Asset', companyCode: '101' },
         {
+          code: 'POLICY',
+          codeType: 'APPLICABLE_FOR',
+          codeDescription: 'Policy',
+          companyCode: '101',
+        },
+        {
+          code: 'CLAIM',
+          codeType: 'APPLICABLE_FOR',
+          codeDescription: 'Claim',
+          companyCode: '101',
+        },
+        {
           code: 'FA',
           codeType: 'APPLICABLE_FOR',
           codeDescription: 'Fixed Asset',
@@ -358,14 +370,13 @@ test('shows descriptions only, neutral table colors, and edit/delete icons for s
     page.getByRole('table', { name: 'Applicable Modules' }).getByRole('columnheader').first(),
   ).toHaveCSS('background-color', 'rgb(241, 237, 232)');
   await expect(moduleRow.locator('td').first()).toHaveCSS('background-color', 'rgb(255, 253, 251)');
-  const paginator = page.getByRole('group', { name: 'Applicable Module pagination' });
-  await expect(paginator.getByText('Items per page:')).toBeVisible();
-  await expect(paginator).toHaveCSS('background-color', 'rgb(255, 253, 251)');
-  const pageSize = await paginator.locator('.mat-mdc-paginator-page-size').boundingBox();
-  const rangeActions = await paginator.locator('.mat-mdc-paginator-range-actions').boundingBox();
-  expect(pageSize).not.toBeNull();
-  expect(rangeActions).not.toBeNull();
-  expect(pageSize!.x).toBeLessThan(rangeActions!.x);
+  const pagination = page.getByRole('navigation', {
+    name: 'Applicable Module page selection',
+  });
+  await expect(pagination.getByRole('button')).toHaveCount(5);
+  await expect(pagination.getByRole('button', { name: 'Page 1' })).toBeVisible();
+  await expect(page.locator('.pagination-row')).toHaveCSS('background-color', 'rgb(255, 253, 251)');
+  await expect(page.locator('.mat-mdc-paginator-page-size')).toHaveCount(0);
   await expect(
     page
       .getByRole('button', { name: 'Applicable Module 98765432109876543', exact: true })
@@ -386,6 +397,49 @@ test('centres the empty Applicable Modules state and keeps Add visible', async (
   await expect(
     page.locator('.modules-actions').getByRole('button', { name: 'Add', exact: true }),
   ).toBeVisible();
+});
+
+test('selects an Applicable Module page from the numbered paginator', async ({ page }) => {
+  const modules = Array.from({ length: 52 }, (_, index) => ({
+    ...assetModule,
+    damodUid: String(index + 1),
+    applicableFor: `MODULE-${index + 1}`,
+  }));
+  const requests: URL[] = [];
+  await page.route('**/api/document-setups/**', async (route) => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/applicable-modules')) {
+      requests.push(url);
+      const requestedPage = Number(url.searchParams.get('page') ?? 1);
+      const pageSize = Number(url.searchParams.get('pageSize') ?? 10);
+      const start = (requestedPage - 1) * pageSize;
+      await route.fulfill({
+        contentType: 'application/json',
+        json: {
+          items: modules.slice(start, start + pageSize),
+          page: requestedPage,
+          pageSize,
+          totalCount: modules.length,
+        },
+      });
+      return;
+    }
+
+    await route.fulfill({ contentType: 'application/json', json: parent });
+  });
+  await page.goto('/document-setups/DOC-EDIT/edit');
+
+  const pageNumbers = page.getByRole('navigation', {
+    name: 'Applicable Module page selection',
+  });
+  await pageNumbers.getByRole('button', { name: 'Last page' }).click();
+  await expect(pageNumbers.getByRole('button', { name: 'Page 6' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'MODULE-51', exact: true })).toBeVisible();
+  await expect.poll(() => requests.at(-1)?.searchParams.get('page')).toBe('6');
+  await pageNumbers.getByRole('button', { name: 'Previous page' }).click();
+  await expect(pageNumbers.getByRole('button', { name: 'Page 5' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'MODULE-41', exact: true })).toBeVisible();
+  await expect.poll(() => requests.at(-1)?.searchParams.get('page')).toBe('5');
 });
 
 test('updates the parent with its loaded version and reports stale saves with reload guidance', async ({
@@ -513,6 +567,14 @@ test('child Add shows Fixed Asset ranges, prevents duplicate saves, and submits 
 
   await expect(page.getByRole('dialog')).toContainText('Applicable Module created successfully.');
   expect(postCount).toBe(1);
+  await page.getByRole('button', { name: 'OK' }).click();
+  await expect(page).toHaveURL('/document-setups/DOC-EDIT/applicable-modules/add');
+  await expect(page.getByRole('combobox', { name: 'Applicable For' })).toContainText(
+    'FA — Fixed Asset',
+  );
+  await expect(page.getByRole('combobox', { name: 'Product From' })).toContainText(
+    '1002 — PERSONAL LINES - MOTOR THIRD PARTY',
+  );
   expect(submittedBody?.['applicableFor']).toBe('FA');
   expect(submittedBody?.['productFrom']).toBe('1002');
   expect(submittedBody?.['productTo']).toBe('1001');
@@ -522,6 +584,83 @@ test('child Add shows Fixed Asset ranges, prevents duplicate saves, and submits 
   expect(submittedBody?.['ccmTo']).toBe('601');
   expect(submittedBody?.['mandatoryYn']).toBe('N');
   expect(submittedBody?.['activeYn']).toBe('Y');
+});
+
+test('Policy and Claim Applicable For choices show Product, PCM, and CCM ranges', async ({ page }) => {
+  await page.goto('/document-setups/DOC-EDIT/applicable-modules/add');
+  const applicableFor = page.getByRole('combobox', { name: 'Applicable For' });
+
+  for (const [optionName, fieldName] of [
+    ['POLICY — Policy', 'Product From'],
+    ['CLAIM — Claim', 'Product From'],
+  ]) {
+    await applicableFor.click();
+    await page.getByRole('option', { name: optionName }).click();
+    await expect(page.getByRole('combobox', { name: fieldName })).toBeVisible();
+    for (const rangeField of ['Product To', 'PCM From', 'PCM To', 'CCM From', 'CCM To']) {
+      await expect(page.getByRole('combobox', { name: rangeField })).toBeVisible();
+    }
+  }
+});
+
+test('Applicable Module edit Add opens a blank new Applicable Module page', async ({ page }) => {
+  await page.route(
+    '**/api/document-setups/DOC-EDIT/applicable-modules/98765432109876543',
+    async (route) => {
+      await route.fulfill({
+        contentType: 'application/json',
+        json: { ...assetModule, damodDocCode: 'DOC-EDIT', createdBy: 'ADMIN' },
+      });
+    },
+  );
+
+  await page.goto(
+    '/document-setups/DOC-EDIT/applicable-modules/98765432109876543/edit',
+  );
+
+  const headerActions = page.locator('.page-header-actions');
+  await expect(headerActions.getByRole('button', { name: 'Add', exact: true })).toBeVisible();
+  await expect(headerActions.getByRole('button', { name: 'Back', exact: true })).toBeVisible();
+  await expect(headerActions.getByRole('button').nth(0)).toHaveText('Add');
+  await headerActions.getByRole('button', { name: 'Add', exact: true }).click();
+
+  await expect(page).toHaveURL('/document-setups/DOC-EDIT/applicable-modules/add');
+  await expect(page.getByRole('heading', { name: 'Applicable Module' })).toBeVisible();
+  await expect(page.locator('.page-header-actions').getByRole('button', { name: 'Add' })).toHaveCount(
+    0,
+  );
+});
+
+test('draft Applicable Module Add resets the form after confirming unsaved changes', async ({
+  page,
+}) => {
+  await page.goto('/document-setups/add/applicable-modules/add');
+  await page.getByRole('combobox', { name: 'Applicable For' }).click();
+  await page.getByRole('option', { name: 'FA — Fixed Asset' }).click();
+  await expect(page.getByRole('combobox', { name: 'Product From' })).toBeVisible();
+
+  await page.locator('.page-header-actions').getByRole('button', { name: 'Add' }).click();
+  await expect(page.getByRole('dialog')).toContainText('Your changes will be lost');
+  await page.getByRole('button', { name: 'Discard' }).click();
+
+  await expect(page).toHaveURL('/document-setups/add/applicable-modules/add');
+  await expect(page.getByRole('combobox', { name: 'Product From' })).toHaveCount(0);
+});
+
+test('saving a draft Applicable Module stays on the page and keeps the selected value', async ({
+  page,
+}) => {
+  await page.goto('/document-setups/add/applicable-modules/add');
+  await page.getByRole('combobox', { name: 'Applicable For' }).click();
+  await page.getByRole('option', { name: 'ASR' }).click();
+  await page.getByRole('button', { name: 'Save' }).click();
+
+  await expect(page.getByRole('dialog')).toContainText(
+    'Applicable Module added to the document setup draft.',
+  );
+  await page.getByRole('button', { name: 'OK' }).click();
+  await expect(page).toHaveURL('/document-setups/add/applicable-modules/add');
+  await expect(page.getByRole('combobox', { name: 'Applicable For' })).toContainText('ASR');
 });
 
 test('uses ALL for unselected Fixed Asset range options in the saved request', async ({ page }) => {

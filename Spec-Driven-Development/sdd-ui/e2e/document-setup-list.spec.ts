@@ -207,7 +207,7 @@ test('sends per-column filters together and resets to the first page', async ({ 
   expect(requests.at(-1)?.searchParams.get('page')).toBe('1');
 });
 
-test('paginates document setups with the supported page sizes', async ({ page }) => {
+test('paginates document setups with compact controls and a fixed page size', async ({ page }) => {
   const requests: URL[] = [];
   await page.route('**/api/document-setups**', async (route) => {
     const url = new URL(route.request().url());
@@ -224,17 +224,45 @@ test('paginates document setups with the supported page sizes', async ({ page })
       },
     });
   });
-
   await openDocumentSetups(page);
+  await openDocumentSetups(page);
+  const pagination = page.getByRole('navigation', { name: 'Document Setup page selection' });
+  await expect(pagination.getByRole('button')).toHaveCount(6);
+  await expect(page.locator('.mat-mdc-paginator-page-size')).toHaveCount(0);
+  await expect.poll(() => requests.at(-1)?.searchParams.get('pageSize')).toBe('10');
   await page.getByRole('button', { name: 'Next page' }).click();
   await expect(page.getByRole('cell', { name: 'DOC-11', exact: true })).toBeVisible();
+  await expect.poll(() => requests.at(-1)?.searchParams.get('pageSize')).toBe('10');
+  await expect.poll(() => requests.at(-1)?.searchParams.get('page')).toBe('2');
+});
 
-  const pageSizeSelect = page.locator('.mat-mdc-paginator-page-size-select');
-  await pageSizeSelect.click();
-  await expect(page.getByRole('option')).toHaveText(['10', '15', '20', '50']);
-  await page.getByRole('option', { name: '15', exact: true }).click();
-  await expect.poll(() => requests.at(-1)?.searchParams.get('pageSize')).toBe('15');
-  expect(requests.at(-1)?.searchParams.get('page')).toBe('1');
+test('selects a document setup page from the numbered paginator', async ({ page }) => {
+  const requests: URL[] = [];
+  await page.route('**/api/document-setups**', async (route) => {
+    const url = new URL(route.request().url());
+    requests.push(url);
+    const requestedPage = Number(url.searchParams.get('page') ?? 1);
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        items: createRecords((requestedPage - 1) * 10 + 1, 10),
+        page: requestedPage,
+        pageSize: 10,
+        totalCount: 52,
+      },
+    });
+  });
+
+  await openDocumentSetups(page);
+  const pageNumbers = page.getByRole('navigation', { name: 'Document Setup page selection' });
+  await pageNumbers.getByRole('button', { name: 'Last page' }).click();
+  await expect(pageNumbers.getByRole('button', { name: 'Page 6' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'DOC-51', exact: true })).toBeVisible();
+  await expect.poll(() => requests.at(-1)?.searchParams.get('page')).toBe('6');
+
+  await pageNumbers.getByRole('button', { name: 'Previous page' }).click();
+  await expect(pageNumbers.getByRole('button', { name: 'Page 5' })).toBeVisible();
+  await expect.poll(() => requests.at(-1)?.searchParams.get('page')).toBe('5');
 });
 
 test('distinguishes an empty listing from a retrieval error and can retry', async ({ page }) => {
