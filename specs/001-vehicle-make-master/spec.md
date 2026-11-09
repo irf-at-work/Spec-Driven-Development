@@ -40,7 +40,7 @@
 - Q: Where are models added and edited? → A: On their own pages, not in place on the make's page. This supersedes the "inline" answers above. The make's page still lists the make's models (display-only when editing is off) and still shows no models section for a new make.
 - Q: How are the row and page actions shown? → A: As icons (add, open, edit, delete), each with a tooltip and an accessible name for screen readers, instead of words.
 - Confirmed by the owner on 30-Oct-2026:
-  - Filters combine (a record must match all of them), ignore upper or lower case, start with "contains", take effect shortly after typing stops, and return the list to page 1. A blank filter is ignored.
+  - Filters combine (a record must match all of them), ignore upper or lower case, start with "contains", update 500 ms after typing stops, and return the list to page 1. A blank filter is ignored.
   - "Not equal to" also lists records whose value is empty (owner confirmed).
   - The model add and edit pages are reached from the make's page, and saving returns the user to that make. Adding, editing and deleting a model stay available only while the make's editing is switched on.
   - Leaving the make's page for a model page while the make has unsaved changes asks for confirmation first.
@@ -261,3 +261,4 @@ As a master-data administrator, I want to upload vehicle dropdown choices from a
 - Inactive makes and models stay visible in their lists, marked inactive. This feature has no filter that hides them except the Status filter the user chooses to apply (FR-030). It only stores and shows the flag; how other pages use it is outside this feature.
 - Turning a make off does not change its models, and the reverse is also true.
 - The model-field dropdown lists are small lookups loaded once when a model page is opened, so they are not paged. This owner-approved exception to the constitution's B8 paging rule MUST be recorded under C3 before implementation.
+- Shared master-data list, form, and API conventions are recorded in [Master Data Common Ground Rules](../master-data-common.md). This feature's explicit requirements and recorded lookup exception remain feature-specific.

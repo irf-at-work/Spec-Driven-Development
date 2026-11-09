@@ -4,6 +4,8 @@ This document describes the planned HTTP boundary. The runtime OpenAPI document 
 
 All routes are relative to `/api/vehicle-makes`. JSON names use camelCase. All non-success responses use `ProblemDetails`; exception handling is global and must not expose stack traces.
 
+Shared list and API behavior follows [Master Data Common Ground Rules](../../master-data-common.md); this contract specifies vehicle-make-specific fields and routes.
+
 ## List
 
 `GET /api/vehicle-makes?page={page}&makeCode={text}&makeCodeOperator={operator}&makeName={text}&makeNameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true|false}&activeOperator={operator}&sortBy={sortBy}&sortDirection={sortDirection}&pageSize={10|25|50}`

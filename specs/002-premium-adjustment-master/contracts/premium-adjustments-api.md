@@ -4,6 +4,8 @@ This document describes the planned HTTP boundary. The runtime OpenAPI document 
 
 All routes are relative to `/api/premium-adjustments`, except the options lookup. JSON names use camelCase. All non-success responses use `ProblemDetails`; exception handling is global and must not expose stack traces. The shapes and rules follow feature 001's contract (`specs/001-vehicle-make-master/contracts/vehicle-makes-api.md`).
 
+Shared list and API behavior follows [Master Data Common Ground Rules](../../master-data-common.md); this contract specifies adjustment-specific fields and routes.
+
 ## List Adjustment Codes
 
 `GET /api/premium-adjustments?page={page}&codeType={text}&codeTypeOperator={operator}&code={text}&codeOperator={operator}&companyCode={text}&companyCodeOperator={operator}&name={text}&nameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true|false}&activeOperator={operator}&sortBy={sortBy}&sortDirection={sortDirection}&pageSize={10|25|50}`
@@ -20,7 +22,7 @@ All routes are relative to `/api/premium-adjustments`, except the options lookup
 - `sortBy`: optional `codeType`, `code`, `companyCode`, `name`, or `shortName`; default `codeType`. Sorting ignores upper and lower case and ends with a unique tie-break (Code Type, Code, Company Code).
 - `sortDirection`: optional `asc` or `desc`; default `asc`.
 - Initial ordering is Code Type description ascending, then Code ascending.
-- Page size is fixed at 10; clients cannot request a different size. Filtering and sorting apply to all records before pagination.
+- Filtering and sorting apply to all records before pagination.
 - `200 OK`: shared `PaginatedResult<AdjustmentCodeListItemDto>` with `items`, `page`, `pageSize`, and `totalCount`. Each item contains `codeType`, `codeTypeDescription`, `code`, `companyCode`, `name`, `shortName`, and `active`.
 - Invalid page, sort or operator values: `400 Bad Request` with ProblemDetails (errors keyed by parameter name, for example `nameOperator`).
 
