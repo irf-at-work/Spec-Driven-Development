@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { Workbook } from 'exceljs';
-import { API_BASE_URL_VALUE } from '../core/app-config';
+import { API_BASE_URL } from '../generated/api-client';
 import { ApiProblemError } from '../core/api-problem';
 import { IconButtonComponent } from '../shared/icon-button/icon-button.component';
 import { NotificationService } from '../shared/notifications/notification.service';
@@ -158,6 +158,7 @@ const layouts = {
 })
 export class MasterDataImportComponent {
   private readonly http = inject(HttpClient);
+  private readonly apiBaseUrl = inject(API_BASE_URL);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly notify = inject(NotificationService);
@@ -258,7 +259,7 @@ export class MasterDataImportComponent {
       this.parsedRows = rows;
       this.busy.set(true);
       this.http
-        .post<PreviewResponse>(`${API_BASE_URL_VALUE}${this.endpoint()}/preview`, { rows })
+        .post<PreviewResponse>(`${this.apiBaseUrl}${this.endpoint()}/preview`, { rows })
         .subscribe({
           next: (r) => {
             this.rows.set(r.rows ?? []);
@@ -310,7 +311,7 @@ export class MasterDataImportComponent {
     if (!ok) return;
     this.busy.set(true);
     this.http
-      .post<ImportResponse>(`${API_BASE_URL_VALUE}${this.endpoint()}`, { rows: this.uploadRows })
+      .post<ImportResponse>(`${this.apiBaseUrl}${this.endpoint()}`, { rows: this.uploadRows })
       .subscribe({
         next: (r) => {
           this.busy.set(false);
