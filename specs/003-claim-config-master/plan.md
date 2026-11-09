@@ -47,13 +47,15 @@ In plain English: an employee saves a CCM, then uses its Applicable Products sec
 - [x] No new database schema changes are made or presumed approved. If Oracle review finds the agreed global unique rule is absent, obtain owner confirmation before any DDL (B8, C3).
 - [x] API contracts will use declared return types; OpenAPI remains the generated Angular client source (B7/B8).
 - [x] CCM association table UI requests page size five; API default remains ten to comply with B8.
+- [x] CCM lookup-choice and available-product listing endpoints use shared paginated responses with default page size ten; no unpaged lookup exception is assumed (B8).
 
-**Pre-implementation gates (not plan violations)**:
+**Pre-implementation gates (blocking)**:
 
-1. Read-only Oracle review identifies the authoritative product list and its product code/name fields, relevant active rule, and any list type values.
-2. Read-only Oracle review verifies CCM keys, audit/default behavior, and whether `CCM_CODE` is globally unique. If it is not guaranteed, stop and obtain approval for the necessary schema decision before implementation.
-3. Configure Company Code as `ASRTEST` for the no-login setup; validate the required setting at startup and do not hard-code it into source.
-4. Dropdown `STD_LIST_ITEM.LI_TYPE` sources are identified for each CCM code/type setting.
+1. Before any CCM write implementation, complete and record the read-only Oracle review in `research.md` and `data-model.md`: identify the authoritative product source, product code/name fields, active rule and row count; identify each CCM dropdown's `STD_LIST_ITEM.LI_TYPE`; and record keys, nullability, defaults, triggers, indexes and audit behavior. Do not start dependent implementation while a required mapping or source decision remains unresolved.
+2. The schema review MUST include a field-to-column map for every field in FR-005 across `BRM_CLM_CONFIG` and `BRM_CCM_PROD`, including database type/size, nullability, key membership, defaults, and audit columns. Record storage capacity separately from confirmed user-facing validation; do not infer UI rules from column types or names.
+3. Verify and record evidence that Oracle enforces global uniqueness of `BRM_CLM_CONFIG.CCM_CODE`. If no database constraint/index guarantees it, stop all CCM write implementation and obtain explicit owner approval for a database change or alternative schema decision; do not proceed on application-only validation. No DDL or data changes are authorized by this plan.
+4. Every CCM lookup-choice and product-choice listing endpoint returns the shared `PaginatedResult<T>` with default page size 10, as required by constitution B8. The corresponding controls must let employees retrieve choices across pages; no unpaged lookup exception is assumed.
+5. Configure Company Code as `ASRTEST` for the no-login setup; validate the required setting at startup and do not hard-code it into source.
 
 No database changes or test runs were performed during planning.
 
@@ -91,7 +93,7 @@ Spec-Driven-Development/
 
 ## Phase 0: Research
 
-See [research.md](research.md). Repository inspection establishes the stack and reusable UI/API patterns. It does not establish the product list source or the Oracle constraints for the CCM tables. These are documented as pre-implementation gates rather than guessed.
+See [research.md](research.md). Repository inspection establishes the stack and reusable UI/API patterns. The product source, lookup mappings, field-to-column mapping and Oracle uniqueness guarantee must be verified and recorded read-only before dependent implementation; unresolved gates block that implementation.
 
 ## Phase 1: Design
 

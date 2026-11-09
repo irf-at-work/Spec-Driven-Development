@@ -15,9 +15,10 @@ Shared filtering, sorting, pagination, error, and response behavior follows [Mas
 
 ## Read a CCM
 
-`GET /api/claim-configurations/{companyCode}/{ccmCode}`
+`GET /api/claim-configurations/{ccmCode}`
 
 - `200 OK`: full `ClaimConfigurationDto`, including settings, active state and audit values.
+- The API derives Company Code from the logged-in user's company; in the current no-identity test environment it uses configured `ASRTEST`. The caller does not choose Company Code in the route.
 - No matching composite key: `404 ProblemDetails`.
 
 ## Create a CCM
@@ -33,9 +34,11 @@ Shared filtering, sorting, pagination, error, and response behavior follows [Mas
 
 ## Update a CCM
 
-`PUT /api/claim-configurations/{companyCode}/{ccmCode}`
+`PUT /api/claim-configurations/{ccmCode}`
 
 `UpdateClaimConfigurationRequest` contains editable values only. It omits both key fields. Company Code and CCM Code cannot be changed. Active/inactive status is maintained through this update; a separate permanent CCM delete route is not defined.
+
+The API derives Company Code from the logged-in user's company when user identity is available. In the current no-identity test environment, it uses configured `ASRTEST`; callers cannot select another Company Code in the route or request body.
 
 - `200 OK`: updated `ClaimConfigurationDto`.
 - Invalid request: `400 ProblemDetails`; no update occurs.
@@ -43,7 +46,7 @@ Shared filtering, sorting, pagination, error, and response behavior follows [Mas
 
 ## List products associated with a CCM
 
-`GET /api/claim-configurations/{companyCode}/{ccmCode}/products?page={page}&pageSize={pageSize}`
+`GET /api/claim-configurations/{ccmCode}/products?page={page}&pageSize={pageSize}`
 
 - `200 OK`: `PaginatedResult<AssociatedProductDto>`.
 - The Applicable Products UI requests `pageSize=5` initially. The API's shared default remains 10 when no size is supplied.
@@ -52,7 +55,7 @@ Shared filtering, sorting, pagination, error, and response behavior follows [Mas
 
 ## Add a product association
 
-`POST /api/claim-configurations/{companyCode}/{ccmCode}/products`
+`POST /api/claim-configurations/{ccmCode}/products`
 
 Request: `{ "productCode": "..." }`.
 
@@ -63,7 +66,7 @@ Request: `{ "productCode": "..." }`.
 
 ## Remove a product association
 
-`DELETE /api/claim-configurations/{companyCode}/{ccmCode}/products/{productCode}`
+`DELETE /api/claim-configurations/{ccmCode}/products/{productCode}`
 
 - The UI obtains confirmation before sending this request.
 - `204 No Content`: only this association is removed.
@@ -79,9 +82,16 @@ Request: `{ "productCode": "..." }`.
 
 ## Lookup choices — implementation gate
 
-The CCM settings require active `STD_LIST_ITEM` choices (FR-020), and the Add modal requires product choices labelled `LI_CODE - LI_TYPE - LI_DESC` (FR-031). The repository does not establish the relevant `LI_TYPE` mappings or authoritative product source. Before fixing the lookup contract, perform the read-only Oracle review identified in [research.md](../research.md). If the product choices are not a small, bounded set, determine the appropriate paginated selection interaction before implementation; do not ship an unpaged large lookup by assumption.
+The CCM settings require active `STD_LIST_ITEM` choices (FR-020), and the Add modal requires product choices labelled `LI_CODE - LI_TYPE - LI_DESC` (FR-031). The repository does not establish the relevant `LI_TYPE` mappings or authoritative product source. Before fixing the lookup contract, perform the read-only Oracle review identified in [research.md](../research.md).
 
-Once verified, prefer one typed, read-only lookup response for the confirmed CCM lists when their sizes justify the existing options-endpoint convention. Product options may be a separate lookup because their source and volume are not yet known.
+Every lookup-choice and product-choice listing endpoint MUST return the shared `PaginatedResult<T>` (`items`, `page`, `pageSize`, `totalCount`) with default page size 10, as required by constitution B8 and FR-037. Use a field/list-type selector for CCM choices so each dropdown can retrieve its own pages. The product-choice endpoint returns pages of available products; the modal lets employees retrieve subsequent pages. Do not introduce an unpaged endpoint based on an assumed small result set.
+
+Proposed routes:
+
+- `GET /api/claim-configuration-options/{field}?page={page}&pageSize={pageSize}` returns `PaginatedResult<LookupChoiceDto>` for the confirmed CCM field/list mapping. Only active choices are returned for new selections.
+- `GET /api/claim-configurations/available-products?page={page}&pageSize={pageSize}` returns `PaginatedResult<AvailableProductDto>` for the verified product source.
+
+When a CCM currently stores a lookup value that is now inactive, its detail response retains that value. While editing, the UI displays it as the current value if unchanged, but the paginated choices endpoint offers active entries only for new selections.
 
 ## Database uniqueness gate
 
