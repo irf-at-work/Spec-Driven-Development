@@ -1,1 +1,669 @@
-import{Ct as _N,G as ON,Hn as wp,In as up,Jn as yE,L as Ko,Lt as dT,N as Ib,P as In,Y as P_,b as Eb,c as AN,ct as Uc,dt as Wm,h as Cn,hn as mp,it as Sc,jn as tb,k as Hc,kn as sp,kt as b,m as Ce,n as r,nt as Qo,o as $N,ot as UN,qn as yA,sn as kN,ut as Vc,yt as Ym}from"./main-RR6WM3XY.js";import{c as Rs,i as Hi,k as ks,x as bi}from"./chunk-CnuPNpsB.js";import{t as We}from"./chunk-BbQnuOdJ.js";var R=dT(We());var X=(o,a)=>a.rowNumber;function Z(o,a){if(o&1&&(Sc(0,`p`),yA(1,` Models will be added under make `),Sc(2,`strong`),yA(3),up(),yA(4,`. Do not add a make-code column. `),up(),Sc(5,`p`)(6,`strong`),yA(7,`MODEL_CODE`),up(),yA(8,`, `),Sc(9,`strong`),yA(10,`MODEL_NAME`),up(),yA(11,`, and `),Sc(12,`strong`),yA(13,`SHORT_NAME`),up(),yA(14,` are required. Other model fields are optional. Any dropdown codes you provide must be active options. `),up(),Sc(15,`p`),yA(16,` Active may be `),Sc(17,`code`),yA(18,`Y`),up(),yA(19,` or `),Sc(20,`code`),yA(21,`N`),up(),yA(22,`; blank defaults to `),Sc(23,`code`),yA(24,`Y`),up(),yA(25,`. Existing model codes are skipped and never overwritten. `),up()),o&2){let i=$N();P_(3),Eb(i.currentMakeCode())}}function ee(o,a){o&1&&(Sc(0,`p`)(1,`strong`),yA(2,`MAKE_CODE`),up(),yA(3,`, `),Sc(4,`strong`),yA(5,`MAKE_NAME`),up(),yA(6,`, and `),Sc(7,`strong`),yA(8,`SHORT_NAME`),up(),yA(9,` are required. Remarks and Arabic fields are optional. `),up(),Sc(10,`p`),yA(11,` Active may be `),Sc(12,`code`),yA(13,`Y`),up(),yA(14,` or `),Sc(15,`code`),yA(16,`N`),up(),yA(17,`; blank defaults to `),Sc(18,`code`),yA(19,`Y`),up(),yA(20,`. Existing make codes are skipped and never overwritten. `),up())}function te(o,a){o&1&&(Sc(0,`p`),yA(1,` Enter the adjustment key, required names, and active classification codes. Optional remarks and Arabic fields may be left blank. `),up(),Sc(2,`p`),yA(3,` Active may be `),Sc(4,`code`),yA(5,`Y`),up(),yA(6,` or `),Sc(7,`code`),yA(8,`N`),up(),yA(9,`; blank defaults to `),Sc(10,`code`),yA(11,`Y`),up(),yA(12,`. Existing adjustment keys are skipped and never overwritten. `),up())}function ne(o,a){if(o&1&&(Sc(0,`p`,11),yA(1),up()),o&2){let i=$N();P_(),mp(`Selected: `,i.fileName())}}function ie(o,a){if(o&1&&Vc(0,`mat-progress-bar`,12),o&2){let i=$N();Uc(`aria-label`,`Checking or importing `+i.layout().title)}}function ae(o,a){if(o&1&&(Sc(0,`div`,13),yA(1),up()),o&2){let i=$N();P_(),Eb(i.error())}}function oe(o,a){if(o&1&&(Sc(0,`div`,14),yA(1),up()),o&2){let i=$N();P_(),Eb(i.resultMessage())}}function re(o,a){if(o&1&&(Sc(0,`span`,20),yA(1),up()),o&2){let i=$N().$implicit;P_(),mp(`Invalid: `,i.errors.join(` `))}}function se(o,a){o&1&&(Sc(0,`span`,21),yA(1,`Already exists; will skip`),up())}function le(o,a){o&1&&(Sc(0,`span`,22),yA(1,`Ready to insert`),up())}function de(o,a){if(o&1&&(Sc(0,`tr`)(1,`td`),yA(2),up(),Sc(3,`td`),yA(4),up(),Sc(5,`td`),yA(6),up(),Sc(7,`td`),_N(8,re,2,1,`span`,20)(9,se,2,0,`span`,21)(10,le,2,0,`span`,22),up()()),o&2){let i=a.$implicit,r=$N(2);P_(2),Eb(i.rowNumber),P_(2),Eb(r.keyText(i)),P_(2),Eb(r.rowName(i)),P_(2),AN(i.isValid?i.alreadyExists?9:10:8)}}function me(o,a){if(o&1){let i=UN();Sc(0,`section`,15)(1,`div`,16)(2,`div`)(3,`h2`,17),yA(4,`Import preview`),up(),Sc(5,`p`),yA(6),up()(),Sc(7,`button`,18),Hc(`click`,function(){Wm(i);let l=$N();return Ym(l.importRows())}),yA(8,` Import valid rows `),up()(),Sc(9,`div`,19)(10,`table`)(11,`thead`)(12,`tr`)(13,`th`),yA(14,`Excel row`),up(),Sc(15,`th`),yA(16,`Key`),up(),Sc(17,`th`),yA(18,`Name`),up(),Sc(19,`th`),yA(20,`Result`),up()()(),Sc(21,`tbody`),ON(22,de,11,4,`tr`,null,X),up()()()()}if(o&2){let i=$N();P_(6),Ib(``,i.rows().length,` rows · `,i.newCount(),` new · `,i.skippedCount(),` existing`),P_(),tb(`disabled`,!i.canImport()||i.busy()),P_(15),kN(i.rows())}}var S={vehicle:{title:`Vehicle Makes`,path:`/api/vehicle-makes/import`,back:`/vehicle-makes`,headers:[`MAKE_CODE`,`MAKE_NAME`,`SHORT_NAME`,`REMARKS`,`ARABIC_MAKE_NAME`,`ARABIC_SHORT_NAME`,`ARABIC_REMARKS`,`ACTIVE`],samples:[],keys:[`makeCode`,`makeName`,`shortName`,`remarks`,`arabicMakeName`,`arabicShortName`,`arabicRemarks`,`active`]},premium:{title:`Premium Adjustments`,path:`/api/premium-adjustments/import`,back:`/premium-adjustments`,headers:[`CODE_TYPE`,`CODE`,`COMPANY_CODE`,`NAME`,`SHORT_NAME`,`DISCOUNT_TYPE`,`CHARGES_TYPE`,`CHARGES_CATEGORY`,`REMARKS`,`ARABIC_NAME`,`ARABIC_SHORT_NAME`,`ARABIC_REMARKS`,`ACTIVE`],samples:[],keys:[`codeType`,`code`,`companyCode`,`name`,`shortName`,`discountType`,`chargesType`,`chargesCategory`,`remarks`,`arabicName`,`arabicShortName`,`arabicRemarks`,`active`]},model:{title:`Vehicle Models`,path:``,back:``,headers:[`MODEL_CODE`,`MODEL_NAME`,`SHORT_NAME`,`REMARKS`,`ARABIC_MODEL_NAME`,`ARABIC_SHORT_NAME`,`ARABIC_REMARKS`,`VARIANT`,`VEHICLE_TYPE`,`WEIGHT`,`LOAD_CAPACITY`,`BODY_TYPE`,`FUEL_TYPE`,`ENGINE_CAPACITY`,`CYLINDERS`,`SEATS`,`PASSENGERS`,`DRIVERS`,`DOORS`,`MAKE_YEAR`,`DRIVING_TYPE`,`BODY_COLOUR`,`VALUE`,`CATEGORY`,`ACTIVE`],samples:[],keys:[`modelCode`,`modelName`,`shortName`,`remarks`,`arabicModelName`,`arabicShortName`,`arabicRemarks`,`variant`,`vehicleType`,`weight`,`loadCapacity`,`bodyType`,`fuelType`,`engineCapacity`,`cylinders`,`seats`,`passengers`,`drivers`,`doors`,`makeYear`,`drivingType`,`bodyColour`,`value`,`category`,`active`]}};var W=class o{http=b(Cn);apiBaseUrl=b(Qo);route=b(In);router=b(Ko);notify=b(yE);layout=wp(()=>this.route.snapshot.data.kind===`premium`?S.premium:this.route.snapshot.data.kind===`model`?S.model:S.vehicle);rows=Ce([]);busy=Ce(!1);error=Ce(``);fileName=Ce(``);resultMessage=Ce(``);newCount=wp(()=>this.rows().filter(a=>!a.alreadyExists&&a.isValid).length);skippedCount=wp(()=>this.rows().filter(a=>a.alreadyExists&&a.isValid).length);canImport=wp(()=>this.rows().length>0&&this.rows().every(a=>a.isValid)&&this.newCount()>0);currentMakeCode(){return this.route.snapshot.paramMap.get(`makeCode`)??``}back(){this.route.snapshot.data.kind===`model`?this.router.navigate([`/vehicle-makes/view`],{state:{makeCode:this.route.snapshot.paramMap.get(`makeCode`)}}):this.router.navigate([this.layout().back])}endpoint(){return this.layout().path||`/api/vehicle-makes/${encodeURIComponent(this.route.snapshot.paramMap.get(`makeCode`)??``)}/models/import`}async downloadTemplate(){let a=this.layout(),i=new R.Workbook,r=i.addWorksheet(`IMPORT`);r.addRow(a.headers);for(let E of a.samples)r.addRow([...E]);r.getRow(1).font={bold:!0},r.views=[{state:`frozen`,ySplit:1}];let l=await i.xlsx.writeBuffer(),c=URL.createObjectURL(new Blob([l])),_=document.createElement(`a`);_.href=c,_.download=`${a.title.toLowerCase().replaceAll(` `,`-`)}-template.xlsx`,_.click(),URL.revokeObjectURL(c)}async selectFile(a){let i=a.target,r=i.files?.[0];if(this.rows.set([]),this.error.set(``),this.resultMessage.set(``),this.fileName.set(r?.name??``),!!r){if(r.size>5242880){this.error.set(`Workbook must be 5 MB or smaller.`),i.value=``;return}try{let l=new R.Workbook;await l.xlsx.load(await r.arrayBuffer());let c=l.getWorksheet(`IMPORT`);if(!c)throw new Error(`The workbook must contain an IMPORT sheet.`);let _=c.getRow(1).values,E=this.layout().headers.map(d=>_.findIndex(w=>String(w??``).trim().toUpperCase()===d));if(E.some(d=>d<1))throw new Error(`Required headers: ${this.layout().headers.join(`, `)}.`);let x=[];if(c.eachRow((d,w)=>{if(w===1)return;let v={};this.layout().keys.forEach((z,q)=>v[z]=String(d.getCell(E[q]).text??``).trim()),Object.values(v).some(Boolean)&&x.push(v)}),x.length>1e3)throw new Error(`Workbook can contain no more than 1,000 data rows.`);if(!x.length)throw new Error(`Workbook contains no data rows.`);this.parsedRows=x,this.busy.set(!0),this.http.post(`${this.apiBaseUrl}${this.endpoint()}/preview`,{rows:x}).subscribe({next:d=>{this.rows.set(d.rows??[]),this.error.set((d.errors??[]).join(` `)),this.busy.set(!1)},error:d=>{this.error.set(this.importErrorMessage(d,`preview`)),this.busy.set(!1)}})}catch(l){this.error.set(l instanceof Error?l.message:`The workbook could not be read.`)}finally{i.value=``}}}keyText(a){return this.layout().keys.slice(0,this.layout().title===`Vehicle Makes`||this.layout().title===`Vehicle Models`?1:3).map(i=>String(a[i]??``)).join(` / `)}rowName(a){return String(a[this.layout().title===`Vehicle Models`?`modelName`:this.layout().title===`Vehicle Makes`?`makeName`:`name`]??``)}async importRows(){await this.notify.confirm({title:`Import ${this.newCount()} ${this.layout().title} rows?`,text:`${this.skippedCount()} existing keys will be skipped.`,confirmButtonText:`Import`,cancelButtonText:`Cancel`})&&(this.busy.set(!0),this.http.post(`${this.apiBaseUrl}${this.endpoint()}`,{rows:this.uploadRows}).subscribe({next:i=>{this.busy.set(!1),this.resultMessage.set(`${i.insertedCount} inserted; ${i.skippedExistingCount} existing rows skipped.`),this.rows.set([]),this.parsedRows=[]},error:i=>{this.busy.set(!1),this.error.set(this.importErrorMessage(i,`import`))}}))}importErrorMessage(a,i){return a instanceof r&&a.problem.status===404?`The import API route was not found. Restart the API with the latest code, then try again.`:a instanceof r&&a.problem.status===0?`The API could not be reached. Check that it is running, then try again.`:i===`preview`?`The workbook could not be checked by the API. Verify the API is running and try again.`:`The import was not completed. Preview the workbook again before retrying.`}get uploadRows(){return this.parsedRows}parsedRows=[];static ɵfac=function(i){return new(i||o)};static ɵcmp=sp({type:o,selectors:[[`app-master-data-import`]],decls:34,vars:10,consts:[[1,`page`],[1,`page-header`],[1,`title-row`],[1,`subtitle`],[1,`header-actions`],[`action`,`back`,3,`clicked`,`tooltip`,`accessibleName`],[`matButton`,`outlined`,`type`,`button`,3,`click`],[1,`card`,`instructions`],[1,`card`,`uploader`],[`for`,`master-workbook`],[`id`,`master-workbook`,`type`,`file`,`accept`,`.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`,3,`change`,`disabled`],[1,`file-name`],[`mode`,`indeterminate`],[`role`,`alert`,1,`message`,`error`],[`role`,`status`,1,`message`,`success`],[`aria-labelledby`,`preview-heading`,1,`card`,`preview`],[1,`preview-header`],[`id`,`preview-heading`],[`matButton`,`filled`,`type`,`button`,3,`click`,`disabled`],[1,`table-scroll`],[1,`invalid`],[1,`skipped`],[1,`ready`]],template:function(i,r){i&1&&(Sc(0,`section`,0)(1,`header`,1)(2,`div`,2)(3,`div`)(4,`h1`),yA(5),up(),Sc(6,`p`,3),yA(7,`Upload and review records before importing them.`),up()()(),Sc(8,`div`,4)(9,`app-icon-button`,5),Hc(`clicked`,function(){return r.back()}),up(),Sc(10,`button`,6),Hc(`click`,function(){return r.downloadTemplate()}),yA(11,` Download Excel template `),up()()(),Sc(12,`div`,7)(13,`h2`),yA(14,`Workbook format`),up(),Sc(15,`p`),yA(16,`Use the `),Sc(17,`strong`),yA(18,`IMPORT`),up(),yA(19,` worksheet and keep the template column headers unchanged.`),up(),_N(20,Z,26,1)(21,ee,21,0)(22,te,13,0),Sc(23,`p`),yA(24,`Maximum file size: 5 MB. Maximum data rows: 1,000.`),up()(),Sc(25,`div`,8)(26,`label`,9),yA(27,`Choose workbook (.xlsx)`),up(),Sc(28,`input`,10),Hc(`change`,function(c){return r.selectFile(c)}),up(),_N(29,ne,2,1,`p`,11),up(),_N(30,ie,1,1,`mat-progress-bar`,12),_N(31,ae,2,1,`div`,13),_N(32,oe,2,1,`div`,14),_N(33,me,24,4,`section`,15),up()),i&2&&(P_(5),mp(`Import `,r.layout().title),P_(4),tb(`tooltip`,`Back to `+r.layout().title)(`accessibleName`,`Back to `+r.layout().title),P_(11),AN(r.layout().title===`Vehicle Models`?20:r.layout().title===`Vehicle Makes`?21:22),P_(8),tb(`disabled`,r.busy()),P_(),AN(r.fileName()?29:-1),P_(),AN(r.busy()?30:-1),P_(),AN(r.error()?31:-1),P_(),AN(r.resultMessage()?32:-1),P_(),AN(r.rows().length?33:-1))},dependencies:[Hi,bi,ks,Rs],styles:[`.page[_ngcontent-%COMP%]{margin:0 auto;padding:24px 24px 48px}.page-header[_ngcontent-%COMP%], .title-row[_ngcontent-%COMP%], .header-actions[_ngcontent-%COMP%], .preview-header[_ngcontent-%COMP%]{display:flex;align-items:center;justify-content:space-between;gap:16px}.page-header[_ngcontent-%COMP%]{margin-bottom:20px}.title-row[_ngcontent-%COMP%]{justify-content:flex-start}.header-actions[_ngcontent-%COMP%]{justify-content:flex-end}h1[_ngcontent-%COMP%], h2[_ngcontent-%COMP%], p[_ngcontent-%COMP%]{margin-top:0}h1[_ngcontent-%COMP%]{margin-bottom:4px;color:var(--%NS%sdd-text);font-size:1.5rem}h2[_ngcontent-%COMP%]{margin-bottom:8px;font-size:1.125rem}.subtitle[_ngcontent-%COMP%], .file-name[_ngcontent-%COMP%], .preview-header[_ngcontent-%COMP%]   p[_ngcontent-%COMP%]{margin-bottom:0;color:var(--%NS%sdd-muted)}.card[_ngcontent-%COMP%]{margin-bottom:16px;padding:20px;border:1px solid var(--%NS%sdd-border);border-radius:8px;background:var(--%NS%sdd-surface)}.instructions[_ngcontent-%COMP%]   p[_ngcontent-%COMP%]:last-child{margin-bottom:0}.uploader[_ngcontent-%COMP%]{display:grid;justify-items:start;gap:10px}.uploader[_ngcontent-%COMP%]   label[_ngcontent-%COMP%]{font-weight:600}.message[_ngcontent-%COMP%]{margin-bottom:16px;padding:12px 16px;border-radius:6px}.error[_ngcontent-%COMP%], .invalid[_ngcontent-%COMP%]{color:var(--%NS%sdd-danger, #b3261e)}.success[_ngcontent-%COMP%], .ready[_ngcontent-%COMP%]{color:var(--%NS%sdd-success, #216e39)}.skipped[_ngcontent-%COMP%]{color:var(--%NS%sdd-muted)}.table-scroll[_ngcontent-%COMP%]{overflow:auto}table[_ngcontent-%COMP%]{width:100%;border-collapse:collapse}th[_ngcontent-%COMP%], td[_ngcontent-%COMP%]{padding:10px 12px;border-bottom:1px solid var(--%NS%sdd-border);text-align:left;vertical-align:top}th[_ngcontent-%COMP%]{font-weight:600}.preview-header[_ngcontent-%COMP%]{margin-bottom:16px}@media(max-width:700px){.preview-header[_ngcontent-%COMP%]{align-items:flex-start;flex-direction:column}.page-header[_ngcontent-%COMP%]{align-items:stretch;flex-direction:column}.header-actions[_ngcontent-%COMP%]{justify-content:flex-end}}`]})};export{W as MasterDataImportComponent};
+import {
+  Ct as _N,
+  G as ON,
+  Hn as wp,
+  In as up,
+  Jn as yE,
+  L as Ko,
+  Lt as dT,
+  N as Ib,
+  P as In,
+  Y as P_,
+  b as Eb,
+  c as AN,
+  ct as Uc,
+  dt as Wm,
+  h as Cn,
+  hn as mp,
+  it as Sc,
+  jn as tb,
+  k as Hc,
+  kn as sp,
+  kt as b,
+  m as Ce,
+  n as r,
+  nt as Qo,
+  o as $N,
+  ot as UN,
+  qn as yA,
+  sn as kN,
+  ut as Vc,
+  yt as Ym,
+} from './main-RR6WM3XY.js';
+import { c as Rs, i as Hi, k as ks, x as bi } from './chunk-CnuPNpsB.js';
+import { t as We } from './chunk-BbQnuOdJ.js';
+var R = dT(We());
+var X = (o, a) => a.rowNumber;
+function Z(o, a) {
+  if (
+    (o & 1 &&
+      (Sc(0, `p`),
+      yA(1, ` Models will be added under make `),
+      Sc(2, `strong`),
+      yA(3),
+      up(),
+      yA(4, `. Do not add a make-code column. `),
+      up(),
+      Sc(5, `p`)(6, `strong`),
+      yA(7, `MODEL_CODE`),
+      up(),
+      yA(8, `, `),
+      Sc(9, `strong`),
+      yA(10, `MODEL_NAME`),
+      up(),
+      yA(11, `, and `),
+      Sc(12, `strong`),
+      yA(13, `SHORT_NAME`),
+      up(),
+      yA(
+        14,
+        ` are required. Other model fields are optional. Any dropdown codes you provide must be active options. `,
+      ),
+      up(),
+      Sc(15, `p`),
+      yA(16, ` Active may be `),
+      Sc(17, `code`),
+      yA(18, `Y`),
+      up(),
+      yA(19, ` or `),
+      Sc(20, `code`),
+      yA(21, `N`),
+      up(),
+      yA(22, `; blank defaults to `),
+      Sc(23, `code`),
+      yA(24, `Y`),
+      up(),
+      yA(25, `. Existing model codes are skipped and never overwritten. `),
+      up()),
+    o & 2)
+  ) {
+    let i = $N();
+    (P_(3), Eb(i.currentMakeCode()));
+  }
+}
+function ee(o, a) {
+  o & 1 &&
+    (Sc(0, `p`)(1, `strong`),
+    yA(2, `MAKE_CODE`),
+    up(),
+    yA(3, `, `),
+    Sc(4, `strong`),
+    yA(5, `MAKE_NAME`),
+    up(),
+    yA(6, `, and `),
+    Sc(7, `strong`),
+    yA(8, `SHORT_NAME`),
+    up(),
+    yA(9, ` are required. Remarks and Arabic fields are optional. `),
+    up(),
+    Sc(10, `p`),
+    yA(11, ` Active may be `),
+    Sc(12, `code`),
+    yA(13, `Y`),
+    up(),
+    yA(14, ` or `),
+    Sc(15, `code`),
+    yA(16, `N`),
+    up(),
+    yA(17, `; blank defaults to `),
+    Sc(18, `code`),
+    yA(19, `Y`),
+    up(),
+    yA(20, `. Existing make codes are skipped and never overwritten. `),
+    up());
+}
+function te(o, a) {
+  o & 1 &&
+    (Sc(0, `p`),
+    yA(
+      1,
+      ` Enter the adjustment key, required names, and active classification codes. Optional remarks and Arabic fields may be left blank. `,
+    ),
+    up(),
+    Sc(2, `p`),
+    yA(3, ` Active may be `),
+    Sc(4, `code`),
+    yA(5, `Y`),
+    up(),
+    yA(6, ` or `),
+    Sc(7, `code`),
+    yA(8, `N`),
+    up(),
+    yA(9, `; blank defaults to `),
+    Sc(10, `code`),
+    yA(11, `Y`),
+    up(),
+    yA(12, `. Existing adjustment keys are skipped and never overwritten. `),
+    up());
+}
+function ne(o, a) {
+  if ((o & 1 && (Sc(0, `p`, 11), yA(1), up()), o & 2)) {
+    let i = $N();
+    (P_(), mp(`Selected: `, i.fileName()));
+  }
+}
+function ie(o, a) {
+  if ((o & 1 && Vc(0, `mat-progress-bar`, 12), o & 2)) {
+    let i = $N();
+    Uc(`aria-label`, `Checking or importing ` + i.layout().title);
+  }
+}
+function ae(o, a) {
+  if ((o & 1 && (Sc(0, `div`, 13), yA(1), up()), o & 2)) {
+    let i = $N();
+    (P_(), Eb(i.error()));
+  }
+}
+function oe(o, a) {
+  if ((o & 1 && (Sc(0, `div`, 14), yA(1), up()), o & 2)) {
+    let i = $N();
+    (P_(), Eb(i.resultMessage()));
+  }
+}
+function re(o, a) {
+  if ((o & 1 && (Sc(0, `span`, 20), yA(1), up()), o & 2)) {
+    let i = $N().$implicit;
+    (P_(), mp(`Invalid: `, i.errors.join(` `)));
+  }
+}
+function se(o, a) {
+  o & 1 && (Sc(0, `span`, 21), yA(1, `Already exists; will skip`), up());
+}
+function le(o, a) {
+  o & 1 && (Sc(0, `span`, 22), yA(1, `Ready to insert`), up());
+}
+function de(o, a) {
+  if (
+    (o & 1 &&
+      (Sc(0, `tr`)(1, `td`),
+      yA(2),
+      up(),
+      Sc(3, `td`),
+      yA(4),
+      up(),
+      Sc(5, `td`),
+      yA(6),
+      up(),
+      Sc(7, `td`),
+      _N(8, re, 2, 1, `span`, 20)(9, se, 2, 0, `span`, 21)(10, le, 2, 0, `span`, 22),
+      up()()),
+    o & 2)
+  ) {
+    let i = a.$implicit,
+      r = $N(2);
+    (P_(2),
+      Eb(i.rowNumber),
+      P_(2),
+      Eb(r.keyText(i)),
+      P_(2),
+      Eb(r.rowName(i)),
+      P_(2),
+      AN(i.isValid ? (i.alreadyExists ? 9 : 10) : 8));
+  }
+}
+function me(o, a) {
+  if (o & 1) {
+    let i = UN();
+    (Sc(0, `section`, 15)(1, `div`, 16)(2, `div`)(3, `h2`, 17),
+      yA(4, `Import preview`),
+      up(),
+      Sc(5, `p`),
+      yA(6),
+      up()(),
+      Sc(7, `button`, 18),
+      Hc(`click`, function () {
+        Wm(i);
+        let l = $N();
+        return Ym(l.importRows());
+      }),
+      yA(8, ` Import valid rows `),
+      up()(),
+      Sc(9, `div`, 19)(10, `table`)(11, `thead`)(12, `tr`)(13, `th`),
+      yA(14, `Excel row`),
+      up(),
+      Sc(15, `th`),
+      yA(16, `Key`),
+      up(),
+      Sc(17, `th`),
+      yA(18, `Name`),
+      up(),
+      Sc(19, `th`),
+      yA(20, `Result`),
+      up()()(),
+      Sc(21, `tbody`),
+      ON(22, de, 11, 4, `tr`, null, X),
+      up()()()());
+  }
+  if (o & 2) {
+    let i = $N();
+    (P_(6),
+      Ib(``, i.rows().length, ` rows · `, i.newCount(), ` new · `, i.skippedCount(), ` existing`),
+      P_(),
+      tb(`disabled`, !i.canImport() || i.busy()),
+      P_(15),
+      kN(i.rows()));
+  }
+}
+var S = {
+  vehicle: {
+    title: `Vehicle Makes`,
+    path: `/api/vehicle-makes/import`,
+    back: `/vehicle-makes`,
+    headers: [
+      `MAKE_CODE`,
+      `MAKE_NAME`,
+      `SHORT_NAME`,
+      `REMARKS`,
+      `ARABIC_MAKE_NAME`,
+      `ARABIC_SHORT_NAME`,
+      `ARABIC_REMARKS`,
+      `ACTIVE`,
+    ],
+    samples: [],
+    keys: [
+      `makeCode`,
+      `makeName`,
+      `shortName`,
+      `remarks`,
+      `arabicMakeName`,
+      `arabicShortName`,
+      `arabicRemarks`,
+      `active`,
+    ],
+  },
+  premium: {
+    title: `Premium Adjustments`,
+    path: `/api/premium-adjustments/import`,
+    back: `/premium-adjustments`,
+    headers: [
+      `CODE_TYPE`,
+      `CODE`,
+      `COMPANY_CODE`,
+      `NAME`,
+      `SHORT_NAME`,
+      `DISCOUNT_TYPE`,
+      `CHARGES_TYPE`,
+      `CHARGES_CATEGORY`,
+      `REMARKS`,
+      `ARABIC_NAME`,
+      `ARABIC_SHORT_NAME`,
+      `ARABIC_REMARKS`,
+      `ACTIVE`,
+    ],
+    samples: [],
+    keys: [
+      `codeType`,
+      `code`,
+      `companyCode`,
+      `name`,
+      `shortName`,
+      `discountType`,
+      `chargesType`,
+      `chargesCategory`,
+      `remarks`,
+      `arabicName`,
+      `arabicShortName`,
+      `arabicRemarks`,
+      `active`,
+    ],
+  },
+  model: {
+    title: `Vehicle Models`,
+    path: ``,
+    back: ``,
+    headers: [
+      `MODEL_CODE`,
+      `MODEL_NAME`,
+      `SHORT_NAME`,
+      `REMARKS`,
+      `ARABIC_MODEL_NAME`,
+      `ARABIC_SHORT_NAME`,
+      `ARABIC_REMARKS`,
+      `VARIANT`,
+      `VEHICLE_TYPE`,
+      `WEIGHT`,
+      `LOAD_CAPACITY`,
+      `BODY_TYPE`,
+      `FUEL_TYPE`,
+      `ENGINE_CAPACITY`,
+      `CYLINDERS`,
+      `SEATS`,
+      `PASSENGERS`,
+      `DRIVERS`,
+      `DOORS`,
+      `MAKE_YEAR`,
+      `DRIVING_TYPE`,
+      `BODY_COLOUR`,
+      `VALUE`,
+      `CATEGORY`,
+      `ACTIVE`,
+    ],
+    samples: [],
+    keys: [
+      `modelCode`,
+      `modelName`,
+      `shortName`,
+      `remarks`,
+      `arabicModelName`,
+      `arabicShortName`,
+      `arabicRemarks`,
+      `variant`,
+      `vehicleType`,
+      `weight`,
+      `loadCapacity`,
+      `bodyType`,
+      `fuelType`,
+      `engineCapacity`,
+      `cylinders`,
+      `seats`,
+      `passengers`,
+      `drivers`,
+      `doors`,
+      `makeYear`,
+      `drivingType`,
+      `bodyColour`,
+      `value`,
+      `category`,
+      `active`,
+    ],
+  },
+};
+var W = class o {
+  http = b(Cn);
+  apiBaseUrl = b(Qo);
+  route = b(In);
+  router = b(Ko);
+  notify = b(yE);
+  layout = wp(() =>
+    this.route.snapshot.data.kind === `premium`
+      ? S.premium
+      : this.route.snapshot.data.kind === `model`
+        ? S.model
+        : S.vehicle,
+  );
+  rows = Ce([]);
+  busy = Ce(!1);
+  error = Ce(``);
+  fileName = Ce(``);
+  resultMessage = Ce(``);
+  newCount = wp(() => this.rows().filter((a) => !a.alreadyExists && a.isValid).length);
+  skippedCount = wp(() => this.rows().filter((a) => a.alreadyExists && a.isValid).length);
+  canImport = wp(
+    () => this.rows().length > 0 && this.rows().every((a) => a.isValid) && this.newCount() > 0,
+  );
+  currentMakeCode() {
+    return this.route.snapshot.paramMap.get(`makeCode`) ?? ``;
+  }
+  back() {
+    this.route.snapshot.data.kind === `model`
+      ? this.router.navigate([`/vehicle-makes/view`], {
+          state: { makeCode: this.route.snapshot.paramMap.get(`makeCode`) },
+        })
+      : this.router.navigate([this.layout().back]);
+  }
+  endpoint() {
+    return (
+      this.layout().path ||
+      `/api/vehicle-makes/${encodeURIComponent(this.route.snapshot.paramMap.get(`makeCode`) ?? ``)}/models/import`
+    );
+  }
+  async downloadTemplate() {
+    let a = this.layout(),
+      i = new R.Workbook(),
+      r = i.addWorksheet(`IMPORT`);
+    r.addRow(a.headers);
+    for (let E of a.samples) r.addRow([...E]);
+    ((r.getRow(1).font = { bold: !0 }), (r.views = [{ state: `frozen`, ySplit: 1 }]));
+    let l = await i.xlsx.writeBuffer(),
+      c = URL.createObjectURL(new Blob([l])),
+      _ = document.createElement(`a`);
+    ((_.href = c),
+      (_.download = `${a.title.toLowerCase().replaceAll(` `, `-`)}-template.xlsx`),
+      _.click(),
+      URL.revokeObjectURL(c));
+  }
+  async selectFile(a) {
+    let i = a.target,
+      r = i.files?.[0];
+    if (
+      (this.rows.set([]),
+      this.error.set(``),
+      this.resultMessage.set(``),
+      this.fileName.set(r?.name ?? ``),
+      !!r)
+    ) {
+      if (r.size > 5242880) {
+        (this.error.set(`Workbook must be 5 MB or smaller.`), (i.value = ``));
+        return;
+      }
+      try {
+        let l = new R.Workbook();
+        await l.xlsx.load(await r.arrayBuffer());
+        let c = l.getWorksheet(`IMPORT`);
+        if (!c) throw new Error(`The workbook must contain an IMPORT sheet.`);
+        let _ = c.getRow(1).values,
+          E = this.layout().headers.map((d) =>
+            _.findIndex(
+              (w) =>
+                String(w ?? ``)
+                  .trim()
+                  .toUpperCase() === d,
+            ),
+          );
+        if (E.some((d) => d < 1))
+          throw new Error(`Required headers: ${this.layout().headers.join(`, `)}.`);
+        let x = [];
+        if (
+          (c.eachRow((d, w) => {
+            if (w === 1) return;
+            let v = {};
+            (this.layout().keys.forEach(
+              (z, q) => (v[z] = String(d.getCell(E[q]).text ?? ``).trim()),
+            ),
+              Object.values(v).some(Boolean) && x.push(v));
+          }),
+          x.length > 1e3)
+        )
+          throw new Error(`Workbook can contain no more than 1,000 data rows.`);
+        if (!x.length) throw new Error(`Workbook contains no data rows.`);
+        ((this.parsedRows = x),
+          this.busy.set(!0),
+          this.http.post(`${this.apiBaseUrl}${this.endpoint()}/preview`, { rows: x }).subscribe({
+            next: (d) => {
+              (this.rows.set(d.rows ?? []),
+                this.error.set((d.errors ?? []).join(` `)),
+                this.busy.set(!1));
+            },
+            error: (d) => {
+              (this.error.set(this.importErrorMessage(d, `preview`)), this.busy.set(!1));
+            },
+          }));
+      } catch (l) {
+        this.error.set(l instanceof Error ? l.message : `The workbook could not be read.`);
+      } finally {
+        i.value = ``;
+      }
+    }
+  }
+  keyText(a) {
+    return this.layout()
+      .keys.slice(
+        0,
+        this.layout().title === `Vehicle Makes` || this.layout().title === `Vehicle Models` ? 1 : 3,
+      )
+      .map((i) => String(a[i] ?? ``))
+      .join(` / `);
+  }
+  rowName(a) {
+    return String(
+      a[
+        this.layout().title === `Vehicle Models`
+          ? `modelName`
+          : this.layout().title === `Vehicle Makes`
+            ? `makeName`
+            : `name`
+      ] ?? ``,
+    );
+  }
+  async importRows() {
+    (await this.notify.confirm({
+      title: `Import ${this.newCount()} ${this.layout().title} rows?`,
+      text: `${this.skippedCount()} existing keys will be skipped.`,
+      confirmButtonText: `Import`,
+      cancelButtonText: `Cancel`,
+    })) &&
+      (this.busy.set(!0),
+      this.http.post(`${this.apiBaseUrl}${this.endpoint()}`, { rows: this.uploadRows }).subscribe({
+        next: (i) => {
+          (this.busy.set(!1),
+            this.resultMessage.set(
+              `${i.insertedCount} inserted; ${i.skippedExistingCount} existing rows skipped.`,
+            ),
+            this.rows.set([]),
+            (this.parsedRows = []));
+        },
+        error: (i) => {
+          (this.busy.set(!1), this.error.set(this.importErrorMessage(i, `import`)));
+        },
+      }));
+  }
+  importErrorMessage(a, i) {
+    return a instanceof r && a.problem.status === 404
+      ? `The import API route was not found. Restart the API with the latest code, then try again.`
+      : a instanceof r && a.problem.status === 0
+        ? `The API could not be reached. Check that it is running, then try again.`
+        : i === `preview`
+          ? `The workbook could not be checked by the API. Verify the API is running and try again.`
+          : `The import was not completed. Preview the workbook again before retrying.`;
+  }
+  get uploadRows() {
+    return this.parsedRows;
+  }
+  parsedRows = [];
+  static ɵfac = function (i) {
+    return new (i || o)();
+  };
+  static ɵcmp = sp({
+    type: o,
+    selectors: [[`app-master-data-import`]],
+    decls: 34,
+    vars: 10,
+    consts: [
+      [1, `page`],
+      [1, `page-header`],
+      [1, `title-row`],
+      [1, `subtitle`],
+      [1, `header-actions`],
+      [`action`, `back`, 3, `clicked`, `tooltip`, `accessibleName`],
+      [`matButton`, `outlined`, `type`, `button`, 3, `click`],
+      [1, `card`, `instructions`],
+      [1, `card`, `uploader`],
+      [`for`, `master-workbook`],
+      [
+        `id`,
+        `master-workbook`,
+        `type`,
+        `file`,
+        `accept`,
+        `.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`,
+        3,
+        `change`,
+        `disabled`,
+      ],
+      [1, `file-name`],
+      [`mode`, `indeterminate`],
+      [`role`, `alert`, 1, `message`, `error`],
+      [`role`, `status`, 1, `message`, `success`],
+      [`aria-labelledby`, `preview-heading`, 1, `card`, `preview`],
+      [1, `preview-header`],
+      [`id`, `preview-heading`],
+      [`matButton`, `filled`, `type`, `button`, 3, `click`, `disabled`],
+      [1, `table-scroll`],
+      [1, `invalid`],
+      [1, `skipped`],
+      [1, `ready`],
+    ],
+    template: function (i, r) {
+      (i & 1 &&
+        (Sc(0, `section`, 0)(1, `header`, 1)(2, `div`, 2)(3, `div`)(4, `h1`),
+        yA(5),
+        up(),
+        Sc(6, `p`, 3),
+        yA(7, `Upload and review records before importing them.`),
+        up()()(),
+        Sc(8, `div`, 4)(9, `app-icon-button`, 5),
+        Hc(`clicked`, function () {
+          return r.back();
+        }),
+        up(),
+        Sc(10, `button`, 6),
+        Hc(`click`, function () {
+          return r.downloadTemplate();
+        }),
+        yA(11, ` Download Excel template `),
+        up()()(),
+        Sc(12, `div`, 7)(13, `h2`),
+        yA(14, `Workbook format`),
+        up(),
+        Sc(15, `p`),
+        yA(16, `Use the `),
+        Sc(17, `strong`),
+        yA(18, `IMPORT`),
+        up(),
+        yA(19, ` worksheet and keep the template column headers unchanged.`),
+        up(),
+        _N(20, Z, 26, 1)(21, ee, 21, 0)(22, te, 13, 0),
+        Sc(23, `p`),
+        yA(24, `Maximum file size: 5 MB. Maximum data rows: 1,000.`),
+        up()(),
+        Sc(25, `div`, 8)(26, `label`, 9),
+        yA(27, `Choose workbook (.xlsx)`),
+        up(),
+        Sc(28, `input`, 10),
+        Hc(`change`, function (c) {
+          return r.selectFile(c);
+        }),
+        up(),
+        _N(29, ne, 2, 1, `p`, 11),
+        up(),
+        _N(30, ie, 1, 1, `mat-progress-bar`, 12),
+        _N(31, ae, 2, 1, `div`, 13),
+        _N(32, oe, 2, 1, `div`, 14),
+        _N(33, me, 24, 4, `section`, 15),
+        up()),
+        i & 2 &&
+          (P_(5),
+          mp(`Import `, r.layout().title),
+          P_(4),
+          tb(`tooltip`, `Back to ` + r.layout().title)(
+            `accessibleName`,
+            `Back to ` + r.layout().title,
+          ),
+          P_(11),
+          AN(
+            r.layout().title === `Vehicle Models`
+              ? 20
+              : r.layout().title === `Vehicle Makes`
+                ? 21
+                : 22,
+          ),
+          P_(8),
+          tb(`disabled`, r.busy()),
+          P_(),
+          AN(r.fileName() ? 29 : -1),
+          P_(),
+          AN(r.busy() ? 30 : -1),
+          P_(),
+          AN(r.error() ? 31 : -1),
+          P_(),
+          AN(r.resultMessage() ? 32 : -1),
+          P_(),
+          AN(r.rows().length ? 33 : -1)));
+    },
+    dependencies: [Hi, bi, ks, Rs],
+    styles: [
+      `.page[_ngcontent-%COMP%]{margin:0 auto;padding:24px 24px 48px}.page-header[_ngcontent-%COMP%], .title-row[_ngcontent-%COMP%], .header-actions[_ngcontent-%COMP%], .preview-header[_ngcontent-%COMP%]{display:flex;align-items:center;justify-content:space-between;gap:16px}.page-header[_ngcontent-%COMP%]{margin-bottom:20px}.title-row[_ngcontent-%COMP%]{justify-content:flex-start}.header-actions[_ngcontent-%COMP%]{justify-content:flex-end}h1[_ngcontent-%COMP%], h2[_ngcontent-%COMP%], p[_ngcontent-%COMP%]{margin-top:0}h1[_ngcontent-%COMP%]{margin-bottom:4px;color:var(--%NS%sdd-text);font-size:1.5rem}h2[_ngcontent-%COMP%]{margin-bottom:8px;font-size:1.125rem}.subtitle[_ngcontent-%COMP%], .file-name[_ngcontent-%COMP%], .preview-header[_ngcontent-%COMP%]   p[_ngcontent-%COMP%]{margin-bottom:0;color:var(--%NS%sdd-muted)}.card[_ngcontent-%COMP%]{margin-bottom:16px;padding:20px;border:1px solid var(--%NS%sdd-border);border-radius:8px;background:var(--%NS%sdd-surface)}.instructions[_ngcontent-%COMP%]   p[_ngcontent-%COMP%]:last-child{margin-bottom:0}.uploader[_ngcontent-%COMP%]{display:grid;justify-items:start;gap:10px}.uploader[_ngcontent-%COMP%]   label[_ngcontent-%COMP%]{font-weight:600}.message[_ngcontent-%COMP%]{margin-bottom:16px;padding:12px 16px;border-radius:6px}.error[_ngcontent-%COMP%], .invalid[_ngcontent-%COMP%]{color:var(--%NS%sdd-danger, #b3261e)}.success[_ngcontent-%COMP%], .ready[_ngcontent-%COMP%]{color:var(--%NS%sdd-success, #216e39)}.skipped[_ngcontent-%COMP%]{color:var(--%NS%sdd-muted)}.table-scroll[_ngcontent-%COMP%]{overflow:auto}table[_ngcontent-%COMP%]{width:100%;border-collapse:collapse}th[_ngcontent-%COMP%], td[_ngcontent-%COMP%]{padding:10px 12px;border-bottom:1px solid var(--%NS%sdd-border);text-align:left;vertical-align:top}th[_ngcontent-%COMP%]{font-weight:600}.preview-header[_ngcontent-%COMP%]{margin-bottom:16px}@media(max-width:700px){.preview-header[_ngcontent-%COMP%]{align-items:flex-start;flex-direction:column}.page-header[_ngcontent-%COMP%]{align-items:stretch;flex-direction:column}.header-actions[_ngcontent-%COMP%]{justify-content:flex-end}}`,
+    ],
+  });
+};
+export { W as MasterDataImportComponent };

@@ -65,6 +65,7 @@ builder.Services.AddScoped<PremiumAdjustmentService>();
 builder.Services.AddScoped<ClaimConfigurationService>();
 builder.Services.AddScoped<ClaimConfigurationProductService>();
 builder.Services.AddScoped<ClaimConfigurationOptionsService>();
+builder.Services.AddScoped<ClaimConfigurationImportService>();
 builder.Services.AddScoped<VehicleMakeService>();
 builder.Services.AddScoped<VehicleModelService>();
 builder.Services.AddScoped<VehicleModelOptionsImportService>();

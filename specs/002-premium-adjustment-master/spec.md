@@ -47,6 +47,7 @@ OUT OF SCOPE: sign-in and permissions, checks for codes used by other records, e
 - The list filters, icon actions, typography, breadcrumb, shared notification style, and unsaved-changes confirmation follow feature 001.
 - Active is the reversible way to retire and restore a record; permanent deletion remains available only with confirmation. These are stated once in the feature behavior and requirements above.
 - The Premium Adjustments list provides an Excel `.xlsx` template/import. Its `IMPORT` sheet includes code type, code, company code, descriptions, classification lookup codes, optional remarks/Arabic text and active flag. Preview validates fields and active lookup values; duplicate keys in the workbook block import, existing database keys are skipped, and new rows are inserted atomically after confirmation (maximum 1,000 rows and 5 MB).
+- When a saved adjustment code is open for editing, show an Add Adjustment Code icon immediately to the left of the Back icon, matching the saved-record form action in feature 001. Selecting it starts a blank add form; unsaved changes must be confirmed before leaving.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -70,6 +71,7 @@ As an insurance broker, I want one filterable, sortable list of adjustment codes
 8. **Given** the list shows an adjustment code, **When** the user selects the open icon, **Then** that code opens in edit mode with Code Type, Code and Company Code locked.
 9. **Given** the list shows an adjustment code, **When** the user selects the delete icon, **Then** the user is asked to confirm permanent deletion before the record is removed.
 10. **Given** the list is open, **When** the user selects the add icon, **Then** the user can begin entering a new adjustment code.
+11. **Given** a saved adjustment code is open for editing, **When** the user selects the Add Adjustment Code icon immediately to the left of Back, **Then** a blank add form opens; if the current record has unsaved changes, the user is asked whether to discard them first.
 
 ### User Story 2 - Add an adjustment code (Priority: P1)
 
@@ -112,6 +114,7 @@ As an insurance broker, I want to edit an adjustment code as soon as I open it s
 7. **Given** an adjustment code was saved earlier without Discount Type, Charges Type, or Charges Category, **When** the user edits and saves it, **Then** the user must choose all three before the save succeeds.
 8. **Given** an adjustment code is open, **When** its details are displayed, **Then** its Active status is editable; turning Active off and saving soft deletes the code (it stays in the list, marked inactive), and turning Active on again and saving restores it.
 9. **Given** the open form has unsaved changes, **When** the user selects Back, follows a breadcrumb link, or uses the browser's back button, **Then** they are asked whether to discard the changes before leaving.
+10. **Given** an adjustment code is open for editing, **When** the user selects Add Adjustment Code, **Then** a blank add form opens without changing the current record; if the current record has unsaved changes, navigation waits for discard confirmation.
 
 ### User Story 4 - Permanently delete an adjustment code (Priority: P2)
 
@@ -126,6 +129,21 @@ As an insurance broker, I want to permanently delete an adjustment code only aft
 1. **Given** the user requests deletion, **When** the confirmation dialog appears, **Then** it states that deletion is permanent and cannot be undone.
 2. **Given** the confirmation dialog is open, **When** the user cancels, **Then** the adjustment code remains unchanged.
 3. **Given** the confirmation dialog is open, **When** the user confirms, **Then** the adjustment code is permanently removed and no restore action is offered.
+
+### User Story 5 - Import adjustment codes from Excel (Priority: P2)
+
+As a master-data administrator, I want to import adjustment codes from an Excel workbook so that I can migrate or maintain many approved codes without entering them one at a time.
+
+**Independent Test**: Download the template, upload valid and invalid rows including duplicate workbook and existing database keys, review the preview, correct or remove invalid rows, confirm the import, and verify the inserted and skipped counts.
+
+**Acceptance Scenarios**:
+
+1. **Given** the user opens the Premium Adjustments list, **When** they choose Import or Download Template, **Then** the system provides an `.xlsx` template with an `IMPORT` sheet and columns for Code Type, Code, Company Code, Name, Short Name, Discount Type, Charges Type, Charges Category, Remarks, Arabic Name, Arabic Short Name, Arabic Remarks, and Active.
+2. **Given** the user uploads an `.xlsx` workbook up to 5 MB containing at most 1,000 data rows, **When** it is parsed, **Then** a preview shows row-level validation results before any database writes occur.
+3. **Given** a row has missing or invalid required fields, an over-limit value, an invalid or inactive lookup choice, or a duplicate `(Code Type, Code, Company Code)` key within the workbook, **When** the preview is shown, **Then** that row is identified and the import cannot proceed while invalid rows remain.
+4. **Given** a valid key already exists in the database, **When** the preview is shown, **Then** that row is marked skipped and the existing record is not changed.
+5. **Given** all remaining rows are valid or skipped, **When** the user confirms import, **Then** new records are revalidated by the server and inserted atomically, and a summary reports inserted and skipped counts.
+6. **Given** the user cancels the import or a row/database error occurs, **When** the operation ends, **Then** no partial import is committed.
 
 ## Edge Cases
 
@@ -168,6 +186,10 @@ As an insurance broker, I want to permanently delete an adjustment code only aft
 - **FR-023**: Every page MUST show the same breadcrumb trail as feature 001 (FR-033 of that spec), reading Master Data › Premium Adjustments › the open code › the current page. Each step except the current page MUST be a link, the current page MUST be marked as such for screen readers, and following a link while a form has unsaved changes MUST ask for confirmation first.
 - **FR-024**: Leaving the adjustment-code form (Back, a breadcrumb link, or the browser's back button) while it has unsaved changes MUST ask for confirmation before the changes are discarded.
 - **FR-025**: Success and failure messages, and every confirmation, MUST use the one shared notification style used by feature 001, written in plain English with the next step where one exists.
+- **FR-026**: A saved adjustment-code form MUST show an Add Adjustment Code icon immediately to the left of the Back icon, matching feature 001's saved-record form action. Selecting it MUST open a blank add form; pending changes MUST be guarded by the existing unsaved-change confirmation, and cancelling MUST retain the current form and its changes.
+- **FR-027**: The Premium Adjustments list MUST provide an `.xlsx` template and import workflow with an `IMPORT` sheet containing Code Type, Code, Company Code, Name, Short Name, Discount Type, Charges Type, Charges Category, optional Remarks and Arabic fields, and Active. The import MUST accept at most 1,000 data rows and a 5 MB workbook.
+- **FR-028**: Before adjustment-code import, the system MUST preview and validate all rows using the normal create rules, including active lookup choices and duplicate `(Code Type, Code, Company Code)` keys within the workbook. Invalid rows MUST block import; existing database keys MUST be skipped without being overwritten.
+- **FR-029**: The server MUST revalidate uploaded rows and insert all eligible new adjustment codes in one transaction only after explicit confirmation. Cancellation or any failure MUST leave no partial import, and the result MUST report inserted and skipped counts.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -184,6 +206,8 @@ As an insurance broker, I want to permanently delete an adjustment code only aft
 - **SC-005**: Created and changed records show `admin` as the recorded user.
 - **SC-006**: A broker can soft delete and restore an adjustment code by turning Active off or on, in the add and edit views; Active is on by default when adding, and the list shows each record's Active status.
 - **SC-007**: Every icon action has a tooltip and an accessible name, and leaving a form with unsaved changes never loses them without a confirmation.
+- **SC-008**: From a saved adjustment-code form, the Add icon immediately left of Back opens a blank add form, and unsaved changes are retained unless the user confirms discarding them.
+- **SC-009**: An administrator can preview an Excel workbook of up to 1,000 rows and 5 MB, correct invalid rows, and confirm an atomic import of new adjustment codes without overwriting existing records.
 
 ## Assumptions
 

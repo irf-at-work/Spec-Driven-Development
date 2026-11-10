@@ -1,21 +1,43 @@
 <section class="page">
   <header class="page-header">
     <div>
-      <h1>{{ mode === 'create' ? 'Add Claim Configuration' : mode === 'view' ? 'Claim Configuration Details' : 'Edit Claim Configuration' }}</h1>
-      <p class="subtitle">{{ mode === 'create' ? 'Fields marked * are required.' : 'Update the details and save your changes.' }}</p>
+      <h1>
+        {{
+          mode === 'create'
+            ? 'Add Claim Configuration'
+            : mode === 'view'
+              ? 'Claim Configuration Details'
+              : 'Edit Claim Configuration'
+        }}
+      </h1>
+      <p class="subtitle">
+        {{
+          mode === 'create'
+            ? 'Fields marked * are required.'
+            : 'Update the details and save your changes.'
+        }}
+      </p>
     </div>
-    <app-icon-button
-      action="back"
-      tooltip="Back to claim configurations"
-      accessibleName="Back to claim configurations"
-      (clicked)="back()"
-    />
+    <div class="header-actions">
+      @if (mode !== 'create') {
+        <app-icon-button
+          action="add"
+          tooltip="Add claim configuration"
+          accessibleName="Add claim configuration"
+          (clicked)="add()"
+        />
+      }
+      <app-icon-button
+        action="back"
+        tooltip="Back to claim configurations"
+        accessibleName="Back to claim configurations"
+        (clicked)="back()"
+      />
+    </div>
   </header>
 
   @if (!writeEnabled()) {
-    <div class="gate" role="status">
-      <strong>Save is disabled.</strong> {{ writeMessage() }}
-    </div>
+    <div class="gate" role="status"><strong>Save is disabled.</strong> {{ writeMessage() }}</div>
   }
   @if (errorMessage()) {
     <div class="error-banner" role="alert">{{ errorMessage() }}</div>
@@ -25,94 +47,173 @@
   }
 
   @if (optionsFailed()) {
-    <div class="error-banner" role="alert">Choice lists could not be loaded. Retry after the API is available.</div>
+    <div class="error-banner" role="alert">
+      Choice lists could not be loaded. Retry after the API is available.
+    </div>
   } @else {
     <form class="card" [formGroup]="form" (ngSubmit)="save()" novalidate>
       <div class="grid">
         @if (mode === 'create') {
           <label class="field">
-            <span>CCM Code</span>
-            <input formControlName="ccmCode" maxlength="12" autocomplete="off" />
+            <span>CCM Code <span class="required-marker" aria-hidden="true">*</span></span>
+            <input
+              formControlName="ccmCode"
+              maxlength="12"
+              autocomplete="off"
+              required
+              aria-required="true"
+            />
             @if (form.controls.ccmCode.touched && form.controls.ccmCode.invalid) {
               <span class="field-error">Enter 1–12 letters, digits, or hyphens.</span>
             }
-            @if (fieldErrors()['ccmCode']) { <span class="field-error">{{ fieldErrors()['ccmCode'] }}</span> }
+            @if (fieldErrors()['ccmCode']) {
+              <span class="field-error">{{ fieldErrors()['ccmCode'] }}</span>
+            }
           </label>
         } @else {
-          <div class="field readonly"><span>CCM Code</span><output>{{ ccmCode }}</output><small>The key cannot be changed.</small></div>
+          <div class="field readonly">
+            <span>CCM Code</span><output>{{ ccmCode }}</output
+            ><small>The key cannot be changed.</small>
+          </div>
         }
         <label class="field">
-          <span>Claim Config Name</span>
-          <input formControlName="name" autocomplete="off" (input)="uppercase('name', $event)" />
-          @if (form.controls.name.touched && form.controls.name.hasError('required')) { <span class="field-error">Claim Config Name is required.</span> }
-          @if (fieldErrors()['name']) { <span class="field-error">{{ fieldErrors()['name'] }}</span> }
+          <span>Claim Config Name <span class="required-marker" aria-hidden="true">*</span></span>
+          <input
+            formControlName="name"
+            autocomplete="off"
+            required
+            aria-required="true"
+            (input)="uppercase('name', $event)"
+          />
+          @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+            <span class="field-error">Claim Config Name is required.</span>
+          }
+          @if (fieldErrors()['name']) {
+            <span class="field-error">{{ fieldErrors()['name'] }}</span>
+          }
         </label>
         <label class="field">
           <span>Short Name</span>
-          <input formControlName="shortName" autocomplete="off" (input)="uppercase('shortName', $event)" />
-          @if (fieldErrors()['shortName']) { <span class="field-error">{{ fieldErrors()['shortName'] }}</span> }
+          <input
+            formControlName="shortName"
+            autocomplete="off"
+            (input)="uppercase('shortName', $event)"
+          />
+          @if (fieldErrors()['shortName']) {
+            <span class="field-error">{{ fieldErrors()['shortName'] }}</span>
+          }
         </label>
         <label class="field">
           <span>Module</span>
           <select formControlName="module">
             <option value="">Select a module</option>
-            @for (item of choicesFor('module', current()?.module); track item.code) { <option [value]="item.code">{{ item.code }} — {{ item.description }}</option> }
+            @for (item of choicesFor('module', current()?.module); track item.code) {
+              <option [value]="item.code">{{ item.code }} — {{ item.description }}</option>
+            }
           </select>
         </label>
         <label class="field">
           <span>Accounting Posting Type</span>
           <select formControlName="accountingPostingType">
             <option value="">Select a posting type</option>
-            @for (item of choicesFor('postingType', current()?.accountingPostingType); track item.code) { <option [value]="item.code">{{ item.code }} — {{ item.description }}</option> }
+            @for (
+              item of choicesFor('postingType', current()?.accountingPostingType);
+              track item.code
+            ) {
+              <option [value]="item.code">{{ item.code }} — {{ item.description }}</option>
+            }
           </select>
         </label>
         <label class="field">
           <span>Accounting Exchange Rate Type</span>
           <select formControlName="accountingExchangeRateType">
             <option value="">Select an exchange rate type</option>
-            @for (item of choicesFor('exchangeRateType', current()?.accountingExchangeRateType); track item.code) { <option [value]="item.code">{{ item.code }} — {{ item.description }}</option> }
+            @for (
+              item of choicesFor('exchangeRateType', current()?.accountingExchangeRateType);
+              track item.code
+            ) {
+              <option [value]="item.code">{{ item.code }} — {{ item.description }}</option>
+            }
           </select>
         </label>
         <label class="field">
           <span>Rounding Type</span>
           <select formControlName="roundingType">
             <option value="">Select a rounding type</option>
-            @for (item of choicesFor('roundType', current()?.roundingType); track item.code) { <option [value]="item.code">{{ item.code }} — {{ item.description }}</option> }
+            @for (item of choicesFor('roundType', current()?.roundingType); track item.code) {
+              <option [value]="item.code">{{ item.code }} — {{ item.description }}</option>
+            }
           </select>
         </label>
         <label class="field">
           <span>Rounding Value</span>
           <input type="number" min="0" step="0.00001" formControlName="roundingValue" />
-          @if (form.controls.roundingValue.hasError('min')) { <span class="field-error">Rounding Value cannot be negative.</span> }
-          @if (fieldErrors()['roundingValue']) { <span class="field-error">{{ fieldErrors()['roundingValue'] }}</span> }
+          @if (form.controls.roundingValue.hasError('min')) {
+            <span class="field-error">Rounding Value cannot be negative.</span>
+          }
+          @if (fieldErrors()['roundingValue']) {
+            <span class="field-error">{{ fieldErrors()['roundingValue'] }}</span>
+          }
         </label>
         <label class="field">
           <span>Applicable Currency Type</span>
           <select formControlName="applicableCurrencyType">
             <option value="">Select a currency type</option>
-            @for (item of choicesFor('applicableCurrencyType', current()?.applicableCurrencyType); track item.code) { <option [value]="item.code">{{ item.code }} — {{ item.description }}</option> }
+            @for (
+              item of choicesFor('applicableCurrencyType', current()?.applicableCurrencyType);
+              track item.code
+            ) {
+              <option [value]="item.code">{{ item.code }} — {{ item.description }}</option>
+            }
           </select>
         </label>
         <label class="field">
           <span>Default Estimated Closure Reason</span>
           <select formControlName="defaultEstimatedClosureReasonCode">
             <option value="">Select a reason</option>
-            @for (item of choicesFor('estimatedClosureReason', current()?.defaultEstimatedClosureReasonCode); track item.code) { <option [value]="item.code">{{ item.code }} — {{ item.description }}</option> }
+            @for (
+              item of choicesFor(
+                'estimatedClosureReason',
+                current()?.defaultEstimatedClosureReasonCode
+              );
+              track item.code
+            ) {
+              <option [value]="item.code">{{ item.code }} — {{ item.description }}</option>
+            }
           </select>
         </label>
         <label class="field">
           <span>Recovery Code for Deduction</span>
           <select formControlName="defaultRecoveryDeductionCode">
             <option value="">Select a recovery code</option>
-            @for (item of choicesFor('recoveryDeduction', current()?.defaultRecoveryDeductionCode); track item.code) { <option [value]="item.code">{{ item.code }} — {{ item.description }}</option> }
+            @for (
+              item of choicesFor('recoveryDeduction', current()?.defaultRecoveryDeductionCode);
+              track item.code
+            ) {
+              <option [value]="item.code">{{ item.code }} — {{ item.description }}</option>
+            }
           </select>
         </label>
 
-        <mat-checkbox class="field flag-checkbox" formControlName="printBeforeApproval">Print Before Approval Yn</mat-checkbox>
-        <mat-checkbox class="field flag-checkbox" formControlName="reprint">RePrint Allowed</mat-checkbox>
-        <mat-checkbox class="field flag-checkbox" formControlName="claimAccountingDocumentGeneration">Claim Accounting Document Generation</mat-checkbox>
-        <mat-checkbox class="field flag-checkbox" formControlName="claimCoinsuranceAccountingDocumentGeneration">Claim Coinsurance Accounting Document Generation</mat-checkbox>
-        <mat-slide-toggle class="field active-toggle" formControlName="active">Active</mat-slide-toggle>
+        <mat-checkbox class="field flag-checkbox" formControlName="printBeforeApproval"
+          >Print Before Approval Yn</mat-checkbox
+        >
+        <mat-checkbox class="field flag-checkbox" formControlName="reprint"
+          >RePrint Allowed</mat-checkbox
+        >
+        <mat-checkbox
+          class="field flag-checkbox"
+          formControlName="claimAccountingDocumentGeneration"
+          >Claim Accounting Document Generation</mat-checkbox
+        >
+        <mat-checkbox
+          class="field flag-checkbox"
+          formControlName="claimCoinsuranceAccountingDocumentGeneration"
+          >Claim Coinsurance Accounting Document Generation</mat-checkbox
+        >
+        <mat-slide-toggle class="field active-toggle" formControlName="active"
+          >Active</mat-slide-toggle
+        >
         <mat-expansion-panel
           class="additional full-span"
           [expanded]="additionalOpen()"
@@ -124,15 +225,28 @@
             <mat-panel-description>Arabic names (optional)</mat-panel-description>
           </mat-expansion-panel-header>
           <div class="grid additional-grid">
-            <app-limited-text-field class="half" label="Arabic Name" [control]="form.controls.nameL2" [rtl]="true" />
-            <app-limited-text-field class="half" label="Arabic Short Name" [control]="form.controls.shortNameL2" [rtl]="true" />
+            <app-limited-text-field
+              class="half"
+              label="Arabic Name"
+              [control]="form.controls.nameL2"
+              [rtl]="true"
+            />
+            <app-limited-text-field
+              class="half"
+              label="Arabic Short Name"
+              [control]="form.controls.shortNameL2"
+              [rtl]="true"
+            />
           </div>
         </mat-expansion-panel>
       </div>
 
       <footer class="form-actions">
         <button type="button" class="secondary" (click)="back()">Cancel</button>
-        <button type="submit" [disabled]="!writeEnabled() || saving() || loading() || optionsLoading()">
+        <button
+          type="submit"
+          [disabled]="!writeEnabled() || saving() || loading() || optionsLoading()"
+        >
           {{ saving() ? 'Saving…' : mode === 'create' ? 'Save' : 'Save changes' }}
         </button>
       </footer>

@@ -6,6 +6,12 @@
     </div>
     <div class="header-actions">
       <app-icon-button
+        action="upload"
+        tooltip="Import claim configurations"
+        accessibleName="Import claim configurations"
+        (clicked)="importWorkbook()"
+      />
+      <app-icon-button
         action="add"
         tooltip="Add claim configuration"
         accessibleName="Add claim configuration"
@@ -38,28 +44,40 @@
           <ng-container matColumnDef="ccmCode">
             <th mat-header-cell *matHeaderCellDef>
               <div mat-sort-header="ccmCode">Claim Config Code</div>
-              <app-column-filter placeholder="Claim Config Code filter" (filterChange)="onTextFilterChange('ccmCode', $event)" />
+              <app-column-filter
+                placeholder="Claim Config Code filter"
+                (filterChange)="onTextFilterChange('ccmCode', $event)"
+              />
             </th>
             <td mat-cell *matCellDef="let item">{{ item.ccmCode }}</td>
           </ng-container>
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>
               <div mat-sort-header="name">Name</div>
-              <app-column-filter placeholder="Name filter" (filterChange)="onTextFilterChange('name', $event)" />
+              <app-column-filter
+                placeholder="Name filter"
+                (filterChange)="onTextFilterChange('name', $event)"
+              />
             </th>
             <td mat-cell *matCellDef="let item">{{ item.name }}</td>
           </ng-container>
           <ng-container matColumnDef="shortName">
             <th mat-header-cell *matHeaderCellDef>
               <div mat-sort-header="shortName">Short Name</div>
-              <app-column-filter placeholder="Short Name filter" (filterChange)="onTextFilterChange('shortName', $event)" />
+              <app-column-filter
+                placeholder="Short Name filter"
+                (filterChange)="onTextFilterChange('shortName', $event)"
+              />
             </th>
             <td mat-cell *matCellDef="let item">{{ item.shortName }}</td>
           </ng-container>
           <ng-container matColumnDef="module">
             <th mat-header-cell *matHeaderCellDef>
               <div mat-sort-header="module">Module Name</div>
-              <app-column-filter placeholder="Module Name filter" (filterChange)="onTextFilterChange('module', $event)" />
+              <app-column-filter
+                placeholder="Module Name filter"
+                (filterChange)="onTextFilterChange('module', $event)"
+              />
             </th>
             <td mat-cell *matCellDef="let item">{{ moduleName(item) }}</td>
           </ng-container>
@@ -83,7 +101,9 @@
                 action="delete"
                 [danger]="true"
                 [disabled]="!writesEnabled()"
-                [tooltip]="writesEnabled() ? 'Delete ' + item.ccmCode : 'Enable CCM writes to delete'"
+                [tooltip]="
+                  writesEnabled() ? 'Delete ' + item.ccmCode : 'Enable CCM writes to delete'
+                "
                 [accessibleName]="'Delete ' + item.ccmCode"
                 (clicked)="delete(item)"
               />

@@ -18,7 +18,7 @@ This document translates the owner-supplied Oracle column information, the read-
 | `CCM_ACNT_POSTING_TYPE` | `VARCHAR2(1)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
 | `CCM_ACNT_EXCH_RATE_TYPE` | `VARCHAR2(1)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
 | `CCM_ROUND_TYPE` | `VARCHAR2(2)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
-| `CCM_ROUND_VALUE` | `NUMBER(8,5)` | Y | none shown | Optional numeric value; `2.000` is an example. No additional range or interaction rule is established. |
+| `CCM_ROUND_VALUE` | `NUMBER(8,5)` | Y | none shown | Optional numeric value; the database has no default expression. Application create default and confirmed non-negative validation are specified separately in FR-042/FR-043; storage capacity does not define those user-facing rules. |
 | `CCM_APPL_CURR_TYPE` | `VARCHAR2(2)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
 | `CCM_DFLT_EST_CLO_REASON_CODE` | `VARCHAR2(12)` | Y | none shown | Optional dropdown; codes/source `LI_TYPE` remain unverified. |
 | `CCM_DFLT_RECV_DEDU_CODE` | `VARCHAR2(12)` | Y | none shown | Optional dropdown labeled “Recovery Code for Deduction”; owner supplied approved choices 100 (Excess) and 200 (Nil), mapped to `CCM_DFLT_RECV_DEDU`. Insert script is prepared but rows are not yet confirmed inserted. |

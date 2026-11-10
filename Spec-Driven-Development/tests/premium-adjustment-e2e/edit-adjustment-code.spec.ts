@@ -172,6 +172,28 @@ test("requires missing legacy classifications and asks before discarding changes
   await page.getByRole("button", { name: "Keep editing" }).click();
   await expect(name).toHaveValue("Unsaved");
 
+  await page.getByRole("button", { name: "Add premium adjustment" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Discard your changes?" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Keep editing" }).click();
+  await expect(name).toHaveValue("Unsaved");
+
   await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page.getByText("Discount Type is required.")).toBeVisible();
+});
+
+test("saved adjustment Add icon opens a blank form after confirming unsaved changes", async ({
+  page,
+}) => {
+  await openAdjustment(page);
+  await page.getByLabel("Name", { exact: true }).fill("Unsaved change");
+  await page.getByRole("button", { name: "Add premium adjustment" }).click();
+  await page.getByRole("button", { name: "Discard changes" }).click();
+
+  await expect(page).toHaveURL(/\/premium-adjustments\/new$/);
+  await expect(
+    page.getByRole("heading", { name: "Add Premium Adjustment" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Name", { exact: true })).toHaveValue("");
 });

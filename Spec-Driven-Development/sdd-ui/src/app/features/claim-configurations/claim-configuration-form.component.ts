@@ -40,7 +40,15 @@ const CHOICE_FIELDS: readonly ChoiceField[] = [
 
 @Component({
   selector: 'app-claim-configuration-form',
-  imports: [IconButtonComponent, LimitedTextFieldComponent, MatCheckboxModule, MatExpansionModule, MatSlideToggle, ReactiveFormsModule, ClaimConfigurationProductsComponent],
+  imports: [
+    IconButtonComponent,
+    LimitedTextFieldComponent,
+    MatCheckboxModule,
+    MatExpansionModule,
+    MatSlideToggle,
+    ReactiveFormsModule,
+    ClaimConfigurationProductsComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './claim-configuration-form.component.html',
   styleUrl: './claim-configuration-form.component.css',
@@ -52,7 +60,12 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationService);
 
-  protected readonly mode: 'create' | 'edit' | 'view' = this.route.snapshot.data['mode'] === 'create' ? 'create' : this.route.snapshot.data['mode'] === 'edit' ? 'edit' : 'view';
+  protected readonly mode: 'create' | 'edit' | 'view' =
+    this.route.snapshot.data['mode'] === 'create'
+      ? 'create'
+      : this.route.snapshot.data['mode'] === 'edit'
+        ? 'edit'
+        : 'view';
   protected readonly ccmCode = this.route.snapshot.paramMap.get('ccmCode') ?? '';
   protected readonly current = signal<ClaimConfigurationDetail | null>(null);
   protected readonly writeEnabled = signal(false);
@@ -65,11 +78,21 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
   protected readonly errorMessage = signal('');
   protected readonly fieldErrors = signal<Record<string, string>>({});
   protected readonly options = signal<Record<ChoiceField, ClaimConfigurationChoice[]>>({
-    module: [], postingType: [], exchangeRateType: [], roundType: [], applicableCurrencyType: [], estimatedClosureReason: [], recoveryDeduction: [],
+    module: [],
+    postingType: [],
+    exchangeRateType: [],
+    roundType: [],
+    applicableCurrencyType: [],
+    estimatedClosureReason: [],
+    recoveryDeduction: [],
   });
 
   protected readonly form = new FormGroup({
-    ccmCode: new FormControl('', [Validators.required, Validators.maxLength(12), Validators.pattern(/^[A-Za-z0-9-]+$/)]),
+    ccmCode: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(12),
+      Validators.pattern(/^[A-Za-z0-9-]+$/),
+    ]),
     name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     shortName: new FormControl('', [Validators.maxLength(30)]),
     nameL2: new FormControl('', { nonNullable: true }),
@@ -78,7 +101,7 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
     accountingPostingType: new FormControl(''),
     accountingExchangeRateType: new FormControl(''),
     roundingType: new FormControl(''),
-    roundingValue: new FormControl<number | null>(0, [Validators.min(0)]),
+    roundingValue: new FormControl<number | string | null>('0.00000', [Validators.min(0)]),
     applicableCurrencyType: new FormControl(''),
     defaultEstimatedClosureReasonCode: new FormControl(''),
     defaultRecoveryDeductionCode: new FormControl(''),
@@ -90,13 +113,17 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
   });
 
   constructor() {
-    this.service.writeStatus().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (status) => {
-        this.writeEnabled.set(status.enabled);
-        this.writeMessage.set(status.message);
-      },
-      error: () => this.writeMessage.set('Write status could not be loaded. Saving is unavailable.'),
-    });
+    this.service
+      .writeStatus()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (status) => {
+          this.writeEnabled.set(status.enabled);
+          this.writeMessage.set(status.message);
+        },
+        error: () =>
+          this.writeMessage.set('Write status could not be loaded. Saving is unavailable.'),
+      });
 
     this.loadChoices();
     if (this.mode !== 'create') {
@@ -115,6 +142,10 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
     void this.router.navigate(['/claim-configurations']);
   }
 
+  protected add(): void {
+    void this.router.navigate(['/claim-configurations/new']);
+  }
+
   protected uppercase(field: 'name' | 'shortName', event: Event): void {
     const input = event.target as HTMLInputElement;
     const upper = input.value.toUpperCase();
@@ -122,12 +153,18 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
     this.form.controls[field].setValue(upper);
   }
 
-  protected choicesFor(field: ChoiceField, currentCode?: string | null): ClaimConfigurationChoice[] {
+  protected choicesFor(
+    field: ChoiceField,
+    currentCode?: string | null,
+  ): ClaimConfigurationChoice[] {
     const choices = this.options()[field];
     if (!currentCode || choices.some((choice) => choice.code === currentCode)) {
       return choices;
     }
-    return [...choices, { code: currentCode, description: `${currentCode} (current value; inactive)` }];
+    return [
+      ...choices,
+      { code: currentCode, description: `${currentCode} (current value; inactive)` },
+    ];
   }
 
   protected save(): void {
@@ -147,32 +184,41 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
     const request: ClaimConfigurationSaveRequest = {
       ccmCode: this.mode === 'create' ? (value.ccmCode ?? '').trim().toUpperCase() : this.ccmCode,
       name: (value.name ?? '').trim().toUpperCase(),
-      shortName: (value.shortName ?? '').trim() ? (value.shortName ?? '').trim().toUpperCase() : null,
+      shortName: (value.shortName ?? '').trim()
+        ? (value.shortName ?? '').trim().toUpperCase()
+        : null,
       nameL2: value.nameL2,
       shortNameL2: value.shortNameL2,
       module: value.module || null,
       accountingPostingType: value.accountingPostingType || null,
       accountingExchangeRateType: value.accountingExchangeRateType || null,
       roundingType: value.roundingType || null,
-      roundingValue: value.roundingValue,
+      roundingValue:
+        value.roundingValue === null || value.roundingValue === ''
+          ? null
+          : Number(value.roundingValue),
       applicableCurrencyType: value.applicableCurrencyType || null,
       defaultEstimatedClosureReasonCode: value.defaultEstimatedClosureReasonCode || null,
       defaultRecoveryDeductionCode: value.defaultRecoveryDeductionCode || null,
       printBeforeApproval: value.printBeforeApproval,
       reprint: value.reprint,
       claimAccountingDocumentGeneration: value.claimAccountingDocumentGeneration,
-      claimCoinsuranceAccountingDocumentGeneration: value.claimCoinsuranceAccountingDocumentGeneration,
+      claimCoinsuranceAccountingDocumentGeneration:
+        value.claimCoinsuranceAccountingDocumentGeneration,
       active: value.active,
     };
 
-    const save$ = this.mode === 'create'
-      ? this.service.create(request)
-      : this.service.update(this.ccmCode, request);
+    const save$ =
+      this.mode === 'create'
+        ? this.service.create(request)
+        : this.service.update(this.ccmCode, request);
     save$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (saved) => {
         this.saving.set(false);
         this.form.markAsPristine();
-        this.notifications.success(this.mode === 'create' ? 'Claim configuration created.' : 'Claim configuration updated.');
+        this.notifications.success(
+          this.mode === 'create' ? 'Claim configuration created.' : 'Claim configuration updated.',
+        );
         void this.router.navigate(['/claim-configurations', saved.ccmCode]);
       },
       error: (error: unknown) => {
@@ -184,9 +230,13 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
           }
           this.fieldErrors.set(messages);
           if (error.problem.status === 503) {
-            this.errorMessage.set('Writes are disabled until the approved global CCM Code index is applied and enabled.');
+            this.errorMessage.set(
+              'Writes are disabled until the approved global CCM Code index is applied and enabled.',
+            );
           } else if (Object.keys(messages).length === 0) {
-            this.errorMessage.set('The claim configuration could not be saved. Review the values and try again.');
+            this.errorMessage.set(
+              'The claim configuration could not be saved. Review the values and try again.',
+            );
           } else {
             this.errorMessage.set(Object.values(messages).join(' '));
           }
@@ -198,58 +248,65 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
   }
 
   private loadChoices(): void {
-    const request = Object.fromEntries(CHOICE_FIELDS.map((field) => [field, this.service.choices(field)])) as Record<
-      ChoiceField,
-      ReturnType<ClaimConfigurationListService['choices']>
-    >;
-    forkJoin(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (choices) => {
-        this.options.set(choices);
-        this.optionsLoading.set(false);
-        this.optionsFailed.set(false);
-        const current = this.current();
-        if (current) this.addCurrentValues(current);
-      },
-      error: () => {
-        this.optionsLoading.set(false);
-        this.optionsFailed.set(true);
-      },
-    });
+    const request = Object.fromEntries(
+      CHOICE_FIELDS.map((field) => [field, this.service.choices(field)]),
+    ) as Record<ChoiceField, ReturnType<ClaimConfigurationListService['choices']>>;
+    forkJoin(request)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (choices) => {
+          this.options.set(choices);
+          this.optionsLoading.set(false);
+          this.optionsFailed.set(false);
+          const current = this.current();
+          if (current) this.addCurrentValues(current);
+        },
+        error: () => {
+          this.optionsLoading.set(false);
+          this.optionsFailed.set(true);
+        },
+      });
   }
 
   private loadCurrent(): void {
-    this.service.get(this.ccmCode).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (item) => {
-        this.current.set(item);
-        this.additionalOpen.set(!!item.nameL2 || !!item.shortNameL2);
-        this.form.reset({
-          ccmCode: item.ccmCode,
-          name: item.name,
-          shortName: item.shortName ?? '',
-          nameL2: item.nameL2 ?? '',
-          shortNameL2: item.shortNameL2 ?? '',
-          module: item.module ?? '',
-          accountingPostingType: item.accountingPostingType ?? '',
-          accountingExchangeRateType: item.accountingExchangeRateType ?? '',
-          roundingType: item.roundingType ?? '',
-          roundingValue: item.roundingValue ?? null,
-          applicableCurrencyType: item.applicableCurrencyType ?? '',
-          defaultEstimatedClosureReasonCode: item.defaultEstimatedClosureReasonCode ?? '',
-          defaultRecoveryDeductionCode: item.defaultRecoveryDeductionCode ?? '',
-          printBeforeApproval: item.printBeforeApproval,
-          reprint: item.reprint,
-          claimAccountingDocumentGeneration: item.claimAccountingDocumentGeneration,
-          claimCoinsuranceAccountingDocumentGeneration: item.claimCoinsuranceAccountingDocumentGeneration,
-          active: item.active,
-        });
-        this.addCurrentValues(item);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.errorMessage.set('This claim configuration could not be loaded. Return to the list and try again.');
-      },
-    });
+    this.service
+      .get(this.ccmCode)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (item) => {
+          this.current.set(item);
+          this.additionalOpen.set(!!item.nameL2 || !!item.shortNameL2);
+          this.form.reset({
+            ccmCode: item.ccmCode,
+            name: item.name,
+            shortName: item.shortName ?? '',
+            nameL2: item.nameL2 ?? '',
+            shortNameL2: item.shortNameL2 ?? '',
+            module: item.module ?? '',
+            accountingPostingType: item.accountingPostingType ?? '',
+            accountingExchangeRateType: item.accountingExchangeRateType ?? '',
+            roundingType: item.roundingType ?? '',
+            roundingValue: item.roundingValue ?? null,
+            applicableCurrencyType: item.applicableCurrencyType ?? '',
+            defaultEstimatedClosureReasonCode: item.defaultEstimatedClosureReasonCode ?? '',
+            defaultRecoveryDeductionCode: item.defaultRecoveryDeductionCode ?? '',
+            printBeforeApproval: item.printBeforeApproval,
+            reprint: item.reprint,
+            claimAccountingDocumentGeneration: item.claimAccountingDocumentGeneration,
+            claimCoinsuranceAccountingDocumentGeneration:
+              item.claimCoinsuranceAccountingDocumentGeneration,
+            active: item.active,
+          });
+          this.addCurrentValues(item);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.errorMessage.set(
+            'This claim configuration could not be loaded. Return to the list and try again.',
+          );
+        },
+      });
   }
 
   private addCurrentValues(item: ClaimConfigurationDetail): void {
@@ -267,7 +324,10 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
       for (const field of CHOICE_FIELDS) {
         const code = values[field];
         if (code && !next[field].some((choice) => choice.code === code)) {
-          next[field] = [...next[field], { code, description: `${code} (current value; inactive)` }];
+          next[field] = [
+            ...next[field],
+            { code, description: `${code} (current value; inactive)` },
+          ];
         }
       }
       return next;

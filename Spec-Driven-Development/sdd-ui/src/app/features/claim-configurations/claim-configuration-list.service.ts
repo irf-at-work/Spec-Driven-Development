@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { EMPTY, Observable, expand, reduce } from 'rxjs';
+import { API_BASE_URL } from '../../generated/api-client';
 
 export interface ClaimConfigurationListItem {
   companyCode: string;
@@ -71,7 +72,7 @@ export interface AvailableProduct {
   description: string;
 }
 
-export interface AssociatedProduct extends AvailableProduct {}
+export type AssociatedProduct = AvailableProduct;
 
 export interface ClaimConfigurationWriteStatus {
   enabled: boolean;
@@ -79,11 +80,20 @@ export interface ClaimConfigurationWriteStatus {
   companyCode: string;
 }
 
-export type ClaimConfigurationSaveRequest = Omit<ClaimConfigurationDetail, 'companyCode' | 'createdBy' | 'createdAt' | 'updatedBy' | 'updatedAt'>;
+export type ClaimConfigurationSaveRequest = Omit<
+  ClaimConfigurationDetail,
+  'companyCode' | 'createdBy' | 'createdAt' | 'updatedBy' | 'updatedAt'
+>;
 
 @Injectable({ providedIn: 'root' })
 export class ClaimConfigurationListService {
   private readonly http = inject(HttpClient);
+  private readonly apiBaseUrl = inject(API_BASE_URL);
+
+  private apiUrl(path: string): string {
+    const base = this.apiBaseUrl.replace(/\/+$/, '');
+    return `${base}${path.startsWith('/') ? path : `/${path}`}`;
+  }
 
   list(query: ClaimConfigurationListQuery): Observable<ClaimConfigurationPage> {
     let params = new HttpParams()
@@ -104,17 +114,17 @@ export class ClaimConfigurationListService {
         .set('activeOperator', query.active.operator);
     }
 
-    return this.http.get<ClaimConfigurationPage>('/api/claim-configurations', { params });
+    return this.http.get<ClaimConfigurationPage>(this.apiUrl('/api/claim-configurations'), { params });
   }
 
   get(ccmCode: string): Observable<ClaimConfigurationDetail> {
     return this.http.get<ClaimConfigurationDetail>(
-      `/api/claim-configurations/${encodeURIComponent(ccmCode)}`,
+      this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}`),
     );
   }
 
   writeStatus(): Observable<ClaimConfigurationWriteStatus> {
-    return this.http.get<ClaimConfigurationWriteStatus>('/api/claim-configurations/write-status');
+    return this.http.get<ClaimConfigurationWriteStatus>(this.apiUrl('/api/claim-configurations/write-status'));
   }
 
   choices(field: string): Observable<ClaimConfigurationChoice[]> {
@@ -129,47 +139,67 @@ export class ClaimConfigurationListService {
   }
 
   create(request: ClaimConfigurationSaveRequest): Observable<ClaimConfigurationDetail> {
-    return this.http.post<ClaimConfigurationDetail>('/api/claim-configurations', request);
+    return this.http.post<ClaimConfigurationDetail>(this.apiUrl('/api/claim-configurations'), request);
   }
 
-  update(ccmCode: string, request: ClaimConfigurationSaveRequest): Observable<ClaimConfigurationDetail> {
+  update(
+    ccmCode: string,
+    request: ClaimConfigurationSaveRequest,
+  ): Observable<ClaimConfigurationDetail> {
     return this.http.put<ClaimConfigurationDetail>(
-      `/api/claim-configurations/${encodeURIComponent(ccmCode)}`,
+      this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}`),
       request,
     );
   }
 
   delete(ccmCode: string): Observable<void> {
-    return this.http.delete<void>(`/api/claim-configurations/${encodeURIComponent(ccmCode)}`);
+    return this.http.delete<void>(this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}`));
   }
 
-  availableProducts(page: number, pageSize = 10): Observable<ClaimConfigurationChoicePage<AvailableProduct>> {
+  availableProducts(
+    page: number,
+    pageSize = 10,
+  ): Observable<ClaimConfigurationChoicePage<AvailableProduct>> {
     const params = new HttpParams().set('page', page).set('pageSize', pageSize);
-    return this.http.get<ClaimConfigurationChoicePage<AvailableProduct>>('/api/claim-configurations/available-products', { params });
+    return this.http.get<ClaimConfigurationChoicePage<AvailableProduct>>(
+      this.apiUrl('/api/claim-configurations/available-products'),
+      { params },
+    );
   }
 
-  associatedProducts(ccmCode: string, page: number, pageSize = 5): Observable<ClaimConfigurationChoicePage<AssociatedProduct>> {
+  associatedProducts(
+    ccmCode: string,
+    page: number,
+    pageSize = 5,
+  ): Observable<ClaimConfigurationChoicePage<AssociatedProduct>> {
     const params = new HttpParams().set('page', page).set('pageSize', pageSize);
     return this.http.get<ClaimConfigurationChoicePage<AssociatedProduct>>(
-      `/api/claim-configurations/${encodeURIComponent(ccmCode)}/products`,
+      this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}/products`),
       { params },
     );
   }
 
   addProduct(ccmCode: string, productCode: string): Observable<void> {
-    return this.http.post<void>(`/api/claim-configurations/${encodeURIComponent(ccmCode)}/products`, { productCode });
+    return this.http.post<void>(
+      this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}/products`),
+      { productCode },
+    );
   }
 
   deleteProduct(ccmCode: string, productCode: string): Observable<void> {
     return this.http.delete<void>(
-      `/api/claim-configurations/${encodeURIComponent(ccmCode)}/products/${encodeURIComponent(productCode)}`,
+      this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}/products/${encodeURIComponent(productCode)}`),
     );
   }
 
-  configurationsForProduct(productCode: string, page: number, pageSize = 10): Observable<ClaimConfigurationPage> {
+  configurationsForProduct(
+    productCode: string,
+    page: number,
+    pageSize = 10,
+  ): Observable<ClaimConfigurationPage> {
     const params = new HttpParams().set('page', page).set('pageSize', pageSize);
     return this.http.get<ClaimConfigurationPage>(
-      `/api/products/${encodeURIComponent(productCode)}/claim-configurations`,
+      this.apiUrl(`/api/products/${encodeURIComponent(productCode)}/claim-configurations`),
       { params },
     );
   }
@@ -177,7 +207,7 @@ export class ClaimConfigurationListService {
   private choicePage(field: string, page: number): Observable<ClaimConfigurationChoicePage> {
     const params = new HttpParams().set('page', page).set('pageSize', 10);
     return this.http.get<ClaimConfigurationChoicePage>(
-      `/api/claim-configuration-options/${encodeURIComponent(field)}`,
+      this.apiUrl(`/api/claim-configuration-options/${encodeURIComponent(field)}`),
       { params },
     );
   }

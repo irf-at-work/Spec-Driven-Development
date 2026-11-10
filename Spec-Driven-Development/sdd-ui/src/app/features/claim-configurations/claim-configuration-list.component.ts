@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -26,7 +27,10 @@ import {
 import { IconButtonComponent } from '../../shared/icon-button/icon-button.component';
 
 type TextColumn = 'ccmCode' | 'name' | 'shortName' | 'module';
-type Filter = { value: string; operator: string };
+interface Filter {
+  value: string;
+  operator: string;
+}
 
 function isTextColumn(value: string): value is TextColumn {
   return ['ccmCode', 'name', 'shortName', 'module'].includes(value);
@@ -35,6 +39,7 @@ function isTextColumn(value: string): value is TextColumn {
 @Component({
   selector: 'app-claim-configuration-list',
   imports: [
+    MatButtonModule,
     MatPaginatorModule,
     MatProgressBar,
     MatSortModule,
@@ -51,7 +56,10 @@ export class ClaimConfigurationListComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationService);
-  private readonly textFilterChanges = new Subject<{ column: TextColumn; change: ColumnFilterChange }>();
+  private readonly textFilterChanges = new Subject<{
+    column: TextColumn;
+    change: ColumnFilterChange;
+  }>();
 
   protected readonly pageSizeOptions = [10, 25, 50];
   protected readonly pageSize = signal(10);
@@ -73,7 +81,8 @@ export class ClaimConfigurationListComponent {
   protected readonly loading = signal(false);
   protected readonly loadFailed = signal(false);
   protected readonly hasActiveFilter = computed(
-    () => Object.values(this.filters()).some((filter) => !!filter.value) || !!this.activeFilter().value,
+    () =>
+      Object.values(this.filters()).some((filter) => !!filter.value) || !!this.activeFilter().value,
   );
   protected readonly emptyMessage = computed(() =>
     this.hasActiveFilter()
@@ -85,14 +94,23 @@ export class ClaimConfigurationListComponent {
     this.textFilterChanges
       .pipe(debounceTime(200), takeUntilDestroyed(this.destroyRef))
       .subscribe(({ column, change }) => this.applyTextFilter(column, change));
-    this.service.writeStatus().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (status) => this.writesEnabled.set(status.enabled),
-      error: () => this.writesEnabled.set(false),
-    });
-    this.service.choices('module').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (choices) => this.moduleNames.set(Object.fromEntries(choices.map((choice) => [choice.code, choice.description]))),
-      error: () => this.moduleNames.set({}),
-    });
+    this.service
+      .writeStatus()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (status) => this.writesEnabled.set(status.enabled),
+        error: () => this.writesEnabled.set(false),
+      });
+    this.service
+      .choices('module')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (choices) =>
+          this.moduleNames.set(
+            Object.fromEntries(choices.map((choice) => [choice.code, choice.description])),
+          ),
+        error: () => this.moduleNames.set({}),
+      });
     this.load();
   }
 
@@ -160,8 +178,12 @@ export class ClaimConfigurationListComponent {
     void this.router.navigate(['/claim-configurations/new']);
   }
 
+  protected importWorkbook(): void {
+    void this.router.navigate(['/claim-configurations/import']);
+  }
+
   protected moduleName(item: ClaimConfigurationListItem): string {
-    return item.module ? this.moduleNames()[item.module] ?? item.module : '—';
+    return item.module ? (this.moduleNames()[item.module] ?? item.module) : '—';
   }
 
   protected async delete(item: ClaimConfigurationListItem): Promise<void> {
@@ -174,25 +196,40 @@ export class ClaimConfigurationListComponent {
     });
     if (!confirmed) return;
 
-    this.service.delete(item.ccmCode).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.notifications.success('Claim configuration deleted.');
-        if (this.items().length === 1 && this.pageIndex() > 0) this.pageIndex.update((page) => page - 1);
-        this.load();
-      },
-      error: (error: unknown) => {
-        if (isApiProblemError(error) && error.problem.status === 404) {
-          this.notifications.info('This claim configuration was already deleted. The list has been refreshed.');
+    this.service
+      .delete(item.ccmCode)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notifications.success('Claim configuration deleted.');
+          if (this.items().length === 1 && this.pageIndex() > 0)
+            this.pageIndex.update((page) => page - 1);
           this.load();
-        } else if (isApiProblemError(error) && error.problem.status === 409) {
-          this.notifications.error('Remove the linked products before deleting this claim configuration.', 'Cannot delete configuration');
-        } else if (isApiProblemError(error) && error.problem.status === 503) {
-          this.notifications.error('Deletes are disabled until claim configuration writes are enabled.', 'Delete unavailable');
-        } else {
-          this.notifications.error('The claim configuration could not be deleted. Please refresh the list and try again.', 'Delete failed');
-        }
-      },
-    });
+        },
+        error: (error: unknown) => {
+          if (isApiProblemError(error) && error.problem.status === 404) {
+            this.notifications.info(
+              'This claim configuration was already deleted. The list has been refreshed.',
+            );
+            this.load();
+          } else if (isApiProblemError(error) && error.problem.status === 409) {
+            this.notifications.error(
+              'Remove the linked products before deleting this claim configuration.',
+              'Cannot delete configuration',
+            );
+          } else if (isApiProblemError(error) && error.problem.status === 503) {
+            this.notifications.error(
+              'Deletes are disabled until claim configuration writes are enabled.',
+              'Delete unavailable',
+            );
+          } else {
+            this.notifications.error(
+              'The claim configuration could not be deleted. Please refresh the list and try again.',
+              'Delete failed',
+            );
+          }
+        },
+      });
   }
 
   private applyTextFilter(column: TextColumn, change: ColumnFilterChange): void {

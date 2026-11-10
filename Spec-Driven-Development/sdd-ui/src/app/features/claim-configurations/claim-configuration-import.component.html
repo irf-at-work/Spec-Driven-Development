@@ -1,0 +1,150 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Import Claim Configurations</h1>
+      <p class="subtitle">Preview CCM records and product links before importing them.</p>
+    </div>
+    <div class="header-actions">
+      <button matButton="outlined" type="button" (click)="downloadTemplate()">
+        Download Excel template
+      </button>
+      <app-icon-button
+        action="back"
+        tooltip="Back to claim configurations"
+        accessibleName="Back to claim configurations"
+        (clicked)="back()"
+      />
+    </div>
+  </header>
+
+  <section class="card instructions" aria-labelledby="workbook-format">
+    <h2 id="workbook-format">Workbook format</h2>
+    <p>
+      Use the <strong>CCM</strong> worksheet. Add product associations on the optional
+      <strong>PRODUCT_LINKS</strong> worksheet.
+    </p>
+    <p>Company Code is assigned from application settings. Do not add it to the workbook.</p>
+    <p>
+      Use <code>Y</code> or <code>N</code> for flag columns. Existing CCM codes and product links
+      are skipped without changes.
+    </p>
+    <p>Maximum file size: 5 MB. Maximum data rows across both sheets: 1,000.</p>
+  </section>
+
+  <section class="card uploader" aria-labelledby="upload-heading">
+    <h2 id="upload-heading">Choose workbook</h2>
+    <label for="ccm-workbook">Excel workbook (.xlsx)</label>
+    <input
+      id="ccm-workbook"
+      type="file"
+      accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      [disabled]="busy()"
+      (change)="selectFile($event)"
+    />
+    @if (fileName()) {
+      <p class="file-name">Selected: {{ fileName() }}</p>
+    }
+  </section>
+
+  @if (busy()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      aria-label="Checking or importing claim configurations"
+    />
+  }
+  @if (error()) {
+    <div class="message error" role="alert">{{ error() }}</div>
+  }
+  @if (result(); as completed) {
+    <div class="message success" role="status">
+      Import complete: {{ completed.insertedConfigurations }} CCMs inserted,
+      {{ completed.skippedConfigurations }} CCMs skipped, {{ completed.insertedLinks }} links
+      inserted, and {{ completed.skippedLinks }} links skipped.
+    </div>
+  }
+
+  @if (preview(); as result) {
+    @if (result.errors.length) {
+      <div class="message error" role="alert">{{ result.errors.join(' ') }}</div>
+    }
+    <section class="card preview" aria-labelledby="preview-heading">
+      <div class="preview-header">
+        <div>
+          <h2 id="preview-heading">Import preview</h2>
+          <p>
+            {{ configurationCount() }} CCM rows · {{ productLinkCount() }} product links ·
+            {{ readyCount() }} ready · {{ skippedCount() }} skipped · {{ invalidCount() }} invalid
+          </p>
+        </div>
+        <button
+          matButton="filled"
+          type="button"
+          [disabled]="!canImport()"
+          (click)="importWorkbook()"
+        >
+          Confirm import
+        </button>
+      </div>
+
+      <h3>Claim configurations</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Excel row</th>
+              <th>CCM Code</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of result.configurations; track row.rowNumber) {
+              <tr>
+                <td>{{ row.rowNumber }}</td>
+                <td>{{ row.key }}</td>
+                <td>
+                  @if (!row.isValid) {
+                    <span class="invalid">Invalid: {{ row.errors.join(' ') }}</span>
+                  } @else if (row.alreadyExists) {
+                    <span class="skipped">Already exists; will skip</span>
+                  } @else {
+                    <span class="ready">Ready to insert</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Product links</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Excel row</th>
+              <th>CCM / Product Code</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of result.productLinks; track row.rowNumber) {
+              <tr>
+                <td>{{ row.rowNumber }}</td>
+                <td>{{ row.key }}</td>
+                <td>
+                  @if (!row.isValid) {
+                    <span class="invalid">Invalid: {{ row.errors.join(' ') }}</span>
+                  } @else if (row.alreadyExists) {
+                    <span class="skipped">Already linked; will skip</span>
+                  } @else {
+                    <span class="ready">Ready to insert</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</section>

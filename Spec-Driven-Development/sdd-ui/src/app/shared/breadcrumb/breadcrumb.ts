@@ -88,11 +88,23 @@ export function buildTrail(page: BreadcrumbPage, context: BreadcrumbContext): re
     case 'claim-configurations':
       return [MASTER_DATA, { label: 'Claim Configurations' }];
     case 'claim-configuration-view':
-      return [MASTER_DATA, { label: 'Claim Configurations', link: ['/claim-configurations'] }, { label: 'Claim Configuration Details' }];
+      return [
+        MASTER_DATA,
+        { label: 'Claim Configurations', link: ['/claim-configurations'] },
+        { label: 'Claim Configuration Details' },
+      ];
     case 'claim-configuration-new':
-      return [MASTER_DATA, { label: 'Claim Configurations', link: ['/claim-configurations'] }, { label: 'Add Claim Configuration' }];
+      return [
+        MASTER_DATA,
+        { label: 'Claim Configurations', link: ['/claim-configurations'] },
+        { label: 'Add Claim Configuration' },
+      ];
     case 'claim-configuration-edit':
-      return [MASTER_DATA, { label: 'Claim Configurations', link: ['/claim-configurations'] }, { label: 'Edit Claim Configuration' }];
+      return [
+        MASTER_DATA,
+        { label: 'Claim Configurations', link: ['/claim-configurations'] },
+        { label: 'Edit Claim Configuration' },
+      ];
     case 'premium-adjustment-new':
       return [
         MASTER_DATA,

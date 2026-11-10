@@ -184,6 +184,10 @@ export class PremiumAdjustmentFormComponent implements HasUnsavedChanges {
     void this.router.navigate(['/premium-adjustments']);
   }
 
+  protected add(): void {
+    void this.router.navigate(['/premium-adjustments/new']);
+  }
+
   protected save(): void {
     this.form.markAllAsTouched();
     if (this.form.invalid) {

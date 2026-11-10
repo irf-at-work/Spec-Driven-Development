@@ -1,4 +1,607 @@
-import{$t as gp,A as I,An as sy,C as GN,Cn as qN,Ct as _N,D as Gn,Dn as s3,E as Ge,G as ON,Gn as xo,H as MT,I as Kc,In as up,It as ci,Kn as xr,Kt as fm,Nn as ub,Nt as bv,Ot as ay,Pn as um,Qt as go,R as Kw,Rn as va,S as Fe$1,St as Zc,T as Gc,U as Mu,Un as xN,Vt as eb,X as Pe$1,Y as P_,a as U,an as je,at as TA,b as Eb,bt as ZN,c as AN,ct as Uc,dn as lb,dt as Wm,fn as le,ft as Wn,gn as n3,hn as mp,it as Sc,j as I0,jn as tb,k as Hc,kn as sp,kt as b,ln as kr,lt as Uf,mn as me,nn as hi,o as $N,ot as UN,pn as mb,qn as yA,s as A,sn as kN,st as Ub,ut as Vc,v as E0,vt as Yc,w as GT,wt as _T,xn as ob,yn as ns,yt as Ym,zt as de}from"./main-RR6WM3XY.js";import{B as y,E as gi,F as sl,L as un,M as nn,O as ji,V as yt,g as X,n as Ft$1,s as Ps,t as At$1,w as en,x as bi,z as vt}from"./chunk-CnuPNpsB.js";import{E as ki,S as dl,_ as Wl,a as Eo,f as Mt,h as Vi,n as $n,o as Fo,p as Qe,s as Fr,t as $l,u as Lr,x as cl}from"./chunk-v95b3x4p.js";var Ht=(()=>{class n{changes=new le;itemsPerPageLabel=`Items per page:`;nextPageLabel=`Next page`;previousPageLabel=`Previous page`;firstPageLabel=`First page`;lastPageLabel=`Last page`;getRangeLabel=(e,t,a)=>{if(a==0||t==0)return`0 of ${a}`;a=Math.max(a,0);let i=e*t,r=i<a?Math.min(i+t,a):i+t;return`${i+1} \u2013 ${r} of ${a}`};static ɵfac=function(t){return new(t||n)};static ɵprov=de({token:n,factory:n.ɵfac})}return n})();var Vt=50;var jt=new A(`MAT_PAGINATOR_DEFAULT_OPTIONS`);var Ut=(()=>{class n{_intl=b(Ht);_changeDetectorRef=b(Zc);_formFieldAppearance;_pageSizeLabelId=b(At$1).getId(`mat-paginator-page-size-label-`);_intlChanges;_isInitialized=!1;_initializedStream=new ci(1);color;get pageIndex(){return this._pageIndex}set pageIndex(e){this._pageIndex=Math.max(e||0,0),this._changeDetectorRef.markForCheck()}_pageIndex=0;get length(){return this._length}set length(e){this._length=e||0,this._changeDetectorRef.markForCheck()}_length=0;get pageSize(){return this._pageSize}set pageSize(e){this._pageSize=Math.max(e||0,0),this._updateDisplayedPageSizeOptions()}_pageSize;get pageSizeOptions(){return this._pageSizeOptions}set pageSizeOptions(e){this._pageSizeOptions=(e||[]).map(t=>s3(t,0)),this._updateDisplayedPageSizeOptions()}_pageSizeOptions=[];hidePageSize=!1;showFirstLastButtons=!1;selectConfig={};disabled=!1;page=new Ge;_displayedPageSizeOptions;initialized=this._initializedStream;constructor(){let e=this._intl,t=b(jt,{optional:!0});if(this._intlChanges=e.changes.subscribe(()=>this._changeDetectorRef.markForCheck()),t){let{pageSize:a,pageSizeOptions:i,hidePageSize:r,showFirstLastButtons:c}=t;a!=null&&(this._pageSize=a),i!=null&&(this._pageSizeOptions=i),r!=null&&(this.hidePageSize=r),c!=null&&(this.showFirstLastButtons=c)}this._formFieldAppearance=t?.formFieldAppearance||`outline`}ngOnInit(){this._isInitialized=!0,this._updateDisplayedPageSizeOptions(),this._initializedStream.next()}ngOnDestroy(){this._initializedStream.complete(),this._intlChanges.unsubscribe()}nextPage(){this.hasNextPage()&&this._navigate(this.pageIndex+1)}previousPage(){this.hasPreviousPage()&&this._navigate(this.pageIndex-1)}firstPage(){this.hasPreviousPage()&&this._navigate(0)}lastPage(){this.hasNextPage()&&this._navigate(this.getNumberOfPages()-1)}hasPreviousPage(){return this.pageIndex>=1&&this.pageSize!=0}hasNextPage(){let e=this.getNumberOfPages()-1;return this.pageIndex<e&&this.pageSize!=0}getNumberOfPages(){return this.pageSize?Math.ceil(this.length/this.pageSize):0}_changePageSize(e){let t=this.pageIndex*this.pageSize,a=this.pageIndex;this.pageIndex=Math.floor(t/e)||0,this.pageSize=e,this._emitPageEvent(a)}_nextButtonsDisabled(){return this.disabled||!this.hasNextPage()}_previousButtonsDisabled(){return this.disabled||!this.hasPreviousPage()}_updateDisplayedPageSizeOptions(){this._isInitialized&&(this.pageSize||(this._pageSize=this.pageSizeOptions.length!=0?this.pageSizeOptions[0]:Vt),this._displayedPageSizeOptions=this.pageSizeOptions.slice(),this._displayedPageSizeOptions.indexOf(this.pageSize)===-1&&this._displayedPageSizeOptions.push(this.pageSize),this._displayedPageSizeOptions.sort((e,t)=>e-t),this._changeDetectorRef.markForCheck())}_emitPageEvent(e){this.page.emit({previousPageIndex:e,pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.length})}_navigate(e){let t=this.pageIndex;e!==t&&(this.pageIndex=e,this._emitPageEvent(t))}_buttonClicked(e,t){t||this._navigate(e)}static ɵfac=function(t){return new(t||n)};static ɵcmp=(function(){function e(l,d){if(l&1&&(Sc(0,`mat-option`,17),yA(1),up()),l&2){let o=d.$implicit;tb(`value`,o),P_(),mp(` `,o,` `)}}function t(l,d){if(l&1){let o=UN();Sc(0,`mat-form-field`,14)(1,`mat-select`,16,0),Hc(`selectionChange`,function(h){Wm(o);let _=$N(2);return Ym(_._changePageSize(h.value))}),ON(3,e,2,2,`mat-option`,17,xN),up(),Sc(5,`div`,18),Hc(`click`,function(){Wm(o);let h=ZN(2);return Ym(h.open())}),up()()}if(l&2){let o=$N(2);tb(`appearance`,o._formFieldAppearance)(`color`,o.color),P_(),tb(`value`,o.pageSize)(`disabled`,o.disabled),eb(`aria-labelledby`,o._pageSizeLabelId),tb(`panelClass`,o.selectConfig.panelClass||``)(`disableOptionCentering`,o.selectConfig.disableOptionCentering),P_(2),kN(o._displayedPageSizeOptions)}}function a(l,d){if(l&1&&(Sc(0,`div`,15),yA(1),up()),l&2){let o=$N(2);P_(),Eb(o.pageSize)}}function i(l,d){if(l&1&&(Sc(0,`div`,3)(1,`div`,13),yA(2),up(),_N(3,t,6,7,`mat-form-field`,14),_N(4,a,2,1,`div`,15),up()),l&2){let o=$N();P_(),Uc(`id`,o._pageSizeLabelId),P_(),mp(` `,o._intl.itemsPerPageLabel,` `),P_(),AN(o._displayedPageSizeOptions.length>1?3:-1),P_(),AN(o._displayedPageSizeOptions.length<=1?4:-1)}}function r(l,d){if(l&1){let o=UN();Sc(0,`button`,19),Hc(`click`,function(){Wm(o);let h=$N();return Ym(h._buttonClicked(0,h._previousButtonsDisabled()))}),sy(),Sc(1,`svg`,8),Vc(2,`path`,20),up()()}if(l&2){let o=$N();tb(`matTooltip`,o._intl.firstPageLabel)(`matTooltipDisabled`,o._previousButtonsDisabled())(`disabled`,o._previousButtonsDisabled())(`tabindex`,o._previousButtonsDisabled()?-1:null),Uc(`aria-label`,o._intl.firstPageLabel)}}function c(l,d){if(l&1){let o=UN();Sc(0,`button`,21),Hc(`click`,function(){Wm(o);let h=$N();return Ym(h._buttonClicked(h.getNumberOfPages()-1,h._nextButtonsDisabled()))}),sy(),Sc(1,`svg`,8),Vc(2,`path`,22),up()()}if(l&2){let o=$N();tb(`matTooltip`,o._intl.lastPageLabel)(`matTooltipDisabled`,o._nextButtonsDisabled())(`disabled`,o._nextButtonsDisabled())(`tabindex`,o._nextButtonsDisabled()?-1:null),Uc(`aria-label`,o._intl.lastPageLabel)}}return sp({type:n,selectors:[[`mat-paginator`]],hostAttrs:[`role`,`group`,1,`mat-mdc-paginator`],inputs:{color:`color`,pageIndex:[2,`pageIndex`,`pageIndex`,s3],length:[2,`length`,`length`,s3],pageSize:[2,`pageSize`,`pageSize`,s3],pageSizeOptions:`pageSizeOptions`,hidePageSize:[2,`hidePageSize`,`hidePageSize`,Kc],showFirstLastButtons:[2,`showFirstLastButtons`,`showFirstLastButtons`,Kc],selectConfig:`selectConfig`,disabled:[2,`disabled`,`disabled`,Kc]},outputs:{page:`page`},exportAs:[`matPaginator`],decls:14,vars:14,consts:[[`selectRef`,``],[1,`mat-mdc-paginator-outer-container`],[1,`mat-mdc-paginator-container`],[1,`mat-mdc-paginator-page-size`],[1,`mat-mdc-paginator-range-actions`],[`aria-atomic`,`true`,`aria-live`,`polite`,`role`,`status`,1,`mat-mdc-paginator-range-label`],[`matIconButton`,``,`type`,`button`,`matTooltipPosition`,`above`,`disabledInteractive`,``,1,`mat-mdc-paginator-navigation-first`,3,`matTooltip`,`matTooltipDisabled`,`disabled`,`tabindex`],[`matIconButton`,``,`type`,`button`,`matTooltipPosition`,`above`,`disabledInteractive`,``,1,`mat-mdc-paginator-navigation-previous`,3,`click`,`matTooltip`,`matTooltipDisabled`,`disabled`,`tabindex`],[`viewBox`,`0 0 24 24`,`focusable`,`false`,`aria-hidden`,`true`,1,`mat-mdc-paginator-icon`],[`d`,`M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z`],[`matIconButton`,``,`type`,`button`,`matTooltipPosition`,`above`,`disabledInteractive`,``,1,`mat-mdc-paginator-navigation-next`,3,`click`,`matTooltip`,`matTooltipDisabled`,`disabled`,`tabindex`],[`d`,`M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z`],[`matIconButton`,``,`type`,`button`,`matTooltipPosition`,`above`,`disabledInteractive`,``,1,`mat-mdc-paginator-navigation-last`,3,`matTooltip`,`matTooltipDisabled`,`disabled`,`tabindex`],[`aria-hidden`,`true`,1,`mat-mdc-paginator-page-size-label`],[1,`mat-mdc-paginator-page-size-select`,3,`appearance`,`color`],[1,`mat-mdc-paginator-page-size-value`],[`hideSingleSelectionIndicator`,``,3,`selectionChange`,`value`,`disabled`,`aria-labelledby`,`panelClass`,`disableOptionCentering`],[3,`value`],[1,`mat-mdc-paginator-touch-target`,3,`click`],[`matIconButton`,``,`type`,`button`,`matTooltipPosition`,`above`,`disabledInteractive`,``,1,`mat-mdc-paginator-navigation-first`,3,`click`,`matTooltip`,`matTooltipDisabled`,`disabled`,`tabindex`],[`d`,`M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z`],[`matIconButton`,``,`type`,`button`,`matTooltipPosition`,`above`,`disabledInteractive`,``,1,`mat-mdc-paginator-navigation-last`,3,`click`,`matTooltip`,`matTooltipDisabled`,`disabled`,`tabindex`],[`d`,`M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z`]],template:function(d,o){d&1&&(Sc(0,`div`,1)(1,`div`,2),_N(2,i,5,4,`div`,3),Sc(3,`div`,4)(4,`div`,5),yA(5),up(),_N(6,r,3,5,`button`,6),Sc(7,`button`,7),Hc(`click`,function(){return o._buttonClicked(o.pageIndex-1,o._previousButtonsDisabled())}),sy(),Sc(8,`svg`,8),Vc(9,`path`,9),up()(),ay(),Sc(10,`button`,10),Hc(`click`,function(){return o._buttonClicked(o.pageIndex+1,o._nextButtonsDisabled())}),sy(),Sc(11,`svg`,8),Vc(12,`path`,11),up()(),_N(13,c,3,5,`button`,12),up()()()),d&2&&(P_(2),AN(o.hidePageSize?-1:2),P_(3),mp(` `,o._intl.getRangeLabel(o.pageIndex,o.pageSize,o.length),` `),P_(),AN(o.showFirstLastButtons?6:-1),P_(),tb(`matTooltip`,o._intl.previousPageLabel)(`matTooltipDisabled`,o._previousButtonsDisabled())(`disabled`,o._previousButtonsDisabled())(`tabindex`,o._previousButtonsDisabled()?-1:null),Uc(`aria-label`,o._intl.previousPageLabel),P_(3),tb(`matTooltip`,o._intl.nextPageLabel)(`matTooltipDisabled`,o._nextButtonsDisabled())(`disabled`,o._nextButtonsDisabled())(`tabindex`,o._nextButtonsDisabled()?-1:null),Uc(`aria-label`,o._intl.nextPageLabel),P_(3),AN(o.showFirstLastButtons?13:-1))},dependencies:[ki,dl,Mt,en,un],styles:[`.mat-mdc-paginator {
+import {
+  $t as gp,
+  A as I,
+  An as sy,
+  C as GN,
+  Cn as qN,
+  Ct as _N,
+  D as Gn,
+  Dn as s3,
+  E as Ge,
+  G as ON,
+  Gn as xo,
+  H as MT,
+  I as Kc,
+  In as up,
+  It as ci,
+  Kn as xr,
+  Kt as fm,
+  Nn as ub,
+  Nt as bv,
+  Ot as ay,
+  Pn as um,
+  Qt as go,
+  R as Kw,
+  Rn as va,
+  S as Fe$1,
+  St as Zc,
+  T as Gc,
+  U as Mu,
+  Un as xN,
+  Vt as eb,
+  X as Pe$1,
+  Y as P_,
+  a as U,
+  an as je,
+  at as TA,
+  b as Eb,
+  bt as ZN,
+  c as AN,
+  ct as Uc,
+  dn as lb,
+  dt as Wm,
+  fn as le,
+  ft as Wn,
+  gn as n3,
+  hn as mp,
+  it as Sc,
+  j as I0,
+  jn as tb,
+  k as Hc,
+  kn as sp,
+  kt as b,
+  ln as kr,
+  lt as Uf,
+  mn as me,
+  nn as hi,
+  o as $N,
+  ot as UN,
+  pn as mb,
+  qn as yA,
+  s as A,
+  sn as kN,
+  st as Ub,
+  ut as Vc,
+  v as E0,
+  vt as Yc,
+  w as GT,
+  wt as _T,
+  xn as ob,
+  yn as ns,
+  yt as Ym,
+  zt as de,
+} from './main-RR6WM3XY.js';
+import {
+  B as y,
+  E as gi,
+  F as sl,
+  L as un,
+  M as nn,
+  O as ji,
+  V as yt,
+  g as X,
+  n as Ft$1,
+  s as Ps,
+  t as At$1,
+  w as en,
+  x as bi,
+  z as vt,
+} from './chunk-CnuPNpsB.js';
+import {
+  E as ki,
+  S as dl,
+  _ as Wl,
+  a as Eo,
+  f as Mt,
+  h as Vi,
+  n as $n,
+  o as Fo,
+  p as Qe,
+  s as Fr,
+  t as $l,
+  u as Lr,
+  x as cl,
+} from './chunk-v95b3x4p.js';
+var Ht = (() => {
+  class n {
+    changes = new le();
+    itemsPerPageLabel = `Items per page:`;
+    nextPageLabel = `Next page`;
+    previousPageLabel = `Previous page`;
+    firstPageLabel = `First page`;
+    lastPageLabel = `Last page`;
+    getRangeLabel = (e, t, a) => {
+      if (a == 0 || t == 0) return `0 of ${a}`;
+      a = Math.max(a, 0);
+      let i = e * t,
+        r = i < a ? Math.min(i + t, a) : i + t;
+      return `${i + 1} \u2013 ${r} of ${a}`;
+    };
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵprov = de({ token: n, factory: n.ɵfac });
+  }
+  return n;
+})();
+var Vt = 50;
+var jt = new A(`MAT_PAGINATOR_DEFAULT_OPTIONS`);
+var Ut = (() => {
+  class n {
+    _intl = b(Ht);
+    _changeDetectorRef = b(Zc);
+    _formFieldAppearance;
+    _pageSizeLabelId = b(At$1).getId(`mat-paginator-page-size-label-`);
+    _intlChanges;
+    _isInitialized = !1;
+    _initializedStream = new ci(1);
+    color;
+    get pageIndex() {
+      return this._pageIndex;
+    }
+    set pageIndex(e) {
+      ((this._pageIndex = Math.max(e || 0, 0)), this._changeDetectorRef.markForCheck());
+    }
+    _pageIndex = 0;
+    get length() {
+      return this._length;
+    }
+    set length(e) {
+      ((this._length = e || 0), this._changeDetectorRef.markForCheck());
+    }
+    _length = 0;
+    get pageSize() {
+      return this._pageSize;
+    }
+    set pageSize(e) {
+      ((this._pageSize = Math.max(e || 0, 0)), this._updateDisplayedPageSizeOptions());
+    }
+    _pageSize;
+    get pageSizeOptions() {
+      return this._pageSizeOptions;
+    }
+    set pageSizeOptions(e) {
+      ((this._pageSizeOptions = (e || []).map((t) => s3(t, 0))),
+        this._updateDisplayedPageSizeOptions());
+    }
+    _pageSizeOptions = [];
+    hidePageSize = !1;
+    showFirstLastButtons = !1;
+    selectConfig = {};
+    disabled = !1;
+    page = new Ge();
+    _displayedPageSizeOptions;
+    initialized = this._initializedStream;
+    constructor() {
+      let e = this._intl,
+        t = b(jt, { optional: !0 });
+      if (
+        ((this._intlChanges = e.changes.subscribe(() => this._changeDetectorRef.markForCheck())), t)
+      ) {
+        let { pageSize: a, pageSizeOptions: i, hidePageSize: r, showFirstLastButtons: c } = t;
+        (a != null && (this._pageSize = a),
+          i != null && (this._pageSizeOptions = i),
+          r != null && (this.hidePageSize = r),
+          c != null && (this.showFirstLastButtons = c));
+      }
+      this._formFieldAppearance = t?.formFieldAppearance || `outline`;
+    }
+    ngOnInit() {
+      ((this._isInitialized = !0),
+        this._updateDisplayedPageSizeOptions(),
+        this._initializedStream.next());
+    }
+    ngOnDestroy() {
+      (this._initializedStream.complete(), this._intlChanges.unsubscribe());
+    }
+    nextPage() {
+      this.hasNextPage() && this._navigate(this.pageIndex + 1);
+    }
+    previousPage() {
+      this.hasPreviousPage() && this._navigate(this.pageIndex - 1);
+    }
+    firstPage() {
+      this.hasPreviousPage() && this._navigate(0);
+    }
+    lastPage() {
+      this.hasNextPage() && this._navigate(this.getNumberOfPages() - 1);
+    }
+    hasPreviousPage() {
+      return this.pageIndex >= 1 && this.pageSize != 0;
+    }
+    hasNextPage() {
+      let e = this.getNumberOfPages() - 1;
+      return this.pageIndex < e && this.pageSize != 0;
+    }
+    getNumberOfPages() {
+      return this.pageSize ? Math.ceil(this.length / this.pageSize) : 0;
+    }
+    _changePageSize(e) {
+      let t = this.pageIndex * this.pageSize,
+        a = this.pageIndex;
+      ((this.pageIndex = Math.floor(t / e) || 0), (this.pageSize = e), this._emitPageEvent(a));
+    }
+    _nextButtonsDisabled() {
+      return this.disabled || !this.hasNextPage();
+    }
+    _previousButtonsDisabled() {
+      return this.disabled || !this.hasPreviousPage();
+    }
+    _updateDisplayedPageSizeOptions() {
+      this._isInitialized &&
+        (this.pageSize ||
+          (this._pageSize = this.pageSizeOptions.length != 0 ? this.pageSizeOptions[0] : Vt),
+        (this._displayedPageSizeOptions = this.pageSizeOptions.slice()),
+        this._displayedPageSizeOptions.indexOf(this.pageSize) === -1 &&
+          this._displayedPageSizeOptions.push(this.pageSize),
+        this._displayedPageSizeOptions.sort((e, t) => e - t),
+        this._changeDetectorRef.markForCheck());
+    }
+    _emitPageEvent(e) {
+      this.page.emit({
+        previousPageIndex: e,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize,
+        length: this.length,
+      });
+    }
+    _navigate(e) {
+      let t = this.pageIndex;
+      e !== t && ((this.pageIndex = e), this._emitPageEvent(t));
+    }
+    _buttonClicked(e, t) {
+      t || this._navigate(e);
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵcmp = (function () {
+      function e(l, d) {
+        if ((l & 1 && (Sc(0, `mat-option`, 17), yA(1), up()), l & 2)) {
+          let o = d.$implicit;
+          (tb(`value`, o), P_(), mp(` `, o, ` `));
+        }
+      }
+      function t(l, d) {
+        if (l & 1) {
+          let o = UN();
+          (Sc(0, `mat-form-field`, 14)(1, `mat-select`, 16, 0),
+            Hc(`selectionChange`, function (h) {
+              Wm(o);
+              let _ = $N(2);
+              return Ym(_._changePageSize(h.value));
+            }),
+            ON(3, e, 2, 2, `mat-option`, 17, xN),
+            up(),
+            Sc(5, `div`, 18),
+            Hc(`click`, function () {
+              Wm(o);
+              let h = ZN(2);
+              return Ym(h.open());
+            }),
+            up()());
+        }
+        if (l & 2) {
+          let o = $N(2);
+          (tb(`appearance`, o._formFieldAppearance)(`color`, o.color),
+            P_(),
+            tb(`value`, o.pageSize)(`disabled`, o.disabled),
+            eb(`aria-labelledby`, o._pageSizeLabelId),
+            tb(`panelClass`, o.selectConfig.panelClass || ``)(
+              `disableOptionCentering`,
+              o.selectConfig.disableOptionCentering,
+            ),
+            P_(2),
+            kN(o._displayedPageSizeOptions));
+        }
+      }
+      function a(l, d) {
+        if ((l & 1 && (Sc(0, `div`, 15), yA(1), up()), l & 2)) {
+          let o = $N(2);
+          (P_(), Eb(o.pageSize));
+        }
+      }
+      function i(l, d) {
+        if (
+          (l & 1 &&
+            (Sc(0, `div`, 3)(1, `div`, 13),
+            yA(2),
+            up(),
+            _N(3, t, 6, 7, `mat-form-field`, 14),
+            _N(4, a, 2, 1, `div`, 15),
+            up()),
+          l & 2)
+        ) {
+          let o = $N();
+          (P_(),
+            Uc(`id`, o._pageSizeLabelId),
+            P_(),
+            mp(` `, o._intl.itemsPerPageLabel, ` `),
+            P_(),
+            AN(o._displayedPageSizeOptions.length > 1 ? 3 : -1),
+            P_(),
+            AN(o._displayedPageSizeOptions.length <= 1 ? 4 : -1));
+        }
+      }
+      function r(l, d) {
+        if (l & 1) {
+          let o = UN();
+          (Sc(0, `button`, 19),
+            Hc(`click`, function () {
+              Wm(o);
+              let h = $N();
+              return Ym(h._buttonClicked(0, h._previousButtonsDisabled()));
+            }),
+            sy(),
+            Sc(1, `svg`, 8),
+            Vc(2, `path`, 20),
+            up()());
+        }
+        if (l & 2) {
+          let o = $N();
+          (tb(`matTooltip`, o._intl.firstPageLabel)(
+            `matTooltipDisabled`,
+            o._previousButtonsDisabled(),
+          )(`disabled`, o._previousButtonsDisabled())(
+            `tabindex`,
+            o._previousButtonsDisabled() ? -1 : null,
+          ),
+            Uc(`aria-label`, o._intl.firstPageLabel));
+        }
+      }
+      function c(l, d) {
+        if (l & 1) {
+          let o = UN();
+          (Sc(0, `button`, 21),
+            Hc(`click`, function () {
+              Wm(o);
+              let h = $N();
+              return Ym(h._buttonClicked(h.getNumberOfPages() - 1, h._nextButtonsDisabled()));
+            }),
+            sy(),
+            Sc(1, `svg`, 8),
+            Vc(2, `path`, 22),
+            up()());
+        }
+        if (l & 2) {
+          let o = $N();
+          (tb(`matTooltip`, o._intl.lastPageLabel)(`matTooltipDisabled`, o._nextButtonsDisabled())(
+            `disabled`,
+            o._nextButtonsDisabled(),
+          )(`tabindex`, o._nextButtonsDisabled() ? -1 : null),
+            Uc(`aria-label`, o._intl.lastPageLabel));
+        }
+      }
+      return sp({
+        type: n,
+        selectors: [[`mat-paginator`]],
+        hostAttrs: [`role`, `group`, 1, `mat-mdc-paginator`],
+        inputs: {
+          color: `color`,
+          pageIndex: [2, `pageIndex`, `pageIndex`, s3],
+          length: [2, `length`, `length`, s3],
+          pageSize: [2, `pageSize`, `pageSize`, s3],
+          pageSizeOptions: `pageSizeOptions`,
+          hidePageSize: [2, `hidePageSize`, `hidePageSize`, Kc],
+          showFirstLastButtons: [2, `showFirstLastButtons`, `showFirstLastButtons`, Kc],
+          selectConfig: `selectConfig`,
+          disabled: [2, `disabled`, `disabled`, Kc],
+        },
+        outputs: { page: `page` },
+        exportAs: [`matPaginator`],
+        decls: 14,
+        vars: 14,
+        consts: [
+          [`selectRef`, ``],
+          [1, `mat-mdc-paginator-outer-container`],
+          [1, `mat-mdc-paginator-container`],
+          [1, `mat-mdc-paginator-page-size`],
+          [1, `mat-mdc-paginator-range-actions`],
+          [
+            `aria-atomic`,
+            `true`,
+            `aria-live`,
+            `polite`,
+            `role`,
+            `status`,
+            1,
+            `mat-mdc-paginator-range-label`,
+          ],
+          [
+            `matIconButton`,
+            ``,
+            `type`,
+            `button`,
+            `matTooltipPosition`,
+            `above`,
+            `disabledInteractive`,
+            ``,
+            1,
+            `mat-mdc-paginator-navigation-first`,
+            3,
+            `matTooltip`,
+            `matTooltipDisabled`,
+            `disabled`,
+            `tabindex`,
+          ],
+          [
+            `matIconButton`,
+            ``,
+            `type`,
+            `button`,
+            `matTooltipPosition`,
+            `above`,
+            `disabledInteractive`,
+            ``,
+            1,
+            `mat-mdc-paginator-navigation-previous`,
+            3,
+            `click`,
+            `matTooltip`,
+            `matTooltipDisabled`,
+            `disabled`,
+            `tabindex`,
+          ],
+          [
+            `viewBox`,
+            `0 0 24 24`,
+            `focusable`,
+            `false`,
+            `aria-hidden`,
+            `true`,
+            1,
+            `mat-mdc-paginator-icon`,
+          ],
+          [`d`, `M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z`],
+          [
+            `matIconButton`,
+            ``,
+            `type`,
+            `button`,
+            `matTooltipPosition`,
+            `above`,
+            `disabledInteractive`,
+            ``,
+            1,
+            `mat-mdc-paginator-navigation-next`,
+            3,
+            `click`,
+            `matTooltip`,
+            `matTooltipDisabled`,
+            `disabled`,
+            `tabindex`,
+          ],
+          [`d`, `M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z`],
+          [
+            `matIconButton`,
+            ``,
+            `type`,
+            `button`,
+            `matTooltipPosition`,
+            `above`,
+            `disabledInteractive`,
+            ``,
+            1,
+            `mat-mdc-paginator-navigation-last`,
+            3,
+            `matTooltip`,
+            `matTooltipDisabled`,
+            `disabled`,
+            `tabindex`,
+          ],
+          [`aria-hidden`, `true`, 1, `mat-mdc-paginator-page-size-label`],
+          [1, `mat-mdc-paginator-page-size-select`, 3, `appearance`, `color`],
+          [1, `mat-mdc-paginator-page-size-value`],
+          [
+            `hideSingleSelectionIndicator`,
+            ``,
+            3,
+            `selectionChange`,
+            `value`,
+            `disabled`,
+            `aria-labelledby`,
+            `panelClass`,
+            `disableOptionCentering`,
+          ],
+          [3, `value`],
+          [1, `mat-mdc-paginator-touch-target`, 3, `click`],
+          [
+            `matIconButton`,
+            ``,
+            `type`,
+            `button`,
+            `matTooltipPosition`,
+            `above`,
+            `disabledInteractive`,
+            ``,
+            1,
+            `mat-mdc-paginator-navigation-first`,
+            3,
+            `click`,
+            `matTooltip`,
+            `matTooltipDisabled`,
+            `disabled`,
+            `tabindex`,
+          ],
+          [`d`, `M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z`],
+          [
+            `matIconButton`,
+            ``,
+            `type`,
+            `button`,
+            `matTooltipPosition`,
+            `above`,
+            `disabledInteractive`,
+            ``,
+            1,
+            `mat-mdc-paginator-navigation-last`,
+            3,
+            `click`,
+            `matTooltip`,
+            `matTooltipDisabled`,
+            `disabled`,
+            `tabindex`,
+          ],
+          [`d`, `M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z`],
+        ],
+        template: function (d, o) {
+          (d & 1 &&
+            (Sc(0, `div`, 1)(1, `div`, 2),
+            _N(2, i, 5, 4, `div`, 3),
+            Sc(3, `div`, 4)(4, `div`, 5),
+            yA(5),
+            up(),
+            _N(6, r, 3, 5, `button`, 6),
+            Sc(7, `button`, 7),
+            Hc(`click`, function () {
+              return o._buttonClicked(o.pageIndex - 1, o._previousButtonsDisabled());
+            }),
+            sy(),
+            Sc(8, `svg`, 8),
+            Vc(9, `path`, 9),
+            up()(),
+            ay(),
+            Sc(10, `button`, 10),
+            Hc(`click`, function () {
+              return o._buttonClicked(o.pageIndex + 1, o._nextButtonsDisabled());
+            }),
+            sy(),
+            Sc(11, `svg`, 8),
+            Vc(12, `path`, 11),
+            up()(),
+            _N(13, c, 3, 5, `button`, 12),
+            up()()()),
+            d & 2 &&
+              (P_(2),
+              AN(o.hidePageSize ? -1 : 2),
+              P_(3),
+              mp(` `, o._intl.getRangeLabel(o.pageIndex, o.pageSize, o.length), ` `),
+              P_(),
+              AN(o.showFirstLastButtons ? 6 : -1),
+              P_(),
+              tb(`matTooltip`, o._intl.previousPageLabel)(
+                `matTooltipDisabled`,
+                o._previousButtonsDisabled(),
+              )(`disabled`, o._previousButtonsDisabled())(
+                `tabindex`,
+                o._previousButtonsDisabled() ? -1 : null,
+              ),
+              Uc(`aria-label`, o._intl.previousPageLabel),
+              P_(3),
+              tb(`matTooltip`, o._intl.nextPageLabel)(
+                `matTooltipDisabled`,
+                o._nextButtonsDisabled(),
+              )(`disabled`, o._nextButtonsDisabled())(
+                `tabindex`,
+                o._nextButtonsDisabled() ? -1 : null,
+              ),
+              Uc(`aria-label`, o._intl.nextPageLabel),
+              P_(3),
+              AN(o.showFirstLastButtons ? 13 : -1)));
+        },
+        dependencies: [ki, dl, Mt, en, un],
+        styles: [
+          `.mat-mdc-paginator {
   display: block;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -99,10 +702,1435 @@ import{$t as gp,A as I,An as sy,C as GN,Cn as qN,Ct as _N,D as Gn,Dn as s3,E as 
   transform: translate(-50%, -50%);
   cursor: pointer;
 }
-`],encapsulation:2})})()}return n})();var pn=(()=>{class n{static ɵfac=function(t){return new(t||n)};static ɵmod=ns({type:n});static ɵinj=go({imports:[bi,cl,ji,Ut]})}return n})();var E=new A(`CDK_TABLE`);var De=(()=>{class n{template=b(xo);static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`cdkCellDef`,``]]})}return n})();var Re=(()=>{class n{template=b(xo);static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`cdkHeaderCellDef`,``]]})}return n})();var It=(()=>{class n{template=b(xo);static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`cdkFooterCellDef`,``]]})}return n})();var G=(()=>{class n{_table=b(E,{optional:!0});_hasStickyChanged=!1;get name(){return this._name}set name(e){this._setNameInput(e)}_name;get sticky(){return this._sticky}set sticky(e){e!==this._sticky&&(this._sticky=e,this._hasStickyChanged=!0)}_sticky=!1;get stickyEnd(){return this._stickyEnd}set stickyEnd(e){e!==this._stickyEnd&&(this._stickyEnd=e,this._hasStickyChanged=!0)}_stickyEnd=!1;cell;headerCell;footerCell;cssClassFriendlyName;_columnCssClassName;hasStickyChanged(){let e=this._hasStickyChanged;return this.resetStickyChanged(),e}resetStickyChanged(){this._hasStickyChanged=!1}_updateColumnCssClassName(){this._columnCssClassName=[`cdk-column-${this.cssClassFriendlyName}`]}_setNameInput(e){e&&(this._name=e,this.cssClassFriendlyName=e.replace(/[^a-z0-9_-]/gi,`-`),this._updateColumnCssClassName())}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`cdkColumnDef`,``]],contentQueries:function(t,a,i){if(t&1&&gp(i,De,5)(i,Re,5)(i,It,5),t&2){let r;lb(r=ub())&&(a.cell=r.first),lb(r=ub())&&(a.headerCell=r.first),lb(r=ub())&&(a.footerCell=r.first)}},inputs:{name:[0,`cdkColumnDef`,`name`],sticky:[2,`sticky`,`sticky`,Kc],stickyEnd:[2,`stickyEnd`,`stickyEnd`,Kc]}})}return n})();var ve=class{constructor(s,e){e.nativeElement.classList.add(...s._columnCssClassName)}};var zt=(()=>{class n extends ve{constructor(){super(b(G),b(Gn))}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[`cdk-header-cell`],[`th`,`cdk-header-cell`,``]],hostAttrs:[`role`,`columnheader`,1,`cdk-header-cell`],features:[Kw]})}return n})();var Pt=(()=>{class n extends ve{constructor(){let e=b(G),t=b(Gn);super(e,t);let a=e._table?._getCellRole();a&&t.nativeElement.setAttribute(`role`,a)}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[`cdk-cell`],[`td`,`cdk-cell`,``]],hostAttrs:[1,`cdk-cell`],features:[Kw]})}return n})();var Fe=(()=>{class n{template=b(xo);_differs=b(Ub);columns;_columnsDiffer;ngOnChanges(e){if(!this._columnsDiffer){let t=e.columns&&e.columns.currentValue||[];this._columnsDiffer=this._differs.find(t).create(),this._columnsDiffer.diff(t)}}getColumnsDiff(){return this._columnsDiffer.diff(this.columns)}extractCellTemplate(e){return this instanceof se?e.headerCell.template:this instanceof Ie?e.footerCell.template:e.cell.template}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,features:[xr]})}return n})();var se=(()=>{class n extends Fe{_table=b(E,{optional:!0});_hasStickyChanged=!1;get sticky(){return this._sticky}set sticky(e){e!==this._sticky&&(this._sticky=e,this._hasStickyChanged=!0)}_sticky=!1;ngOnChanges(e){super.ngOnChanges(e)}hasStickyChanged(){let e=this._hasStickyChanged;return this.resetStickyChanged(),e}resetStickyChanged(){this._hasStickyChanged=!1}static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[``,`cdkHeaderRowDef`,``]],inputs:{columns:[0,`cdkHeaderRowDef`,`columns`],sticky:[2,`cdkHeaderRowDefSticky`,`sticky`,Kc]},features:[Kw,xr]})}return n})();var Ie=(()=>{class n extends Fe{_table=b(E,{optional:!0});_hasStickyChanged=!1;get sticky(){return this._sticky}set sticky(e){e!==this._sticky&&(this._sticky=e,this._hasStickyChanged=!0)}_sticky=!1;ngOnChanges(e){super.ngOnChanges(e)}hasStickyChanged(){let e=this._hasStickyChanged;return this.resetStickyChanged(),e}resetStickyChanged(){this._hasStickyChanged=!1}static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[``,`cdkFooterRowDef`,``]],inputs:{columns:[0,`cdkFooterRowDef`,`columns`],sticky:[2,`cdkFooterRowDefSticky`,`sticky`,Kc]},features:[Kw,xr]})}return n})();var ke=(()=>{class n extends Fe{_table=b(E,{optional:!0});when;static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[``,`cdkRowDef`,``]],inputs:{columns:[0,`cdkRowDefColumns`,`columns`],when:[0,`cdkRowDefWhen`,`when`]},features:[Kw]})}return n})();var V=(()=>{class n{_viewContainer=b(Wn);cells;context;static mostRecentCellOutlet=null;constructor(){n.mostRecentCellOutlet=this}ngOnDestroy(){n.mostRecentCellOutlet===this&&(n.mostRecentCellOutlet=null)}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`cdkCellOutlet`,``]]})}return n})();var ze=(()=>{class n{static ɵfac=function(t){return new(t||n)};static ɵcmp=sp({type:n,selectors:[[`cdk-header-row`],[`tr`,`cdk-header-row`,``]],hostAttrs:[`role`,`row`,1,`cdk-header-row`],decls:1,vars:0,consts:[[`cdkCellOutlet`,``]],template:function(t,a){t&1&&ob(0,0)},dependencies:[V],encapsulation:2,changeDetection:1})}return n})();var Pe=(()=>{class n{static ɵfac=function(t){return new(t||n)};static ɵcmp=sp({type:n,selectors:[[`cdk-row`],[`tr`,`cdk-row`,``]],hostAttrs:[`role`,`row`,1,`cdk-row`],decls:1,vars:0,consts:[[`cdkCellOutlet`,``]],template:function(t,a){t&1&&ob(0,0)},dependencies:[V],encapsulation:2,changeDetection:1})}return n})();var At=(()=>{class n{templateRef=b(xo);_contentClassNames=[`cdk-no-data-row`,`cdk-row`];_cellClassNames=[`cdk-cell`,`cdk-no-data-cell`];_cellSelector=`td, cdk-cell, [cdk-cell], .cdk-cell`;static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[`ng-template`,`cdkNoDataRow`,``]]})}return n})();var Nt=[`top`,`bottom`,`left`,`right`];var Ee=class{_isNativeHtmlTable;_stickCellCss;_isBrowser;_needsPositionStickyOnElement;direction;_positionListener;_tableInjector;_elemSizeCache=/* @__PURE__ */ new WeakMap;_resizeObserver=globalThis?.ResizeObserver?new globalThis.ResizeObserver(s=>this._updateCachedSizes(s)):null;_updatedStickyColumnsParamsToReplay=[];_stickyColumnsReplayTimeout=null;_cachedCellWidths=[];_borderCellCss;_destroyed=!1;constructor(s,e,t=!0,a=!0,i,r,c){this._isNativeHtmlTable=s,this._stickCellCss=e,this._isBrowser=t,this._needsPositionStickyOnElement=a,this.direction=i,this._positionListener=r,this._tableInjector=c,this._borderCellCss={top:`${e}-border-elem-top`,bottom:`${e}-border-elem-bottom`,left:`${e}-border-elem-left`,right:`${e}-border-elem-right`}}clearStickyPositioning(s,e){(e.includes(`left`)||e.includes(`right`))&&this._removeFromStickyColumnReplayQueue(s);let t=[];for(let a of s)a.nodeType===a.ELEMENT_NODE&&t.push(a,...Array.from(a.children));Uf({write:()=>{for(let a of t)this._removeStickyStyle(a,e)}},{injector:this._tableInjector})}updateStickyColumns(s,e,t,a=!0,i=!0){if(!s.length||!this._isBrowser||!(e.some(O=>O)||t.some(O=>O))){this._positionListener?.stickyColumnsUpdated({sizes:[]}),this._positionListener?.stickyEndColumnsUpdated({sizes:[]});return}let r=s[0],c=r.children.length,l=this.direction===`rtl`,d=l?`right`:`left`,o=l?`left`:`right`,p=e.lastIndexOf(!0),h=t.indexOf(!0),_,je,Ue;i&&this._updateStickyColumnReplayQueue({rows:[...s],stickyStartStates:[...e],stickyEndStates:[...t]}),Uf({earlyRead:()=>{_=this._getCellWidths(r,a),je=this._getStickyStartColumnPositions(_,e),Ue=this._getStickyEndColumnPositions(_,t)},write:()=>{for(let O of s)for(let M=0;M<c;M++){let We=O.children[M];e[M]&&this._addStickyStyle(We,d,je[M],M===p),t[M]&&this._addStickyStyle(We,o,Ue[M],M===h)}this._positionListener&&_.some(O=>!!O)&&(this._positionListener.stickyColumnsUpdated({sizes:p===-1?[]:_.slice(0,p+1).map((O,M)=>e[M]?O:null)}),this._positionListener.stickyEndColumnsUpdated({sizes:h===-1?[]:_.slice(h).map((O,M)=>t[M+h]?O:null).reverse()}))}},{injector:this._tableInjector})}stickRows(s,e,t){if(!this._isBrowser)return;let a=t===`bottom`?s.slice().reverse():s,i=t===`bottom`?e.slice().reverse():e,r=[],c=[],l=[];Uf({earlyRead:()=>{for(let d=0,o=0;d<a.length;d++){if(!i[d])continue;r[d]=o;let p=a[d];l[d]=this._isNativeHtmlTable?Array.from(p.children):[p];let h=this._retrieveElementSize(p).height;o+=h,c[d]=h}},write:()=>{let d=i.lastIndexOf(!0);for(let o=0;o<a.length;o++){if(!i[o])continue;let p=r[o],h=o===d;for(let _ of l[o])this._addStickyStyle(_,t,p,h)}t===`top`?this._positionListener?.stickyHeaderRowsUpdated({sizes:c,offsets:r,elements:l}):this._positionListener?.stickyFooterRowsUpdated({sizes:c,offsets:r,elements:l})}},{injector:this._tableInjector})}updateStickyFooterContainer(s,e){this._isNativeHtmlTable&&Uf({write:()=>{let t=s.querySelector(`tfoot`);t&&(e.some(a=>!a)?this._removeStickyStyle(t,[`bottom`]):this._addStickyStyle(t,`bottom`,0,!1))}},{injector:this._tableInjector})}destroy(){this._stickyColumnsReplayTimeout&&clearTimeout(this._stickyColumnsReplayTimeout),this._resizeObserver?.disconnect(),this._destroyed=!0}_removeStickyStyle(s,e){if(!s.classList.contains(this._stickCellCss))return;for(let a of e)s.style[a]=``,s.classList.remove(this._borderCellCss[a]);Nt.some(a=>e.indexOf(a)===-1&&s.style[a])?s.style.zIndex=this._getCalculatedZIndex(s):(s.style.zIndex=``,this._needsPositionStickyOnElement&&(s.style.position=``),s.classList.remove(this._stickCellCss))}_addStickyStyle(s,e,t,a){s.classList.add(this._stickCellCss),a&&s.classList.add(this._borderCellCss[e]),s.style[e]=`${t}px`,s.style.zIndex=this._getCalculatedZIndex(s),this._needsPositionStickyOnElement&&(s.style.cssText+=`position: -webkit-sticky; position: sticky; `)}_getCalculatedZIndex(s){let e={top:100,bottom:10,left:1,right:1},t=0;for(let a of Nt)s.style[a]&&(t+=e[a]);return t?`${t}`:``}_getCellWidths(s,e=!0){if(!e&&this._cachedCellWidths.length)return this._cachedCellWidths;let t=[],a=s.children;for(let i=0;i<a.length;i++){let r=a[i];t.push(this._retrieveElementSize(r).width)}return this._cachedCellWidths=t,t}_getStickyStartColumnPositions(s,e){let t=[],a=0;for(let i=0;i<s.length;i++)e[i]&&(t[i]=a,a+=s[i]);return t}_getStickyEndColumnPositions(s,e){let t=[],a=0;for(let i=s.length;i>0;i--)e[i]&&(t[i]=a,a+=s[i]);return t}_retrieveElementSize(s){let e=this._elemSizeCache.get(s);if(e)return e;let t=s.getBoundingClientRect(),a={width:t.width,height:t.height};return this._resizeObserver&&(this._elemSizeCache.set(s,a),this._resizeObserver.observe(s,{box:`border-box`})),a}_updateStickyColumnReplayQueue(s){this._removeFromStickyColumnReplayQueue(s.rows),this._stickyColumnsReplayTimeout||this._updatedStickyColumnsParamsToReplay.push(s)}_removeFromStickyColumnReplayQueue(s){let e=new Set(s);for(let t of this._updatedStickyColumnsParamsToReplay)t.rows=t.rows.filter(a=>!e.has(a));this._updatedStickyColumnsParamsToReplay=this._updatedStickyColumnsParamsToReplay.filter(t=>!!t.rows.length)}_updateCachedSizes(s){let e=!1;for(let t of s){let a=t.borderBoxSize?.length?{width:t.borderBoxSize[0].inlineSize,height:t.borderBoxSize[0].blockSize}:{width:t.contentRect.width,height:t.contentRect.height};a.width!==this._elemSizeCache.get(t.target)?.width&&Gt(t.target)&&(e=!0),this._elemSizeCache.set(t.target,a)}e&&this._updatedStickyColumnsParamsToReplay.length&&(this._stickyColumnsReplayTimeout&&clearTimeout(this._stickyColumnsReplayTimeout),this._stickyColumnsReplayTimeout=setTimeout(()=>{if(!this._destroyed){for(let t of this._updatedStickyColumnsParamsToReplay)this.updateStickyColumns(t.rows,t.stickyStartStates,t.stickyEndStates,!0,!1);this._updatedStickyColumnsParamsToReplay=[],this._stickyColumnsReplayTimeout=null}},0))}};function Gt(n){return[`cdk-cell`,`cdk-header-cell`,`cdk-footer-cell`].some(s=>n.classList.contains(s))}function Et(n){return Error(`Could not find column with id "${n}".`)}var re=new A(`STICKY_POSITIONING_LISTENER`);var Ae=(()=>{class n{viewContainer=b(Wn);elementRef=b(Gn);constructor(){let e=b(E);e._rowOutlet=this,e._outletAssigned()}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`rowOutlet`,``]]})}return n})();var Le=(()=>{class n{viewContainer=b(Wn);elementRef=b(Gn);constructor(){let e=b(E);e._headerRowOutlet=this,e._outletAssigned()}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`headerRowOutlet`,``]]})}return n})();var Be=(()=>{class n{viewContainer=b(Wn);elementRef=b(Gn);constructor(){let e=b(E);e._footerRowOutlet=this,e._outletAssigned()}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`footerRowOutlet`,``]]})}return n})();var He=(()=>{class n{viewContainer=b(Wn);elementRef=b(Gn);constructor(){let e=b(E);e._noDataRowOutlet=this,e._outletAssigned()}static ɵfac=function(t){return new(t||n)};static ɵdir=kr({type:n,selectors:[[``,`noDataRowOutlet`,``]]})}return n})();var Ve=(()=>{class n{_differs=b(Ub);_changeDetectorRef=b(Zc);_elementRef=b(Gn);_dir=b(vt,{optional:!0});_platform=b(y);_viewRepeater;_viewportRuler=b(yt);_injector=b(Fe$1);_virtualScrollViewport=b(sl,{optional:!0,host:!0});_positionListener=b(re,{optional:!0})||b(re,{optional:!0,skipSelf:!0});_document=b(me);_data;_renderedRange;_onDestroy=new le;_renderRows;_renderChangeSubscription=null;_columnDefsByName=/* @__PURE__ */ new Map;_rowDefs;_headerRowDefs;_footerRowDefs;_dataDiffer;_defaultRowDef=null;_customColumnDefs=/* @__PURE__ */ new Set;_customRowDefs=/* @__PURE__ */ new Set;_customHeaderRowDefs=/* @__PURE__ */ new Set;_customFooterRowDefs=/* @__PURE__ */ new Set;_customNoDataRow=null;_headerRowDefChanged=!0;_footerRowDefChanged=!0;_stickyColumnStylesNeedReset=!0;_forceRecalculateCellWidths=!0;_cachedRenderRowsMap=/* @__PURE__ */ new Map;_rowDefsByView=/* @__PURE__ */ new WeakMap;_isNativeHtmlTable;_stickyStyler;stickyCssClass=`cdk-table-sticky`;needsPositionStickyOnElement=!0;_isServer;_isShowingNoDataRow=!1;_hasAllOutlets=!1;_hasInitialized=!1;_headerRowStickyUpdates=new le;_footerRowStickyUpdates=new le;_disableVirtualScrolling=!1;_getCellRole(){if(this._cellRoleInternal===void 0){let e=this._elementRef.nativeElement.getAttribute(`role`);return e===`grid`||e===`treegrid`?`gridcell`:`cell`}return this._cellRoleInternal}_cellRoleInternal=void 0;get trackBy(){return this._trackByFn}set trackBy(e){this._trackByFn=e}_trackByFn;get dataSource(){return this._dataSource}set dataSource(e){this._dataSource!==e&&(this._switchDataSource(e),this._changeDetectorRef.markForCheck())}_dataSource;_dataSourceChanges=new le;_dataStream=new le;get multiTemplateDataRows(){return this._multiTemplateDataRows}set multiTemplateDataRows(e){this._multiTemplateDataRows=e,this._rowOutlet&&this._rowOutlet.viewContainer.length&&(this._forceRenderDataRows(),this.updateStickyColumnStyles())}_multiTemplateDataRows=!1;get fixedLayout(){return this._virtualScrollEnabled()?!0:this._fixedLayout}set fixedLayout(e){this._fixedLayout=e,this._forceRecalculateCellWidths=!0,this._stickyColumnStylesNeedReset=!0}_fixedLayout=!1;recycleRows=!1;contentChanged=new Ge;viewChange=new Pe$1({start:0,end:Number.MAX_VALUE});_rowOutlet;_headerRowOutlet;_footerRowOutlet;_noDataRowOutlet;_contentColumnDefs;_contentRowDefs;_contentHeaderRowDefs;_contentFooterRowDefs;_noDataRow;get renderedRows(){return this._renderRows}constructor(){b(new Gc(`role`),{optional:!0})||this._elementRef.nativeElement.setAttribute(`role`,`table`),this._isServer=!this._platform.isBrowser,this._isNativeHtmlTable=this._elementRef.nativeElement.nodeName===`TABLE`,this._dataDiffer=this._differs.find([]).create((t,a)=>this.trackBy?this.trackBy(a.dataIndex,a.data):a)}ngOnInit(){this._setupStickyStyler(),this._viewportRuler.change().pipe(hi(this._onDestroy)).subscribe(()=>{this._forceRecalculateCellWidths=!0})}ngAfterContentInit(){this._viewRepeater=this.recycleRows||this._virtualScrollEnabled()?new gi:new Vi,this._virtualScrollEnabled()&&this._setupVirtualScrolling(this._virtualScrollViewport),this._hasInitialized=!0}ngAfterContentChecked(){this._canRender()&&this._render()}ngOnDestroy(){this._stickyStyler?.destroy(),[this._rowOutlet?.viewContainer,this._headerRowOutlet?.viewContainer,this._footerRowOutlet?.viewContainer,this._cachedRenderRowsMap,this._customColumnDefs,this._customRowDefs,this._customHeaderRowDefs,this._customFooterRowDefs,this._columnDefsByName].forEach(e=>{e?.clear()}),this._headerRowDefs=[],this._footerRowDefs=[],this._defaultRowDef=null,this._headerRowStickyUpdates.complete(),this._footerRowStickyUpdates.complete(),this._onDestroy.next(),this._onDestroy.complete(),Ps(this.dataSource)&&this.dataSource.disconnect(this)}renderRows(){this._renderRows=this._getAllRenderRows();let e=this._dataDiffer.diff(this._renderRows);if(!e){this._updateNoDataRow(),this.contentChanged.next();return}let t=this._rowOutlet.viewContainer;this._viewRepeater.applyChanges(e,t,(a,i,r)=>this._getEmbeddedViewArgs(a.item,r),a=>a.item.data,a=>{if(a.operation===Ft$1.INSERTED&&a.context){this._renderCellTemplateForItem(a.record.item.rowDef,a.context);let i=t.get(a.record.currentIndex);this._rowDefsByView.set(i,a.record.item.rowDef)}}),e.forEachIdentityChange(a=>{let i=a.currentIndex,r=t.get(i);if(this._rowDefsByView.get(r)!==a.item.rowDef){t.remove(i);let c=this._renderRow(this._rowOutlet,a.item.rowDef,i,{$implicit:a.item.data});this._rowDefsByView.set(c,a.item.rowDef)}else r.context.$implicit=a.item.data}),this._updateRowIndexContext(),this._updateNoDataRow(),this.contentChanged.next(),this.updateStickyColumnStyles()}addColumnDef(e){this._customColumnDefs.add(e)}removeColumnDef(e){this._customColumnDefs.delete(e)}addRowDef(e){this._customRowDefs.add(e)}removeRowDef(e){this._customRowDefs.delete(e)}addHeaderRowDef(e){this._customHeaderRowDefs.add(e),this._headerRowDefChanged=!0}removeHeaderRowDef(e){this._customHeaderRowDefs.delete(e),this._headerRowDefChanged=!0}addFooterRowDef(e){this._customFooterRowDefs.add(e),this._footerRowDefChanged=!0}removeFooterRowDef(e){this._customFooterRowDefs.delete(e),this._footerRowDefChanged=!0}setNoDataRow(e){this._customNoDataRow=e}updateStickyHeaderRowStyles(){let e=this._getRenderedRows(this._headerRowOutlet);if(this._isNativeHtmlTable){let a=Ft(this._headerRowOutlet,`thead`);a&&(a.style.display=e.length?``:`none`)}let t=this._headerRowDefs.map(a=>a.sticky);this._stickyStyler.clearStickyPositioning(e,[`top`]),this._stickyStyler.stickRows(e,t,`top`),this._headerRowDefs.forEach(a=>a.resetStickyChanged())}updateStickyFooterRowStyles(){let e=this._getRenderedRows(this._footerRowOutlet);if(this._isNativeHtmlTable){let a=Ft(this._footerRowOutlet,`tfoot`);a&&(a.style.display=e.length?``:`none`)}let t=this._footerRowDefs.map(a=>a.sticky);this._stickyStyler.clearStickyPositioning(e,[`bottom`]),this._stickyStyler.stickRows(e,t,`bottom`),this._stickyStyler.updateStickyFooterContainer(this._elementRef.nativeElement,t),this._footerRowDefs.forEach(a=>a.resetStickyChanged())}updateStickyColumnStyles(){let e=this._getRenderedRows(this._headerRowOutlet),t=this._getRenderedRows(this._rowOutlet),a=this._getRenderedRows(this._footerRowOutlet);(this._isNativeHtmlTable&&!this.fixedLayout||this._stickyColumnStylesNeedReset)&&(this._stickyStyler.clearStickyPositioning([...e,...t,...a],[`left`,`right`]),this._stickyColumnStylesNeedReset=!1),e.forEach((i,r)=>{this._addStickyColumnStyles([i],this._headerRowDefs[r])}),this._rowDefs.forEach(i=>{let r=[];for(let c=0;c<t.length;c++)this._renderRows[c].rowDef===i&&r.push(t[c]);this._addStickyColumnStyles(r,i)}),a.forEach((i,r)=>{this._addStickyColumnStyles([i],this._footerRowDefs[r])}),Array.from(this._columnDefsByName.values()).forEach(i=>i.resetStickyChanged())}stickyColumnsUpdated(e){this._positionListener?.stickyColumnsUpdated(e)}stickyEndColumnsUpdated(e){this._positionListener?.stickyEndColumnsUpdated(e)}stickyHeaderRowsUpdated(e){this._headerRowStickyUpdates.next(e),this._positionListener?.stickyHeaderRowsUpdated(e)}stickyFooterRowsUpdated(e){this._footerRowStickyUpdates.next(e),this._positionListener?.stickyFooterRowsUpdated(e)}_outletAssigned(){!this._hasAllOutlets&&this._rowOutlet&&this._headerRowOutlet&&this._footerRowOutlet&&this._noDataRowOutlet&&(this._hasAllOutlets=!0,this._canRender()&&this._render())}_canRender(){return this._hasAllOutlets&&this._hasInitialized}_render(){this._cacheRowDefs(),this._cacheColumnDefs(),!this._headerRowDefs.length&&!this._footerRowDefs.length&&this._rowDefs.length;let t=this._renderUpdatedColumns()||this._headerRowDefChanged||this._footerRowDefChanged;this._stickyColumnStylesNeedReset=this._stickyColumnStylesNeedReset||t,this._forceRecalculateCellWidths=t,this._headerRowDefChanged&&(this._forceRenderHeaderRows(),this._headerRowDefChanged=!1),this._footerRowDefChanged&&(this._forceRenderFooterRows(),this._footerRowDefChanged=!1),this.dataSource&&this._rowDefs.length>0&&!this._renderChangeSubscription?this._observeRenderChanges():this._stickyColumnStylesNeedReset&&this.updateStickyColumnStyles(),this._checkStickyStates()}_getAllRenderRows(){if(!Array.isArray(this._data)||!this._renderedRange)return[];let e=[],t=Math.min(this._data.length,this._renderedRange.end),a=this._cachedRenderRowsMap;this._cachedRenderRowsMap=/* @__PURE__ */ new Map;for(let i=this._renderedRange.start;i<t;i++){let r=this._data[i],c=this._getRenderRowsForData(r,i,a.get(r));this._cachedRenderRowsMap.has(r)||this._cachedRenderRowsMap.set(r,/* @__PURE__ */ new WeakMap);for(let l=0;l<c.length;l++){let d=c[l],o=this._cachedRenderRowsMap.get(d.data);o.has(d.rowDef)?o.get(d.rowDef).push(d):o.set(d.rowDef,[d]),e.push(d)}}return e}_getRenderRowsForData(e,t,a){return this._getRowDefs(e,t).map(r=>{let c=a&&a.has(r)?a.get(r):[];if(c.length){let l=c.shift();return l.dataIndex=t,l}else return{data:e,rowDef:r,dataIndex:t}})}_cacheColumnDefs(){this._columnDefsByName.clear(),be(this._getOwnDefs(this._contentColumnDefs),this._customColumnDefs).forEach(t=>{this._columnDefsByName.has(t.name),this._columnDefsByName.set(t.name,t)})}_cacheRowDefs(){this._headerRowDefs=be(this._getOwnDefs(this._contentHeaderRowDefs),this._customHeaderRowDefs),this._footerRowDefs=be(this._getOwnDefs(this._contentFooterRowDefs),this._customFooterRowDefs),this._rowDefs=be(this._getOwnDefs(this._contentRowDefs),this._customRowDefs);let e=this._rowDefs.filter(t=>!t.when);this._defaultRowDef=e[0]}_renderUpdatedColumns(){let e=(r,c)=>{let l=!!c.getColumnsDiff();return r||l},t=this._rowDefs.reduce(e,!1);t&&this._forceRenderDataRows();let a=this._headerRowDefs.reduce(e,!1);a&&this._forceRenderHeaderRows();let i=this._footerRowDefs.reduce(e,!1);return i&&this._forceRenderFooterRows(),t||a||i}_switchDataSource(e){this._data=[],Ps(this.dataSource)&&this.dataSource.disconnect(this),this._renderChangeSubscription&&(this._renderChangeSubscription.unsubscribe(),this._renderChangeSubscription=null),e||(this._dataDiffer&&this._dataDiffer.diff([]),this._rowOutlet&&this._rowOutlet.viewContainer.clear()),this._dataSource=e}_observeRenderChanges(){if(!this.dataSource)return;let e;Ps(this.dataSource)?e=this.dataSource.connect(this):va(this.dataSource)?e=this.dataSource:Array.isArray(this.dataSource)&&(e=I(this.dataSource)),this._renderChangeSubscription=Mu([e,this.viewChange]).pipe(hi(this._onDestroy)).subscribe(([t,a])=>{this._data=t||[],this._renderedRange=a,this._dataStream.next(t),this.renderRows()})}_forceRenderHeaderRows(){this._headerRowOutlet.viewContainer.length>0&&this._headerRowOutlet.viewContainer.clear(),this._headerRowDefs.forEach((e,t)=>this._renderRow(this._headerRowOutlet,e,t)),this.updateStickyHeaderRowStyles()}_forceRenderFooterRows(){this._footerRowOutlet.viewContainer.length>0&&this._footerRowOutlet.viewContainer.clear(),this._footerRowDefs.forEach((e,t)=>this._renderRow(this._footerRowOutlet,e,t)),this.updateStickyFooterRowStyles()}_addStickyColumnStyles(e,t){let a=Array.from(t?.columns||[]).map(c=>{let l=this._columnDefsByName.get(c);if(!l)throw Et(c);return l}),i=a.map(c=>c.sticky),r=a.map(c=>c.stickyEnd);this._stickyStyler.updateStickyColumns(e,i,r,!this.fixedLayout||this._forceRecalculateCellWidths)}_getRenderedRows(e){let t=[];for(let a=0;a<e.viewContainer.length;a++){let i=e.viewContainer.get(a);t.push(i.rootNodes[0])}return t}_getRowDefs(e,t){if(this._rowDefs.length===1)return[this._rowDefs[0]];let a=[];if(this.multiTemplateDataRows)a=this._rowDefs.filter(i=>!i.when||i.when(t,e));else{let i=this._rowDefs.find(r=>r.when&&r.when(t,e))||this._defaultRowDef;i&&a.push(i)}return a.length,a}_getEmbeddedViewArgs(e,t){let a=e.rowDef,i={$implicit:e.data};return{templateRef:a.template,context:i,index:t}}_renderRow(e,t,a,i={}){let r=e.viewContainer.createEmbeddedView(t.template,i,a);return this._renderCellTemplateForItem(t,i),r}_renderCellTemplateForItem(e,t){for(let a of this._getCellTemplates(e))V.mostRecentCellOutlet&&V.mostRecentCellOutlet._viewContainer.createEmbeddedView(a,t);this._changeDetectorRef.markForCheck()}_updateRowIndexContext(){let e=this._rowOutlet.viewContainer;for(let t=0,a=e.length;t<a;t++){let r=e.get(t).context;r.count=a,r.first=t===0,r.last=t===a-1,r.even=t%2===0,r.odd=!r.even,this.multiTemplateDataRows?(r.dataIndex=this._renderRows[t].dataIndex,r.renderIndex=t):r.index=this._renderRows[t].dataIndex}}_getCellTemplates(e){return!e||!e.columns?[]:Array.from(e.columns,t=>{let a=this._columnDefsByName.get(t);if(!a)throw Et(t);return e.extractCellTemplate(a)})}_forceRenderDataRows(){this._dataDiffer.diff([]),this._rowOutlet.viewContainer.clear(),this.renderRows()}_checkStickyStates(){let e=(t,a)=>t||a.hasStickyChanged();this._headerRowDefs.reduce(e,!1)&&this.updateStickyHeaderRowStyles(),this._footerRowDefs.reduce(e,!1)&&this.updateStickyFooterRowStyles(),Array.from(this._columnDefsByName.values()).reduce(e,!1)&&(this._stickyColumnStylesNeedReset=!0,this.updateStickyColumnStyles())}_setupStickyStyler(){let e=this._dir?this._dir.value:`ltr`,t=this._injector;this._stickyStyler=new Ee(this._isNativeHtmlTable,this.stickyCssClass,this._platform.isBrowser,this.needsPositionStickyOnElement,e,this,t),(this._dir?this._dir.change:I()).pipe(hi(this._onDestroy)).subscribe(a=>{this._stickyStyler.direction=a,this.updateStickyColumnStyles()})}_setupVirtualScrolling(e){let t=typeof requestAnimationFrame<`u`?_T:MT;this.viewChange.next({start:0,end:0}),e.renderedRangeStream.pipe(GT(0,t),hi(this._onDestroy)).subscribe(this.viewChange),e.attach({dataStream:this._dataStream,measureRangeSize:(a,i)=>this._measureRangeSize(a,i)}),Mu([e.renderedContentOffset,this._headerRowStickyUpdates]).pipe(hi(this._onDestroy)).subscribe(([a,i])=>{if(!(!i.sizes||!i.offsets||!i.elements))for(let r=0;r<i.elements.length;r++){let c=i.elements[r];if(c){let l=i.offsets[r],d=a!==0?Math.max(a-l,l):-l;for(let o of c)o.style.top=`${-d}px`}}}),Mu([e.renderedContentOffset,this._footerRowStickyUpdates]).pipe(hi(this._onDestroy)).subscribe(([a,i])=>{if(!(!i.sizes||!i.offsets||!i.elements))for(let r=0;r<i.elements.length;r++){let c=i.elements[r];if(c)for(let l of c)l.style.bottom=`${a+i.offsets[r]}px`}})}_getOwnDefs(e){return e.filter(t=>!t._table||t._table===this)}_updateNoDataRow(){let e=this._customNoDataRow||this._noDataRow;if(!e)return;let t=this._rowOutlet.viewContainer.length===0;if(t===this._isShowingNoDataRow)return;let a=this._noDataRowOutlet.viewContainer;if(t){let i=a.createEmbeddedView(e.templateRef),r=i.rootNodes[0];if(i.rootNodes.length===1&&r?.nodeType===this._document.ELEMENT_NODE){r.setAttribute(`role`,`row`),r.classList.add(...e._contentClassNames);let c=r.querySelectorAll(e._cellSelector);for(let l=0;l<c.length;l++)c[l].classList.add(...e._cellClassNames)}}else a.clear();this._isShowingNoDataRow=t,this._changeDetectorRef.markForCheck()}_measureRangeSize(e,t){if(e.start>=e.end||t!==`vertical`)return 0;let a=this.viewChange.value,i=this._rowOutlet.viewContainer;e.start<a.start||(e.end,a.end);let r=e.start-a.start,c=e.end-e.start,l,d;for(let h=0;h<c;h++){let _=i.get(h+r);if(_&&_.rootNodes.length){l=d=_.rootNodes[0];break}}for(let h=c-1;h>-1;h--){let _=i.get(h+r);if(_&&_.rootNodes.length){d=_.rootNodes[_.rootNodes.length-1];break}}let o=l?.getBoundingClientRect?.(),p=d?.getBoundingClientRect?.();return o&&p?p.bottom-o.top:0}_virtualScrollEnabled(){return!this._disableVirtualScrolling&&this._virtualScrollViewport!=null}static ɵfac=function(t){return new(t||n)};static ɵcmp=(function(){let e=[[[`caption`]],[[`colgroup`],[`col`]],`*`],t=[`caption`,`colgroup, col`,`*`];function a(c,l){c&1&&GN(0,2)}function i(c,l){c&1&&(Sc(0,`thead`,0),ob(1,1),up(),Sc(2,`tbody`,0),ob(3,2)(4,3),up(),Sc(5,`tfoot`,0),ob(6,4),up())}function r(c,l){c&1&&ob(0,1)(1,2)(2,3)(3,4)}return sp({type:n,selectors:[[`cdk-table`],[`table`,`cdk-table`,``]],contentQueries:function(l,d,o){if(l&1&&gp(o,At,5)(o,G,5)(o,ke,5)(o,se,5)(o,Ie,5),l&2){let p;lb(p=ub())&&(d._noDataRow=p.first),lb(p=ub())&&(d._contentColumnDefs=p),lb(p=ub())&&(d._contentRowDefs=p),lb(p=ub())&&(d._contentHeaderRowDefs=p),lb(p=ub())&&(d._contentFooterRowDefs=p)}},hostAttrs:[1,`cdk-table`],hostVars:2,hostBindings:function(l,d){l&2&&mb(`cdk-table-fixed-layout`,d.fixedLayout)},inputs:{trackBy:`trackBy`,dataSource:`dataSource`,multiTemplateDataRows:[2,`multiTemplateDataRows`,`multiTemplateDataRows`,Kc],fixedLayout:[2,`fixedLayout`,`fixedLayout`,Kc],recycleRows:[2,`recycleRows`,`recycleRows`,Kc]},outputs:{contentChanged:`contentChanged`},exportAs:[`cdkTable`],features:[TA([{provide:E,useExisting:n},{provide:re,useValue:null}])],ngContentSelectors:t,decls:5,vars:2,consts:[[`role`,`rowgroup`],[`headerRowOutlet`,``],[`rowOutlet`,``],[`noDataRowOutlet`,``],[`footerRowOutlet`,``]],template:function(l,d){l&1&&(qN(e),GN(0),GN(1,1),_N(2,a,1,0),_N(3,i,7,0)(4,r,4,0)),l&2&&(P_(2),AN(d._isServer?2:-1),P_(),AN(d._isNativeHtmlTable?3:4))},dependencies:[Le,Ae,He,Be],styles:[`.cdk-table-fixed-layout {
+`,
+        ],
+        encapsulation: 2,
+      });
+    })();
+  }
+  return n;
+})();
+var pn = (() => {
+  class n {
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵmod = ns({ type: n });
+    static ɵinj = go({ imports: [bi, cl, ji, Ut] });
+  }
+  return n;
+})();
+var E = new A(`CDK_TABLE`);
+var De = (() => {
+  class n {
+    template = b(xo);
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[``, `cdkCellDef`, ``]] });
+  }
+  return n;
+})();
+var Re = (() => {
+  class n {
+    template = b(xo);
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[``, `cdkHeaderCellDef`, ``]] });
+  }
+  return n;
+})();
+var It = (() => {
+  class n {
+    template = b(xo);
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[``, `cdkFooterCellDef`, ``]] });
+  }
+  return n;
+})();
+var G = (() => {
+  class n {
+    _table = b(E, { optional: !0 });
+    _hasStickyChanged = !1;
+    get name() {
+      return this._name;
+    }
+    set name(e) {
+      this._setNameInput(e);
+    }
+    _name;
+    get sticky() {
+      return this._sticky;
+    }
+    set sticky(e) {
+      e !== this._sticky && ((this._sticky = e), (this._hasStickyChanged = !0));
+    }
+    _sticky = !1;
+    get stickyEnd() {
+      return this._stickyEnd;
+    }
+    set stickyEnd(e) {
+      e !== this._stickyEnd && ((this._stickyEnd = e), (this._hasStickyChanged = !0));
+    }
+    _stickyEnd = !1;
+    cell;
+    headerCell;
+    footerCell;
+    cssClassFriendlyName;
+    _columnCssClassName;
+    hasStickyChanged() {
+      let e = this._hasStickyChanged;
+      return (this.resetStickyChanged(), e);
+    }
+    resetStickyChanged() {
+      this._hasStickyChanged = !1;
+    }
+    _updateColumnCssClassName() {
+      this._columnCssClassName = [`cdk-column-${this.cssClassFriendlyName}`];
+    }
+    _setNameInput(e) {
+      e &&
+        ((this._name = e),
+        (this.cssClassFriendlyName = e.replace(/[^a-z0-9_-]/gi, `-`)),
+        this._updateColumnCssClassName());
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `cdkColumnDef`, ``]],
+      contentQueries: function (t, a, i) {
+        if ((t & 1 && gp(i, De, 5)(i, Re, 5)(i, It, 5), t & 2)) {
+          let r;
+          (lb((r = ub())) && (a.cell = r.first),
+            lb((r = ub())) && (a.headerCell = r.first),
+            lb((r = ub())) && (a.footerCell = r.first));
+        }
+      },
+      inputs: {
+        name: [0, `cdkColumnDef`, `name`],
+        sticky: [2, `sticky`, `sticky`, Kc],
+        stickyEnd: [2, `stickyEnd`, `stickyEnd`, Kc],
+      },
+    });
+  }
+  return n;
+})();
+var ve = class {
+  constructor(s, e) {
+    e.nativeElement.classList.add(...s._columnCssClassName);
+  }
+};
+var zt = (() => {
+  class n extends ve {
+    constructor() {
+      super(b(G), b(Gn));
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({
+      type: n,
+      selectors: [[`cdk-header-cell`], [`th`, `cdk-header-cell`, ``]],
+      hostAttrs: [`role`, `columnheader`, 1, `cdk-header-cell`],
+      features: [Kw],
+    });
+  }
+  return n;
+})();
+var Pt = (() => {
+  class n extends ve {
+    constructor() {
+      let e = b(G),
+        t = b(Gn);
+      super(e, t);
+      let a = e._table?._getCellRole();
+      a && t.nativeElement.setAttribute(`role`, a);
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({
+      type: n,
+      selectors: [[`cdk-cell`], [`td`, `cdk-cell`, ``]],
+      hostAttrs: [1, `cdk-cell`],
+      features: [Kw],
+    });
+  }
+  return n;
+})();
+var Fe = (() => {
+  class n {
+    template = b(xo);
+    _differs = b(Ub);
+    columns;
+    _columnsDiffer;
+    ngOnChanges(e) {
+      if (!this._columnsDiffer) {
+        let t = (e.columns && e.columns.currentValue) || [];
+        ((this._columnsDiffer = this._differs.find(t).create()), this._columnsDiffer.diff(t));
+      }
+    }
+    getColumnsDiff() {
+      return this._columnsDiffer.diff(this.columns);
+    }
+    extractCellTemplate(e) {
+      return this instanceof se
+        ? e.headerCell.template
+        : this instanceof Ie
+          ? e.footerCell.template
+          : e.cell.template;
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, features: [xr] });
+  }
+  return n;
+})();
+var se = (() => {
+  class n extends Fe {
+    _table = b(E, { optional: !0 });
+    _hasStickyChanged = !1;
+    get sticky() {
+      return this._sticky;
+    }
+    set sticky(e) {
+      e !== this._sticky && ((this._sticky = e), (this._hasStickyChanged = !0));
+    }
+    _sticky = !1;
+    ngOnChanges(e) {
+      super.ngOnChanges(e);
+    }
+    hasStickyChanged() {
+      let e = this._hasStickyChanged;
+      return (this.resetStickyChanged(), e);
+    }
+    resetStickyChanged() {
+      this._hasStickyChanged = !1;
+    }
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `cdkHeaderRowDef`, ``]],
+      inputs: {
+        columns: [0, `cdkHeaderRowDef`, `columns`],
+        sticky: [2, `cdkHeaderRowDefSticky`, `sticky`, Kc],
+      },
+      features: [Kw, xr],
+    });
+  }
+  return n;
+})();
+var Ie = (() => {
+  class n extends Fe {
+    _table = b(E, { optional: !0 });
+    _hasStickyChanged = !1;
+    get sticky() {
+      return this._sticky;
+    }
+    set sticky(e) {
+      e !== this._sticky && ((this._sticky = e), (this._hasStickyChanged = !0));
+    }
+    _sticky = !1;
+    ngOnChanges(e) {
+      super.ngOnChanges(e);
+    }
+    hasStickyChanged() {
+      let e = this._hasStickyChanged;
+      return (this.resetStickyChanged(), e);
+    }
+    resetStickyChanged() {
+      this._hasStickyChanged = !1;
+    }
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `cdkFooterRowDef`, ``]],
+      inputs: {
+        columns: [0, `cdkFooterRowDef`, `columns`],
+        sticky: [2, `cdkFooterRowDefSticky`, `sticky`, Kc],
+      },
+      features: [Kw, xr],
+    });
+  }
+  return n;
+})();
+var ke = (() => {
+  class n extends Fe {
+    _table = b(E, { optional: !0 });
+    when;
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `cdkRowDef`, ``]],
+      inputs: { columns: [0, `cdkRowDefColumns`, `columns`], when: [0, `cdkRowDefWhen`, `when`] },
+      features: [Kw],
+    });
+  }
+  return n;
+})();
+var V = (() => {
+  class n {
+    _viewContainer = b(Wn);
+    cells;
+    context;
+    static mostRecentCellOutlet = null;
+    constructor() {
+      n.mostRecentCellOutlet = this;
+    }
+    ngOnDestroy() {
+      n.mostRecentCellOutlet === this && (n.mostRecentCellOutlet = null);
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[``, `cdkCellOutlet`, ``]] });
+  }
+  return n;
+})();
+var ze = (() => {
+  class n {
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵcmp = sp({
+      type: n,
+      selectors: [[`cdk-header-row`], [`tr`, `cdk-header-row`, ``]],
+      hostAttrs: [`role`, `row`, 1, `cdk-header-row`],
+      decls: 1,
+      vars: 0,
+      consts: [[`cdkCellOutlet`, ``]],
+      template: function (t, a) {
+        t & 1 && ob(0, 0);
+      },
+      dependencies: [V],
+      encapsulation: 2,
+      changeDetection: 1,
+    });
+  }
+  return n;
+})();
+var Pe = (() => {
+  class n {
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵcmp = sp({
+      type: n,
+      selectors: [[`cdk-row`], [`tr`, `cdk-row`, ``]],
+      hostAttrs: [`role`, `row`, 1, `cdk-row`],
+      decls: 1,
+      vars: 0,
+      consts: [[`cdkCellOutlet`, ``]],
+      template: function (t, a) {
+        t & 1 && ob(0, 0);
+      },
+      dependencies: [V],
+      encapsulation: 2,
+      changeDetection: 1,
+    });
+  }
+  return n;
+})();
+var At = (() => {
+  class n {
+    templateRef = b(xo);
+    _contentClassNames = [`cdk-no-data-row`, `cdk-row`];
+    _cellClassNames = [`cdk-cell`, `cdk-no-data-cell`];
+    _cellSelector = `td, cdk-cell, [cdk-cell], .cdk-cell`;
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[`ng-template`, `cdkNoDataRow`, ``]] });
+  }
+  return n;
+})();
+var Nt = [`top`, `bottom`, `left`, `right`];
+var Ee = class {
+  _isNativeHtmlTable;
+  _stickCellCss;
+  _isBrowser;
+  _needsPositionStickyOnElement;
+  direction;
+  _positionListener;
+  _tableInjector;
+  _elemSizeCache = /* @__PURE__ */ new WeakMap();
+  _resizeObserver = globalThis?.ResizeObserver
+    ? new globalThis.ResizeObserver((s) => this._updateCachedSizes(s))
+    : null;
+  _updatedStickyColumnsParamsToReplay = [];
+  _stickyColumnsReplayTimeout = null;
+  _cachedCellWidths = [];
+  _borderCellCss;
+  _destroyed = !1;
+  constructor(s, e, t = !0, a = !0, i, r, c) {
+    ((this._isNativeHtmlTable = s),
+      (this._stickCellCss = e),
+      (this._isBrowser = t),
+      (this._needsPositionStickyOnElement = a),
+      (this.direction = i),
+      (this._positionListener = r),
+      (this._tableInjector = c),
+      (this._borderCellCss = {
+        top: `${e}-border-elem-top`,
+        bottom: `${e}-border-elem-bottom`,
+        left: `${e}-border-elem-left`,
+        right: `${e}-border-elem-right`,
+      }));
+  }
+  clearStickyPositioning(s, e) {
+    (e.includes(`left`) || e.includes(`right`)) && this._removeFromStickyColumnReplayQueue(s);
+    let t = [];
+    for (let a of s) a.nodeType === a.ELEMENT_NODE && t.push(a, ...Array.from(a.children));
+    Uf(
+      {
+        write: () => {
+          for (let a of t) this._removeStickyStyle(a, e);
+        },
+      },
+      { injector: this._tableInjector },
+    );
+  }
+  updateStickyColumns(s, e, t, a = !0, i = !0) {
+    if (!s.length || !this._isBrowser || !(e.some((O) => O) || t.some((O) => O))) {
+      (this._positionListener?.stickyColumnsUpdated({ sizes: [] }),
+        this._positionListener?.stickyEndColumnsUpdated({ sizes: [] }));
+      return;
+    }
+    let r = s[0],
+      c = r.children.length,
+      l = this.direction === `rtl`,
+      d = l ? `right` : `left`,
+      o = l ? `left` : `right`,
+      p = e.lastIndexOf(!0),
+      h = t.indexOf(!0),
+      _,
+      je,
+      Ue;
+    (i &&
+      this._updateStickyColumnReplayQueue({
+        rows: [...s],
+        stickyStartStates: [...e],
+        stickyEndStates: [...t],
+      }),
+      Uf(
+        {
+          earlyRead: () => {
+            ((_ = this._getCellWidths(r, a)),
+              (je = this._getStickyStartColumnPositions(_, e)),
+              (Ue = this._getStickyEndColumnPositions(_, t)));
+          },
+          write: () => {
+            for (let O of s)
+              for (let M = 0; M < c; M++) {
+                let We = O.children[M];
+                (e[M] && this._addStickyStyle(We, d, je[M], M === p),
+                  t[M] && this._addStickyStyle(We, o, Ue[M], M === h));
+              }
+            this._positionListener &&
+              _.some((O) => !!O) &&
+              (this._positionListener.stickyColumnsUpdated({
+                sizes: p === -1 ? [] : _.slice(0, p + 1).map((O, M) => (e[M] ? O : null)),
+              }),
+              this._positionListener.stickyEndColumnsUpdated({
+                sizes:
+                  h === -1
+                    ? []
+                    : _.slice(h)
+                        .map((O, M) => (t[M + h] ? O : null))
+                        .reverse(),
+              }));
+          },
+        },
+        { injector: this._tableInjector },
+      ));
+  }
+  stickRows(s, e, t) {
+    if (!this._isBrowser) return;
+    let a = t === `bottom` ? s.slice().reverse() : s,
+      i = t === `bottom` ? e.slice().reverse() : e,
+      r = [],
+      c = [],
+      l = [];
+    Uf(
+      {
+        earlyRead: () => {
+          for (let d = 0, o = 0; d < a.length; d++) {
+            if (!i[d]) continue;
+            r[d] = o;
+            let p = a[d];
+            l[d] = this._isNativeHtmlTable ? Array.from(p.children) : [p];
+            let h = this._retrieveElementSize(p).height;
+            ((o += h), (c[d] = h));
+          }
+        },
+        write: () => {
+          let d = i.lastIndexOf(!0);
+          for (let o = 0; o < a.length; o++) {
+            if (!i[o]) continue;
+            let p = r[o],
+              h = o === d;
+            for (let _ of l[o]) this._addStickyStyle(_, t, p, h);
+          }
+          t === `top`
+            ? this._positionListener?.stickyHeaderRowsUpdated({ sizes: c, offsets: r, elements: l })
+            : this._positionListener?.stickyFooterRowsUpdated({
+                sizes: c,
+                offsets: r,
+                elements: l,
+              });
+        },
+      },
+      { injector: this._tableInjector },
+    );
+  }
+  updateStickyFooterContainer(s, e) {
+    this._isNativeHtmlTable &&
+      Uf(
+        {
+          write: () => {
+            let t = s.querySelector(`tfoot`);
+            t &&
+              (e.some((a) => !a)
+                ? this._removeStickyStyle(t, [`bottom`])
+                : this._addStickyStyle(t, `bottom`, 0, !1));
+          },
+        },
+        { injector: this._tableInjector },
+      );
+  }
+  destroy() {
+    (this._stickyColumnsReplayTimeout && clearTimeout(this._stickyColumnsReplayTimeout),
+      this._resizeObserver?.disconnect(),
+      (this._destroyed = !0));
+  }
+  _removeStickyStyle(s, e) {
+    if (!s.classList.contains(this._stickCellCss)) return;
+    for (let a of e) ((s.style[a] = ``), s.classList.remove(this._borderCellCss[a]));
+    Nt.some((a) => e.indexOf(a) === -1 && s.style[a])
+      ? (s.style.zIndex = this._getCalculatedZIndex(s))
+      : ((s.style.zIndex = ``),
+        this._needsPositionStickyOnElement && (s.style.position = ``),
+        s.classList.remove(this._stickCellCss));
+  }
+  _addStickyStyle(s, e, t, a) {
+    (s.classList.add(this._stickCellCss),
+      a && s.classList.add(this._borderCellCss[e]),
+      (s.style[e] = `${t}px`),
+      (s.style.zIndex = this._getCalculatedZIndex(s)),
+      this._needsPositionStickyOnElement &&
+        (s.style.cssText += `position: -webkit-sticky; position: sticky; `));
+  }
+  _getCalculatedZIndex(s) {
+    let e = { top: 100, bottom: 10, left: 1, right: 1 },
+      t = 0;
+    for (let a of Nt) s.style[a] && (t += e[a]);
+    return t ? `${t}` : ``;
+  }
+  _getCellWidths(s, e = !0) {
+    if (!e && this._cachedCellWidths.length) return this._cachedCellWidths;
+    let t = [],
+      a = s.children;
+    for (let i = 0; i < a.length; i++) {
+      let r = a[i];
+      t.push(this._retrieveElementSize(r).width);
+    }
+    return ((this._cachedCellWidths = t), t);
+  }
+  _getStickyStartColumnPositions(s, e) {
+    let t = [],
+      a = 0;
+    for (let i = 0; i < s.length; i++) e[i] && ((t[i] = a), (a += s[i]));
+    return t;
+  }
+  _getStickyEndColumnPositions(s, e) {
+    let t = [],
+      a = 0;
+    for (let i = s.length; i > 0; i--) e[i] && ((t[i] = a), (a += s[i]));
+    return t;
+  }
+  _retrieveElementSize(s) {
+    let e = this._elemSizeCache.get(s);
+    if (e) return e;
+    let t = s.getBoundingClientRect(),
+      a = { width: t.width, height: t.height };
+    return (
+      this._resizeObserver &&
+        (this._elemSizeCache.set(s, a), this._resizeObserver.observe(s, { box: `border-box` })),
+      a
+    );
+  }
+  _updateStickyColumnReplayQueue(s) {
+    (this._removeFromStickyColumnReplayQueue(s.rows),
+      this._stickyColumnsReplayTimeout || this._updatedStickyColumnsParamsToReplay.push(s));
+  }
+  _removeFromStickyColumnReplayQueue(s) {
+    let e = new Set(s);
+    for (let t of this._updatedStickyColumnsParamsToReplay)
+      t.rows = t.rows.filter((a) => !e.has(a));
+    this._updatedStickyColumnsParamsToReplay = this._updatedStickyColumnsParamsToReplay.filter(
+      (t) => !!t.rows.length,
+    );
+  }
+  _updateCachedSizes(s) {
+    let e = !1;
+    for (let t of s) {
+      let a = t.borderBoxSize?.length
+        ? { width: t.borderBoxSize[0].inlineSize, height: t.borderBoxSize[0].blockSize }
+        : { width: t.contentRect.width, height: t.contentRect.height };
+      (a.width !== this._elemSizeCache.get(t.target)?.width && Gt(t.target) && (e = !0),
+        this._elemSizeCache.set(t.target, a));
+    }
+    e &&
+      this._updatedStickyColumnsParamsToReplay.length &&
+      (this._stickyColumnsReplayTimeout && clearTimeout(this._stickyColumnsReplayTimeout),
+      (this._stickyColumnsReplayTimeout = setTimeout(() => {
+        if (!this._destroyed) {
+          for (let t of this._updatedStickyColumnsParamsToReplay)
+            this.updateStickyColumns(t.rows, t.stickyStartStates, t.stickyEndStates, !0, !1);
+          ((this._updatedStickyColumnsParamsToReplay = []),
+            (this._stickyColumnsReplayTimeout = null));
+        }
+      }, 0)));
+  }
+};
+function Gt(n) {
+  return [`cdk-cell`, `cdk-header-cell`, `cdk-footer-cell`].some((s) => n.classList.contains(s));
+}
+function Et(n) {
+  return Error(`Could not find column with id "${n}".`);
+}
+var re = new A(`STICKY_POSITIONING_LISTENER`);
+var Ae = (() => {
+  class n {
+    viewContainer = b(Wn);
+    elementRef = b(Gn);
+    constructor() {
+      let e = b(E);
+      ((e._rowOutlet = this), e._outletAssigned());
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[``, `rowOutlet`, ``]] });
+  }
+  return n;
+})();
+var Le = (() => {
+  class n {
+    viewContainer = b(Wn);
+    elementRef = b(Gn);
+    constructor() {
+      let e = b(E);
+      ((e._headerRowOutlet = this), e._outletAssigned());
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[``, `headerRowOutlet`, ``]] });
+  }
+  return n;
+})();
+var Be = (() => {
+  class n {
+    viewContainer = b(Wn);
+    elementRef = b(Gn);
+    constructor() {
+      let e = b(E);
+      ((e._footerRowOutlet = this), e._outletAssigned());
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[``, `footerRowOutlet`, ``]] });
+  }
+  return n;
+})();
+var He = (() => {
+  class n {
+    viewContainer = b(Wn);
+    elementRef = b(Gn);
+    constructor() {
+      let e = b(E);
+      ((e._noDataRowOutlet = this), e._outletAssigned());
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵdir = kr({ type: n, selectors: [[``, `noDataRowOutlet`, ``]] });
+  }
+  return n;
+})();
+var Ve = (() => {
+  class n {
+    _differs = b(Ub);
+    _changeDetectorRef = b(Zc);
+    _elementRef = b(Gn);
+    _dir = b(vt, { optional: !0 });
+    _platform = b(y);
+    _viewRepeater;
+    _viewportRuler = b(yt);
+    _injector = b(Fe$1);
+    _virtualScrollViewport = b(sl, { optional: !0, host: !0 });
+    _positionListener = b(re, { optional: !0 }) || b(re, { optional: !0, skipSelf: !0 });
+    _document = b(me);
+    _data;
+    _renderedRange;
+    _onDestroy = new le();
+    _renderRows;
+    _renderChangeSubscription = null;
+    _columnDefsByName = /* @__PURE__ */ new Map();
+    _rowDefs;
+    _headerRowDefs;
+    _footerRowDefs;
+    _dataDiffer;
+    _defaultRowDef = null;
+    _customColumnDefs = /* @__PURE__ */ new Set();
+    _customRowDefs = /* @__PURE__ */ new Set();
+    _customHeaderRowDefs = /* @__PURE__ */ new Set();
+    _customFooterRowDefs = /* @__PURE__ */ new Set();
+    _customNoDataRow = null;
+    _headerRowDefChanged = !0;
+    _footerRowDefChanged = !0;
+    _stickyColumnStylesNeedReset = !0;
+    _forceRecalculateCellWidths = !0;
+    _cachedRenderRowsMap = /* @__PURE__ */ new Map();
+    _rowDefsByView = /* @__PURE__ */ new WeakMap();
+    _isNativeHtmlTable;
+    _stickyStyler;
+    stickyCssClass = `cdk-table-sticky`;
+    needsPositionStickyOnElement = !0;
+    _isServer;
+    _isShowingNoDataRow = !1;
+    _hasAllOutlets = !1;
+    _hasInitialized = !1;
+    _headerRowStickyUpdates = new le();
+    _footerRowStickyUpdates = new le();
+    _disableVirtualScrolling = !1;
+    _getCellRole() {
+      if (this._cellRoleInternal === void 0) {
+        let e = this._elementRef.nativeElement.getAttribute(`role`);
+        return e === `grid` || e === `treegrid` ? `gridcell` : `cell`;
+      }
+      return this._cellRoleInternal;
+    }
+    _cellRoleInternal = void 0;
+    get trackBy() {
+      return this._trackByFn;
+    }
+    set trackBy(e) {
+      this._trackByFn = e;
+    }
+    _trackByFn;
+    get dataSource() {
+      return this._dataSource;
+    }
+    set dataSource(e) {
+      this._dataSource !== e && (this._switchDataSource(e), this._changeDetectorRef.markForCheck());
+    }
+    _dataSource;
+    _dataSourceChanges = new le();
+    _dataStream = new le();
+    get multiTemplateDataRows() {
+      return this._multiTemplateDataRows;
+    }
+    set multiTemplateDataRows(e) {
+      ((this._multiTemplateDataRows = e),
+        this._rowOutlet &&
+          this._rowOutlet.viewContainer.length &&
+          (this._forceRenderDataRows(), this.updateStickyColumnStyles()));
+    }
+    _multiTemplateDataRows = !1;
+    get fixedLayout() {
+      return this._virtualScrollEnabled() ? !0 : this._fixedLayout;
+    }
+    set fixedLayout(e) {
+      ((this._fixedLayout = e),
+        (this._forceRecalculateCellWidths = !0),
+        (this._stickyColumnStylesNeedReset = !0));
+    }
+    _fixedLayout = !1;
+    recycleRows = !1;
+    contentChanged = new Ge();
+    viewChange = new Pe$1({ start: 0, end: Number.MAX_VALUE });
+    _rowOutlet;
+    _headerRowOutlet;
+    _footerRowOutlet;
+    _noDataRowOutlet;
+    _contentColumnDefs;
+    _contentRowDefs;
+    _contentHeaderRowDefs;
+    _contentFooterRowDefs;
+    _noDataRow;
+    get renderedRows() {
+      return this._renderRows;
+    }
+    constructor() {
+      (b(new Gc(`role`), { optional: !0 }) ||
+        this._elementRef.nativeElement.setAttribute(`role`, `table`),
+        (this._isServer = !this._platform.isBrowser),
+        (this._isNativeHtmlTable = this._elementRef.nativeElement.nodeName === `TABLE`),
+        (this._dataDiffer = this._differs
+          .find([])
+          .create((t, a) => (this.trackBy ? this.trackBy(a.dataIndex, a.data) : a))));
+    }
+    ngOnInit() {
+      (this._setupStickyStyler(),
+        this._viewportRuler
+          .change()
+          .pipe(hi(this._onDestroy))
+          .subscribe(() => {
+            this._forceRecalculateCellWidths = !0;
+          }));
+    }
+    ngAfterContentInit() {
+      ((this._viewRepeater =
+        this.recycleRows || this._virtualScrollEnabled() ? new gi() : new Vi()),
+        this._virtualScrollEnabled() && this._setupVirtualScrolling(this._virtualScrollViewport),
+        (this._hasInitialized = !0));
+    }
+    ngAfterContentChecked() {
+      this._canRender() && this._render();
+    }
+    ngOnDestroy() {
+      (this._stickyStyler?.destroy(),
+        [
+          this._rowOutlet?.viewContainer,
+          this._headerRowOutlet?.viewContainer,
+          this._footerRowOutlet?.viewContainer,
+          this._cachedRenderRowsMap,
+          this._customColumnDefs,
+          this._customRowDefs,
+          this._customHeaderRowDefs,
+          this._customFooterRowDefs,
+          this._columnDefsByName,
+        ].forEach((e) => {
+          e?.clear();
+        }),
+        (this._headerRowDefs = []),
+        (this._footerRowDefs = []),
+        (this._defaultRowDef = null),
+        this._headerRowStickyUpdates.complete(),
+        this._footerRowStickyUpdates.complete(),
+        this._onDestroy.next(),
+        this._onDestroy.complete(),
+        Ps(this.dataSource) && this.dataSource.disconnect(this));
+    }
+    renderRows() {
+      this._renderRows = this._getAllRenderRows();
+      let e = this._dataDiffer.diff(this._renderRows);
+      if (!e) {
+        (this._updateNoDataRow(), this.contentChanged.next());
+        return;
+      }
+      let t = this._rowOutlet.viewContainer;
+      (this._viewRepeater.applyChanges(
+        e,
+        t,
+        (a, i, r) => this._getEmbeddedViewArgs(a.item, r),
+        (a) => a.item.data,
+        (a) => {
+          if (a.operation === Ft$1.INSERTED && a.context) {
+            this._renderCellTemplateForItem(a.record.item.rowDef, a.context);
+            let i = t.get(a.record.currentIndex);
+            this._rowDefsByView.set(i, a.record.item.rowDef);
+          }
+        },
+      ),
+        e.forEachIdentityChange((a) => {
+          let i = a.currentIndex,
+            r = t.get(i);
+          if (this._rowDefsByView.get(r) !== a.item.rowDef) {
+            t.remove(i);
+            let c = this._renderRow(this._rowOutlet, a.item.rowDef, i, { $implicit: a.item.data });
+            this._rowDefsByView.set(c, a.item.rowDef);
+          } else r.context.$implicit = a.item.data;
+        }),
+        this._updateRowIndexContext(),
+        this._updateNoDataRow(),
+        this.contentChanged.next(),
+        this.updateStickyColumnStyles());
+    }
+    addColumnDef(e) {
+      this._customColumnDefs.add(e);
+    }
+    removeColumnDef(e) {
+      this._customColumnDefs.delete(e);
+    }
+    addRowDef(e) {
+      this._customRowDefs.add(e);
+    }
+    removeRowDef(e) {
+      this._customRowDefs.delete(e);
+    }
+    addHeaderRowDef(e) {
+      (this._customHeaderRowDefs.add(e), (this._headerRowDefChanged = !0));
+    }
+    removeHeaderRowDef(e) {
+      (this._customHeaderRowDefs.delete(e), (this._headerRowDefChanged = !0));
+    }
+    addFooterRowDef(e) {
+      (this._customFooterRowDefs.add(e), (this._footerRowDefChanged = !0));
+    }
+    removeFooterRowDef(e) {
+      (this._customFooterRowDefs.delete(e), (this._footerRowDefChanged = !0));
+    }
+    setNoDataRow(e) {
+      this._customNoDataRow = e;
+    }
+    updateStickyHeaderRowStyles() {
+      let e = this._getRenderedRows(this._headerRowOutlet);
+      if (this._isNativeHtmlTable) {
+        let a = Ft(this._headerRowOutlet, `thead`);
+        a && (a.style.display = e.length ? `` : `none`);
+      }
+      let t = this._headerRowDefs.map((a) => a.sticky);
+      (this._stickyStyler.clearStickyPositioning(e, [`top`]),
+        this._stickyStyler.stickRows(e, t, `top`),
+        this._headerRowDefs.forEach((a) => a.resetStickyChanged()));
+    }
+    updateStickyFooterRowStyles() {
+      let e = this._getRenderedRows(this._footerRowOutlet);
+      if (this._isNativeHtmlTable) {
+        let a = Ft(this._footerRowOutlet, `tfoot`);
+        a && (a.style.display = e.length ? `` : `none`);
+      }
+      let t = this._footerRowDefs.map((a) => a.sticky);
+      (this._stickyStyler.clearStickyPositioning(e, [`bottom`]),
+        this._stickyStyler.stickRows(e, t, `bottom`),
+        this._stickyStyler.updateStickyFooterContainer(this._elementRef.nativeElement, t),
+        this._footerRowDefs.forEach((a) => a.resetStickyChanged()));
+    }
+    updateStickyColumnStyles() {
+      let e = this._getRenderedRows(this._headerRowOutlet),
+        t = this._getRenderedRows(this._rowOutlet),
+        a = this._getRenderedRows(this._footerRowOutlet);
+      (((this._isNativeHtmlTable && !this.fixedLayout) || this._stickyColumnStylesNeedReset) &&
+        (this._stickyStyler.clearStickyPositioning([...e, ...t, ...a], [`left`, `right`]),
+        (this._stickyColumnStylesNeedReset = !1)),
+        e.forEach((i, r) => {
+          this._addStickyColumnStyles([i], this._headerRowDefs[r]);
+        }),
+        this._rowDefs.forEach((i) => {
+          let r = [];
+          for (let c = 0; c < t.length; c++) this._renderRows[c].rowDef === i && r.push(t[c]);
+          this._addStickyColumnStyles(r, i);
+        }),
+        a.forEach((i, r) => {
+          this._addStickyColumnStyles([i], this._footerRowDefs[r]);
+        }),
+        Array.from(this._columnDefsByName.values()).forEach((i) => i.resetStickyChanged()));
+    }
+    stickyColumnsUpdated(e) {
+      this._positionListener?.stickyColumnsUpdated(e);
+    }
+    stickyEndColumnsUpdated(e) {
+      this._positionListener?.stickyEndColumnsUpdated(e);
+    }
+    stickyHeaderRowsUpdated(e) {
+      (this._headerRowStickyUpdates.next(e), this._positionListener?.stickyHeaderRowsUpdated(e));
+    }
+    stickyFooterRowsUpdated(e) {
+      (this._footerRowStickyUpdates.next(e), this._positionListener?.stickyFooterRowsUpdated(e));
+    }
+    _outletAssigned() {
+      !this._hasAllOutlets &&
+        this._rowOutlet &&
+        this._headerRowOutlet &&
+        this._footerRowOutlet &&
+        this._noDataRowOutlet &&
+        ((this._hasAllOutlets = !0), this._canRender() && this._render());
+    }
+    _canRender() {
+      return this._hasAllOutlets && this._hasInitialized;
+    }
+    _render() {
+      (this._cacheRowDefs(),
+        this._cacheColumnDefs(),
+        !this._headerRowDefs.length && !this._footerRowDefs.length && this._rowDefs.length);
+      let t =
+        this._renderUpdatedColumns() || this._headerRowDefChanged || this._footerRowDefChanged;
+      ((this._stickyColumnStylesNeedReset = this._stickyColumnStylesNeedReset || t),
+        (this._forceRecalculateCellWidths = t),
+        this._headerRowDefChanged &&
+          (this._forceRenderHeaderRows(), (this._headerRowDefChanged = !1)),
+        this._footerRowDefChanged &&
+          (this._forceRenderFooterRows(), (this._footerRowDefChanged = !1)),
+        this.dataSource && this._rowDefs.length > 0 && !this._renderChangeSubscription
+          ? this._observeRenderChanges()
+          : this._stickyColumnStylesNeedReset && this.updateStickyColumnStyles(),
+        this._checkStickyStates());
+    }
+    _getAllRenderRows() {
+      if (!Array.isArray(this._data) || !this._renderedRange) return [];
+      let e = [],
+        t = Math.min(this._data.length, this._renderedRange.end),
+        a = this._cachedRenderRowsMap;
+      this._cachedRenderRowsMap = /* @__PURE__ */ new Map();
+      for (let i = this._renderedRange.start; i < t; i++) {
+        let r = this._data[i],
+          c = this._getRenderRowsForData(r, i, a.get(r));
+        this._cachedRenderRowsMap.has(r) ||
+          this._cachedRenderRowsMap.set(r, /* @__PURE__ */ new WeakMap());
+        for (let l = 0; l < c.length; l++) {
+          let d = c[l],
+            o = this._cachedRenderRowsMap.get(d.data);
+          (o.has(d.rowDef) ? o.get(d.rowDef).push(d) : o.set(d.rowDef, [d]), e.push(d));
+        }
+      }
+      return e;
+    }
+    _getRenderRowsForData(e, t, a) {
+      return this._getRowDefs(e, t).map((r) => {
+        let c = a && a.has(r) ? a.get(r) : [];
+        if (c.length) {
+          let l = c.shift();
+          return ((l.dataIndex = t), l);
+        } else return { data: e, rowDef: r, dataIndex: t };
+      });
+    }
+    _cacheColumnDefs() {
+      (this._columnDefsByName.clear(),
+        be(this._getOwnDefs(this._contentColumnDefs), this._customColumnDefs).forEach((t) => {
+          (this._columnDefsByName.has(t.name), this._columnDefsByName.set(t.name, t));
+        }));
+    }
+    _cacheRowDefs() {
+      ((this._headerRowDefs = be(
+        this._getOwnDefs(this._contentHeaderRowDefs),
+        this._customHeaderRowDefs,
+      )),
+        (this._footerRowDefs = be(
+          this._getOwnDefs(this._contentFooterRowDefs),
+          this._customFooterRowDefs,
+        )),
+        (this._rowDefs = be(this._getOwnDefs(this._contentRowDefs), this._customRowDefs)));
+      let e = this._rowDefs.filter((t) => !t.when);
+      this._defaultRowDef = e[0];
+    }
+    _renderUpdatedColumns() {
+      let e = (r, c) => {
+          let l = !!c.getColumnsDiff();
+          return r || l;
+        },
+        t = this._rowDefs.reduce(e, !1);
+      t && this._forceRenderDataRows();
+      let a = this._headerRowDefs.reduce(e, !1);
+      a && this._forceRenderHeaderRows();
+      let i = this._footerRowDefs.reduce(e, !1);
+      return (i && this._forceRenderFooterRows(), t || a || i);
+    }
+    _switchDataSource(e) {
+      ((this._data = []),
+        Ps(this.dataSource) && this.dataSource.disconnect(this),
+        this._renderChangeSubscription &&
+          (this._renderChangeSubscription.unsubscribe(), (this._renderChangeSubscription = null)),
+        e ||
+          (this._dataDiffer && this._dataDiffer.diff([]),
+          this._rowOutlet && this._rowOutlet.viewContainer.clear()),
+        (this._dataSource = e));
+    }
+    _observeRenderChanges() {
+      if (!this.dataSource) return;
+      let e;
+      (Ps(this.dataSource)
+        ? (e = this.dataSource.connect(this))
+        : va(this.dataSource)
+          ? (e = this.dataSource)
+          : Array.isArray(this.dataSource) && (e = I(this.dataSource)),
+        (this._renderChangeSubscription = Mu([e, this.viewChange])
+          .pipe(hi(this._onDestroy))
+          .subscribe(([t, a]) => {
+            ((this._data = t || []),
+              (this._renderedRange = a),
+              this._dataStream.next(t),
+              this.renderRows());
+          })));
+    }
+    _forceRenderHeaderRows() {
+      (this._headerRowOutlet.viewContainer.length > 0 &&
+        this._headerRowOutlet.viewContainer.clear(),
+        this._headerRowDefs.forEach((e, t) => this._renderRow(this._headerRowOutlet, e, t)),
+        this.updateStickyHeaderRowStyles());
+    }
+    _forceRenderFooterRows() {
+      (this._footerRowOutlet.viewContainer.length > 0 &&
+        this._footerRowOutlet.viewContainer.clear(),
+        this._footerRowDefs.forEach((e, t) => this._renderRow(this._footerRowOutlet, e, t)),
+        this.updateStickyFooterRowStyles());
+    }
+    _addStickyColumnStyles(e, t) {
+      let a = Array.from(t?.columns || []).map((c) => {
+          let l = this._columnDefsByName.get(c);
+          if (!l) throw Et(c);
+          return l;
+        }),
+        i = a.map((c) => c.sticky),
+        r = a.map((c) => c.stickyEnd);
+      this._stickyStyler.updateStickyColumns(
+        e,
+        i,
+        r,
+        !this.fixedLayout || this._forceRecalculateCellWidths,
+      );
+    }
+    _getRenderedRows(e) {
+      let t = [];
+      for (let a = 0; a < e.viewContainer.length; a++) {
+        let i = e.viewContainer.get(a);
+        t.push(i.rootNodes[0]);
+      }
+      return t;
+    }
+    _getRowDefs(e, t) {
+      if (this._rowDefs.length === 1) return [this._rowDefs[0]];
+      let a = [];
+      if (this.multiTemplateDataRows) a = this._rowDefs.filter((i) => !i.when || i.when(t, e));
+      else {
+        let i = this._rowDefs.find((r) => r.when && r.when(t, e)) || this._defaultRowDef;
+        i && a.push(i);
+      }
+      return (a.length, a);
+    }
+    _getEmbeddedViewArgs(e, t) {
+      let a = e.rowDef,
+        i = { $implicit: e.data };
+      return { templateRef: a.template, context: i, index: t };
+    }
+    _renderRow(e, t, a, i = {}) {
+      let r = e.viewContainer.createEmbeddedView(t.template, i, a);
+      return (this._renderCellTemplateForItem(t, i), r);
+    }
+    _renderCellTemplateForItem(e, t) {
+      for (let a of this._getCellTemplates(e))
+        V.mostRecentCellOutlet && V.mostRecentCellOutlet._viewContainer.createEmbeddedView(a, t);
+      this._changeDetectorRef.markForCheck();
+    }
+    _updateRowIndexContext() {
+      let e = this._rowOutlet.viewContainer;
+      for (let t = 0, a = e.length; t < a; t++) {
+        let r = e.get(t).context;
+        ((r.count = a),
+          (r.first = t === 0),
+          (r.last = t === a - 1),
+          (r.even = t % 2 === 0),
+          (r.odd = !r.even),
+          this.multiTemplateDataRows
+            ? ((r.dataIndex = this._renderRows[t].dataIndex), (r.renderIndex = t))
+            : (r.index = this._renderRows[t].dataIndex));
+      }
+    }
+    _getCellTemplates(e) {
+      return !e || !e.columns
+        ? []
+        : Array.from(e.columns, (t) => {
+            let a = this._columnDefsByName.get(t);
+            if (!a) throw Et(t);
+            return e.extractCellTemplate(a);
+          });
+    }
+    _forceRenderDataRows() {
+      (this._dataDiffer.diff([]), this._rowOutlet.viewContainer.clear(), this.renderRows());
+    }
+    _checkStickyStates() {
+      let e = (t, a) => t || a.hasStickyChanged();
+      (this._headerRowDefs.reduce(e, !1) && this.updateStickyHeaderRowStyles(),
+        this._footerRowDefs.reduce(e, !1) && this.updateStickyFooterRowStyles(),
+        Array.from(this._columnDefsByName.values()).reduce(e, !1) &&
+          ((this._stickyColumnStylesNeedReset = !0), this.updateStickyColumnStyles()));
+    }
+    _setupStickyStyler() {
+      let e = this._dir ? this._dir.value : `ltr`,
+        t = this._injector;
+      ((this._stickyStyler = new Ee(
+        this._isNativeHtmlTable,
+        this.stickyCssClass,
+        this._platform.isBrowser,
+        this.needsPositionStickyOnElement,
+        e,
+        this,
+        t,
+      )),
+        (this._dir ? this._dir.change : I()).pipe(hi(this._onDestroy)).subscribe((a) => {
+          ((this._stickyStyler.direction = a), this.updateStickyColumnStyles());
+        }));
+    }
+    _setupVirtualScrolling(e) {
+      let t = typeof requestAnimationFrame < `u` ? _T : MT;
+      (this.viewChange.next({ start: 0, end: 0 }),
+        e.renderedRangeStream.pipe(GT(0, t), hi(this._onDestroy)).subscribe(this.viewChange),
+        e.attach({
+          dataStream: this._dataStream,
+          measureRangeSize: (a, i) => this._measureRangeSize(a, i),
+        }),
+        Mu([e.renderedContentOffset, this._headerRowStickyUpdates])
+          .pipe(hi(this._onDestroy))
+          .subscribe(([a, i]) => {
+            if (!(!i.sizes || !i.offsets || !i.elements))
+              for (let r = 0; r < i.elements.length; r++) {
+                let c = i.elements[r];
+                if (c) {
+                  let l = i.offsets[r],
+                    d = a !== 0 ? Math.max(a - l, l) : -l;
+                  for (let o of c) o.style.top = `${-d}px`;
+                }
+              }
+          }),
+        Mu([e.renderedContentOffset, this._footerRowStickyUpdates])
+          .pipe(hi(this._onDestroy))
+          .subscribe(([a, i]) => {
+            if (!(!i.sizes || !i.offsets || !i.elements))
+              for (let r = 0; r < i.elements.length; r++) {
+                let c = i.elements[r];
+                if (c) for (let l of c) l.style.bottom = `${a + i.offsets[r]}px`;
+              }
+          }));
+    }
+    _getOwnDefs(e) {
+      return e.filter((t) => !t._table || t._table === this);
+    }
+    _updateNoDataRow() {
+      let e = this._customNoDataRow || this._noDataRow;
+      if (!e) return;
+      let t = this._rowOutlet.viewContainer.length === 0;
+      if (t === this._isShowingNoDataRow) return;
+      let a = this._noDataRowOutlet.viewContainer;
+      if (t) {
+        let i = a.createEmbeddedView(e.templateRef),
+          r = i.rootNodes[0];
+        if (i.rootNodes.length === 1 && r?.nodeType === this._document.ELEMENT_NODE) {
+          (r.setAttribute(`role`, `row`), r.classList.add(...e._contentClassNames));
+          let c = r.querySelectorAll(e._cellSelector);
+          for (let l = 0; l < c.length; l++) c[l].classList.add(...e._cellClassNames);
+        }
+      } else a.clear();
+      ((this._isShowingNoDataRow = t), this._changeDetectorRef.markForCheck());
+    }
+    _measureRangeSize(e, t) {
+      if (e.start >= e.end || t !== `vertical`) return 0;
+      let a = this.viewChange.value,
+        i = this._rowOutlet.viewContainer;
+      e.start < a.start || (e.end, a.end);
+      let r = e.start - a.start,
+        c = e.end - e.start,
+        l,
+        d;
+      for (let h = 0; h < c; h++) {
+        let _ = i.get(h + r);
+        if (_ && _.rootNodes.length) {
+          l = d = _.rootNodes[0];
+          break;
+        }
+      }
+      for (let h = c - 1; h > -1; h--) {
+        let _ = i.get(h + r);
+        if (_ && _.rootNodes.length) {
+          d = _.rootNodes[_.rootNodes.length - 1];
+          break;
+        }
+      }
+      let o = l?.getBoundingClientRect?.(),
+        p = d?.getBoundingClientRect?.();
+      return o && p ? p.bottom - o.top : 0;
+    }
+    _virtualScrollEnabled() {
+      return !this._disableVirtualScrolling && this._virtualScrollViewport != null;
+    }
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵcmp = (function () {
+      let e = [[[`caption`]], [[`colgroup`], [`col`]], `*`],
+        t = [`caption`, `colgroup, col`, `*`];
+      function a(c, l) {
+        c & 1 && GN(0, 2);
+      }
+      function i(c, l) {
+        c & 1 &&
+          (Sc(0, `thead`, 0),
+          ob(1, 1),
+          up(),
+          Sc(2, `tbody`, 0),
+          ob(3, 2)(4, 3),
+          up(),
+          Sc(5, `tfoot`, 0),
+          ob(6, 4),
+          up());
+      }
+      function r(c, l) {
+        c & 1 && ob(0, 1)(1, 2)(2, 3)(3, 4);
+      }
+      return sp({
+        type: n,
+        selectors: [[`cdk-table`], [`table`, `cdk-table`, ``]],
+        contentQueries: function (l, d, o) {
+          if ((l & 1 && gp(o, At, 5)(o, G, 5)(o, ke, 5)(o, se, 5)(o, Ie, 5), l & 2)) {
+            let p;
+            (lb((p = ub())) && (d._noDataRow = p.first),
+              lb((p = ub())) && (d._contentColumnDefs = p),
+              lb((p = ub())) && (d._contentRowDefs = p),
+              lb((p = ub())) && (d._contentHeaderRowDefs = p),
+              lb((p = ub())) && (d._contentFooterRowDefs = p));
+          }
+        },
+        hostAttrs: [1, `cdk-table`],
+        hostVars: 2,
+        hostBindings: function (l, d) {
+          l & 2 && mb(`cdk-table-fixed-layout`, d.fixedLayout);
+        },
+        inputs: {
+          trackBy: `trackBy`,
+          dataSource: `dataSource`,
+          multiTemplateDataRows: [2, `multiTemplateDataRows`, `multiTemplateDataRows`, Kc],
+          fixedLayout: [2, `fixedLayout`, `fixedLayout`, Kc],
+          recycleRows: [2, `recycleRows`, `recycleRows`, Kc],
+        },
+        outputs: { contentChanged: `contentChanged` },
+        exportAs: [`cdkTable`],
+        features: [
+          TA([
+            { provide: E, useExisting: n },
+            { provide: re, useValue: null },
+          ]),
+        ],
+        ngContentSelectors: t,
+        decls: 5,
+        vars: 2,
+        consts: [
+          [`role`, `rowgroup`],
+          [`headerRowOutlet`, ``],
+          [`rowOutlet`, ``],
+          [`noDataRowOutlet`, ``],
+          [`footerRowOutlet`, ``],
+        ],
+        template: function (l, d) {
+          (l & 1 && (qN(e), GN(0), GN(1, 1), _N(2, a, 1, 0), _N(3, i, 7, 0)(4, r, 4, 0)),
+            l & 2 && (P_(2), AN(d._isServer ? 2 : -1), P_(), AN(d._isNativeHtmlTable ? 3 : 4)));
+        },
+        dependencies: [Le, Ae, He, Be],
+        styles: [
+          `.cdk-table-fixed-layout {
   table-layout: fixed;
 }
-`],encapsulation:2,changeDetection:1})})()}return n})();function be(n,s){return n.concat(Array.from(s))}function Ft(n,s){let e=s.toUpperCase(),t=n.viewContainer.element.nativeElement;for(;t;){let a=t.nodeType===1?t.nodeName:null;if(a===e)return t;if(a===`TABLE`)break;t=t.parentNode}return null}var Lt=(()=>{class n{static ɵfac=function(t){return new(t||n)};static ɵmod=ns({type:n});static ɵinj=go({imports:[nn]})}return n})();var Kn=(()=>{class n extends Ve{stickyCssClass=`mat-mdc-table-sticky`;needsPositionStickyOnElement=!1;static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵcmp=(function(){let e=[[[`caption`]],[[`colgroup`],[`col`]],`*`],t=[`caption`,`colgroup, col`,`*`];function a(c,l){c&1&&GN(0,2)}function i(c,l){c&1&&(Sc(0,`thead`,0),ob(1,1),up(),Sc(2,`tbody`,2),ob(3,3)(4,4),up(),Sc(5,`tfoot`,0),ob(6,5),up())}function r(c,l){c&1&&ob(0,1)(1,3)(2,4)(3,5)}return sp({type:n,selectors:[[`mat-table`],[`table`,`mat-table`,``]],hostAttrs:[1,`mat-mdc-table`,`mdc-data-table__table`],hostVars:2,hostBindings:function(l,d){l&2&&mb(`mat-table-fixed-layout`,d.fixedLayout)},exportAs:[`matTable`],features:[TA([{provide:Ve,useExisting:n},{provide:E,useExisting:n},{provide:re,useValue:null}]),Kw],ngContentSelectors:t,decls:5,vars:2,consts:[[`role`,`rowgroup`],[`headerRowOutlet`,``],[`role`,`rowgroup`,1,`mdc-data-table__content`],[`rowOutlet`,``],[`noDataRowOutlet`,``],[`footerRowOutlet`,``]],template:function(l,d){l&1&&(qN(e),GN(0),GN(1,1),_N(2,a,1,0),_N(3,i,7,0)(4,r,4,0)),l&2&&(P_(2),AN(d._isServer?2:-1),P_(),AN(d._isNativeHtmlTable?3:4))},dependencies:[Le,Ae,He,Be],styles:[`.mat-mdc-table-sticky {
+`,
+        ],
+        encapsulation: 2,
+        changeDetection: 1,
+      });
+    })();
+  }
+  return n;
+})();
+function be(n, s) {
+  return n.concat(Array.from(s));
+}
+function Ft(n, s) {
+  let e = s.toUpperCase(),
+    t = n.viewContainer.element.nativeElement;
+  for (; t;) {
+    let a = t.nodeType === 1 ? t.nodeName : null;
+    if (a === e) return t;
+    if (a === `TABLE`) break;
+    t = t.parentNode;
+  }
+  return null;
+}
+var Lt = (() => {
+  class n {
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵmod = ns({ type: n });
+    static ɵinj = go({ imports: [nn] });
+  }
+  return n;
+})();
+var Kn = (() => {
+  class n extends Ve {
+    stickyCssClass = `mat-mdc-table-sticky`;
+    needsPositionStickyOnElement = !1;
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵcmp = (function () {
+      let e = [[[`caption`]], [[`colgroup`], [`col`]], `*`],
+        t = [`caption`, `colgroup, col`, `*`];
+      function a(c, l) {
+        c & 1 && GN(0, 2);
+      }
+      function i(c, l) {
+        c & 1 &&
+          (Sc(0, `thead`, 0),
+          ob(1, 1),
+          up(),
+          Sc(2, `tbody`, 2),
+          ob(3, 3)(4, 4),
+          up(),
+          Sc(5, `tfoot`, 0),
+          ob(6, 5),
+          up());
+      }
+      function r(c, l) {
+        c & 1 && ob(0, 1)(1, 3)(2, 4)(3, 5);
+      }
+      return sp({
+        type: n,
+        selectors: [[`mat-table`], [`table`, `mat-table`, ``]],
+        hostAttrs: [1, `mat-mdc-table`, `mdc-data-table__table`],
+        hostVars: 2,
+        hostBindings: function (l, d) {
+          l & 2 && mb(`mat-table-fixed-layout`, d.fixedLayout);
+        },
+        exportAs: [`matTable`],
+        features: [
+          TA([
+            { provide: Ve, useExisting: n },
+            { provide: E, useExisting: n },
+            { provide: re, useValue: null },
+          ]),
+          Kw,
+        ],
+        ngContentSelectors: t,
+        decls: 5,
+        vars: 2,
+        consts: [
+          [`role`, `rowgroup`],
+          [`headerRowOutlet`, ``],
+          [`role`, `rowgroup`, 1, `mdc-data-table__content`],
+          [`rowOutlet`, ``],
+          [`noDataRowOutlet`, ``],
+          [`footerRowOutlet`, ``],
+        ],
+        template: function (l, d) {
+          (l & 1 && (qN(e), GN(0), GN(1, 1), _N(2, a, 1, 0), _N(3, i, 7, 0)(4, r, 4, 0)),
+            l & 2 && (P_(2), AN(d._isServer ? 2 : -1), P_(), AN(d._isNativeHtmlTable ? 3 : 4)));
+        },
+        dependencies: [Le, Ae, He, Be],
+        styles: [
+          `.mat-mdc-table-sticky {
   position: sticky !important;
 }
 
@@ -279,4 +2307,367 @@ mat-cell.mat-mdc-cell,
 mat-footer-cell.mat-mdc-footer-cell {
   align-self: stretch;
 }
-`],encapsulation:2,changeDetection:1})})()}return n})();var Xn=(()=>{class n extends De{static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[``,`matCellDef`,``]],features:[TA([{provide:De,useExisting:n}]),Kw]})}return n})();var Yn=(()=>{class n extends Re{static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[``,`matHeaderCellDef`,``]],features:[TA([{provide:Re,useExisting:n}]),Kw]})}return n})();var Zn=(()=>{class n extends G{get name(){return this._name}set name(e){this._setNameInput(e)}_updateColumnCssClassName(){super._updateColumnCssClassName(),this._columnCssClassName.push(`mat-column-${this.cssClassFriendlyName}`)}static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[``,`matColumnDef`,``]],inputs:{name:[0,`matColumnDef`,`name`]},features:[TA([{provide:G,useExisting:n}]),Kw]})}return n})();var Jn=(()=>{class n extends zt{static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[`mat-header-cell`],[`th`,`mat-header-cell`,``]],hostAttrs:[`role`,`columnheader`,1,`mat-mdc-header-cell`,`mdc-data-table__header-cell`],features:[Kw]})}return n})();var ea=(()=>{class n extends Pt{static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[`mat-cell`],[`td`,`mat-cell`,``]],hostAttrs:[1,`mat-mdc-cell`,`mdc-data-table__cell`],features:[Kw]})}return n})();var ta=(()=>{class n extends se{static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[``,`matHeaderRowDef`,``]],inputs:{columns:[0,`matHeaderRowDef`,`columns`],sticky:[2,`matHeaderRowDefSticky`,`sticky`,Kc]},features:[TA([{provide:se,useExisting:n}]),Kw]})}return n})();var na=(()=>{class n extends ke{static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵdir=kr({type:n,selectors:[[``,`matRowDef`,``]],inputs:{columns:[0,`matRowDefColumns`,`columns`],when:[0,`matRowDefWhen`,`when`]},features:[TA([{provide:ke,useExisting:n}]),Kw]})}return n})();var aa=(()=>{class n extends ze{static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵcmp=sp({type:n,selectors:[[`mat-header-row`],[`tr`,`mat-header-row`,``]],hostAttrs:[`role`,`row`,1,`mat-mdc-header-row`,`mdc-data-table__header-row`],exportAs:[`matHeaderRow`],features:[TA([{provide:ze,useExisting:n}]),Kw],decls:1,vars:0,consts:[[`cdkCellOutlet`,``]],template:function(t,a){t&1&&ob(0,0)},dependencies:[V],encapsulation:2,changeDetection:1})}return n})();var ia=(()=>{class n extends Pe{static ɵfac=(()=>{let e;return function(a){return(e||(e=bv(n)))(a||n)}})();static ɵcmp=sp({type:n,selectors:[[`mat-row`],[`tr`,`mat-row`,``]],hostAttrs:[`role`,`row`,1,`mat-mdc-row`,`mdc-data-table__row`],exportAs:[`matRow`],features:[TA([{provide:Pe,useExisting:n}]),Kw],decls:1,vars:0,consts:[[`cdkCellOutlet`,``]],template:function(t,a){t&1&&ob(0,0)},dependencies:[V],encapsulation:2,changeDetection:1})}return n})();var oa=(()=>{class n{static ɵfac=function(t){return new(t||n)};static ɵmod=ns({type:n});static ɵinj=go({imports:[Lt,X]})}return n})();function Kt(n,s){if(n&1&&(Sc(0,`mat-form-field`,1)(1,`input`,2),E0(),up()(),Sc(2,`mat-form-field`,3)(3,`mat-select`,4),E0(),Sc(4,`mat-option`,5),yA(5,`Contains`),up(),Sc(6,`mat-option`,6),yA(7,`Starts with`),up(),Sc(8,`mat-option`,7),yA(9,`Ends with`),up(),Sc(10,`mat-option`,8),yA(11,`Equals`),up(),Sc(12,`mat-option`,9),yA(13,`Not equal`),up()()()),n&2){let e=$N();P_(),tb(`placeholder`,e.placeholder())(`formControl`,e.textControl),Uc(`aria-label`,e.placeholder()),I0(),P_(2),eb(`aria-label`,e.placeholder()+` operator`),tb(`formControl`,e.operatorControl),I0()}}function Xt(n,s){if(n&1&&(Sc(0,`mat-form-field`,10)(1,`mat-select`,11),E0(),Sc(2,`mat-option`,12),yA(3,`All`),up(),Sc(4,`mat-option`,13),yA(5,`Active`),up(),Sc(6,`mat-option`,14),yA(7,`Inactive`),up()()(),Sc(8,`mat-form-field`,3)(9,`mat-select`,15),E0(),Sc(10,`mat-option`,8),yA(11,`Equals`),up(),Sc(12,`mat-option`,9),yA(13,`Not equal`),up()()()),n&2){let e=$N();P_(),tb(`formControl`,e.statusControl),I0(),P_(8),tb(`formControl`,e.operatorControl),I0()}}var Bt=class n{destroyRef=b(je);type=Yc(`text`);placeholder=Yc(`Filter...`);filterChange=n3();operatorControl=new Fr(`contains`,{nonNullable:!0});textControl=new Fr(``,{nonNullable:!0});statusControl=new Fr(``,{nonNullable:!0});constructor(){this.textControl.valueChanges.pipe(um(300),fm(),U(this.destroyRef)).subscribe(s=>{this.emitChange(s,this.operatorControl.value)}),this.statusControl.valueChanges.pipe(um(400),fm(),U(this.destroyRef)).subscribe(s=>{this.emitChange(s,this.operatorControl.value)}),this.statusControl.valueChanges.pipe(fm(),U(this.destroyRef)).subscribe(s=>{this.emitChange(s,this.operatorControl.value)}),this.operatorControl.valueChanges.pipe(fm(),U(this.destroyRef)).subscribe(s=>{let e=this.type()===`status`?this.statusControl.value:this.textControl.value;e&&this.emitChange(e,s)})}ngOnInit(){this.type()===`status`&&this.operatorControl.setValue(`equals`)}emitChange(s,e){this.filterChange.emit({value:s.trim(),operator:e})}reset(){this.textControl.setValue(``,{emitEvent:!1}),this.statusControl.setValue(``,{emitEvent:!1}),this.operatorControl.setValue(this.type()===`status`?`equals`:`contains`,{emitEvent:!1})}static ɵfac=function(e){return new(e||n)};static ɵcmp=sp({type:n,selectors:[[`app-column-filter`]],inputs:{type:[1,`type`],placeholder:[1,`placeholder`]},outputs:{filterChange:`filterChange`},decls:3,vars:3,consts:[[1,`column-filter-container`],[`appearance`,`outline`,`subscriptSizing`,`dynamic`,1,`filter-input`],[`matInput`,``,`type`,`text`,`autocomplete`,`off`,3,`placeholder`,`formControl`],[`appearance`,`outline`,`subscriptSizing`,`dynamic`,1,`operator-select`],[3,`aria-label`,`formControl`],[`value`,`contains`],[`value`,`startsWith`],[`value`,`endsWith`],[`value`,`equals`],[`value`,`notEquals`],[`appearance`,`outline`,`subscriptSizing`,`dynamic`,1,`status-select`],[`aria-label`,`Status filter`,3,`formControl`],[`value`,``],[`value`,`true`],[`value`,`false`],[`aria-label`,`Status operator`,3,`formControl`]],template:function(e,t){e&1&&(Sc(0,`div`,0),_N(1,Kt,14,5)(2,Xt,14,2),up()),e&2&&(mb(`status-filter`,t.type()===`status`),P_(),AN(t.type()===`text`?1:2))},dependencies:[Fo,$n,Eo,Lr,Qe,ki,$l,Wl,cl,dl,Mt],styles:[`.column-filter-container[_ngcontent-%COMP%]{display:flex;align-items:center;gap:4px;margin:2px 0;font-weight:400}.operator-select[_ngcontent-%COMP%]{width:105px;font-size:12px}.filter-input[_ngcontent-%COMP%], .status-select[_ngcontent-%COMP%]{min-width:90px;flex:1;font-size:13px}[_nghost-%COMP%]     .mat-mdc-form-field-infix{min-height:15px!important;padding-top:0!important;padding-bottom:0!important}[_nghost-%COMP%]     .mat-mdc-text-field-wrapper{padding:0 8px!important}[_nghost-%COMP%]     input.mat-mdc-input-element{height:15px!important;padding:0!important;margin:0!important;line-height:15px!important}[_nghost-%COMP%]     .mat-mdc-select-trigger{height:15px!important;line-height:15px!important}[_nghost-%COMP%]     .mat-mdc-form-field-subscript-wrapper{display:none!important}`]})};export{Ut as a,Zn as c,ia as d,na as f,ta as h,Kn as i,aa as l,pn as m,G as n,Xn as o,oa as p,Jn as r,Yn as s,Bt as t,ea as u};
+`,
+        ],
+        encapsulation: 2,
+        changeDetection: 1,
+      });
+    })();
+  }
+  return n;
+})();
+var Xn = (() => {
+  class n extends De {
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `matCellDef`, ``]],
+      features: [TA([{ provide: De, useExisting: n }]), Kw],
+    });
+  }
+  return n;
+})();
+var Yn = (() => {
+  class n extends Re {
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `matHeaderCellDef`, ``]],
+      features: [TA([{ provide: Re, useExisting: n }]), Kw],
+    });
+  }
+  return n;
+})();
+var Zn = (() => {
+  class n extends G {
+    get name() {
+      return this._name;
+    }
+    set name(e) {
+      this._setNameInput(e);
+    }
+    _updateColumnCssClassName() {
+      (super._updateColumnCssClassName(),
+        this._columnCssClassName.push(`mat-column-${this.cssClassFriendlyName}`));
+    }
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `matColumnDef`, ``]],
+      inputs: { name: [0, `matColumnDef`, `name`] },
+      features: [TA([{ provide: G, useExisting: n }]), Kw],
+    });
+  }
+  return n;
+})();
+var Jn = (() => {
+  class n extends zt {
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[`mat-header-cell`], [`th`, `mat-header-cell`, ``]],
+      hostAttrs: [`role`, `columnheader`, 1, `mat-mdc-header-cell`, `mdc-data-table__header-cell`],
+      features: [Kw],
+    });
+  }
+  return n;
+})();
+var ea = (() => {
+  class n extends Pt {
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[`mat-cell`], [`td`, `mat-cell`, ``]],
+      hostAttrs: [1, `mat-mdc-cell`, `mdc-data-table__cell`],
+      features: [Kw],
+    });
+  }
+  return n;
+})();
+var ta = (() => {
+  class n extends se {
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `matHeaderRowDef`, ``]],
+      inputs: {
+        columns: [0, `matHeaderRowDef`, `columns`],
+        sticky: [2, `matHeaderRowDefSticky`, `sticky`, Kc],
+      },
+      features: [TA([{ provide: se, useExisting: n }]), Kw],
+    });
+  }
+  return n;
+})();
+var na = (() => {
+  class n extends ke {
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵdir = kr({
+      type: n,
+      selectors: [[``, `matRowDef`, ``]],
+      inputs: { columns: [0, `matRowDefColumns`, `columns`], when: [0, `matRowDefWhen`, `when`] },
+      features: [TA([{ provide: ke, useExisting: n }]), Kw],
+    });
+  }
+  return n;
+})();
+var aa = (() => {
+  class n extends ze {
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵcmp = sp({
+      type: n,
+      selectors: [[`mat-header-row`], [`tr`, `mat-header-row`, ``]],
+      hostAttrs: [`role`, `row`, 1, `mat-mdc-header-row`, `mdc-data-table__header-row`],
+      exportAs: [`matHeaderRow`],
+      features: [TA([{ provide: ze, useExisting: n }]), Kw],
+      decls: 1,
+      vars: 0,
+      consts: [[`cdkCellOutlet`, ``]],
+      template: function (t, a) {
+        t & 1 && ob(0, 0);
+      },
+      dependencies: [V],
+      encapsulation: 2,
+      changeDetection: 1,
+    });
+  }
+  return n;
+})();
+var ia = (() => {
+  class n extends Pe {
+    static ɵfac = (() => {
+      let e;
+      return function (a) {
+        return (e || (e = bv(n)))(a || n);
+      };
+    })();
+    static ɵcmp = sp({
+      type: n,
+      selectors: [[`mat-row`], [`tr`, `mat-row`, ``]],
+      hostAttrs: [`role`, `row`, 1, `mat-mdc-row`, `mdc-data-table__row`],
+      exportAs: [`matRow`],
+      features: [TA([{ provide: Pe, useExisting: n }]), Kw],
+      decls: 1,
+      vars: 0,
+      consts: [[`cdkCellOutlet`, ``]],
+      template: function (t, a) {
+        t & 1 && ob(0, 0);
+      },
+      dependencies: [V],
+      encapsulation: 2,
+      changeDetection: 1,
+    });
+  }
+  return n;
+})();
+var oa = (() => {
+  class n {
+    static ɵfac = function (t) {
+      return new (t || n)();
+    };
+    static ɵmod = ns({ type: n });
+    static ɵinj = go({ imports: [Lt, X] });
+  }
+  return n;
+})();
+function Kt(n, s) {
+  if (
+    (n & 1 &&
+      (Sc(0, `mat-form-field`, 1)(1, `input`, 2),
+      E0(),
+      up()(),
+      Sc(2, `mat-form-field`, 3)(3, `mat-select`, 4),
+      E0(),
+      Sc(4, `mat-option`, 5),
+      yA(5, `Contains`),
+      up(),
+      Sc(6, `mat-option`, 6),
+      yA(7, `Starts with`),
+      up(),
+      Sc(8, `mat-option`, 7),
+      yA(9, `Ends with`),
+      up(),
+      Sc(10, `mat-option`, 8),
+      yA(11, `Equals`),
+      up(),
+      Sc(12, `mat-option`, 9),
+      yA(13, `Not equal`),
+      up()()()),
+    n & 2)
+  ) {
+    let e = $N();
+    (P_(),
+      tb(`placeholder`, e.placeholder())(`formControl`, e.textControl),
+      Uc(`aria-label`, e.placeholder()),
+      I0(),
+      P_(2),
+      eb(`aria-label`, e.placeholder() + ` operator`),
+      tb(`formControl`, e.operatorControl),
+      I0());
+  }
+}
+function Xt(n, s) {
+  if (
+    (n & 1 &&
+      (Sc(0, `mat-form-field`, 10)(1, `mat-select`, 11),
+      E0(),
+      Sc(2, `mat-option`, 12),
+      yA(3, `All`),
+      up(),
+      Sc(4, `mat-option`, 13),
+      yA(5, `Active`),
+      up(),
+      Sc(6, `mat-option`, 14),
+      yA(7, `Inactive`),
+      up()()(),
+      Sc(8, `mat-form-field`, 3)(9, `mat-select`, 15),
+      E0(),
+      Sc(10, `mat-option`, 8),
+      yA(11, `Equals`),
+      up(),
+      Sc(12, `mat-option`, 9),
+      yA(13, `Not equal`),
+      up()()()),
+    n & 2)
+  ) {
+    let e = $N();
+    (P_(),
+      tb(`formControl`, e.statusControl),
+      I0(),
+      P_(8),
+      tb(`formControl`, e.operatorControl),
+      I0());
+  }
+}
+var Bt = class n {
+  destroyRef = b(je);
+  type = Yc(`text`);
+  placeholder = Yc(`Filter...`);
+  filterChange = n3();
+  operatorControl = new Fr(`contains`, { nonNullable: !0 });
+  textControl = new Fr(``, { nonNullable: !0 });
+  statusControl = new Fr(``, { nonNullable: !0 });
+  constructor() {
+    (this.textControl.valueChanges.pipe(um(300), fm(), U(this.destroyRef)).subscribe((s) => {
+      this.emitChange(s, this.operatorControl.value);
+    }),
+      this.statusControl.valueChanges.pipe(um(400), fm(), U(this.destroyRef)).subscribe((s) => {
+        this.emitChange(s, this.operatorControl.value);
+      }),
+      this.statusControl.valueChanges.pipe(fm(), U(this.destroyRef)).subscribe((s) => {
+        this.emitChange(s, this.operatorControl.value);
+      }),
+      this.operatorControl.valueChanges.pipe(fm(), U(this.destroyRef)).subscribe((s) => {
+        let e = this.type() === `status` ? this.statusControl.value : this.textControl.value;
+        e && this.emitChange(e, s);
+      }));
+  }
+  ngOnInit() {
+    this.type() === `status` && this.operatorControl.setValue(`equals`);
+  }
+  emitChange(s, e) {
+    this.filterChange.emit({ value: s.trim(), operator: e });
+  }
+  reset() {
+    (this.textControl.setValue(``, { emitEvent: !1 }),
+      this.statusControl.setValue(``, { emitEvent: !1 }),
+      this.operatorControl.setValue(this.type() === `status` ? `equals` : `contains`, {
+        emitEvent: !1,
+      }));
+  }
+  static ɵfac = function (e) {
+    return new (e || n)();
+  };
+  static ɵcmp = sp({
+    type: n,
+    selectors: [[`app-column-filter`]],
+    inputs: { type: [1, `type`], placeholder: [1, `placeholder`] },
+    outputs: { filterChange: `filterChange` },
+    decls: 3,
+    vars: 3,
+    consts: [
+      [1, `column-filter-container`],
+      [`appearance`, `outline`, `subscriptSizing`, `dynamic`, 1, `filter-input`],
+      [`matInput`, ``, `type`, `text`, `autocomplete`, `off`, 3, `placeholder`, `formControl`],
+      [`appearance`, `outline`, `subscriptSizing`, `dynamic`, 1, `operator-select`],
+      [3, `aria-label`, `formControl`],
+      [`value`, `contains`],
+      [`value`, `startsWith`],
+      [`value`, `endsWith`],
+      [`value`, `equals`],
+      [`value`, `notEquals`],
+      [`appearance`, `outline`, `subscriptSizing`, `dynamic`, 1, `status-select`],
+      [`aria-label`, `Status filter`, 3, `formControl`],
+      [`value`, ``],
+      [`value`, `true`],
+      [`value`, `false`],
+      [`aria-label`, `Status operator`, 3, `formControl`],
+    ],
+    template: function (e, t) {
+      (e & 1 && (Sc(0, `div`, 0), _N(1, Kt, 14, 5)(2, Xt, 14, 2), up()),
+        e & 2 &&
+          (mb(`status-filter`, t.type() === `status`), P_(), AN(t.type() === `text` ? 1 : 2)));
+    },
+    dependencies: [Fo, $n, Eo, Lr, Qe, ki, $l, Wl, cl, dl, Mt],
+    styles: [
+      `.column-filter-container[_ngcontent-%COMP%]{display:flex;align-items:center;gap:4px;margin:2px 0;font-weight:400}.operator-select[_ngcontent-%COMP%]{width:105px;font-size:12px}.filter-input[_ngcontent-%COMP%], .status-select[_ngcontent-%COMP%]{min-width:90px;flex:1;font-size:13px}[_nghost-%COMP%]     .mat-mdc-form-field-infix{min-height:15px!important;padding-top:0!important;padding-bottom:0!important}[_nghost-%COMP%]     .mat-mdc-text-field-wrapper{padding:0 8px!important}[_nghost-%COMP%]     input.mat-mdc-input-element{height:15px!important;padding:0!important;margin:0!important;line-height:15px!important}[_nghost-%COMP%]     .mat-mdc-select-trigger{height:15px!important;line-height:15px!important}[_nghost-%COMP%]     .mat-mdc-form-field-subscript-wrapper{display:none!important}`,
+    ],
+  });
+};
+export {
+  Ut as a,
+  Zn as c,
+  ia as d,
+  na as f,
+  ta as h,
+  Kn as i,
+  aa as l,
+  pn as m,
+  G as n,
+  Xn as o,
+  oa as p,
+  Jn as r,
+  Yn as s,
+  Bt as t,
+  ea as u,
+};

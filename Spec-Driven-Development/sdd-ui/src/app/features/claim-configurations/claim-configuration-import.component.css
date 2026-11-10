@@ -1,0 +1,107 @@
+.page {
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+}
+.page-header,
+.header-actions,
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.page-header {
+  margin-bottom: 20px;
+}
+.header-actions {
+  justify-content: flex-end;
+}
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+h1 {
+  margin-bottom: 4px;
+  color: var(--sdd-text);
+  font-size: 1.5rem;
+}
+h2 {
+  margin-bottom: 8px;
+  font-size: 1.125rem;
+}
+h3 {
+  margin: 20px 0 10px;
+  font-size: 1rem;
+}
+.subtitle,
+.file-name,
+.preview-header p {
+  margin-bottom: 0;
+  color: var(--sdd-muted);
+}
+.card {
+  margin-bottom: 16px;
+  padding: 20px;
+  border: 1px solid var(--sdd-border);
+  border-radius: 8px;
+  background: var(--sdd-surface);
+}
+.instructions p:last-child {
+  margin-bottom: 0;
+}
+.uploader {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+}
+.uploader label {
+  font-weight: 600;
+}
+.message {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 6px;
+}
+.error,
+.invalid {
+  color: var(--sdd-danger, #b3261e);
+}
+.success,
+.ready {
+  color: var(--sdd-success, #216e39);
+}
+.skipped {
+  color: var(--sdd-muted);
+}
+.table-scroll {
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--sdd-border);
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  font-weight: 600;
+}
+.preview-header {
+  margin-bottom: 16px;
+}
+@media (max-width: 700px) {
+  .preview-header,
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .header-actions {
+    justify-content: flex-end;
+  }
+}

@@ -13,8 +13,34 @@ namespace SDD.API.Controllers;
 public sealed class ClaimConfigurationsController(
     ClaimConfigurationService configurations,
     ClaimConfigurationProductService products,
+    ClaimConfigurationImportService imports,
     IOptions<ClaimConfigurationOptions> companyOptions) : ControllerBase
 {
+    [HttpPost("import/preview")]
+    public async Task<ActionResult<ClaimConfigurationImportPreviewDto>> PreviewImport(
+        ClaimConfigurationImportRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!companyOptions.Value.WritesEnabled) return WritesDisabledProblem();
+        return await imports.PreviewAsync(request, cancellationToken);
+    }
+
+    [HttpPost("import")]
+    public async Task<ActionResult<ClaimConfigurationImportResultDto>> Import(
+        ClaimConfigurationImportRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!companyOptions.Value.WritesEnabled) return WritesDisabledProblem();
+        var (result, preview) = await imports.ImportAsync(request, cancellationToken);
+        if (result is not null) return Ok(result);
+
+        var errors = new Dictionary<string, string[]>();
+        foreach (var message in preview.Errors) errors[$"workbook_{errors.Count + 1}"] = [message];
+        foreach (var row in preview.Configurations.Where(row => !row.IsValid)) errors[$"ccm_row_{row.RowNumber}"] = row.Errors;
+        foreach (var row in preview.ProductLinks.Where(row => !row.IsValid)) errors[$"product_link_row_{row.RowNumber}"] = row.Errors;
+        return ValidationProblem(new ValidationProblemDetails(errors));
+    }
+
     [HttpGet("available-products")]
     public async Task<ActionResult<PaginatedResult<AvailableProductDto>>> AvailableProducts(
         int page = 1,

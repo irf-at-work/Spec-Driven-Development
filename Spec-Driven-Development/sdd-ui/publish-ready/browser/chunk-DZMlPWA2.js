@@ -1,1 +1,862 @@
-import{At as bE,Ct as _N,Hn as wp,In as up,Jn as yE,L as Ko,P as In,Sn as pp,Tn as r3,Ut as fb,Wt as fe,Xn as n,Y as P_,_t as YN,a as U,an as je$1,b as Eb,c as AN,dt as Wm,f as C,hn as mp,ht as Xw,it as Sc,j as I0,jn as tb,k as Hc,kn as sp,kt as b,l as Ad,m as Ce,o as $N,ot as UN,qn as yA,rn as hp,t as n$1,ut as Vc,v as E0,vt as Yc,y as EE,yt as Ym}from"./main-RR6WM3XY.js";import{c as Rs,i as Hi}from"./chunk-CnuPNpsB.js";import{D as ko,T as ht,a as Eo,d as Me,g as We$1,i as Do,o as Fo,s as Fr,u as Lr}from"./chunk-v95b3x4p.js";import{a as ft,c as rn,i as dn,n as Xn,o as ln,r as cn,s as pt,t as In$1}from"./chunk-CbUCfSIQ.js";import{a as Ut,c as Zn,d as ia,f as na,h as ta,i as Kn,l as aa,m as pn,o as Xn$1,p as oa,r as Jn,s as Yn,t as Bt,u as ea}from"./chunk-CUrU3FYc.js";function Ee(a,e){if(a&1){let t=UN();Sc(0,`div`,2)(1,`app-icon-button`,17),Hc(`clicked`,function(){Wm(t);let l=$N();return Ym(l.importModels())}),up(),Sc(2,`app-icon-button`,18),Hc(`clicked`,function(){Wm(t);let l=$N();return Ym(l.addModel())}),up()()}}function De(a,e){a&1&&Vc(0,`mat-progress-bar`,3)}function Le(a,e){if(a&1){let t=UN();Sc(0,`th`,19)(1,`div`),yA(2,`Model Code`),up(),Sc(3,`app-column-filter`,20),Hc(`filterChange`,function(l){Wm(t);let s=$N();return Ym(s.onFilterChange(`modelCode`,l))}),up()()}}function Te(a,e){if(a&1&&(Sc(0,`td`,21),yA(1),up()),a&2){let t=e.$implicit;P_(),Eb(t.modelCode)}}function Pe(a,e){if(a&1){let t=UN();Sc(0,`th`,19)(1,`div`),yA(2,`Model Name`),up(),Sc(3,`app-column-filter`,22),Hc(`filterChange`,function(l){Wm(t);let s=$N();return Ym(s.onFilterChange(`modelName`,l))}),up()()}}function Oe(a,e){if(a&1&&(Sc(0,`td`,21),yA(1),up()),a&2){let t=e.$implicit;P_(),Eb(t.modelName)}}function Ae(a,e){if(a&1){let t=UN();Sc(0,`th`,19)(1,`div`),yA(2,`Short Name`),up(),Sc(3,`app-column-filter`,23),Hc(`filterChange`,function(l){Wm(t);let s=$N();return Ym(s.onFilterChange(`shortName`,l))}),up()()}}function Re(a,e){if(a&1&&(Sc(0,`td`,21),yA(1),up()),a&2){let t=e.$implicit;P_(),Eb(t.shortName)}}function Ie(a,e){if(a&1){let t=UN();Sc(0,`th`,19)(1,`div`),yA(2,`Status`),up(),Sc(3,`app-column-filter`,24),Hc(`filterChange`,function(l){Wm(t);let s=$N();return Ym(s.onFilterChange(`status`,l))}),up()()}}function ze(a,e){if(a&1&&(Sc(0,`td`,21),yA(1),up()),a&2){let t=e.$implicit;P_(),Eb(t.active?`Active`:`Inactive`)}}function He(a,e){a&1&&(Sc(0,`th`,27),yA(1,`Actions`),up())}function Be(a,e){if(a&1){let t=UN();Sc(0,`td`,28)(1,`app-icon-button`,29),Hc(`clicked`,function(){let l=Wm(t).$implicit,s=$N(2);return Ym(s.editModel(l))}),up(),Sc(2,`app-icon-button`,30),Hc(`clicked`,function(){let l=Wm(t).$implicit,s=$N(2);return Ym(s.deleteModel(l))}),up()()}if(a&2){let t=e.$implicit;P_(),tb(`tooltip`,`Edit `+t.modelCode)(`accessibleName`,`Edit `+t.modelCode),P_(),tb(`danger`,!0)(`tooltip`,`Delete `+t.modelCode)(`accessibleName`,`Delete `+t.modelCode)}}function Ue(a,e){a&1&&(pp(0,12),Xw(1,He,2,0,`th`,25)(2,Be,3,5,`td`,26),hp())}function $e(a,e){a&1&&Vc(0,`tr`,31)}function je(a,e){a&1&&Vc(0,`tr`,32)}function qe(a,e){if(a&1&&(Sc(0,`p`,15),yA(1),up()),a&2){let t=$N();P_(),Eb(t.emptyMessage())}}var F=class a{router=b(Ko);modelsClient=b(EE);notifications=b(yE);destroyRef=b(je$1);makeCode=Yc.required();makeEditable=Yc(!1);pageSizeOptions=[10,25,50];pageSize=Ce(10);items=Ce([]);totalCount=Ce(0);pageIndex=Ce(0);loading=Ce(!1);modelCodeFilter=Ce({value:``,operator:`contains`});modelNameFilter=Ce({value:``,operator:`contains`});shortNameFilter=Ce({value:``,operator:`contains`});statusFilter=Ce({value:``,operator:`equals`});columns=wp(()=>this.makeEditable()?[`modelCode`,`modelName`,`shortName`,`status`,`actions`]:[`modelCode`,`modelName`,`shortName`,`status`]);hasActiveFilter=wp(()=>!!(this.modelCodeFilter().value||this.modelNameFilter().value||this.shortNameFilter().value||this.statusFilter().value));emptyMessage=wp(()=>this.hasActiveFilter()?`No models match your filters. Try adjusting or clearing the filter values.`:this.makeEditable()?`No models have been added for this make yet. Use Add to create the first model.`:`No models have been added for this make.`);constructor(){Ad(()=>{this.makeCode()&&fe(()=>{this.pageIndex.set(0),this.load()})})}hasUnsavedChanges(){return!1}load(){let e=this.makeCode();if(!e){this.items.set([]),this.totalCount.set(0);return}this.loading.set(!0);let t=this.statusFilter().value?this.statusFilter().value===`true`:void 0,i=this.statusFilter().value?this.statusFilter().operator:void 0;this.modelsClient.list(e,this.pageIndex()+1,this.modelCodeFilter().value||void 0,this.modelCodeFilter().value?this.modelCodeFilter().operator:void 0,this.modelNameFilter().value||void 0,this.modelNameFilter().value?this.modelNameFilter().operator:void 0,this.shortNameFilter().value||void 0,this.shortNameFilter().value?this.shortNameFilter().operator:void 0,t,i,this.pageSize()).pipe(U(this.destroyRef)).subscribe({next:l=>{this.items.set(l.items??[]),this.totalCount.set(l.totalCount??0),this.loading.set(!1)},error:()=>{this.loading.set(!1),this.notifications.error(`The vehicle models could not be loaded.`,`Load error`)}})}onFilterChange(e,t){e===`modelCode`?this.modelCodeFilter.set(t):e===`modelName`?this.modelNameFilter.set(t):e===`shortName`?this.shortNameFilter.set(t):e===`status`&&this.statusFilter.set(t),this.pageIndex.set(0),this.load()}onPage(e){this.pageIndex.set(e.pageIndex),this.pageSize.set(e.pageSize),this.load()}addModel(){this.router.navigate([`/vehicle-makes`,this.makeCode(),`models`,`new`])}importModels(){this.router.navigate([`/vehicle-makes`,this.makeCode(),`models`,`import`])}editModel(e){this.router.navigate([`/vehicle-makes`,this.makeCode(),`models`,e.modelCode,`edit`])}async deleteModel(e){let t=e.modelCode;await this.notifications.confirm({title:`Delete vehicle model ${t}?`,text:`This deletion is permanent and cannot be undone.`,confirmButtonText:`Delete permanently`,cancelButtonText:`Cancel`,isDanger:!0})&&this.modelsClient.delete(this.makeCode(),t).pipe(U(this.destroyRef)).subscribe({next:()=>{this.notifications.success(`Vehicle model deleted.`),this.load()},error:()=>{this.notifications.error(`The vehicle model could not be deleted.`,`Delete failed`)}})}static ɵfac=function(t){return new(t||a)};static ɵcmp=sp({type:a,selectors:[[`app-vehicle-model-list`]],inputs:{makeCode:[1,`makeCode`],makeEditable:[1,`makeEditable`]},decls:25,vars:12,consts:[[1,`model-list`],[1,`model-header`],[1,`header-actions`],[`mode`,`indeterminate`,`aria-label`,`Loading vehicle models`],[1,`table-scroll`],[`mat-table`,``,3,`dataSource`],[`matColumnDef`,`modelCode`],[`mat-header-cell`,``,4,`matHeaderCellDef`],[`mat-cell`,``,4,`matCellDef`],[`matColumnDef`,`modelName`],[`matColumnDef`,`shortName`],[`matColumnDef`,`status`],[`matColumnDef`,`actions`],[`mat-header-row`,``,4,`matHeaderRowDef`],[`mat-row`,``,4,`matRowDef`,`matRowDefColumns`],[1,`state`],[`aria-label`,`Select a page of vehicle models`,3,`page`,`length`,`pageSize`,`pageSizeOptions`,`pageIndex`,`showFirstLastButtons`],[`action`,`upload`,`tooltip`,`Import vehicle models`,`accessibleName`,`Import vehicle models`,3,`clicked`],[`action`,`add`,`tooltip`,`Add model`,`accessibleName`,`Add model`,3,`clicked`],[`mat-header-cell`,``],[`placeholder`,`Code...`,3,`filterChange`],[`mat-cell`,``],[`placeholder`,`Name...`,3,`filterChange`],[`placeholder`,`Short name...`,3,`filterChange`],[`type`,`status`,3,`filterChange`],[`mat-header-cell`,``,`class`,`actions-column`,4,`matHeaderCellDef`],[`mat-cell`,``,`class`,`actions-column`,4,`matCellDef`],[`mat-header-cell`,``,1,`actions-column`],[`mat-cell`,``,1,`actions-column`],[`action`,`edit`,3,`clicked`,`tooltip`,`accessibleName`],[`action`,`delete`,3,`clicked`,`danger`,`tooltip`,`accessibleName`],[`mat-header-row`,``],[`mat-row`,``]],template:function(t,i){t&1&&(Sc(0,`section`,0)(1,`header`,1)(2,`h2`),yA(3,`Vehicle Models`),up(),_N(4,Ee,3,0,`div`,2),up(),_N(5,De,1,0,`mat-progress-bar`,3),Sc(6,`div`,4)(7,`table`,5),pp(8,6),Xw(9,Le,4,0,`th`,7)(10,Te,2,1,`td`,8),hp(),pp(11,9),Xw(12,Pe,4,0,`th`,7)(13,Oe,2,1,`td`,8),hp(),pp(14,10),Xw(15,Ae,4,0,`th`,7)(16,Re,2,1,`td`,8),hp(),pp(17,11),Xw(18,Ie,4,0,`th`,7)(19,ze,2,1,`td`,8),hp(),_N(20,Ue,3,0,`ng-container`,12),Xw(21,$e,1,0,`tr`,13)(22,je,1,0,`tr`,14),up()(),_N(23,qe,2,1,`p`,15),Sc(24,`mat-paginator`,16),Hc(`page`,function(s){return i.onPage(s)}),up()()),t&2&&(P_(4),AN(i.makeEditable()?4:-1),P_(),AN(i.loading()?5:-1),P_(2),tb(`dataSource`,i.items()),P_(13),AN(i.makeEditable()?20:-1),P_(),tb(`matHeaderRowDef`,i.columns()),P_(),tb(`matRowDefColumns`,i.columns()),P_(),AN(!i.loading()&&i.items().length===0?23:-1),P_(),tb(`length`,i.totalCount())(`pageSize`,i.pageSize())(`pageSizeOptions`,i.pageSizeOptions)(`pageIndex`,i.pageIndex())(`showFirstLastButtons`,!0))},dependencies:[pn,Ut,Rs,oa,Kn,Yn,ta,Zn,Xn$1,na,Jn,ea,aa,ia,Bt,Hi],styles:[`.model-list[_ngcontent-%COMP%]{margin-top:32px;background:var(--%NS%sdd-surface);border:1px solid var(--%NS%sdd-border);border-radius:8px;padding:24px}.model-header[_ngcontent-%COMP%]{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.model-header[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%]{margin:0;font-size:1.25rem;font-weight:600}.header-actions[_ngcontent-%COMP%]{display:flex;align-items:center;gap:8px}.table-scroll[_ngcontent-%COMP%]{overflow-x:auto}table[_ngcontent-%COMP%]{width:100%}.actions-column[_ngcontent-%COMP%]{width:110px;text-align:right;white-space:nowrap}.state[_ngcontent-%COMP%]{text-align:center;padding:32px 16px;color:var(--%NS%sdd-muted)}`]})};function Ge(a,e){a&1&&(Sc(0,`p`,2),yA(1,`Update the details and save your changes.`),up())}function Qe(a,e){a&1&&(Sc(0,`p`,2),yA(1,`Fields marked * are required.`),up())}function Ze(a,e){if(a&1){let t=UN();Sc(0,`app-icon-button`,20),Hc(`clicked`,function(){Wm(t);let l=$N();return Ym(l.add())}),up()}}function Je(a,e){a&1&&Vc(0,`mat-progress-bar`,5)}function Ke(a,e){if(a&1&&Vc(0,`app-vehicle-model-list`,19),a&2){let t=$N();tb(`makeCode`,t.currentMakeCode())(`makeEditable`,!0)}}var M={makeCode:12,makeName:100,shortName:30,remarks:2e3,arabicMakeName:100,arabicShortName:30,arabicRemarks:2e3};var We=[`remarks`,`arabicMakeName`,`arabicShortName`,`arabicRemarks`];var we=class a{client=b(bE);router=b(Ko);notifications=b(yE);destroyRef=b(je$1);modelList=r3(F);mode=b(In).snapshot.data.mode===`view`?`view`:`create`;heading=this.mode===`create`?`Add vehicle make`:`Vehicle make details`;limits=M;loading=Ce(!1);saving=Ce(!1);additionalOpen=Ce(!1);currentMakeCode=Ce(``);form=new ht({makeCode:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(M.makeCode),Me.pattern(/^[A-Za-z0-9-]+$/)]}),makeName:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(M.makeName)]}),shortName:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(M.shortName)]}),remarks:new Fr(``,{nonNullable:!0,validators:[Me.maxLength(M.remarks)]}),arabicMakeName:new Fr(``,{nonNullable:!0,validators:[Me.maxLength(M.arabicMakeName)]}),arabicShortName:new Fr(``,{nonNullable:!0,validators:[Me.maxLength(M.arabicShortName)]}),arabicRemarks:new Fr(``,{nonNullable:!0,validators:[Me.maxLength(M.arabicRemarks)]}),active:new Fr(!0,{nonNullable:!0})});constructor(){if(this.mode===`view`){let e=n();if(e===null){this.router.navigate([`/vehicle-makes`]);return}this.applyEditState(),this.loadMake(e)}}hasUnsavedChanges(){return this.form.dirty||(this.modelList()?.hasUnsavedChanges()??!1)}back(){this.router.navigate([`/vehicle-makes`])}add(){this.router.navigate([`/vehicle-makes/new`])}save(){if(this.form.markAllAsTouched(),this.form.invalid){this.openAdditionalInformationIfItHasAnError();return}let e=this.form.getRawValue(),t={makeName:e.makeName,shortName:e.shortName,remarks:e.remarks,arabicMakeName:e.arabicMakeName,arabicShortName:e.arabicShortName,arabicRemarks:e.arabicRemarks,active:e.active};if(this.saving.set(!0),this.mode===`create`){this.client.create(C({makeCode:e.makeCode},t)).pipe(U(this.destroyRef)).subscribe({next:()=>{this.saving.set(!1),this.form.markAsPristine(),this.notifications.success(`Vehicle make saved.`),this.back()},error:i=>this.onSaveFailed(i)});return}this.client.update(e.makeCode,t).pipe(U(this.destroyRef)).subscribe({next:i=>{this.saving.set(!1),this.showMake(i),this.notifications.success(`Vehicle make updated.`)},error:i=>this.onSaveFailed(i)})}loadMake(e){this.loading.set(!0),this.client.get(e).pipe(U(this.destroyRef)).subscribe({next:t=>{this.loading.set(!1),this.showMake(t)},error:()=>this.back()})}showMake(e){let t={makeCode:e.makeCode,makeName:e.makeName,shortName:e.shortName,remarks:e.remarks??``,arabicMakeName:e.arabicMakeName??``,arabicShortName:e.arabicShortName??``,arabicRemarks:e.arabicRemarks??``,active:e.active!==!1};this.form.reset(t),this.currentMakeCode.set(t.makeCode),this.additionalOpen.set(t.remarks!==``||t.arabicMakeName!==``||t.arabicShortName!==``||t.arabicRemarks!==``),this.applyEditState()}applyEditState(){this.form.enable(),this.mode===`view`&&this.form.controls.makeCode.disable()}onSaveFailed(e){if(this.saving.set(!1),!n$1(e))throw e;this.showFieldErrors(e.problem)}showFieldErrors(e){let t=this.form.controls;for(let[i,l]of Object.entries(e.fieldErrors)){let s=t[i];s&&l.length>0&&(s.setErrors({server:l[0]}),s.markAsTouched())}this.openAdditionalInformationIfItHasAnError()}openAdditionalInformationIfItHasAnError(){let e=this.form.controls;We.some(t=>e[t].invalid)&&this.additionalOpen.set(!0)}static ɵfac=function(t){return new(t||a)};static ɵcmp=sp({type:a,selectors:[[`app-vehicle-make-form`]],viewQuery:function(t,i){t&1&&fb(i.modelList,F,5),t&2&&YN()},decls:33,vars:32,consts:[[1,`page`],[1,`page-header`],[1,`subtitle`],[`action`,`add`,`tooltip`,`Add vehicle make`,`accessibleName`,`Add vehicle make`],[`action`,`back`,`tooltip`,`Back to list`,`accessibleName`,`Back to list`,3,`clicked`],[`mode`,`indeterminate`,`aria-label`,`Loading the vehicle make`],[`novalidate`,``,1,`card`,3,`ngSubmit`,`formGroup`],[1,`grid`],[`label`,`Make Code`,`patternMessage`,`Make Code can contain only letters, digits and hyphens.`,1,`code`,3,`control`,`maxLength`,`uppercase`],[`label`,`Make Name`,1,`name`,3,`control`,`maxLength`],[`label`,`Short Name`,1,`short`,3,`control`,`maxLength`],[1,`active`,3,`formControl`],[1,`additional`,3,`opened`,`closed`,`expanded`],[`label`,`Remarks`,1,`full`,3,`control`,`maxLength`,`multiline`,`showCounter`],[`label`,`Arabic Make Name`,1,`half`,3,`control`,`maxLength`,`rtl`],[`label`,`Arabic Short Name`,1,`half`,3,`control`,`maxLength`,`rtl`],[`label`,`Arabic Remarks`,1,`full`,3,`control`,`maxLength`,`multiline`,`rtl`,`showCounter`],[1,`actions`],[`mat-flat-button`,``,`type`,`submit`,2,`border-radius`,`15px`,`padding`,`15px`,`color`,`white`,`background-color`,`var(--mat-sys-on-primary-fixed-variant)`,`border`,`0`,`display`,`flex`,`justify-content`,`end`,`align-items`,`end`,3,`disabled`],[3,`makeCode`,`makeEditable`],[`action`,`add`,`tooltip`,`Add vehicle make`,`accessibleName`,`Add vehicle make`,3,`clicked`]],template:function(t,i){t&1&&(Sc(0,`section`,0)(1,`header`,1)(2,`div`)(3,`h1`),yA(4),up(),_N(5,Ge,2,0,`p`,2)(6,Qe,2,0,`p`,2),up(),Sc(7,`div`),_N(8,Ze,1,0,`app-icon-button`,3),Sc(9,`app-icon-button`,4),Hc(`clicked`,function(){return i.back()}),up()()(),_N(10,Je,1,0,`mat-progress-bar`,5),Sc(11,`form`,6),Hc(`ngSubmit`,function(){return i.save()}),Sc(12,`div`,7),Vc(13,`app-limited-text-field`,8)(14,`app-limited-text-field`,9)(15,`app-limited-text-field`,10),Sc(16,`mat-slide-toggle`,11),E0(),yA(17,`Active`),up()(),Sc(18,`mat-expansion-panel`,12),Hc(`opened`,function(){return i.additionalOpen.set(!0)})(`closed`,function(){return i.additionalOpen.set(!1)}),Sc(19,`mat-expansion-panel-header`)(20,`mat-panel-title`),yA(21,`Additional Information`),up(),Sc(22,`mat-panel-description`),yA(23,`Remarks and Arabic names (all optional)`),up()(),Sc(24,`div`,7),Vc(25,`app-limited-text-field`,13)(26,`app-limited-text-field`,14)(27,`app-limited-text-field`,15)(28,`app-limited-text-field`,16),up()(),Sc(29,`div`,17)(30,`button`,18),yA(31),up()()(),_N(32,Ke,1,2,`app-vehicle-model-list`,19),up()),t&2&&(P_(4),mp(` `,i.heading,` `),P_(),AN(i.mode===`view`&&i.currentMakeCode()?5:6),P_(3),AN(i.mode===`view`?8:-1),P_(2),AN(i.loading()?10:-1),P_(),tb(`formGroup`,i.form),P_(2),tb(`control`,i.form.controls.makeCode)(`maxLength`,i.limits.makeCode)(`uppercase`,!0),P_(),tb(`control`,i.form.controls.makeName)(`maxLength`,i.limits.makeName),P_(),tb(`control`,i.form.controls.shortName)(`maxLength`,i.limits.shortName),P_(),tb(`formControl`,i.form.controls.active),I0(),P_(2),tb(`expanded`,i.additionalOpen()),P_(7),tb(`control`,i.form.controls.remarks)(`maxLength`,i.limits.remarks)(`multiline`,!0)(`showCounter`,!0),P_(),tb(`control`,i.form.controls.arabicMakeName)(`maxLength`,i.limits.arabicMakeName)(`rtl`,!0),P_(),tb(`control`,i.form.controls.arabicShortName)(`maxLength`,i.limits.arabicShortName)(`rtl`,!0),P_(),tb(`control`,i.form.controls.arabicRemarks)(`maxLength`,i.limits.arabicRemarks)(`multiline`,!0)(`rtl`,!0)(`showCounter`,!0),P_(2),tb(`disabled`,i.saving()||i.loading()),P_(),mp(` `,i.mode===`create`?`Save vehicle make`:`Save changes`,` `),P_(),AN(i.mode===`view`?32:-1))},dependencies:[Hi,Fo,ko,Eo,Do,Lr,We$1,cn,ft,rn,ln,dn,Rs,In$1,pt,F],styles:[`.page[_ngcontent-%COMP%]{margin:0 auto;padding:24px 24px 48px}.page-header[_ngcontent-%COMP%]{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}h1[_ngcontent-%COMP%]{margin:0 0 4px;font-size:1.5rem;font-weight:600;color:var(--%NS%sdd-text)}.subtitle[_ngcontent-%COMP%]{margin:0;color:var(--%NS%sdd-muted)}.card[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:20px;padding:24px;background:var(--%NS%sdd-surface);border:1px solid var(--%NS%sdd-border);border-radius:8px}.grid[_ngcontent-%COMP%]{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.code[_ngcontent-%COMP%]{grid-column:span 3}.name[_ngcontent-%COMP%]{grid-column:span 6}.short[_ngcontent-%COMP%]{grid-column:span 3}.half[_ngcontent-%COMP%]{grid-column:span 6}.full[_ngcontent-%COMP%]{grid-column:span 12}.additional[_ngcontent-%COMP%]{box-shadow:none;border:1px solid var(--%NS%sdd-border)}.actions[_ngcontent-%COMP%]{display:flex;justify-content:space-between;gap:12px}@media(max-width:700px){.code[_ngcontent-%COMP%], .name[_ngcontent-%COMP%], .short[_ngcontent-%COMP%], .half[_ngcontent-%COMP%]{grid-column:span 12}.page-header[_ngcontent-%COMP%]{flex-direction:column}}`]})};export{we as VehicleMakeFormComponent};
+import {
+  At as bE,
+  Ct as _N,
+  Hn as wp,
+  In as up,
+  Jn as yE,
+  L as Ko,
+  P as In,
+  Sn as pp,
+  Tn as r3,
+  Ut as fb,
+  Wt as fe,
+  Xn as n,
+  Y as P_,
+  _t as YN,
+  a as U,
+  an as je$1,
+  b as Eb,
+  c as AN,
+  dt as Wm,
+  f as C,
+  hn as mp,
+  ht as Xw,
+  it as Sc,
+  j as I0,
+  jn as tb,
+  k as Hc,
+  kn as sp,
+  kt as b,
+  l as Ad,
+  m as Ce,
+  o as $N,
+  ot as UN,
+  qn as yA,
+  rn as hp,
+  t as n$1,
+  ut as Vc,
+  v as E0,
+  vt as Yc,
+  y as EE,
+  yt as Ym,
+} from './main-RR6WM3XY.js';
+import { c as Rs, i as Hi } from './chunk-CnuPNpsB.js';
+import {
+  D as ko,
+  T as ht,
+  a as Eo,
+  d as Me,
+  g as We$1,
+  i as Do,
+  o as Fo,
+  s as Fr,
+  u as Lr,
+} from './chunk-v95b3x4p.js';
+import {
+  a as ft,
+  c as rn,
+  i as dn,
+  n as Xn,
+  o as ln,
+  r as cn,
+  s as pt,
+  t as In$1,
+} from './chunk-CbUCfSIQ.js';
+import {
+  a as Ut,
+  c as Zn,
+  d as ia,
+  f as na,
+  h as ta,
+  i as Kn,
+  l as aa,
+  m as pn,
+  o as Xn$1,
+  p as oa,
+  r as Jn,
+  s as Yn,
+  t as Bt,
+  u as ea,
+} from './chunk-CUrU3FYc.js';
+function Ee(a, e) {
+  if (a & 1) {
+    let t = UN();
+    (Sc(0, `div`, 2)(1, `app-icon-button`, 17),
+      Hc(`clicked`, function () {
+        Wm(t);
+        let l = $N();
+        return Ym(l.importModels());
+      }),
+      up(),
+      Sc(2, `app-icon-button`, 18),
+      Hc(`clicked`, function () {
+        Wm(t);
+        let l = $N();
+        return Ym(l.addModel());
+      }),
+      up()());
+  }
+}
+function De(a, e) {
+  a & 1 && Vc(0, `mat-progress-bar`, 3);
+}
+function Le(a, e) {
+  if (a & 1) {
+    let t = UN();
+    (Sc(0, `th`, 19)(1, `div`),
+      yA(2, `Model Code`),
+      up(),
+      Sc(3, `app-column-filter`, 20),
+      Hc(`filterChange`, function (l) {
+        Wm(t);
+        let s = $N();
+        return Ym(s.onFilterChange(`modelCode`, l));
+      }),
+      up()());
+  }
+}
+function Te(a, e) {
+  if ((a & 1 && (Sc(0, `td`, 21), yA(1), up()), a & 2)) {
+    let t = e.$implicit;
+    (P_(), Eb(t.modelCode));
+  }
+}
+function Pe(a, e) {
+  if (a & 1) {
+    let t = UN();
+    (Sc(0, `th`, 19)(1, `div`),
+      yA(2, `Model Name`),
+      up(),
+      Sc(3, `app-column-filter`, 22),
+      Hc(`filterChange`, function (l) {
+        Wm(t);
+        let s = $N();
+        return Ym(s.onFilterChange(`modelName`, l));
+      }),
+      up()());
+  }
+}
+function Oe(a, e) {
+  if ((a & 1 && (Sc(0, `td`, 21), yA(1), up()), a & 2)) {
+    let t = e.$implicit;
+    (P_(), Eb(t.modelName));
+  }
+}
+function Ae(a, e) {
+  if (a & 1) {
+    let t = UN();
+    (Sc(0, `th`, 19)(1, `div`),
+      yA(2, `Short Name`),
+      up(),
+      Sc(3, `app-column-filter`, 23),
+      Hc(`filterChange`, function (l) {
+        Wm(t);
+        let s = $N();
+        return Ym(s.onFilterChange(`shortName`, l));
+      }),
+      up()());
+  }
+}
+function Re(a, e) {
+  if ((a & 1 && (Sc(0, `td`, 21), yA(1), up()), a & 2)) {
+    let t = e.$implicit;
+    (P_(), Eb(t.shortName));
+  }
+}
+function Ie(a, e) {
+  if (a & 1) {
+    let t = UN();
+    (Sc(0, `th`, 19)(1, `div`),
+      yA(2, `Status`),
+      up(),
+      Sc(3, `app-column-filter`, 24),
+      Hc(`filterChange`, function (l) {
+        Wm(t);
+        let s = $N();
+        return Ym(s.onFilterChange(`status`, l));
+      }),
+      up()());
+  }
+}
+function ze(a, e) {
+  if ((a & 1 && (Sc(0, `td`, 21), yA(1), up()), a & 2)) {
+    let t = e.$implicit;
+    (P_(), Eb(t.active ? `Active` : `Inactive`));
+  }
+}
+function He(a, e) {
+  a & 1 && (Sc(0, `th`, 27), yA(1, `Actions`), up());
+}
+function Be(a, e) {
+  if (a & 1) {
+    let t = UN();
+    (Sc(0, `td`, 28)(1, `app-icon-button`, 29),
+      Hc(`clicked`, function () {
+        let l = Wm(t).$implicit,
+          s = $N(2);
+        return Ym(s.editModel(l));
+      }),
+      up(),
+      Sc(2, `app-icon-button`, 30),
+      Hc(`clicked`, function () {
+        let l = Wm(t).$implicit,
+          s = $N(2);
+        return Ym(s.deleteModel(l));
+      }),
+      up()());
+  }
+  if (a & 2) {
+    let t = e.$implicit;
+    (P_(),
+      tb(`tooltip`, `Edit ` + t.modelCode)(`accessibleName`, `Edit ` + t.modelCode),
+      P_(),
+      tb(`danger`, !0)(`tooltip`, `Delete ` + t.modelCode)(
+        `accessibleName`,
+        `Delete ` + t.modelCode,
+      ));
+  }
+}
+function Ue(a, e) {
+  a & 1 && (pp(0, 12), Xw(1, He, 2, 0, `th`, 25)(2, Be, 3, 5, `td`, 26), hp());
+}
+function $e(a, e) {
+  a & 1 && Vc(0, `tr`, 31);
+}
+function je(a, e) {
+  a & 1 && Vc(0, `tr`, 32);
+}
+function qe(a, e) {
+  if ((a & 1 && (Sc(0, `p`, 15), yA(1), up()), a & 2)) {
+    let t = $N();
+    (P_(), Eb(t.emptyMessage()));
+  }
+}
+var F = class a {
+  router = b(Ko);
+  modelsClient = b(EE);
+  notifications = b(yE);
+  destroyRef = b(je$1);
+  makeCode = Yc.required();
+  makeEditable = Yc(!1);
+  pageSizeOptions = [10, 25, 50];
+  pageSize = Ce(10);
+  items = Ce([]);
+  totalCount = Ce(0);
+  pageIndex = Ce(0);
+  loading = Ce(!1);
+  modelCodeFilter = Ce({ value: ``, operator: `contains` });
+  modelNameFilter = Ce({ value: ``, operator: `contains` });
+  shortNameFilter = Ce({ value: ``, operator: `contains` });
+  statusFilter = Ce({ value: ``, operator: `equals` });
+  columns = wp(() =>
+    this.makeEditable()
+      ? [`modelCode`, `modelName`, `shortName`, `status`, `actions`]
+      : [`modelCode`, `modelName`, `shortName`, `status`],
+  );
+  hasActiveFilter = wp(
+    () =>
+      !!(
+        this.modelCodeFilter().value ||
+        this.modelNameFilter().value ||
+        this.shortNameFilter().value ||
+        this.statusFilter().value
+      ),
+  );
+  emptyMessage = wp(() =>
+    this.hasActiveFilter()
+      ? `No models match your filters. Try adjusting or clearing the filter values.`
+      : this.makeEditable()
+        ? `No models have been added for this make yet. Use Add to create the first model.`
+        : `No models have been added for this make.`,
+  );
+  constructor() {
+    Ad(() => {
+      this.makeCode() &&
+        fe(() => {
+          (this.pageIndex.set(0), this.load());
+        });
+    });
+  }
+  hasUnsavedChanges() {
+    return !1;
+  }
+  load() {
+    let e = this.makeCode();
+    if (!e) {
+      (this.items.set([]), this.totalCount.set(0));
+      return;
+    }
+    this.loading.set(!0);
+    let t = this.statusFilter().value ? this.statusFilter().value === `true` : void 0,
+      i = this.statusFilter().value ? this.statusFilter().operator : void 0;
+    this.modelsClient
+      .list(
+        e,
+        this.pageIndex() + 1,
+        this.modelCodeFilter().value || void 0,
+        this.modelCodeFilter().value ? this.modelCodeFilter().operator : void 0,
+        this.modelNameFilter().value || void 0,
+        this.modelNameFilter().value ? this.modelNameFilter().operator : void 0,
+        this.shortNameFilter().value || void 0,
+        this.shortNameFilter().value ? this.shortNameFilter().operator : void 0,
+        t,
+        i,
+        this.pageSize(),
+      )
+      .pipe(U(this.destroyRef))
+      .subscribe({
+        next: (l) => {
+          (this.items.set(l.items ?? []),
+            this.totalCount.set(l.totalCount ?? 0),
+            this.loading.set(!1));
+        },
+        error: () => {
+          (this.loading.set(!1),
+            this.notifications.error(`The vehicle models could not be loaded.`, `Load error`));
+        },
+      });
+  }
+  onFilterChange(e, t) {
+    (e === `modelCode`
+      ? this.modelCodeFilter.set(t)
+      : e === `modelName`
+        ? this.modelNameFilter.set(t)
+        : e === `shortName`
+          ? this.shortNameFilter.set(t)
+          : e === `status` && this.statusFilter.set(t),
+      this.pageIndex.set(0),
+      this.load());
+  }
+  onPage(e) {
+    (this.pageIndex.set(e.pageIndex), this.pageSize.set(e.pageSize), this.load());
+  }
+  addModel() {
+    this.router.navigate([`/vehicle-makes`, this.makeCode(), `models`, `new`]);
+  }
+  importModels() {
+    this.router.navigate([`/vehicle-makes`, this.makeCode(), `models`, `import`]);
+  }
+  editModel(e) {
+    this.router.navigate([`/vehicle-makes`, this.makeCode(), `models`, e.modelCode, `edit`]);
+  }
+  async deleteModel(e) {
+    let t = e.modelCode;
+    (await this.notifications.confirm({
+      title: `Delete vehicle model ${t}?`,
+      text: `This deletion is permanent and cannot be undone.`,
+      confirmButtonText: `Delete permanently`,
+      cancelButtonText: `Cancel`,
+      isDanger: !0,
+    })) &&
+      this.modelsClient
+        .delete(this.makeCode(), t)
+        .pipe(U(this.destroyRef))
+        .subscribe({
+          next: () => {
+            (this.notifications.success(`Vehicle model deleted.`), this.load());
+          },
+          error: () => {
+            this.notifications.error(`The vehicle model could not be deleted.`, `Delete failed`);
+          },
+        });
+  }
+  static ɵfac = function (t) {
+    return new (t || a)();
+  };
+  static ɵcmp = sp({
+    type: a,
+    selectors: [[`app-vehicle-model-list`]],
+    inputs: { makeCode: [1, `makeCode`], makeEditable: [1, `makeEditable`] },
+    decls: 25,
+    vars: 12,
+    consts: [
+      [1, `model-list`],
+      [1, `model-header`],
+      [1, `header-actions`],
+      [`mode`, `indeterminate`, `aria-label`, `Loading vehicle models`],
+      [1, `table-scroll`],
+      [`mat-table`, ``, 3, `dataSource`],
+      [`matColumnDef`, `modelCode`],
+      [`mat-header-cell`, ``, 4, `matHeaderCellDef`],
+      [`mat-cell`, ``, 4, `matCellDef`],
+      [`matColumnDef`, `modelName`],
+      [`matColumnDef`, `shortName`],
+      [`matColumnDef`, `status`],
+      [`matColumnDef`, `actions`],
+      [`mat-header-row`, ``, 4, `matHeaderRowDef`],
+      [`mat-row`, ``, 4, `matRowDef`, `matRowDefColumns`],
+      [1, `state`],
+      [
+        `aria-label`,
+        `Select a page of vehicle models`,
+        3,
+        `page`,
+        `length`,
+        `pageSize`,
+        `pageSizeOptions`,
+        `pageIndex`,
+        `showFirstLastButtons`,
+      ],
+      [
+        `action`,
+        `upload`,
+        `tooltip`,
+        `Import vehicle models`,
+        `accessibleName`,
+        `Import vehicle models`,
+        3,
+        `clicked`,
+      ],
+      [`action`, `add`, `tooltip`, `Add model`, `accessibleName`, `Add model`, 3, `clicked`],
+      [`mat-header-cell`, ``],
+      [`placeholder`, `Code...`, 3, `filterChange`],
+      [`mat-cell`, ``],
+      [`placeholder`, `Name...`, 3, `filterChange`],
+      [`placeholder`, `Short name...`, 3, `filterChange`],
+      [`type`, `status`, 3, `filterChange`],
+      [`mat-header-cell`, ``, `class`, `actions-column`, 4, `matHeaderCellDef`],
+      [`mat-cell`, ``, `class`, `actions-column`, 4, `matCellDef`],
+      [`mat-header-cell`, ``, 1, `actions-column`],
+      [`mat-cell`, ``, 1, `actions-column`],
+      [`action`, `edit`, 3, `clicked`, `tooltip`, `accessibleName`],
+      [`action`, `delete`, 3, `clicked`, `danger`, `tooltip`, `accessibleName`],
+      [`mat-header-row`, ``],
+      [`mat-row`, ``],
+    ],
+    template: function (t, i) {
+      (t & 1 &&
+        (Sc(0, `section`, 0)(1, `header`, 1)(2, `h2`),
+        yA(3, `Vehicle Models`),
+        up(),
+        _N(4, Ee, 3, 0, `div`, 2),
+        up(),
+        _N(5, De, 1, 0, `mat-progress-bar`, 3),
+        Sc(6, `div`, 4)(7, `table`, 5),
+        pp(8, 6),
+        Xw(9, Le, 4, 0, `th`, 7)(10, Te, 2, 1, `td`, 8),
+        hp(),
+        pp(11, 9),
+        Xw(12, Pe, 4, 0, `th`, 7)(13, Oe, 2, 1, `td`, 8),
+        hp(),
+        pp(14, 10),
+        Xw(15, Ae, 4, 0, `th`, 7)(16, Re, 2, 1, `td`, 8),
+        hp(),
+        pp(17, 11),
+        Xw(18, Ie, 4, 0, `th`, 7)(19, ze, 2, 1, `td`, 8),
+        hp(),
+        _N(20, Ue, 3, 0, `ng-container`, 12),
+        Xw(21, $e, 1, 0, `tr`, 13)(22, je, 1, 0, `tr`, 14),
+        up()(),
+        _N(23, qe, 2, 1, `p`, 15),
+        Sc(24, `mat-paginator`, 16),
+        Hc(`page`, function (s) {
+          return i.onPage(s);
+        }),
+        up()()),
+        t & 2 &&
+          (P_(4),
+          AN(i.makeEditable() ? 4 : -1),
+          P_(),
+          AN(i.loading() ? 5 : -1),
+          P_(2),
+          tb(`dataSource`, i.items()),
+          P_(13),
+          AN(i.makeEditable() ? 20 : -1),
+          P_(),
+          tb(`matHeaderRowDef`, i.columns()),
+          P_(),
+          tb(`matRowDefColumns`, i.columns()),
+          P_(),
+          AN(!i.loading() && i.items().length === 0 ? 23 : -1),
+          P_(),
+          tb(`length`, i.totalCount())(`pageSize`, i.pageSize())(
+            `pageSizeOptions`,
+            i.pageSizeOptions,
+          )(`pageIndex`, i.pageIndex())(`showFirstLastButtons`, !0)));
+    },
+    dependencies: [pn, Ut, Rs, oa, Kn, Yn, ta, Zn, Xn$1, na, Jn, ea, aa, ia, Bt, Hi],
+    styles: [
+      `.model-list[_ngcontent-%COMP%]{margin-top:32px;background:var(--%NS%sdd-surface);border:1px solid var(--%NS%sdd-border);border-radius:8px;padding:24px}.model-header[_ngcontent-%COMP%]{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.model-header[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%]{margin:0;font-size:1.25rem;font-weight:600}.header-actions[_ngcontent-%COMP%]{display:flex;align-items:center;gap:8px}.table-scroll[_ngcontent-%COMP%]{overflow-x:auto}table[_ngcontent-%COMP%]{width:100%}.actions-column[_ngcontent-%COMP%]{width:110px;text-align:right;white-space:nowrap}.state[_ngcontent-%COMP%]{text-align:center;padding:32px 16px;color:var(--%NS%sdd-muted)}`,
+    ],
+  });
+};
+function Ge(a, e) {
+  a & 1 && (Sc(0, `p`, 2), yA(1, `Update the details and save your changes.`), up());
+}
+function Qe(a, e) {
+  a & 1 && (Sc(0, `p`, 2), yA(1, `Fields marked * are required.`), up());
+}
+function Ze(a, e) {
+  if (a & 1) {
+    let t = UN();
+    (Sc(0, `app-icon-button`, 20),
+      Hc(`clicked`, function () {
+        Wm(t);
+        let l = $N();
+        return Ym(l.add());
+      }),
+      up());
+  }
+}
+function Je(a, e) {
+  a & 1 && Vc(0, `mat-progress-bar`, 5);
+}
+function Ke(a, e) {
+  if ((a & 1 && Vc(0, `app-vehicle-model-list`, 19), a & 2)) {
+    let t = $N();
+    tb(`makeCode`, t.currentMakeCode())(`makeEditable`, !0);
+  }
+}
+var M = {
+  makeCode: 12,
+  makeName: 100,
+  shortName: 30,
+  remarks: 2e3,
+  arabicMakeName: 100,
+  arabicShortName: 30,
+  arabicRemarks: 2e3,
+};
+var We = [`remarks`, `arabicMakeName`, `arabicShortName`, `arabicRemarks`];
+var we = class a {
+  client = b(bE);
+  router = b(Ko);
+  notifications = b(yE);
+  destroyRef = b(je$1);
+  modelList = r3(F);
+  mode = b(In).snapshot.data.mode === `view` ? `view` : `create`;
+  heading = this.mode === `create` ? `Add vehicle make` : `Vehicle make details`;
+  limits = M;
+  loading = Ce(!1);
+  saving = Ce(!1);
+  additionalOpen = Ce(!1);
+  currentMakeCode = Ce(``);
+  form = new ht({
+    makeCode: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me.required, Xn, Me.maxLength(M.makeCode), Me.pattern(/^[A-Za-z0-9-]+$/)],
+    }),
+    makeName: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me.required, Xn, Me.maxLength(M.makeName)],
+    }),
+    shortName: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me.required, Xn, Me.maxLength(M.shortName)],
+    }),
+    remarks: new Fr(``, { nonNullable: !0, validators: [Me.maxLength(M.remarks)] }),
+    arabicMakeName: new Fr(``, { nonNullable: !0, validators: [Me.maxLength(M.arabicMakeName)] }),
+    arabicShortName: new Fr(``, { nonNullable: !0, validators: [Me.maxLength(M.arabicShortName)] }),
+    arabicRemarks: new Fr(``, { nonNullable: !0, validators: [Me.maxLength(M.arabicRemarks)] }),
+    active: new Fr(!0, { nonNullable: !0 }),
+  });
+  constructor() {
+    if (this.mode === `view`) {
+      let e = n();
+      if (e === null) {
+        this.router.navigate([`/vehicle-makes`]);
+        return;
+      }
+      (this.applyEditState(), this.loadMake(e));
+    }
+  }
+  hasUnsavedChanges() {
+    return this.form.dirty || (this.modelList()?.hasUnsavedChanges() ?? !1);
+  }
+  back() {
+    this.router.navigate([`/vehicle-makes`]);
+  }
+  add() {
+    this.router.navigate([`/vehicle-makes/new`]);
+  }
+  save() {
+    if ((this.form.markAllAsTouched(), this.form.invalid)) {
+      this.openAdditionalInformationIfItHasAnError();
+      return;
+    }
+    let e = this.form.getRawValue(),
+      t = {
+        makeName: e.makeName,
+        shortName: e.shortName,
+        remarks: e.remarks,
+        arabicMakeName: e.arabicMakeName,
+        arabicShortName: e.arabicShortName,
+        arabicRemarks: e.arabicRemarks,
+        active: e.active,
+      };
+    if ((this.saving.set(!0), this.mode === `create`)) {
+      this.client
+        .create(C({ makeCode: e.makeCode }, t))
+        .pipe(U(this.destroyRef))
+        .subscribe({
+          next: () => {
+            (this.saving.set(!1),
+              this.form.markAsPristine(),
+              this.notifications.success(`Vehicle make saved.`),
+              this.back());
+          },
+          error: (i) => this.onSaveFailed(i),
+        });
+      return;
+    }
+    this.client
+      .update(e.makeCode, t)
+      .pipe(U(this.destroyRef))
+      .subscribe({
+        next: (i) => {
+          (this.saving.set(!1),
+            this.showMake(i),
+            this.notifications.success(`Vehicle make updated.`));
+        },
+        error: (i) => this.onSaveFailed(i),
+      });
+  }
+  loadMake(e) {
+    (this.loading.set(!0),
+      this.client
+        .get(e)
+        .pipe(U(this.destroyRef))
+        .subscribe({
+          next: (t) => {
+            (this.loading.set(!1), this.showMake(t));
+          },
+          error: () => this.back(),
+        }));
+  }
+  showMake(e) {
+    let t = {
+      makeCode: e.makeCode,
+      makeName: e.makeName,
+      shortName: e.shortName,
+      remarks: e.remarks ?? ``,
+      arabicMakeName: e.arabicMakeName ?? ``,
+      arabicShortName: e.arabicShortName ?? ``,
+      arabicRemarks: e.arabicRemarks ?? ``,
+      active: e.active !== !1,
+    };
+    (this.form.reset(t),
+      this.currentMakeCode.set(t.makeCode),
+      this.additionalOpen.set(
+        t.remarks !== `` ||
+          t.arabicMakeName !== `` ||
+          t.arabicShortName !== `` ||
+          t.arabicRemarks !== ``,
+      ),
+      this.applyEditState());
+  }
+  applyEditState() {
+    (this.form.enable(), this.mode === `view` && this.form.controls.makeCode.disable());
+  }
+  onSaveFailed(e) {
+    if ((this.saving.set(!1), !n$1(e))) throw e;
+    this.showFieldErrors(e.problem);
+  }
+  showFieldErrors(e) {
+    let t = this.form.controls;
+    for (let [i, l] of Object.entries(e.fieldErrors)) {
+      let s = t[i];
+      s && l.length > 0 && (s.setErrors({ server: l[0] }), s.markAsTouched());
+    }
+    this.openAdditionalInformationIfItHasAnError();
+  }
+  openAdditionalInformationIfItHasAnError() {
+    let e = this.form.controls;
+    We.some((t) => e[t].invalid) && this.additionalOpen.set(!0);
+  }
+  static ɵfac = function (t) {
+    return new (t || a)();
+  };
+  static ɵcmp = sp({
+    type: a,
+    selectors: [[`app-vehicle-make-form`]],
+    viewQuery: function (t, i) {
+      (t & 1 && fb(i.modelList, F, 5), t & 2 && YN());
+    },
+    decls: 33,
+    vars: 32,
+    consts: [
+      [1, `page`],
+      [1, `page-header`],
+      [1, `subtitle`],
+      [`action`, `add`, `tooltip`, `Add vehicle make`, `accessibleName`, `Add vehicle make`],
+      [`action`, `back`, `tooltip`, `Back to list`, `accessibleName`, `Back to list`, 3, `clicked`],
+      [`mode`, `indeterminate`, `aria-label`, `Loading the vehicle make`],
+      [`novalidate`, ``, 1, `card`, 3, `ngSubmit`, `formGroup`],
+      [1, `grid`],
+      [
+        `label`,
+        `Make Code`,
+        `patternMessage`,
+        `Make Code can contain only letters, digits and hyphens.`,
+        1,
+        `code`,
+        3,
+        `control`,
+        `maxLength`,
+        `uppercase`,
+      ],
+      [`label`, `Make Name`, 1, `name`, 3, `control`, `maxLength`],
+      [`label`, `Short Name`, 1, `short`, 3, `control`, `maxLength`],
+      [1, `active`, 3, `formControl`],
+      [1, `additional`, 3, `opened`, `closed`, `expanded`],
+      [`label`, `Remarks`, 1, `full`, 3, `control`, `maxLength`, `multiline`, `showCounter`],
+      [`label`, `Arabic Make Name`, 1, `half`, 3, `control`, `maxLength`, `rtl`],
+      [`label`, `Arabic Short Name`, 1, `half`, 3, `control`, `maxLength`, `rtl`],
+      [
+        `label`,
+        `Arabic Remarks`,
+        1,
+        `full`,
+        3,
+        `control`,
+        `maxLength`,
+        `multiline`,
+        `rtl`,
+        `showCounter`,
+      ],
+      [1, `actions`],
+      [
+        `mat-flat-button`,
+        ``,
+        `type`,
+        `submit`,
+        2,
+        `border-radius`,
+        `15px`,
+        `padding`,
+        `15px`,
+        `color`,
+        `white`,
+        `background-color`,
+        `var(--mat-sys-on-primary-fixed-variant)`,
+        `border`,
+        `0`,
+        `display`,
+        `flex`,
+        `justify-content`,
+        `end`,
+        `align-items`,
+        `end`,
+        3,
+        `disabled`,
+      ],
+      [3, `makeCode`, `makeEditable`],
+      [
+        `action`,
+        `add`,
+        `tooltip`,
+        `Add vehicle make`,
+        `accessibleName`,
+        `Add vehicle make`,
+        3,
+        `clicked`,
+      ],
+    ],
+    template: function (t, i) {
+      (t & 1 &&
+        (Sc(0, `section`, 0)(1, `header`, 1)(2, `div`)(3, `h1`),
+        yA(4),
+        up(),
+        _N(5, Ge, 2, 0, `p`, 2)(6, Qe, 2, 0, `p`, 2),
+        up(),
+        Sc(7, `div`),
+        _N(8, Ze, 1, 0, `app-icon-button`, 3),
+        Sc(9, `app-icon-button`, 4),
+        Hc(`clicked`, function () {
+          return i.back();
+        }),
+        up()()(),
+        _N(10, Je, 1, 0, `mat-progress-bar`, 5),
+        Sc(11, `form`, 6),
+        Hc(`ngSubmit`, function () {
+          return i.save();
+        }),
+        Sc(12, `div`, 7),
+        Vc(13, `app-limited-text-field`, 8)(14, `app-limited-text-field`, 9)(
+          15,
+          `app-limited-text-field`,
+          10,
+        ),
+        Sc(16, `mat-slide-toggle`, 11),
+        E0(),
+        yA(17, `Active`),
+        up()(),
+        Sc(18, `mat-expansion-panel`, 12),
+        Hc(`opened`, function () {
+          return i.additionalOpen.set(!0);
+        })(`closed`, function () {
+          return i.additionalOpen.set(!1);
+        }),
+        Sc(19, `mat-expansion-panel-header`)(20, `mat-panel-title`),
+        yA(21, `Additional Information`),
+        up(),
+        Sc(22, `mat-panel-description`),
+        yA(23, `Remarks and Arabic names (all optional)`),
+        up()(),
+        Sc(24, `div`, 7),
+        Vc(25, `app-limited-text-field`, 13)(26, `app-limited-text-field`, 14)(
+          27,
+          `app-limited-text-field`,
+          15,
+        )(28, `app-limited-text-field`, 16),
+        up()(),
+        Sc(29, `div`, 17)(30, `button`, 18),
+        yA(31),
+        up()()(),
+        _N(32, Ke, 1, 2, `app-vehicle-model-list`, 19),
+        up()),
+        t & 2 &&
+          (P_(4),
+          mp(` `, i.heading, ` `),
+          P_(),
+          AN(i.mode === `view` && i.currentMakeCode() ? 5 : 6),
+          P_(3),
+          AN(i.mode === `view` ? 8 : -1),
+          P_(2),
+          AN(i.loading() ? 10 : -1),
+          P_(),
+          tb(`formGroup`, i.form),
+          P_(2),
+          tb(`control`, i.form.controls.makeCode)(`maxLength`, i.limits.makeCode)(`uppercase`, !0),
+          P_(),
+          tb(`control`, i.form.controls.makeName)(`maxLength`, i.limits.makeName),
+          P_(),
+          tb(`control`, i.form.controls.shortName)(`maxLength`, i.limits.shortName),
+          P_(),
+          tb(`formControl`, i.form.controls.active),
+          I0(),
+          P_(2),
+          tb(`expanded`, i.additionalOpen()),
+          P_(7),
+          tb(`control`, i.form.controls.remarks)(`maxLength`, i.limits.remarks)(`multiline`, !0)(
+            `showCounter`,
+            !0,
+          ),
+          P_(),
+          tb(`control`, i.form.controls.arabicMakeName)(`maxLength`, i.limits.arabicMakeName)(
+            `rtl`,
+            !0,
+          ),
+          P_(),
+          tb(`control`, i.form.controls.arabicShortName)(`maxLength`, i.limits.arabicShortName)(
+            `rtl`,
+            !0,
+          ),
+          P_(),
+          tb(`control`, i.form.controls.arabicRemarks)(`maxLength`, i.limits.arabicRemarks)(
+            `multiline`,
+            !0,
+          )(`rtl`, !0)(`showCounter`, !0),
+          P_(2),
+          tb(`disabled`, i.saving() || i.loading()),
+          P_(),
+          mp(` `, i.mode === `create` ? `Save vehicle make` : `Save changes`, ` `),
+          P_(),
+          AN(i.mode === `view` ? 32 : -1)));
+    },
+    dependencies: [Hi, Fo, ko, Eo, Do, Lr, We$1, cn, ft, rn, ln, dn, Rs, In$1, pt, F],
+    styles: [
+      `.page[_ngcontent-%COMP%]{margin:0 auto;padding:24px 24px 48px}.page-header[_ngcontent-%COMP%]{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}h1[_ngcontent-%COMP%]{margin:0 0 4px;font-size:1.5rem;font-weight:600;color:var(--%NS%sdd-text)}.subtitle[_ngcontent-%COMP%]{margin:0;color:var(--%NS%sdd-muted)}.card[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:20px;padding:24px;background:var(--%NS%sdd-surface);border:1px solid var(--%NS%sdd-border);border-radius:8px}.grid[_ngcontent-%COMP%]{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.code[_ngcontent-%COMP%]{grid-column:span 3}.name[_ngcontent-%COMP%]{grid-column:span 6}.short[_ngcontent-%COMP%]{grid-column:span 3}.half[_ngcontent-%COMP%]{grid-column:span 6}.full[_ngcontent-%COMP%]{grid-column:span 12}.additional[_ngcontent-%COMP%]{box-shadow:none;border:1px solid var(--%NS%sdd-border)}.actions[_ngcontent-%COMP%]{display:flex;justify-content:space-between;gap:12px}@media(max-width:700px){.code[_ngcontent-%COMP%], .name[_ngcontent-%COMP%], .short[_ngcontent-%COMP%], .half[_ngcontent-%COMP%]{grid-column:span 12}.page-header[_ngcontent-%COMP%]{flex-direction:column}}`,
+    ],
+  });
+};
+export { we as VehicleMakeFormComponent };

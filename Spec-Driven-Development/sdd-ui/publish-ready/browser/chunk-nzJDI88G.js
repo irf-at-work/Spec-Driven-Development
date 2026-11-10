@@ -1,1 +1,796 @@
-import{Ct as _N,G as ON,Hn as wp,In as up,Jn as yE,L as Ko,P as In,Y as P_,_ as DE,a as U,an as je,b as Eb,c as AN,f as C,hn as mp,it as Sc,j as I0,jn as tb,k as Hc,kn as sp,kt as b,m as Ce$1,qn as yA,sn as kN,t as n,ut as Vc,v as E0,y as EE}from"./main-RR6WM3XY.js";import{c as Rs,i as Hi}from"./chunk-CnuPNpsB.js";import{C as gr,D as ko,E as ki,S as dl,T as ht,_ as Wl,a as Eo,d as Me$1,f as Mt,g as We,i as Do,m as Tr,n as $n,o as Fo,p as Qe,s as Fr,t as $l,u as Lr,w as hr,x as cl,y as Zt}from"./chunk-v95b3x4p.js";import{a as ft,c as rn,i as dn,n as Xn,o as ln,r as cn,s as pt,t as In$1}from"./chunk-CbUCfSIQ.js";var g=(a,e)=>e.code;function ye(a,e){a&1&&Vc(0,`mat-progress-bar`,5)}function fe(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}function ve(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}function he(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}function ge(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}function be(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}function Ce(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}function Ne(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}function Me(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}function Se(a,e){if(a&1&&(Sc(0,`mat-option`,21),yA(1),up()),a&2){let l=e.$implicit;tb(`value`,l.code),P_(),Eb(l.description)}}var h={modelCode:12,modelName:100,shortName:30,remarks:2e3,arabicModelName:100,arabicShortName:30,arabicRemarks:2e3,weight:100,loadCapacity:100};var M=a=>{if(a.value===null||a.value===``||a.value===void 0)return null;let e=Number(a.value);return!Number.isInteger(e)||e<0?{nonNegativeWholeNumber:!0}:null};var xe=a=>{if(a.value===null||a.value===``||a.value===void 0)return null;let e=Number(a.value);return Number.isNaN(e)||e<0?{nonNegativeDecimal:!0}:null};var ce=class a{route=b(In);router=b(Ko);modelsClient=b(EE);optionsClient=b(DE);notifications=b(yE);destroyRef=b(je);limits=h;makeCode=Ce$1(``);modelCode=Ce$1(``);mode=Ce$1(`create`);loading=Ce$1(!1);saving=Ce$1(!1);variantOptions=Ce$1([]);typeOptions=Ce$1([]);bodyTypeOptions=Ce$1([]);fuelTypeOptions=Ce$1([]);cylinderOptions=Ce$1([]);doorOptions=Ce$1([]);drivingTypeOptions=Ce$1([]);bodyColourOptions=Ce$1([]);categoryOptions=Ce$1([]);initialInactiveSelections=Ce$1({});form=new ht({modelCode:new Fr(``,{nonNullable:!0,validators:[Me$1.required,Xn,Me$1.maxLength(h.modelCode),Me$1.pattern(/^[A-Za-z0-9-]+$/)]}),modelName:new Fr(``,{nonNullable:!0,validators:[Me$1.required,Xn,Me$1.maxLength(h.modelName)]}),shortName:new Fr(``,{nonNullable:!0,validators:[Me$1.required,Xn,Me$1.maxLength(h.shortName)]}),remarks:new Fr(``,{nonNullable:!0,validators:[Me$1.maxLength(h.remarks)]}),arabicModelName:new Fr(``,{nonNullable:!0,validators:[Me$1.maxLength(h.arabicModelName)]}),arabicShortName:new Fr(``,{nonNullable:!0,validators:[Me$1.maxLength(h.arabicShortName)]}),arabicRemarks:new Fr(``,{nonNullable:!0,validators:[Me$1.maxLength(h.arabicRemarks)]}),variant:new Fr(``,{nonNullable:!0}),vehicleType:new Fr(``,{nonNullable:!0}),weight:new Fr(``,{nonNullable:!0,validators:[Me$1.maxLength(h.weight)]}),loadCapacity:new Fr(``,{nonNullable:!0,validators:[Me$1.maxLength(h.loadCapacity)]}),bodyType:new Fr(``,{nonNullable:!0}),fuelType:new Fr(``,{nonNullable:!0}),engineCapacity:new Fr(null,{validators:[M]}),cylinders:new Fr(``,{nonNullable:!0}),seats:new Fr(null,{validators:[M,Me$1.max(999)]}),passengers:new Fr(null,{validators:[M,Me$1.max(999)]}),drivers:new Fr(null,{validators:[M,Me$1.max(999)]}),doors:new Fr(``,{nonNullable:!0}),makeYear:new Fr(null,{validators:[M,Me$1.max(9999)]}),drivingType:new Fr(``,{nonNullable:!0}),bodyColour:new Fr(``,{nonNullable:!0}),value:new Fr(null,{validators:[xe]}),category:new Fr(``,{nonNullable:!0}),active:new Fr(!0,{nonNullable:!0})});pageTitle=wp(()=>this.mode()===`create`?`Add Vehicle Model for Make ${this.makeCode()}`:`Edit Vehicle Model ${this.modelCode()} (${this.makeCode()})`);constructor(){this.route.paramMap.pipe(U()).subscribe(e=>{let l=e.get(`makeCode`)||``,i=e.get(`modelCode`);this.makeCode.set(l),i?(this.modelCode.set(i),this.mode.set(`edit`),this.form.controls.modelCode.disable()):(this.mode.set(`create`),this.form.controls.modelCode.enable())}),this.loadDropdownOptions(),this.mode()===`edit`&&this.loadModel()}hasUnsavedChanges(){return this.form.dirty}loadDropdownOptions(){this.optionsClient.get().pipe(U(this.destroyRef)).subscribe({next:e=>{this.variantOptions.set(e.variants??[]),this.typeOptions.set(e.vehicleTypes??[]),this.bodyTypeOptions.set(e.bodyTypes??[]),this.fuelTypeOptions.set(e.fuelTypes??[]),this.cylinderOptions.set(e.cylinders??[]),this.doorOptions.set(e.doors??[]),this.drivingTypeOptions.set(e.drivingTypes??[]),this.bodyColourOptions.set(e.bodyColours??[]),this.categoryOptions.set(e.categories??[])}})}loadModel(){this.loading.set(!0),this.modelsClient.get(this.makeCode(),this.modelCode()).pipe(U(this.destroyRef)).subscribe({next:e=>{this.populateForm(e),this.loading.set(!1)},error:()=>{this.loading.set(!1),this.notifications.error(`The vehicle model could not be loaded.`,`Load error`),this.back()}})}populateForm(e){this.form.patchValue({modelCode:e.modelCode??``,modelName:e.modelName??``,shortName:e.shortName??``,remarks:e.remarks??``,arabicModelName:e.arabicModelName??``,arabicShortName:e.arabicShortName??``,arabicRemarks:e.arabicRemarks??``,variant:e.variant??``,vehicleType:e.vehicleType??``,weight:e.weight??``,loadCapacity:e.loadCapacity??``,bodyType:e.bodyType??``,fuelType:e.fuelType??``,engineCapacity:e.engineCapacity??null,cylinders:e.cylinders??``,seats:e.seats??null,passengers:e.passengers??null,drivers:e.drivers??null,doors:e.doors??``,makeYear:e.makeYear??null,drivingType:e.drivingType??``,bodyColour:e.bodyColour??``,value:e.value??null,category:e.category??``,active:e.active??!0}),this.form.markAsPristine()}save(){if(this.form.markAllAsTouched(),this.form.invalid)return;let e=this.form.getRawValue(),l={modelName:e.modelName,shortName:e.shortName,remarks:e.remarks||null,arabicModelName:e.arabicModelName||null,arabicShortName:e.arabicShortName||null,arabicRemarks:e.arabicRemarks||null,variant:e.variant||null,vehicleType:e.vehicleType||null,weight:e.weight||null,loadCapacity:e.loadCapacity||null,bodyType:e.bodyType||null,fuelType:e.fuelType||null,engineCapacity:e.engineCapacity??null,cylinders:e.cylinders||null,seats:e.seats??null,passengers:e.passengers??null,drivers:e.drivers??null,doors:e.doors||null,makeYear:e.makeYear??null,drivingType:e.drivingType||null,bodyColour:e.bodyColour||null,value:e.value??null,category:e.category||null,active:e.active};this.saving.set(!0),this.mode()===`create`?this.modelsClient.create(this.makeCode(),C({modelCode:e.modelCode},l)).pipe(U(this.destroyRef)).subscribe({next:()=>{this.saving.set(!1),this.form.markAsPristine(),this.notifications.success(`Vehicle model created.`),this.back()},error:i=>{this.saving.set(!1),this.handleError(i)}}):this.modelsClient.update(this.makeCode(),this.modelCode(),l).pipe(U(this.destroyRef)).subscribe({next:()=>{this.saving.set(!1),this.form.markAsPristine(),this.notifications.success(`Vehicle model updated.`),this.back()},error:i=>{this.saving.set(!1),this.handleError(i)}})}handleError(e){if(n(e)&&e.problem.status===409){let l=e.problem.fieldErrors.modelCode?.[0]??`This model code already exists for this make.`;this.form.controls.modelCode.setErrors({server:l}),this.notifications.error(l,`Duplicate Model Code`)}else this.notifications.error(`The vehicle model could not be saved.`,`Save failed`)}back(){this.router.navigate([`/vehicle-makes/view`],{state:{makeCode:this.makeCode()}})}optionsFor(e){switch(e){case`variant`:return this.variantOptions();case`vehicleType`:return this.typeOptions();case`bodyType`:return this.bodyTypeOptions();case`fuelType`:return this.fuelTypeOptions();case`cylinders`:return this.cylinderOptions();case`doors`:return this.doorOptions();case`drivingType`:return this.drivingTypeOptions();case`bodyColour`:return this.bodyColourOptions();case`category`:return this.categoryOptions()}}static ɵfac=function(l){return new(l||a)};static ɵcmp=sp({type:a,selectors:[[`app-vehicle-model-form`]],decls:136,vars:48,consts:[[1,`page`],[1,`page-header`],[2,`display`,`flex`,`flex-direction`,`row`,`justify-content`,`space-between`],[`action`,`back`,`tooltip`,`Back to make`,`accessibleName`,`Back to make`,3,`clicked`],[1,`subtitle`],[`mode`,`indeterminate`,`aria-label`,`Loading model details`],[`novalidate`,``,1,`card`,3,`ngSubmit`,`formGroup`],[1,`grid`],[`label`,`Model Code`,`patternMessage`,`Model Code can contain only letters, digits and hyphens.`,1,`code`,3,`control`,`maxLength`,`uppercase`],[`label`,`Model Name`,1,`name`,3,`control`,`maxLength`],[`label`,`Short Name`,1,`short`,3,`control`,`maxLength`],[1,`active`,3,`formControl`],[1,`additional`],[`label`,`Remarks`,1,`full`,3,`control`,`maxLength`,`multiline`,`showCounter`],[`label`,`Arabic Model Name`,1,`half`,3,`control`,`maxLength`,`rtl`],[`label`,`Arabic Short Name`,1,`half`,3,`control`,`maxLength`,`rtl`],[`label`,`Arabic Remarks`,1,`full`,3,`control`,`maxLength`,`multiline`,`rtl`,`showCounter`],[1,`additional`,3,`expanded`],[`appearance`,`outline`],[3,`formControl`],[`value`,``],[3,`value`],[`label`,`Weight`,1,`half`,3,`control`,`maxLength`],[`label`,`Load Capacity`,1,`half`,3,`control`,`maxLength`],[`matInput`,``,`type`,`number`,`min`,`0`,3,`formControl`],[`matInput`,``,`type`,`number`,`min`,`1900`,`max`,`9999`,3,`formControl`],[`matInput`,``,`type`,`number`,`min`,`0`,`max`,`999`,3,`formControl`],[`matInput`,``,`type`,`number`,`min`,`0`,`step`,`0.01`,3,`formControl`],[1,`actions`],[`mat-flat-button`,``,`type`,`submit`,2,`border-radius`,`15px`,`padding`,`15px`,`color`,`white`,`background-color`,`var(--mat-sys-on-primary-fixed-variant)`,`border`,`0`,`display`,`flex`,`justify-content`,`end`,`align-items`,`end`,3,`disabled`]],template:function(l,i){l&1&&(Sc(0,`section`,0)(1,`header`,1)(2,`div`)(3,`div`,2)(4,`h1`),yA(5),up(),Sc(6,`app-icon-button`,3),Hc(`clicked`,function(){return i.back()}),up()(),Sc(7,`p`,4),yA(8,` Enter the details for this vehicle model. Fields marked * are required. `),up()()(),_N(9,ye,1,0,`mat-progress-bar`,5),Sc(10,`form`,6),Hc(`ngSubmit`,function(){return i.save()}),Sc(11,`div`,7),Vc(12,`app-limited-text-field`,8)(13,`app-limited-text-field`,9)(14,`app-limited-text-field`,10),Sc(15,`mat-slide-toggle`,11),E0(),yA(16,` Active `),up()(),Sc(17,`mat-expansion-panel`,12)(18,`mat-expansion-panel-header`)(19,`mat-panel-title`),yA(20,`Additional Information`),up(),Sc(21,`mat-panel-description`),yA(22,`Remarks and Arabic names (all optional)`),up()(),Sc(23,`div`,7),Vc(24,`app-limited-text-field`,13)(25,`app-limited-text-field`,14)(26,`app-limited-text-field`,15)(27,`app-limited-text-field`,16),up()(),Sc(28,`mat-expansion-panel`,17)(29,`mat-expansion-panel-header`)(30,`mat-panel-title`),yA(31,`Technical & Commercial Specifications`),up(),Sc(32,`mat-panel-description`),yA(33,`Optional details and standard classifications`),up()(),Sc(34,`div`,7)(35,`mat-form-field`,18)(36,`mat-label`),yA(37,`Variant`),up(),Sc(38,`mat-select`,19),E0(),Sc(39,`mat-option`,20),yA(40,`None`),up(),ON(41,fe,2,2,`mat-option`,21,g),up()(),Sc(43,`mat-form-field`,18)(44,`mat-label`),yA(45,`Vehicle Type`),up(),Sc(46,`mat-select`,19),E0(),Sc(47,`mat-option`,20),yA(48,`None`),up(),ON(49,ve,2,2,`mat-option`,21,g),up()(),Sc(51,`mat-form-field`,18)(52,`mat-label`),yA(53,`Body Type`),up(),Sc(54,`mat-select`,19),E0(),Sc(55,`mat-option`,20),yA(56,`None`),up(),ON(57,he,2,2,`mat-option`,21,g),up()(),Sc(59,`mat-form-field`,18)(60,`mat-label`),yA(61,`Fuel Type`),up(),Sc(62,`mat-select`,19),E0(),Sc(63,`mat-option`,20),yA(64,`None`),up(),ON(65,ge,2,2,`mat-option`,21,g),up()(),Sc(67,`mat-form-field`,18)(68,`mat-label`),yA(69,`Cylinders`),up(),Sc(70,`mat-select`,19),E0(),Sc(71,`mat-option`,20),yA(72,`None`),up(),ON(73,be,2,2,`mat-option`,21,g),up()(),Sc(75,`mat-form-field`,18)(76,`mat-label`),yA(77,`Doors`),up(),Sc(78,`mat-select`,19),E0(),Sc(79,`mat-option`,20),yA(80,`None`),up(),ON(81,Ce,2,2,`mat-option`,21,g),up()(),Sc(83,`mat-form-field`,18)(84,`mat-label`),yA(85,`Driving Type`),up(),Sc(86,`mat-select`,19),E0(),Sc(87,`mat-option`,20),yA(88,`None`),up(),ON(89,Ne,2,2,`mat-option`,21,g),up()(),Sc(91,`mat-form-field`,18)(92,`mat-label`),yA(93,`Body Colour`),up(),Sc(94,`mat-select`,19),E0(),Sc(95,`mat-option`,20),yA(96,`None`),up(),ON(97,Me,2,2,`mat-option`,21,g),up()(),Sc(99,`mat-form-field`,18)(100,`mat-label`),yA(101,`Category`),up(),Sc(102,`mat-select`,19),E0(),Sc(103,`mat-option`,20),yA(104,`None`),up(),ON(105,Se,2,2,`mat-option`,21,g),up()(),Vc(107,`app-limited-text-field`,22)(108,`app-limited-text-field`,23),Sc(109,`mat-form-field`,18)(110,`mat-label`),yA(111,`Engine Capacity (CC)`),up(),Sc(112,`input`,24),E0(),up()(),Sc(113,`mat-form-field`,18)(114,`mat-label`),yA(115,`Make Year`),up(),Sc(116,`input`,25),E0(),up()(),Sc(117,`mat-form-field`,18)(118,`mat-label`),yA(119,`Seats`),up(),Sc(120,`input`,26),E0(),up()(),Sc(121,`mat-form-field`,18)(122,`mat-label`),yA(123,`Passengers`),up(),Sc(124,`input`,26),E0(),up()(),Sc(125,`mat-form-field`,18)(126,`mat-label`),yA(127,`Drivers`),up(),Sc(128,`input`,26),E0(),up()(),Sc(129,`mat-form-field`,18)(130,`mat-label`),yA(131,`Value (AED)`),up(),Sc(132,`input`,27),E0(),up()()()(),Sc(133,`div`,28)(134,`button`,29),yA(135),up()()()()),l&2&&(P_(5),Eb(i.pageTitle()),P_(4),AN(i.loading()?9:-1),P_(),tb(`formGroup`,i.form),P_(2),tb(`control`,i.form.controls.modelCode)(`maxLength`,i.limits.modelCode)(`uppercase`,!0),P_(),tb(`control`,i.form.controls.modelName)(`maxLength`,i.limits.modelName),P_(),tb(`control`,i.form.controls.shortName)(`maxLength`,i.limits.shortName),P_(),tb(`formControl`,i.form.controls.active),I0(),P_(9),tb(`control`,i.form.controls.remarks)(`maxLength`,i.limits.remarks)(`multiline`,!0)(`showCounter`,!0),P_(),tb(`control`,i.form.controls.arabicModelName)(`maxLength`,i.limits.arabicModelName)(`rtl`,!0),P_(),tb(`control`,i.form.controls.arabicShortName)(`maxLength`,i.limits.arabicShortName)(`rtl`,!0),P_(),tb(`control`,i.form.controls.arabicRemarks)(`maxLength`,i.limits.arabicRemarks)(`multiline`,!0)(`rtl`,!0)(`showCounter`,!0),P_(),tb(`expanded`,!0),P_(10),tb(`formControl`,i.form.controls.variant),I0(),P_(3),kN(i.optionsFor(`variant`)),P_(5),tb(`formControl`,i.form.controls.vehicleType),I0(),P_(3),kN(i.optionsFor(`vehicleType`)),P_(5),tb(`formControl`,i.form.controls.bodyType),I0(),P_(3),kN(i.optionsFor(`bodyType`)),P_(5),tb(`formControl`,i.form.controls.fuelType),I0(),P_(3),kN(i.optionsFor(`fuelType`)),P_(5),tb(`formControl`,i.form.controls.cylinders),I0(),P_(3),kN(i.optionsFor(`cylinders`)),P_(5),tb(`formControl`,i.form.controls.doors),I0(),P_(3),kN(i.optionsFor(`doors`)),P_(5),tb(`formControl`,i.form.controls.drivingType),I0(),P_(3),kN(i.optionsFor(`drivingType`)),P_(5),tb(`formControl`,i.form.controls.bodyColour),I0(),P_(3),kN(i.optionsFor(`bodyColour`)),P_(5),tb(`formControl`,i.form.controls.category),I0(),P_(3),kN(i.optionsFor(`category`)),P_(2),tb(`control`,i.form.controls.weight)(`maxLength`,i.limits.weight),P_(),tb(`control`,i.form.controls.loadCapacity)(`maxLength`,i.limits.loadCapacity),P_(4),tb(`formControl`,i.form.controls.engineCapacity),I0(),P_(4),tb(`formControl`,i.form.controls.makeYear),I0(),P_(4),tb(`formControl`,i.form.controls.seats),I0(),P_(4),tb(`formControl`,i.form.controls.passengers),I0(),P_(4),tb(`formControl`,i.form.controls.drivers),I0(),P_(4),tb(`formControl`,i.form.controls.value),I0(),P_(2),tb(`disabled`,i.saving()||i.loading()),P_(),mp(` `,i.mode()===`create`?`Save vehicle model`:`Save changes`,` `))},dependencies:[Fo,ko,$n,Tr,Eo,Do,gr,hr,Lr,We,cn,ft,rn,ln,dn,Qe,ki,Zt,$l,Wl,Rs,cl,dl,Mt,In$1,pt,Hi],styles:[`.page[_ngcontent-%COMP%]{max-width:1040px;margin:0 auto;padding:24px}.page-header[_ngcontent-%COMP%]{margin-bottom:24px}.page-header[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%]{margin:0 0 4px;font-size:1.5rem;font-weight:600}.subtitle[_ngcontent-%COMP%]{margin:0;color:var(--%NS%sdd-muted)}.card[_ngcontent-%COMP%]{background:var(--%NS%sdd-surface);border:1px solid var(--%NS%sdd-border);border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:20px}.grid[_ngcontent-%COMP%]{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;align-items:start}.code[_ngcontent-%COMP%], .name[_ngcontent-%COMP%], .short[_ngcontent-%COMP%], .half[_ngcontent-%COMP%]{grid-column:span 1}.full[_ngcontent-%COMP%]{grid-column:1 / -1}.active[_ngcontent-%COMP%]{margin-top:8px}.actions[_ngcontent-%COMP%]{display:flex;justify-content:flex-end;gap:12px;margin-top:12px;border-top:1px solid var(--%NS%sdd-border);padding-top:16px}`]})};export{ce as VehicleModelFormComponent};
+import {
+  Ct as _N,
+  G as ON,
+  Hn as wp,
+  In as up,
+  Jn as yE,
+  L as Ko,
+  P as In,
+  Y as P_,
+  _ as DE,
+  a as U,
+  an as je,
+  b as Eb,
+  c as AN,
+  f as C,
+  hn as mp,
+  it as Sc,
+  j as I0,
+  jn as tb,
+  k as Hc,
+  kn as sp,
+  kt as b,
+  m as Ce$1,
+  qn as yA,
+  sn as kN,
+  t as n,
+  ut as Vc,
+  v as E0,
+  y as EE,
+} from './main-RR6WM3XY.js';
+import { c as Rs, i as Hi } from './chunk-CnuPNpsB.js';
+import {
+  C as gr,
+  D as ko,
+  E as ki,
+  S as dl,
+  T as ht,
+  _ as Wl,
+  a as Eo,
+  d as Me$1,
+  f as Mt,
+  g as We,
+  i as Do,
+  m as Tr,
+  n as $n,
+  o as Fo,
+  p as Qe,
+  s as Fr,
+  t as $l,
+  u as Lr,
+  w as hr,
+  x as cl,
+  y as Zt,
+} from './chunk-v95b3x4p.js';
+import {
+  a as ft,
+  c as rn,
+  i as dn,
+  n as Xn,
+  o as ln,
+  r as cn,
+  s as pt,
+  t as In$1,
+} from './chunk-CbUCfSIQ.js';
+var g = (a, e) => e.code;
+function ye(a, e) {
+  a & 1 && Vc(0, `mat-progress-bar`, 5);
+}
+function fe(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+function ve(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+function he(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+function ge(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+function be(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+function Ce(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+function Ne(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+function Me(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+function Se(a, e) {
+  if ((a & 1 && (Sc(0, `mat-option`, 21), yA(1), up()), a & 2)) {
+    let l = e.$implicit;
+    (tb(`value`, l.code), P_(), Eb(l.description));
+  }
+}
+var h = {
+  modelCode: 12,
+  modelName: 100,
+  shortName: 30,
+  remarks: 2e3,
+  arabicModelName: 100,
+  arabicShortName: 30,
+  arabicRemarks: 2e3,
+  weight: 100,
+  loadCapacity: 100,
+};
+var M = (a) => {
+  if (a.value === null || a.value === `` || a.value === void 0) return null;
+  let e = Number(a.value);
+  return !Number.isInteger(e) || e < 0 ? { nonNegativeWholeNumber: !0 } : null;
+};
+var xe = (a) => {
+  if (a.value === null || a.value === `` || a.value === void 0) return null;
+  let e = Number(a.value);
+  return Number.isNaN(e) || e < 0 ? { nonNegativeDecimal: !0 } : null;
+};
+var ce = class a {
+  route = b(In);
+  router = b(Ko);
+  modelsClient = b(EE);
+  optionsClient = b(DE);
+  notifications = b(yE);
+  destroyRef = b(je);
+  limits = h;
+  makeCode = Ce$1(``);
+  modelCode = Ce$1(``);
+  mode = Ce$1(`create`);
+  loading = Ce$1(!1);
+  saving = Ce$1(!1);
+  variantOptions = Ce$1([]);
+  typeOptions = Ce$1([]);
+  bodyTypeOptions = Ce$1([]);
+  fuelTypeOptions = Ce$1([]);
+  cylinderOptions = Ce$1([]);
+  doorOptions = Ce$1([]);
+  drivingTypeOptions = Ce$1([]);
+  bodyColourOptions = Ce$1([]);
+  categoryOptions = Ce$1([]);
+  initialInactiveSelections = Ce$1({});
+  form = new ht({
+    modelCode: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me$1.required, Xn, Me$1.maxLength(h.modelCode), Me$1.pattern(/^[A-Za-z0-9-]+$/)],
+    }),
+    modelName: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me$1.required, Xn, Me$1.maxLength(h.modelName)],
+    }),
+    shortName: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me$1.required, Xn, Me$1.maxLength(h.shortName)],
+    }),
+    remarks: new Fr(``, { nonNullable: !0, validators: [Me$1.maxLength(h.remarks)] }),
+    arabicModelName: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me$1.maxLength(h.arabicModelName)],
+    }),
+    arabicShortName: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me$1.maxLength(h.arabicShortName)],
+    }),
+    arabicRemarks: new Fr(``, { nonNullable: !0, validators: [Me$1.maxLength(h.arabicRemarks)] }),
+    variant: new Fr(``, { nonNullable: !0 }),
+    vehicleType: new Fr(``, { nonNullable: !0 }),
+    weight: new Fr(``, { nonNullable: !0, validators: [Me$1.maxLength(h.weight)] }),
+    loadCapacity: new Fr(``, { nonNullable: !0, validators: [Me$1.maxLength(h.loadCapacity)] }),
+    bodyType: new Fr(``, { nonNullable: !0 }),
+    fuelType: new Fr(``, { nonNullable: !0 }),
+    engineCapacity: new Fr(null, { validators: [M] }),
+    cylinders: new Fr(``, { nonNullable: !0 }),
+    seats: new Fr(null, { validators: [M, Me$1.max(999)] }),
+    passengers: new Fr(null, { validators: [M, Me$1.max(999)] }),
+    drivers: new Fr(null, { validators: [M, Me$1.max(999)] }),
+    doors: new Fr(``, { nonNullable: !0 }),
+    makeYear: new Fr(null, { validators: [M, Me$1.max(9999)] }),
+    drivingType: new Fr(``, { nonNullable: !0 }),
+    bodyColour: new Fr(``, { nonNullable: !0 }),
+    value: new Fr(null, { validators: [xe] }),
+    category: new Fr(``, { nonNullable: !0 }),
+    active: new Fr(!0, { nonNullable: !0 }),
+  });
+  pageTitle = wp(() =>
+    this.mode() === `create`
+      ? `Add Vehicle Model for Make ${this.makeCode()}`
+      : `Edit Vehicle Model ${this.modelCode()} (${this.makeCode()})`,
+  );
+  constructor() {
+    (this.route.paramMap.pipe(U()).subscribe((e) => {
+      let l = e.get(`makeCode`) || ``,
+        i = e.get(`modelCode`);
+      (this.makeCode.set(l),
+        i
+          ? (this.modelCode.set(i), this.mode.set(`edit`), this.form.controls.modelCode.disable())
+          : (this.mode.set(`create`), this.form.controls.modelCode.enable()));
+    }),
+      this.loadDropdownOptions(),
+      this.mode() === `edit` && this.loadModel());
+  }
+  hasUnsavedChanges() {
+    return this.form.dirty;
+  }
+  loadDropdownOptions() {
+    this.optionsClient
+      .get()
+      .pipe(U(this.destroyRef))
+      .subscribe({
+        next: (e) => {
+          (this.variantOptions.set(e.variants ?? []),
+            this.typeOptions.set(e.vehicleTypes ?? []),
+            this.bodyTypeOptions.set(e.bodyTypes ?? []),
+            this.fuelTypeOptions.set(e.fuelTypes ?? []),
+            this.cylinderOptions.set(e.cylinders ?? []),
+            this.doorOptions.set(e.doors ?? []),
+            this.drivingTypeOptions.set(e.drivingTypes ?? []),
+            this.bodyColourOptions.set(e.bodyColours ?? []),
+            this.categoryOptions.set(e.categories ?? []));
+        },
+      });
+  }
+  loadModel() {
+    (this.loading.set(!0),
+      this.modelsClient
+        .get(this.makeCode(), this.modelCode())
+        .pipe(U(this.destroyRef))
+        .subscribe({
+          next: (e) => {
+            (this.populateForm(e), this.loading.set(!1));
+          },
+          error: () => {
+            (this.loading.set(!1),
+              this.notifications.error(`The vehicle model could not be loaded.`, `Load error`),
+              this.back());
+          },
+        }));
+  }
+  populateForm(e) {
+    (this.form.patchValue({
+      modelCode: e.modelCode ?? ``,
+      modelName: e.modelName ?? ``,
+      shortName: e.shortName ?? ``,
+      remarks: e.remarks ?? ``,
+      arabicModelName: e.arabicModelName ?? ``,
+      arabicShortName: e.arabicShortName ?? ``,
+      arabicRemarks: e.arabicRemarks ?? ``,
+      variant: e.variant ?? ``,
+      vehicleType: e.vehicleType ?? ``,
+      weight: e.weight ?? ``,
+      loadCapacity: e.loadCapacity ?? ``,
+      bodyType: e.bodyType ?? ``,
+      fuelType: e.fuelType ?? ``,
+      engineCapacity: e.engineCapacity ?? null,
+      cylinders: e.cylinders ?? ``,
+      seats: e.seats ?? null,
+      passengers: e.passengers ?? null,
+      drivers: e.drivers ?? null,
+      doors: e.doors ?? ``,
+      makeYear: e.makeYear ?? null,
+      drivingType: e.drivingType ?? ``,
+      bodyColour: e.bodyColour ?? ``,
+      value: e.value ?? null,
+      category: e.category ?? ``,
+      active: e.active ?? !0,
+    }),
+      this.form.markAsPristine());
+  }
+  save() {
+    if ((this.form.markAllAsTouched(), this.form.invalid)) return;
+    let e = this.form.getRawValue(),
+      l = {
+        modelName: e.modelName,
+        shortName: e.shortName,
+        remarks: e.remarks || null,
+        arabicModelName: e.arabicModelName || null,
+        arabicShortName: e.arabicShortName || null,
+        arabicRemarks: e.arabicRemarks || null,
+        variant: e.variant || null,
+        vehicleType: e.vehicleType || null,
+        weight: e.weight || null,
+        loadCapacity: e.loadCapacity || null,
+        bodyType: e.bodyType || null,
+        fuelType: e.fuelType || null,
+        engineCapacity: e.engineCapacity ?? null,
+        cylinders: e.cylinders || null,
+        seats: e.seats ?? null,
+        passengers: e.passengers ?? null,
+        drivers: e.drivers ?? null,
+        doors: e.doors || null,
+        makeYear: e.makeYear ?? null,
+        drivingType: e.drivingType || null,
+        bodyColour: e.bodyColour || null,
+        value: e.value ?? null,
+        category: e.category || null,
+        active: e.active,
+      };
+    (this.saving.set(!0),
+      this.mode() === `create`
+        ? this.modelsClient
+            .create(this.makeCode(), C({ modelCode: e.modelCode }, l))
+            .pipe(U(this.destroyRef))
+            .subscribe({
+              next: () => {
+                (this.saving.set(!1),
+                  this.form.markAsPristine(),
+                  this.notifications.success(`Vehicle model created.`),
+                  this.back());
+              },
+              error: (i) => {
+                (this.saving.set(!1), this.handleError(i));
+              },
+            })
+        : this.modelsClient
+            .update(this.makeCode(), this.modelCode(), l)
+            .pipe(U(this.destroyRef))
+            .subscribe({
+              next: () => {
+                (this.saving.set(!1),
+                  this.form.markAsPristine(),
+                  this.notifications.success(`Vehicle model updated.`),
+                  this.back());
+              },
+              error: (i) => {
+                (this.saving.set(!1), this.handleError(i));
+              },
+            }));
+  }
+  handleError(e) {
+    if (n(e) && e.problem.status === 409) {
+      let l =
+        e.problem.fieldErrors.modelCode?.[0] ?? `This model code already exists for this make.`;
+      (this.form.controls.modelCode.setErrors({ server: l }),
+        this.notifications.error(l, `Duplicate Model Code`));
+    } else this.notifications.error(`The vehicle model could not be saved.`, `Save failed`);
+  }
+  back() {
+    this.router.navigate([`/vehicle-makes/view`], { state: { makeCode: this.makeCode() } });
+  }
+  optionsFor(e) {
+    switch (e) {
+      case `variant`:
+        return this.variantOptions();
+      case `vehicleType`:
+        return this.typeOptions();
+      case `bodyType`:
+        return this.bodyTypeOptions();
+      case `fuelType`:
+        return this.fuelTypeOptions();
+      case `cylinders`:
+        return this.cylinderOptions();
+      case `doors`:
+        return this.doorOptions();
+      case `drivingType`:
+        return this.drivingTypeOptions();
+      case `bodyColour`:
+        return this.bodyColourOptions();
+      case `category`:
+        return this.categoryOptions();
+    }
+  }
+  static ɵfac = function (l) {
+    return new (l || a)();
+  };
+  static ɵcmp = sp({
+    type: a,
+    selectors: [[`app-vehicle-model-form`]],
+    decls: 136,
+    vars: 48,
+    consts: [
+      [1, `page`],
+      [1, `page-header`],
+      [2, `display`, `flex`, `flex-direction`, `row`, `justify-content`, `space-between`],
+      [`action`, `back`, `tooltip`, `Back to make`, `accessibleName`, `Back to make`, 3, `clicked`],
+      [1, `subtitle`],
+      [`mode`, `indeterminate`, `aria-label`, `Loading model details`],
+      [`novalidate`, ``, 1, `card`, 3, `ngSubmit`, `formGroup`],
+      [1, `grid`],
+      [
+        `label`,
+        `Model Code`,
+        `patternMessage`,
+        `Model Code can contain only letters, digits and hyphens.`,
+        1,
+        `code`,
+        3,
+        `control`,
+        `maxLength`,
+        `uppercase`,
+      ],
+      [`label`, `Model Name`, 1, `name`, 3, `control`, `maxLength`],
+      [`label`, `Short Name`, 1, `short`, 3, `control`, `maxLength`],
+      [1, `active`, 3, `formControl`],
+      [1, `additional`],
+      [`label`, `Remarks`, 1, `full`, 3, `control`, `maxLength`, `multiline`, `showCounter`],
+      [`label`, `Arabic Model Name`, 1, `half`, 3, `control`, `maxLength`, `rtl`],
+      [`label`, `Arabic Short Name`, 1, `half`, 3, `control`, `maxLength`, `rtl`],
+      [
+        `label`,
+        `Arabic Remarks`,
+        1,
+        `full`,
+        3,
+        `control`,
+        `maxLength`,
+        `multiline`,
+        `rtl`,
+        `showCounter`,
+      ],
+      [1, `additional`, 3, `expanded`],
+      [`appearance`, `outline`],
+      [3, `formControl`],
+      [`value`, ``],
+      [3, `value`],
+      [`label`, `Weight`, 1, `half`, 3, `control`, `maxLength`],
+      [`label`, `Load Capacity`, 1, `half`, 3, `control`, `maxLength`],
+      [`matInput`, ``, `type`, `number`, `min`, `0`, 3, `formControl`],
+      [`matInput`, ``, `type`, `number`, `min`, `1900`, `max`, `9999`, 3, `formControl`],
+      [`matInput`, ``, `type`, `number`, `min`, `0`, `max`, `999`, 3, `formControl`],
+      [`matInput`, ``, `type`, `number`, `min`, `0`, `step`, `0.01`, 3, `formControl`],
+      [1, `actions`],
+      [
+        `mat-flat-button`,
+        ``,
+        `type`,
+        `submit`,
+        2,
+        `border-radius`,
+        `15px`,
+        `padding`,
+        `15px`,
+        `color`,
+        `white`,
+        `background-color`,
+        `var(--mat-sys-on-primary-fixed-variant)`,
+        `border`,
+        `0`,
+        `display`,
+        `flex`,
+        `justify-content`,
+        `end`,
+        `align-items`,
+        `end`,
+        3,
+        `disabled`,
+      ],
+    ],
+    template: function (l, i) {
+      (l & 1 &&
+        (Sc(0, `section`, 0)(1, `header`, 1)(2, `div`)(3, `div`, 2)(4, `h1`),
+        yA(5),
+        up(),
+        Sc(6, `app-icon-button`, 3),
+        Hc(`clicked`, function () {
+          return i.back();
+        }),
+        up()(),
+        Sc(7, `p`, 4),
+        yA(8, ` Enter the details for this vehicle model. Fields marked * are required. `),
+        up()()(),
+        _N(9, ye, 1, 0, `mat-progress-bar`, 5),
+        Sc(10, `form`, 6),
+        Hc(`ngSubmit`, function () {
+          return i.save();
+        }),
+        Sc(11, `div`, 7),
+        Vc(12, `app-limited-text-field`, 8)(13, `app-limited-text-field`, 9)(
+          14,
+          `app-limited-text-field`,
+          10,
+        ),
+        Sc(15, `mat-slide-toggle`, 11),
+        E0(),
+        yA(16, ` Active `),
+        up()(),
+        Sc(17, `mat-expansion-panel`, 12)(18, `mat-expansion-panel-header`)(19, `mat-panel-title`),
+        yA(20, `Additional Information`),
+        up(),
+        Sc(21, `mat-panel-description`),
+        yA(22, `Remarks and Arabic names (all optional)`),
+        up()(),
+        Sc(23, `div`, 7),
+        Vc(24, `app-limited-text-field`, 13)(25, `app-limited-text-field`, 14)(
+          26,
+          `app-limited-text-field`,
+          15,
+        )(27, `app-limited-text-field`, 16),
+        up()(),
+        Sc(28, `mat-expansion-panel`, 17)(29, `mat-expansion-panel-header`)(30, `mat-panel-title`),
+        yA(31, `Technical & Commercial Specifications`),
+        up(),
+        Sc(32, `mat-panel-description`),
+        yA(33, `Optional details and standard classifications`),
+        up()(),
+        Sc(34, `div`, 7)(35, `mat-form-field`, 18)(36, `mat-label`),
+        yA(37, `Variant`),
+        up(),
+        Sc(38, `mat-select`, 19),
+        E0(),
+        Sc(39, `mat-option`, 20),
+        yA(40, `None`),
+        up(),
+        ON(41, fe, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Sc(43, `mat-form-field`, 18)(44, `mat-label`),
+        yA(45, `Vehicle Type`),
+        up(),
+        Sc(46, `mat-select`, 19),
+        E0(),
+        Sc(47, `mat-option`, 20),
+        yA(48, `None`),
+        up(),
+        ON(49, ve, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Sc(51, `mat-form-field`, 18)(52, `mat-label`),
+        yA(53, `Body Type`),
+        up(),
+        Sc(54, `mat-select`, 19),
+        E0(),
+        Sc(55, `mat-option`, 20),
+        yA(56, `None`),
+        up(),
+        ON(57, he, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Sc(59, `mat-form-field`, 18)(60, `mat-label`),
+        yA(61, `Fuel Type`),
+        up(),
+        Sc(62, `mat-select`, 19),
+        E0(),
+        Sc(63, `mat-option`, 20),
+        yA(64, `None`),
+        up(),
+        ON(65, ge, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Sc(67, `mat-form-field`, 18)(68, `mat-label`),
+        yA(69, `Cylinders`),
+        up(),
+        Sc(70, `mat-select`, 19),
+        E0(),
+        Sc(71, `mat-option`, 20),
+        yA(72, `None`),
+        up(),
+        ON(73, be, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Sc(75, `mat-form-field`, 18)(76, `mat-label`),
+        yA(77, `Doors`),
+        up(),
+        Sc(78, `mat-select`, 19),
+        E0(),
+        Sc(79, `mat-option`, 20),
+        yA(80, `None`),
+        up(),
+        ON(81, Ce, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Sc(83, `mat-form-field`, 18)(84, `mat-label`),
+        yA(85, `Driving Type`),
+        up(),
+        Sc(86, `mat-select`, 19),
+        E0(),
+        Sc(87, `mat-option`, 20),
+        yA(88, `None`),
+        up(),
+        ON(89, Ne, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Sc(91, `mat-form-field`, 18)(92, `mat-label`),
+        yA(93, `Body Colour`),
+        up(),
+        Sc(94, `mat-select`, 19),
+        E0(),
+        Sc(95, `mat-option`, 20),
+        yA(96, `None`),
+        up(),
+        ON(97, Me, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Sc(99, `mat-form-field`, 18)(100, `mat-label`),
+        yA(101, `Category`),
+        up(),
+        Sc(102, `mat-select`, 19),
+        E0(),
+        Sc(103, `mat-option`, 20),
+        yA(104, `None`),
+        up(),
+        ON(105, Se, 2, 2, `mat-option`, 21, g),
+        up()(),
+        Vc(107, `app-limited-text-field`, 22)(108, `app-limited-text-field`, 23),
+        Sc(109, `mat-form-field`, 18)(110, `mat-label`),
+        yA(111, `Engine Capacity (CC)`),
+        up(),
+        Sc(112, `input`, 24),
+        E0(),
+        up()(),
+        Sc(113, `mat-form-field`, 18)(114, `mat-label`),
+        yA(115, `Make Year`),
+        up(),
+        Sc(116, `input`, 25),
+        E0(),
+        up()(),
+        Sc(117, `mat-form-field`, 18)(118, `mat-label`),
+        yA(119, `Seats`),
+        up(),
+        Sc(120, `input`, 26),
+        E0(),
+        up()(),
+        Sc(121, `mat-form-field`, 18)(122, `mat-label`),
+        yA(123, `Passengers`),
+        up(),
+        Sc(124, `input`, 26),
+        E0(),
+        up()(),
+        Sc(125, `mat-form-field`, 18)(126, `mat-label`),
+        yA(127, `Drivers`),
+        up(),
+        Sc(128, `input`, 26),
+        E0(),
+        up()(),
+        Sc(129, `mat-form-field`, 18)(130, `mat-label`),
+        yA(131, `Value (AED)`),
+        up(),
+        Sc(132, `input`, 27),
+        E0(),
+        up()()()(),
+        Sc(133, `div`, 28)(134, `button`, 29),
+        yA(135),
+        up()()()()),
+        l & 2 &&
+          (P_(5),
+          Eb(i.pageTitle()),
+          P_(4),
+          AN(i.loading() ? 9 : -1),
+          P_(),
+          tb(`formGroup`, i.form),
+          P_(2),
+          tb(`control`, i.form.controls.modelCode)(`maxLength`, i.limits.modelCode)(
+            `uppercase`,
+            !0,
+          ),
+          P_(),
+          tb(`control`, i.form.controls.modelName)(`maxLength`, i.limits.modelName),
+          P_(),
+          tb(`control`, i.form.controls.shortName)(`maxLength`, i.limits.shortName),
+          P_(),
+          tb(`formControl`, i.form.controls.active),
+          I0(),
+          P_(9),
+          tb(`control`, i.form.controls.remarks)(`maxLength`, i.limits.remarks)(`multiline`, !0)(
+            `showCounter`,
+            !0,
+          ),
+          P_(),
+          tb(`control`, i.form.controls.arabicModelName)(`maxLength`, i.limits.arabicModelName)(
+            `rtl`,
+            !0,
+          ),
+          P_(),
+          tb(`control`, i.form.controls.arabicShortName)(`maxLength`, i.limits.arabicShortName)(
+            `rtl`,
+            !0,
+          ),
+          P_(),
+          tb(`control`, i.form.controls.arabicRemarks)(`maxLength`, i.limits.arabicRemarks)(
+            `multiline`,
+            !0,
+          )(`rtl`, !0)(`showCounter`, !0),
+          P_(),
+          tb(`expanded`, !0),
+          P_(10),
+          tb(`formControl`, i.form.controls.variant),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`variant`)),
+          P_(5),
+          tb(`formControl`, i.form.controls.vehicleType),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`vehicleType`)),
+          P_(5),
+          tb(`formControl`, i.form.controls.bodyType),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`bodyType`)),
+          P_(5),
+          tb(`formControl`, i.form.controls.fuelType),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`fuelType`)),
+          P_(5),
+          tb(`formControl`, i.form.controls.cylinders),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`cylinders`)),
+          P_(5),
+          tb(`formControl`, i.form.controls.doors),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`doors`)),
+          P_(5),
+          tb(`formControl`, i.form.controls.drivingType),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`drivingType`)),
+          P_(5),
+          tb(`formControl`, i.form.controls.bodyColour),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`bodyColour`)),
+          P_(5),
+          tb(`formControl`, i.form.controls.category),
+          I0(),
+          P_(3),
+          kN(i.optionsFor(`category`)),
+          P_(2),
+          tb(`control`, i.form.controls.weight)(`maxLength`, i.limits.weight),
+          P_(),
+          tb(`control`, i.form.controls.loadCapacity)(`maxLength`, i.limits.loadCapacity),
+          P_(4),
+          tb(`formControl`, i.form.controls.engineCapacity),
+          I0(),
+          P_(4),
+          tb(`formControl`, i.form.controls.makeYear),
+          I0(),
+          P_(4),
+          tb(`formControl`, i.form.controls.seats),
+          I0(),
+          P_(4),
+          tb(`formControl`, i.form.controls.passengers),
+          I0(),
+          P_(4),
+          tb(`formControl`, i.form.controls.drivers),
+          I0(),
+          P_(4),
+          tb(`formControl`, i.form.controls.value),
+          I0(),
+          P_(2),
+          tb(`disabled`, i.saving() || i.loading()),
+          P_(),
+          mp(` `, i.mode() === `create` ? `Save vehicle model` : `Save changes`, ` `)));
+    },
+    dependencies: [
+      Fo,
+      ko,
+      $n,
+      Tr,
+      Eo,
+      Do,
+      gr,
+      hr,
+      Lr,
+      We,
+      cn,
+      ft,
+      rn,
+      ln,
+      dn,
+      Qe,
+      ki,
+      Zt,
+      $l,
+      Wl,
+      Rs,
+      cl,
+      dl,
+      Mt,
+      In$1,
+      pt,
+      Hi,
+    ],
+    styles: [
+      `.page[_ngcontent-%COMP%]{max-width:1040px;margin:0 auto;padding:24px}.page-header[_ngcontent-%COMP%]{margin-bottom:24px}.page-header[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%]{margin:0 0 4px;font-size:1.5rem;font-weight:600}.subtitle[_ngcontent-%COMP%]{margin:0;color:var(--%NS%sdd-muted)}.card[_ngcontent-%COMP%]{background:var(--%NS%sdd-surface);border:1px solid var(--%NS%sdd-border);border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:20px}.grid[_ngcontent-%COMP%]{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;align-items:start}.code[_ngcontent-%COMP%], .name[_ngcontent-%COMP%], .short[_ngcontent-%COMP%], .half[_ngcontent-%COMP%]{grid-column:span 1}.full[_ngcontent-%COMP%]{grid-column:1 / -1}.active[_ngcontent-%COMP%]{margin-top:8px}.actions[_ngcontent-%COMP%]{display:flex;justify-content:flex-end;gap:12px;margin-top:12px;border-top:1px solid var(--%NS%sdd-border);padding-top:16px}`,
+    ],
+  });
+};
+export { ce as VehicleModelFormComponent };

@@ -70,6 +70,7 @@ try {
     $env:ConnectionStrings__SddOracle = $env:SDD_TEST_ORACLE_CONNECTION
     $env:ASPNETCORE_ENVIRONMENT = 'Development'
     $env:SDD_API_URL = "http://localhost:$apiPort"
+    $env:SDD_UI_URL = 'http://localhost:4201'
     $api = Start-Process -FilePath 'dotnet' `
         -ArgumentList @($apiTestAssembly, '--urls', "http://localhost:$apiPort") `
         -PassThru -WindowStyle Hidden -WorkingDirectory (Split-Path $apiProject)

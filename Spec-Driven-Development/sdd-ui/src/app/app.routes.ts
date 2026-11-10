@@ -62,6 +62,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'claim-configurations/import',
+    title: 'Import Claim Configurations',
+    data: { breadcrumb: 'claim-configuration-import' },
+    loadComponent: () =>
+      import('./features/claim-configurations/claim-configuration-import.component').then(
+        (module) => module.ClaimConfigurationImportComponent,
+      ),
+  },
+  {
     path: 'claim-configurations',
     pathMatch: 'full',
     title: 'Claim Configuration Master',
@@ -103,6 +112,7 @@ export const routes: Routes = [
   },
   {
     path: 'vehicle-makes',
+    pathMatch: 'full',
     title: 'Vehicle Make Master',
     data: { breadcrumb: 'makes' },
     loadComponent: () =>

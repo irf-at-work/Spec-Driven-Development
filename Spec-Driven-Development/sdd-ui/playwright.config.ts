@@ -4,8 +4,9 @@ import { defineConfig, devices } from '@playwright/test';
 // Both can be changed with environment variables if a port is already taken.
 // The API address must match API_BASE_URL_VALUE in src/app/core/app-config.ts, because the browser calls the API there.
 process.env['SDD_API_URL'] ??= 'http://localhost:5114';
-process.env['SDD_UI_URL'] ??= 'http://localhost:4200';
-const uiUrl = process.env['SDD_UI_URL'] ?? 'http://localhost:4200';
+process.env['SDD_UI_URL'] ??= 'http://localhost:4201';
+const uiUrl = process.env['SDD_UI_URL'] ?? 'http://localhost:4201';
+const uiPort = new URL(uiUrl).port || '4201';
 
 export default defineConfig({
   testDir: '../tests',
@@ -20,12 +21,12 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  // Starts the Angular app when it is not already running. The API must be started separately against the approved test
-  // schema, because it needs the Oracle connection string (see quickstart.md).
+  // Use a dedicated port and a fresh Angular server so browser checks cannot silently reuse an older local UI bundle.
+  // The API must be started separately against the approved test schema (see quickstart.md).
   webServer: {
-    command: 'npm start',
+    command: `npm start -- --port ${uiPort}`,
     url: uiUrl,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 120_000,
   },
 });

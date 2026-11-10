@@ -1,1 +1,677 @@
-import{Bn as wE,Ct as _N,G as ON,In as up,Jn as yE,L as Ko,Ln as vE,P as In,Y as P_,Zn as t,a as U,an as je$1,b as Eb,c as AN,dt as Wm,hn as mp,it as Sc,j as I0,jn as tb,k as Hc,kn as sp,kt as b,m as Ce$1,o as $N,ot as UN,qn as yA,sn as kN,t as n,ut as Vc,v as E0,yt as Ym}from"./main-RR6WM3XY.js";import{c as Rs,i as Hi}from"./chunk-CnuPNpsB.js";import{D as ko,E as ki,S as dl,T as ht,a as Eo,c as Hr,d as Me,f as Mt,g as We,i as Do,o as Fo,p as Qe,r as Br,s as Fr,x as cl,y as Zt}from"./chunk-v95b3x4p.js";import{a as ft,c as rn,i as dn,n as Xn,o as ln,r as cn,s as pt,t as In$1}from"./chunk-CbUCfSIQ.js";var M=(t,e)=>e.code;function ge(t,e){t&1&&(Sc(0,`p`,2),yA(1,`Update the details and save your changes.`),up())}function fe(t,e){t&1&&(Sc(0,`p`,2),yA(1,`Fields marked * are required.`),up())}function he(t,e){t&1&&Vc(0,`mat-progress-bar`,5)}function ye(t,e){t&1&&(Sc(0,`div`,6),yA(1,` The dropdown options could not be loaded. Return to the list and try again. `),up())}function Ce(t,e){if(t&1&&(Sc(0,`mat-option`,12),yA(1),up()),t&2){let o=e.$implicit;tb(`value`,o.code),P_(),Eb(o.description)}}function ve(t,e){t&1&&(Sc(0,`mat-error`),yA(1,`Code Type is required.`),up())}function be(t,e){t&1&&(Sc(0,`mat-error`),yA(1),up()),t&2&&(P_(),Eb(e))}function _e(t,e){if(t&1&&(Sc(0,`mat-option`,12),yA(1),up()),t&2){let o=e.$implicit;tb(`value`,o.code),P_(),Eb(o.description)}}function xe(t,e){t&1&&(Sc(0,`mat-error`),yA(1,`Discount Type is required.`),up())}function Ne(t,e){t&1&&(Sc(0,`mat-error`),yA(1),up()),t&2&&(P_(),Eb(e))}function Te(t,e){if(t&1&&(Sc(0,`mat-option`,12),yA(1),up()),t&2){let o=e.$implicit;tb(`value`,o.code),P_(),Eb(o.description)}}function Ae(t,e){t&1&&(Sc(0,`mat-error`),yA(1,`Charges Type is required.`),up())}function Se(t,e){t&1&&(Sc(0,`mat-error`),yA(1),up()),t&2&&(P_(),Eb(e))}function Pe(t,e){if(t&1&&(Sc(0,`mat-option`,12),yA(1),up()),t&2){let o=e.$implicit;tb(`value`,o.code),P_(),Eb(o.description)}}function Ee(t,e){t&1&&(Sc(0,`mat-error`),yA(1,`Charges Category is required.`),up())}function Fe(t,e){t&1&&(Sc(0,`mat-error`),yA(1),up()),t&2&&(P_(),Eb(e))}function je(t,e){if(t&1){let o=UN();Sc(0,`form`,8),Hc(`ngSubmit`,function(){Wm(o);let p=$N();return Ym(p.save())}),Sc(1,`div`,9)(2,`mat-form-field`,10)(3,`mat-label`),yA(4,`Code Type`),up(),Sc(5,`mat-select`,11),E0(),ON(6,Ce,2,2,`mat-option`,12,M),up(),_N(8,ve,2,0,`mat-error`)(9,be,2,1,`mat-error`),up(),Vc(10,`app-limited-text-field`,13)(11,`app-limited-text-field`,14)(12,`app-limited-text-field`,15)(13,`app-limited-text-field`,16),Sc(14,`mat-form-field`,10)(15,`mat-label`),yA(16,`Discount Type`),up(),Sc(17,`mat-select`,17),E0(),ON(18,_e,2,2,`mat-option`,12,M),up(),_N(20,xe,2,0,`mat-error`)(21,Ne,2,1,`mat-error`),up(),Sc(22,`mat-form-field`,10)(23,`mat-label`),yA(24,`Charges Type`),up(),Sc(25,`mat-select`,18),E0(),ON(26,Te,2,2,`mat-option`,12,M),up(),_N(28,Ae,2,0,`mat-error`)(29,Se,2,1,`mat-error`),up(),Sc(30,`mat-form-field`,10)(31,`mat-label`),yA(32,`Charges Category`),up(),Sc(33,`mat-select`,19),E0(),ON(34,Pe,2,2,`mat-option`,12,M),up(),_N(36,Ee,2,0,`mat-error`)(37,Fe,2,1,`mat-error`),up(),Sc(38,`mat-slide-toggle`,20),E0(),yA(39,`Active`),up()(),Sc(40,`mat-expansion-panel`,21),Hc(`opened`,function(){Wm(o);let p=$N();return Ym(p.additionalOpen.set(!0))})(`closed`,function(){Wm(o);let p=$N();return Ym(p.additionalOpen.set(!1))}),Sc(41,`mat-expansion-panel-header`)(42,`mat-panel-title`),yA(43,`Additional Information`),up(),Sc(44,`mat-panel-description`),yA(45,`Remarks and Arabic details (all optional)`),up()(),Sc(46,`div`,9),Vc(47,`app-limited-text-field`,22)(48,`app-limited-text-field`,23)(49,`app-limited-text-field`,24)(50,`app-limited-text-field`,25),up()(),Sc(51,`div`,26)(52,`button`,27),yA(53),up()()()}if(t&2){let o,m,p,b,n=$N();tb(`formGroup`,n.form),P_(5),I0(),P_(),kN(n.optionsFor(n.options()?.codeTypes,n.adjustment()?.codeType)),P_(2),AN(n.form.controls.codeType.hasError(`required`)?8:(o=n.fieldMessage(n.form.controls.codeType))?9:-1,o),P_(2),tb(`control`,n.form.controls.code)(`maxLength`,n.limits.code)(`uppercase`,!0),P_(),tb(`control`,n.form.controls.companyCode)(`maxLength`,n.limits.companyCode)(`uppercase`,!0),P_(),tb(`control`,n.form.controls.name)(`maxLength`,n.limits.name),P_(),tb(`control`,n.form.controls.shortName)(`maxLength`,n.limits.shortName),P_(4),I0(),P_(),kN(n.optionsFor(n.options()?.discountTypes,n.adjustment()?.discountType)),P_(2),AN(n.form.controls.discountType.hasError(`required`)?20:(m=n.fieldMessage(n.form.controls.discountType))?21:-1,m),P_(5),I0(),P_(),kN(n.optionsFor(n.options()?.chargesTypes,n.adjustment()?.chargesType)),P_(2),AN(n.form.controls.chargesType.hasError(`required`)?28:(p=n.fieldMessage(n.form.controls.chargesType))?29:-1,p),P_(5),I0(),P_(),kN(n.optionsFor(n.options()?.chargesCategories,n.adjustment()?.chargesCategory)),P_(2),AN(n.form.controls.chargesCategory.hasError(`required`)?36:(b=n.fieldMessage(n.form.controls.chargesCategory))?37:-1,b),P_(2),I0(),P_(2),tb(`expanded`,n.additionalOpen()),P_(7),tb(`control`,n.form.controls.remarks)(`maxLength`,n.limits.remarks)(`multiline`,!0)(`showCounter`,!0),P_(),tb(`control`,n.form.controls.arabicName)(`maxLength`,n.limits.arabicName)(`rtl`,!0),P_(),tb(`control`,n.form.controls.arabicShortName)(`maxLength`,n.limits.arabicShortName)(`rtl`,!0),P_(),tb(`control`,n.form.controls.arabicRemarks)(`maxLength`,n.limits.arabicRemarks)(`multiline`,!0)(`rtl`,!0)(`showCounter`,!0),P_(2),tb(`disabled`,n.saving()||n.loading()||n.optionsLoading()),P_(),mp(` `,n.mode===`create`?`Save premium adjustment`:`Save changes`,` `)}}var h={code:12,companyCode:12,name:100,shortName:30,remarks:2e3,arabicName:100,arabicShortName:30,arabicRemarks:2e3};var pe=[`remarks`,`arabicName`,`arabicShortName`,`arabicRemarks`];var ue=class t$1{client=b(wE);optionsClient=b(vE);router=b(Ko);route=b(In);notifications=b(yE);destroyRef=b(je$1);mode=this.route.snapshot.data.mode===`view`?`view`:`create`;heading=this.mode===`create`?`Add Premium Adjustment`:`Premium Adjustment Details`;limits=h;loading=Ce$1(!1);optionsLoading=Ce$1(!0);optionsFailed=Ce$1(!1);saving=Ce$1(!1);additionalOpen=Ce$1(!1);adjustment=Ce$1(null);options=Ce$1(null);key=Ce$1(null);form=new ht({codeType:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(12)]}),code:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(h.code),Me.pattern(/^[A-Za-z0-9-]+$/)]}),companyCode:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(h.companyCode),Me.pattern(/^[A-Za-z0-9-]+$/)]}),name:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(h.name)]}),shortName:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(h.shortName)]}),discountType:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(12)]}),chargesType:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(12)]}),chargesCategory:new Fr(``,{nonNullable:!0,validators:[Me.required,Xn,Me.maxLength(12)]}),remarks:new Fr(``,{nonNullable:!0,validators:[Me.maxLength(h.remarks)]}),arabicName:new Fr(``,{nonNullable:!0,validators:[Me.maxLength(h.arabicName)]}),arabicShortName:new Fr(``,{nonNullable:!0,validators:[Me.maxLength(h.arabicShortName)]}),arabicRemarks:new Fr(``,{nonNullable:!0,validators:[Me.maxLength(h.arabicRemarks)]}),active:new Fr(!0,{nonNullable:!0})});constructor(){if(this.mode===`view`){let e=t();if(e===null){this.router.navigate([`/premium-adjustments`]);return}this.key.set(e),this.loadAdjustment(e)}else this.applyEditState();this.loadOptions()}hasUnsavedChanges(){return this.form.dirty}back(){this.router.navigate([`/premium-adjustments`])}save(){if(this.form.markAllAsTouched(),this.form.invalid){this.openAdditionalInformationIfItHasAnError();return}let e=this.form.getRawValue();if(this.saving.set(!0),this.mode===`create`){this.client.create(e).pipe(U(this.destroyRef)).subscribe({next:()=>{this.saving.set(!1),this.form.markAsPristine(),this.notifications.success(`Premium adjustment saved.`),this.back()},error:m=>this.onSaveFailed(m)});return}let o=this.key();if(o===null){this.saving.set(!1),this.notifications.error(`The premium adjustment key is missing. Return to the list and open it again.`);return}this.client.update(o.codeType,o.code,o.companyCode,{name:e.name,shortName:e.shortName,discountType:e.discountType,chargesType:e.chargesType,chargesCategory:e.chargesCategory,remarks:e.remarks,arabicName:e.arabicName,arabicShortName:e.arabicShortName,arabicRemarks:e.arabicRemarks,active:e.active}).pipe(U(this.destroyRef)).subscribe({next:m=>{this.saving.set(!1),this.showAdjustment(m),this.notifications.success(`Premium adjustment updated.`)},error:m=>this.onSaveFailed(m)})}optionsFor(e,o){return e?!o||e.some(m=>m.code===o)?e:[{code:o,description:`${o} (inactive)`},...e]:[]}fieldMessage(e){let o=e.getError(`server`);return typeof o==`string`?o:null}loadOptions(){this.optionsClient.get().pipe(U(this.destroyRef)).subscribe({next:e=>{this.options.set(e),this.optionsLoading.set(!1)},error:()=>{this.optionsFailed.set(!0),this.optionsLoading.set(!1),this.notifications.error(`The dropdown options could not be loaded. Please try again.`)}})}loadAdjustment(e){this.loading.set(!0),this.client.get(e.codeType,e.code,e.companyCode).pipe(U(this.destroyRef)).subscribe({next:o=>{this.showAdjustment(o),this.loading.set(!1)},error:()=>{this.loading.set(!1),this.back()}})}showAdjustment(e){let o={codeType:e.codeType,code:e.code,companyCode:e.companyCode,name:e.name,shortName:e.shortName,discountType:e.discountType??``,chargesType:e.chargesType??``,chargesCategory:e.chargesCategory??``,remarks:e.remarks??``,arabicName:e.arabicName??``,arabicShortName:e.arabicShortName??``,arabicRemarks:e.arabicRemarks??``,active:e.active};this.adjustment.set(e),this.form.reset(o),this.additionalOpen.set(pe.some(m=>o[m]!==``)),this.applyEditState()}applyEditState(){this.form.enable(),this.mode===`view`&&(this.form.controls.codeType.disable(),this.form.controls.code.disable(),this.form.controls.companyCode.disable())}onSaveFailed(e){if(this.saving.set(!1),!n(e)){this.notifications.error(`The premium adjustment could not be saved. Please try again.`);return}this.showFieldErrors(e.problem)}showFieldErrors(e){let o=this.form.controls;for(let[m,p]of Object.entries(e.fieldErrors)){let b=o[m];b&&p.length>0&&(b.setErrors({server:p[0]}),b.markAsTouched())}this.openAdditionalInformationIfItHasAnError()}openAdditionalInformationIfItHasAnError(){let e=this.form.controls;pe.some(o=>e[o].invalid)&&this.additionalOpen.set(!0)}static ɵfac=function(o){return new(o||t$1)};static ɵcmp=sp({type:t$1,selectors:[[`app-premium-adjustment-form`]],decls:12,vars:4,consts:[[1,`page`],[1,`page-header`],[1,`subtitle`],[1,`header-actions`],[`action`,`back`,`tooltip`,`Back to premium adjustments`,`accessibleName`,`Back to premium adjustments`,3,`clicked`],[`mode`,`indeterminate`,`aria-label`,`Loading premium adjustment details`],[`role`,`alert`,1,`state`],[`novalidate`,``,1,`card`,3,`formGroup`],[`novalidate`,``,1,`card`,3,`ngSubmit`,`formGroup`],[1,`grid`],[`appearance`,`outline`,1,`third`],[`formControlName`,`codeType`],[3,`value`],[`label`,`Code`,`patternMessage`,`Code can contain only letters, digits and hyphens.`,1,`third`,3,`control`,`maxLength`,`uppercase`],[`label`,`Company Code`,`patternMessage`,`Company Code can contain only letters, digits and hyphens.`,1,`third`,3,`control`,`maxLength`,`uppercase`],[`label`,`Name`,1,`name`,3,`control`,`maxLength`],[`label`,`Short Name`,1,`short`,3,`control`,`maxLength`],[`formControlName`,`discountType`],[`formControlName`,`chargesType`],[`formControlName`,`chargesCategory`],[`formControlName`,`active`,1,`active`],[1,`additional`,3,`opened`,`closed`,`expanded`],[`label`,`Remarks`,1,`full`,3,`control`,`maxLength`,`multiline`,`showCounter`],[`label`,`Arabic Name`,1,`half`,3,`control`,`maxLength`,`rtl`],[`label`,`Arabic Short Name`,1,`half`,3,`control`,`maxLength`,`rtl`],[`label`,`Arabic Remarks`,1,`full`,3,`control`,`maxLength`,`multiline`,`rtl`,`showCounter`],[1,`actions`],[`mat-flat-button`,``,`type`,`submit`,2,`border-radius`,`15px`,`padding`,`15px`,`color`,`white`,`background-color`,`var(--mat-sys-on-primary-fixed-variant)`,`border`,`0`,`display`,`flex`,`justify-content`,`end`,`align-items`,`end`,3,`disabled`]],template:function(o,m){o&1&&(Sc(0,`section`,0)(1,`header`,1)(2,`div`)(3,`h1`),yA(4),up(),_N(5,ge,2,0,`p`,2)(6,fe,2,0,`p`,2),up(),Sc(7,`div`,3)(8,`app-icon-button`,4),Hc(`clicked`,function(){return m.back()}),up()()(),_N(9,he,1,0,`mat-progress-bar`,5),_N(10,ye,2,0,`div`,6)(11,je,54,33,`form`,7),up()),o&2&&(P_(4),Eb(m.heading),P_(),AN(m.mode===`view`&&m.adjustment()?5:6),P_(4),AN(m.loading()||m.optionsLoading()?9:-1),P_(),AN(m.optionsFailed()?10:11))},dependencies:[Hi,pt,cn,ft,rn,ln,dn,Qe,ki,Zt,Hr,Rs,cl,dl,Mt,In$1,Fo,ko,Eo,Do,We,Br],styles:[`.page[_ngcontent-%COMP%]{margin:0 auto;padding:24px 24px 48px}.page-header[_ngcontent-%COMP%]{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}.header-actions[_ngcontent-%COMP%]{display:flex;align-items:center;gap:16px}h1[_ngcontent-%COMP%]{margin:0 0 4px;font-size:1.5rem;font-weight:600;color:var(--%NS%sdd-text)}.subtitle[_ngcontent-%COMP%]{margin:0;color:var(--%NS%sdd-muted)}.card[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:20px;padding:24px;background:var(--%NS%sdd-surface);border:1px solid var(--%NS%sdd-border);border-radius:8px}.grid[_ngcontent-%COMP%]{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.third[_ngcontent-%COMP%]{grid-column:span 4}.name[_ngcontent-%COMP%]{grid-column:span 8}.short[_ngcontent-%COMP%]{grid-column:span 4}.half[_ngcontent-%COMP%]{grid-column:span 6}.full[_ngcontent-%COMP%]{grid-column:span 12}.active[_ngcontent-%COMP%]{grid-column:span 4;align-self:center;margin-bottom:16px}.additional[_ngcontent-%COMP%]{box-shadow:none;border:1px solid var(--%NS%sdd-border)}.actions[_ngcontent-%COMP%]{display:flex;justify-content:flex-end}.state[_ngcontent-%COMP%]{padding:20px;color:var(--%NS%sdd-muted)}@media(max-width:700px){.third[_ngcontent-%COMP%], .name[_ngcontent-%COMP%], .short[_ngcontent-%COMP%], .half[_ngcontent-%COMP%]{grid-column:span 12}.page-header[_ngcontent-%COMP%]{flex-direction:column}}`]})};export{ue as PremiumAdjustmentFormComponent};
+import {
+  Bn as wE,
+  Ct as _N,
+  G as ON,
+  In as up,
+  Jn as yE,
+  L as Ko,
+  Ln as vE,
+  P as In,
+  Y as P_,
+  Zn as t,
+  a as U,
+  an as je$1,
+  b as Eb,
+  c as AN,
+  dt as Wm,
+  hn as mp,
+  it as Sc,
+  j as I0,
+  jn as tb,
+  k as Hc,
+  kn as sp,
+  kt as b,
+  m as Ce$1,
+  o as $N,
+  ot as UN,
+  qn as yA,
+  sn as kN,
+  t as n,
+  ut as Vc,
+  v as E0,
+  yt as Ym,
+} from './main-RR6WM3XY.js';
+import { c as Rs, i as Hi } from './chunk-CnuPNpsB.js';
+import {
+  D as ko,
+  E as ki,
+  S as dl,
+  T as ht,
+  a as Eo,
+  c as Hr,
+  d as Me,
+  f as Mt,
+  g as We,
+  i as Do,
+  o as Fo,
+  p as Qe,
+  r as Br,
+  s as Fr,
+  x as cl,
+  y as Zt,
+} from './chunk-v95b3x4p.js';
+import {
+  a as ft,
+  c as rn,
+  i as dn,
+  n as Xn,
+  o as ln,
+  r as cn,
+  s as pt,
+  t as In$1,
+} from './chunk-CbUCfSIQ.js';
+var M = (t, e) => e.code;
+function ge(t, e) {
+  t & 1 && (Sc(0, `p`, 2), yA(1, `Update the details and save your changes.`), up());
+}
+function fe(t, e) {
+  t & 1 && (Sc(0, `p`, 2), yA(1, `Fields marked * are required.`), up());
+}
+function he(t, e) {
+  t & 1 && Vc(0, `mat-progress-bar`, 5);
+}
+function ye(t, e) {
+  t & 1 &&
+    (Sc(0, `div`, 6),
+    yA(1, ` The dropdown options could not be loaded. Return to the list and try again. `),
+    up());
+}
+function Ce(t, e) {
+  if ((t & 1 && (Sc(0, `mat-option`, 12), yA(1), up()), t & 2)) {
+    let o = e.$implicit;
+    (tb(`value`, o.code), P_(), Eb(o.description));
+  }
+}
+function ve(t, e) {
+  t & 1 && (Sc(0, `mat-error`), yA(1, `Code Type is required.`), up());
+}
+function be(t, e) {
+  (t & 1 && (Sc(0, `mat-error`), yA(1), up()), t & 2 && (P_(), Eb(e)));
+}
+function _e(t, e) {
+  if ((t & 1 && (Sc(0, `mat-option`, 12), yA(1), up()), t & 2)) {
+    let o = e.$implicit;
+    (tb(`value`, o.code), P_(), Eb(o.description));
+  }
+}
+function xe(t, e) {
+  t & 1 && (Sc(0, `mat-error`), yA(1, `Discount Type is required.`), up());
+}
+function Ne(t, e) {
+  (t & 1 && (Sc(0, `mat-error`), yA(1), up()), t & 2 && (P_(), Eb(e)));
+}
+function Te(t, e) {
+  if ((t & 1 && (Sc(0, `mat-option`, 12), yA(1), up()), t & 2)) {
+    let o = e.$implicit;
+    (tb(`value`, o.code), P_(), Eb(o.description));
+  }
+}
+function Ae(t, e) {
+  t & 1 && (Sc(0, `mat-error`), yA(1, `Charges Type is required.`), up());
+}
+function Se(t, e) {
+  (t & 1 && (Sc(0, `mat-error`), yA(1), up()), t & 2 && (P_(), Eb(e)));
+}
+function Pe(t, e) {
+  if ((t & 1 && (Sc(0, `mat-option`, 12), yA(1), up()), t & 2)) {
+    let o = e.$implicit;
+    (tb(`value`, o.code), P_(), Eb(o.description));
+  }
+}
+function Ee(t, e) {
+  t & 1 && (Sc(0, `mat-error`), yA(1, `Charges Category is required.`), up());
+}
+function Fe(t, e) {
+  (t & 1 && (Sc(0, `mat-error`), yA(1), up()), t & 2 && (P_(), Eb(e)));
+}
+function je(t, e) {
+  if (t & 1) {
+    let o = UN();
+    (Sc(0, `form`, 8),
+      Hc(`ngSubmit`, function () {
+        Wm(o);
+        let p = $N();
+        return Ym(p.save());
+      }),
+      Sc(1, `div`, 9)(2, `mat-form-field`, 10)(3, `mat-label`),
+      yA(4, `Code Type`),
+      up(),
+      Sc(5, `mat-select`, 11),
+      E0(),
+      ON(6, Ce, 2, 2, `mat-option`, 12, M),
+      up(),
+      _N(8, ve, 2, 0, `mat-error`)(9, be, 2, 1, `mat-error`),
+      up(),
+      Vc(10, `app-limited-text-field`, 13)(11, `app-limited-text-field`, 14)(
+        12,
+        `app-limited-text-field`,
+        15,
+      )(13, `app-limited-text-field`, 16),
+      Sc(14, `mat-form-field`, 10)(15, `mat-label`),
+      yA(16, `Discount Type`),
+      up(),
+      Sc(17, `mat-select`, 17),
+      E0(),
+      ON(18, _e, 2, 2, `mat-option`, 12, M),
+      up(),
+      _N(20, xe, 2, 0, `mat-error`)(21, Ne, 2, 1, `mat-error`),
+      up(),
+      Sc(22, `mat-form-field`, 10)(23, `mat-label`),
+      yA(24, `Charges Type`),
+      up(),
+      Sc(25, `mat-select`, 18),
+      E0(),
+      ON(26, Te, 2, 2, `mat-option`, 12, M),
+      up(),
+      _N(28, Ae, 2, 0, `mat-error`)(29, Se, 2, 1, `mat-error`),
+      up(),
+      Sc(30, `mat-form-field`, 10)(31, `mat-label`),
+      yA(32, `Charges Category`),
+      up(),
+      Sc(33, `mat-select`, 19),
+      E0(),
+      ON(34, Pe, 2, 2, `mat-option`, 12, M),
+      up(),
+      _N(36, Ee, 2, 0, `mat-error`)(37, Fe, 2, 1, `mat-error`),
+      up(),
+      Sc(38, `mat-slide-toggle`, 20),
+      E0(),
+      yA(39, `Active`),
+      up()(),
+      Sc(40, `mat-expansion-panel`, 21),
+      Hc(`opened`, function () {
+        Wm(o);
+        let p = $N();
+        return Ym(p.additionalOpen.set(!0));
+      })(`closed`, function () {
+        Wm(o);
+        let p = $N();
+        return Ym(p.additionalOpen.set(!1));
+      }),
+      Sc(41, `mat-expansion-panel-header`)(42, `mat-panel-title`),
+      yA(43, `Additional Information`),
+      up(),
+      Sc(44, `mat-panel-description`),
+      yA(45, `Remarks and Arabic details (all optional)`),
+      up()(),
+      Sc(46, `div`, 9),
+      Vc(47, `app-limited-text-field`, 22)(48, `app-limited-text-field`, 23)(
+        49,
+        `app-limited-text-field`,
+        24,
+      )(50, `app-limited-text-field`, 25),
+      up()(),
+      Sc(51, `div`, 26)(52, `button`, 27),
+      yA(53),
+      up()()());
+  }
+  if (t & 2) {
+    let o,
+      m,
+      p,
+      b,
+      n = $N();
+    (tb(`formGroup`, n.form),
+      P_(5),
+      I0(),
+      P_(),
+      kN(n.optionsFor(n.options()?.codeTypes, n.adjustment()?.codeType)),
+      P_(2),
+      AN(
+        n.form.controls.codeType.hasError(`required`)
+          ? 8
+          : (o = n.fieldMessage(n.form.controls.codeType))
+            ? 9
+            : -1,
+        o,
+      ),
+      P_(2),
+      tb(`control`, n.form.controls.code)(`maxLength`, n.limits.code)(`uppercase`, !0),
+      P_(),
+      tb(`control`, n.form.controls.companyCode)(`maxLength`, n.limits.companyCode)(
+        `uppercase`,
+        !0,
+      ),
+      P_(),
+      tb(`control`, n.form.controls.name)(`maxLength`, n.limits.name),
+      P_(),
+      tb(`control`, n.form.controls.shortName)(`maxLength`, n.limits.shortName),
+      P_(4),
+      I0(),
+      P_(),
+      kN(n.optionsFor(n.options()?.discountTypes, n.adjustment()?.discountType)),
+      P_(2),
+      AN(
+        n.form.controls.discountType.hasError(`required`)
+          ? 20
+          : (m = n.fieldMessage(n.form.controls.discountType))
+            ? 21
+            : -1,
+        m,
+      ),
+      P_(5),
+      I0(),
+      P_(),
+      kN(n.optionsFor(n.options()?.chargesTypes, n.adjustment()?.chargesType)),
+      P_(2),
+      AN(
+        n.form.controls.chargesType.hasError(`required`)
+          ? 28
+          : (p = n.fieldMessage(n.form.controls.chargesType))
+            ? 29
+            : -1,
+        p,
+      ),
+      P_(5),
+      I0(),
+      P_(),
+      kN(n.optionsFor(n.options()?.chargesCategories, n.adjustment()?.chargesCategory)),
+      P_(2),
+      AN(
+        n.form.controls.chargesCategory.hasError(`required`)
+          ? 36
+          : (b = n.fieldMessage(n.form.controls.chargesCategory))
+            ? 37
+            : -1,
+        b,
+      ),
+      P_(2),
+      I0(),
+      P_(2),
+      tb(`expanded`, n.additionalOpen()),
+      P_(7),
+      tb(`control`, n.form.controls.remarks)(`maxLength`, n.limits.remarks)(`multiline`, !0)(
+        `showCounter`,
+        !0,
+      ),
+      P_(),
+      tb(`control`, n.form.controls.arabicName)(`maxLength`, n.limits.arabicName)(`rtl`, !0),
+      P_(),
+      tb(`control`, n.form.controls.arabicShortName)(`maxLength`, n.limits.arabicShortName)(
+        `rtl`,
+        !0,
+      ),
+      P_(),
+      tb(`control`, n.form.controls.arabicRemarks)(`maxLength`, n.limits.arabicRemarks)(
+        `multiline`,
+        !0,
+      )(`rtl`, !0)(`showCounter`, !0),
+      P_(2),
+      tb(`disabled`, n.saving() || n.loading() || n.optionsLoading()),
+      P_(),
+      mp(` `, n.mode === `create` ? `Save premium adjustment` : `Save changes`, ` `));
+  }
+}
+var h = {
+  code: 12,
+  companyCode: 12,
+  name: 100,
+  shortName: 30,
+  remarks: 2e3,
+  arabicName: 100,
+  arabicShortName: 30,
+  arabicRemarks: 2e3,
+};
+var pe = [`remarks`, `arabicName`, `arabicShortName`, `arabicRemarks`];
+var ue = class t$1 {
+  client = b(wE);
+  optionsClient = b(vE);
+  router = b(Ko);
+  route = b(In);
+  notifications = b(yE);
+  destroyRef = b(je$1);
+  mode = this.route.snapshot.data.mode === `view` ? `view` : `create`;
+  heading = this.mode === `create` ? `Add Premium Adjustment` : `Premium Adjustment Details`;
+  limits = h;
+  loading = Ce$1(!1);
+  optionsLoading = Ce$1(!0);
+  optionsFailed = Ce$1(!1);
+  saving = Ce$1(!1);
+  additionalOpen = Ce$1(!1);
+  adjustment = Ce$1(null);
+  options = Ce$1(null);
+  key = Ce$1(null);
+  form = new ht({
+    codeType: new Fr(``, { nonNullable: !0, validators: [Me.required, Xn, Me.maxLength(12)] }),
+    code: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me.required, Xn, Me.maxLength(h.code), Me.pattern(/^[A-Za-z0-9-]+$/)],
+    }),
+    companyCode: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me.required, Xn, Me.maxLength(h.companyCode), Me.pattern(/^[A-Za-z0-9-]+$/)],
+    }),
+    name: new Fr(``, { nonNullable: !0, validators: [Me.required, Xn, Me.maxLength(h.name)] }),
+    shortName: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me.required, Xn, Me.maxLength(h.shortName)],
+    }),
+    discountType: new Fr(``, { nonNullable: !0, validators: [Me.required, Xn, Me.maxLength(12)] }),
+    chargesType: new Fr(``, { nonNullable: !0, validators: [Me.required, Xn, Me.maxLength(12)] }),
+    chargesCategory: new Fr(``, {
+      nonNullable: !0,
+      validators: [Me.required, Xn, Me.maxLength(12)],
+    }),
+    remarks: new Fr(``, { nonNullable: !0, validators: [Me.maxLength(h.remarks)] }),
+    arabicName: new Fr(``, { nonNullable: !0, validators: [Me.maxLength(h.arabicName)] }),
+    arabicShortName: new Fr(``, { nonNullable: !0, validators: [Me.maxLength(h.arabicShortName)] }),
+    arabicRemarks: new Fr(``, { nonNullable: !0, validators: [Me.maxLength(h.arabicRemarks)] }),
+    active: new Fr(!0, { nonNullable: !0 }),
+  });
+  constructor() {
+    if (this.mode === `view`) {
+      let e = t();
+      if (e === null) {
+        this.router.navigate([`/premium-adjustments`]);
+        return;
+      }
+      (this.key.set(e), this.loadAdjustment(e));
+    } else this.applyEditState();
+    this.loadOptions();
+  }
+  hasUnsavedChanges() {
+    return this.form.dirty;
+  }
+  back() {
+    this.router.navigate([`/premium-adjustments`]);
+  }
+  save() {
+    if ((this.form.markAllAsTouched(), this.form.invalid)) {
+      this.openAdditionalInformationIfItHasAnError();
+      return;
+    }
+    let e = this.form.getRawValue();
+    if ((this.saving.set(!0), this.mode === `create`)) {
+      this.client
+        .create(e)
+        .pipe(U(this.destroyRef))
+        .subscribe({
+          next: () => {
+            (this.saving.set(!1),
+              this.form.markAsPristine(),
+              this.notifications.success(`Premium adjustment saved.`),
+              this.back());
+          },
+          error: (m) => this.onSaveFailed(m),
+        });
+      return;
+    }
+    let o = this.key();
+    if (o === null) {
+      (this.saving.set(!1),
+        this.notifications.error(
+          `The premium adjustment key is missing. Return to the list and open it again.`,
+        ));
+      return;
+    }
+    this.client
+      .update(o.codeType, o.code, o.companyCode, {
+        name: e.name,
+        shortName: e.shortName,
+        discountType: e.discountType,
+        chargesType: e.chargesType,
+        chargesCategory: e.chargesCategory,
+        remarks: e.remarks,
+        arabicName: e.arabicName,
+        arabicShortName: e.arabicShortName,
+        arabicRemarks: e.arabicRemarks,
+        active: e.active,
+      })
+      .pipe(U(this.destroyRef))
+      .subscribe({
+        next: (m) => {
+          (this.saving.set(!1),
+            this.showAdjustment(m),
+            this.notifications.success(`Premium adjustment updated.`));
+        },
+        error: (m) => this.onSaveFailed(m),
+      });
+  }
+  optionsFor(e, o) {
+    return e
+      ? !o || e.some((m) => m.code === o)
+        ? e
+        : [{ code: o, description: `${o} (inactive)` }, ...e]
+      : [];
+  }
+  fieldMessage(e) {
+    let o = e.getError(`server`);
+    return typeof o == `string` ? o : null;
+  }
+  loadOptions() {
+    this.optionsClient
+      .get()
+      .pipe(U(this.destroyRef))
+      .subscribe({
+        next: (e) => {
+          (this.options.set(e), this.optionsLoading.set(!1));
+        },
+        error: () => {
+          (this.optionsFailed.set(!0),
+            this.optionsLoading.set(!1),
+            this.notifications.error(
+              `The dropdown options could not be loaded. Please try again.`,
+            ));
+        },
+      });
+  }
+  loadAdjustment(e) {
+    (this.loading.set(!0),
+      this.client
+        .get(e.codeType, e.code, e.companyCode)
+        .pipe(U(this.destroyRef))
+        .subscribe({
+          next: (o) => {
+            (this.showAdjustment(o), this.loading.set(!1));
+          },
+          error: () => {
+            (this.loading.set(!1), this.back());
+          },
+        }));
+  }
+  showAdjustment(e) {
+    let o = {
+      codeType: e.codeType,
+      code: e.code,
+      companyCode: e.companyCode,
+      name: e.name,
+      shortName: e.shortName,
+      discountType: e.discountType ?? ``,
+      chargesType: e.chargesType ?? ``,
+      chargesCategory: e.chargesCategory ?? ``,
+      remarks: e.remarks ?? ``,
+      arabicName: e.arabicName ?? ``,
+      arabicShortName: e.arabicShortName ?? ``,
+      arabicRemarks: e.arabicRemarks ?? ``,
+      active: e.active,
+    };
+    (this.adjustment.set(e),
+      this.form.reset(o),
+      this.additionalOpen.set(pe.some((m) => o[m] !== ``)),
+      this.applyEditState());
+  }
+  applyEditState() {
+    (this.form.enable(),
+      this.mode === `view` &&
+        (this.form.controls.codeType.disable(),
+        this.form.controls.code.disable(),
+        this.form.controls.companyCode.disable()));
+  }
+  onSaveFailed(e) {
+    if ((this.saving.set(!1), !n(e))) {
+      this.notifications.error(`The premium adjustment could not be saved. Please try again.`);
+      return;
+    }
+    this.showFieldErrors(e.problem);
+  }
+  showFieldErrors(e) {
+    let o = this.form.controls;
+    for (let [m, p] of Object.entries(e.fieldErrors)) {
+      let b = o[m];
+      b && p.length > 0 && (b.setErrors({ server: p[0] }), b.markAsTouched());
+    }
+    this.openAdditionalInformationIfItHasAnError();
+  }
+  openAdditionalInformationIfItHasAnError() {
+    let e = this.form.controls;
+    pe.some((o) => e[o].invalid) && this.additionalOpen.set(!0);
+  }
+  static ɵfac = function (o) {
+    return new (o || t$1)();
+  };
+  static ɵcmp = sp({
+    type: t$1,
+    selectors: [[`app-premium-adjustment-form`]],
+    decls: 12,
+    vars: 4,
+    consts: [
+      [1, `page`],
+      [1, `page-header`],
+      [1, `subtitle`],
+      [1, `header-actions`],
+      [
+        `action`,
+        `back`,
+        `tooltip`,
+        `Back to premium adjustments`,
+        `accessibleName`,
+        `Back to premium adjustments`,
+        3,
+        `clicked`,
+      ],
+      [`mode`, `indeterminate`, `aria-label`, `Loading premium adjustment details`],
+      [`role`, `alert`, 1, `state`],
+      [`novalidate`, ``, 1, `card`, 3, `formGroup`],
+      [`novalidate`, ``, 1, `card`, 3, `ngSubmit`, `formGroup`],
+      [1, `grid`],
+      [`appearance`, `outline`, 1, `third`],
+      [`formControlName`, `codeType`],
+      [3, `value`],
+      [
+        `label`,
+        `Code`,
+        `patternMessage`,
+        `Code can contain only letters, digits and hyphens.`,
+        1,
+        `third`,
+        3,
+        `control`,
+        `maxLength`,
+        `uppercase`,
+      ],
+      [
+        `label`,
+        `Company Code`,
+        `patternMessage`,
+        `Company Code can contain only letters, digits and hyphens.`,
+        1,
+        `third`,
+        3,
+        `control`,
+        `maxLength`,
+        `uppercase`,
+      ],
+      [`label`, `Name`, 1, `name`, 3, `control`, `maxLength`],
+      [`label`, `Short Name`, 1, `short`, 3, `control`, `maxLength`],
+      [`formControlName`, `discountType`],
+      [`formControlName`, `chargesType`],
+      [`formControlName`, `chargesCategory`],
+      [`formControlName`, `active`, 1, `active`],
+      [1, `additional`, 3, `opened`, `closed`, `expanded`],
+      [`label`, `Remarks`, 1, `full`, 3, `control`, `maxLength`, `multiline`, `showCounter`],
+      [`label`, `Arabic Name`, 1, `half`, 3, `control`, `maxLength`, `rtl`],
+      [`label`, `Arabic Short Name`, 1, `half`, 3, `control`, `maxLength`, `rtl`],
+      [
+        `label`,
+        `Arabic Remarks`,
+        1,
+        `full`,
+        3,
+        `control`,
+        `maxLength`,
+        `multiline`,
+        `rtl`,
+        `showCounter`,
+      ],
+      [1, `actions`],
+      [
+        `mat-flat-button`,
+        ``,
+        `type`,
+        `submit`,
+        2,
+        `border-radius`,
+        `15px`,
+        `padding`,
+        `15px`,
+        `color`,
+        `white`,
+        `background-color`,
+        `var(--mat-sys-on-primary-fixed-variant)`,
+        `border`,
+        `0`,
+        `display`,
+        `flex`,
+        `justify-content`,
+        `end`,
+        `align-items`,
+        `end`,
+        3,
+        `disabled`,
+      ],
+    ],
+    template: function (o, m) {
+      (o & 1 &&
+        (Sc(0, `section`, 0)(1, `header`, 1)(2, `div`)(3, `h1`),
+        yA(4),
+        up(),
+        _N(5, ge, 2, 0, `p`, 2)(6, fe, 2, 0, `p`, 2),
+        up(),
+        Sc(7, `div`, 3)(8, `app-icon-button`, 4),
+        Hc(`clicked`, function () {
+          return m.back();
+        }),
+        up()()(),
+        _N(9, he, 1, 0, `mat-progress-bar`, 5),
+        _N(10, ye, 2, 0, `div`, 6)(11, je, 54, 33, `form`, 7),
+        up()),
+        o & 2 &&
+          (P_(4),
+          Eb(m.heading),
+          P_(),
+          AN(m.mode === `view` && m.adjustment() ? 5 : 6),
+          P_(4),
+          AN(m.loading() || m.optionsLoading() ? 9 : -1),
+          P_(),
+          AN(m.optionsFailed() ? 10 : 11)));
+    },
+    dependencies: [
+      Hi,
+      pt,
+      cn,
+      ft,
+      rn,
+      ln,
+      dn,
+      Qe,
+      ki,
+      Zt,
+      Hr,
+      Rs,
+      cl,
+      dl,
+      Mt,
+      In$1,
+      Fo,
+      ko,
+      Eo,
+      Do,
+      We,
+      Br,
+    ],
+    styles: [
+      `.page[_ngcontent-%COMP%]{margin:0 auto;padding:24px 24px 48px}.page-header[_ngcontent-%COMP%]{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}.header-actions[_ngcontent-%COMP%]{display:flex;align-items:center;gap:16px}h1[_ngcontent-%COMP%]{margin:0 0 4px;font-size:1.5rem;font-weight:600;color:var(--%NS%sdd-text)}.subtitle[_ngcontent-%COMP%]{margin:0;color:var(--%NS%sdd-muted)}.card[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:20px;padding:24px;background:var(--%NS%sdd-surface);border:1px solid var(--%NS%sdd-border);border-radius:8px}.grid[_ngcontent-%COMP%]{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.third[_ngcontent-%COMP%]{grid-column:span 4}.name[_ngcontent-%COMP%]{grid-column:span 8}.short[_ngcontent-%COMP%]{grid-column:span 4}.half[_ngcontent-%COMP%]{grid-column:span 6}.full[_ngcontent-%COMP%]{grid-column:span 12}.active[_ngcontent-%COMP%]{grid-column:span 4;align-self:center;margin-bottom:16px}.additional[_ngcontent-%COMP%]{box-shadow:none;border:1px solid var(--%NS%sdd-border)}.actions[_ngcontent-%COMP%]{display:flex;justify-content:flex-end}.state[_ngcontent-%COMP%]{padding:20px;color:var(--%NS%sdd-muted)}@media(max-width:700px){.third[_ngcontent-%COMP%], .name[_ngcontent-%COMP%], .short[_ngcontent-%COMP%], .half[_ngcontent-%COMP%]{grid-column:span 12}.page-header[_ngcontent-%COMP%]{flex-direction:column}}`,
+    ],
+  });
+};
+export { ue as PremiumAdjustmentFormComponent };

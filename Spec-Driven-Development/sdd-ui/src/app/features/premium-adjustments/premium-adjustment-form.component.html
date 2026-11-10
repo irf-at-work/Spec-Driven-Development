@@ -9,6 +9,14 @@
       }
     </div>
     <div class="header-actions">
+      @if (mode === 'view') {
+        <app-icon-button
+          action="add"
+          tooltip="Add premium adjustment"
+          accessibleName="Add premium adjustment"
+          (clicked)="add()"
+        />
+      }
       <app-icon-button
         action="back"
         tooltip="Back to premium adjustments"

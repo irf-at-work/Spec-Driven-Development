@@ -100,7 +100,8 @@ export class LimitedTextFieldComponent {
 
   // Only while the box can be edited: a full read-only value is not a warning.
   protected readonly limitReached = computed(
-    () => this.maxLength() !== null && this.state().enabled && this.state().length >= this.maxLength()!,
+    () =>
+      this.maxLength() !== null && this.state().enabled && this.state().length >= this.maxLength()!,
   );
 
   protected serverMessage(): string | null {
