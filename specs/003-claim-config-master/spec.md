@@ -48,7 +48,9 @@ As a master-data employee, I want to create, view and update a claim configurati
 6. **Given** a CCM has second-language name values, **When** the employee views or edits it, **Then** those values are shown right-to-left and their text and spacing remain unchanged when saved.
 7. **Given** a CCM is open for update, **When** the employee attempts to change its CCM code, **Then** the CCM code remains unchanged.
 8. **Given** an employee enters a CCM Code, **When** they save the new CCM, **Then** the code is limited to 1–12 letters, digits, or hyphens and is saved in uppercase; Company Code is supplied by the application context.
-9. **Given** an existing CCM has a setting whose lookup value is now inactive, **When** the employee edits the CCM without changing that setting, **Then** the current value remains displayed and is saved unchanged, while new choices contain active values only.
+9. **Given** an existing CCM has a setting whose choice is now inactive, **When** the employee edits the CCM without changing that setting, **Then** the current value remains displayed and is saved unchanged, while new choices contain active values only.
+10. **Given** a CCM save fails validation, **When** the form is submitted, **Then** the affected fields are identified with correction guidance and the entered values remain available for correction.
+11. **Given** a CCM is created or updated, **When** the saved record is retrieved, **Then** its creation and update user/date audit values are retained according to the project audit convention.
 
 ### User Story 3 - Associate products with CCM configurations (Priority: P1)
 
@@ -61,8 +63,8 @@ As a master-data employee, I want to maintain the Applicable Products for a save
 **Acceptance Scenarios**:
 
 1. **Given** an employee has saved or opened a CCM, **When** the CCM page is shown, **Then** an Applicable Products section appears at the bottom with an Add button and a table containing Product Code, Product Name, and Action columns.
-2. **Given** the Applicable Products section is open, **When** the employee selects Add, **Then** a modal titled “Available Products” opens with one required “Product Code” dropdown whose options display `LI_CODE - LI_TYPE - LI_DESC`.
-3. **Given** the employee selects a product and saves the modal, **When** the association is saved, **Then** its row appears in the table with Product Code shown as `LI_CODE`, Product Name shown as `LI_TYPE - LI_DESC`, and a Delete button in the Action column.
+2. **Given** the Applicable Products section is open, **When** the employee selects Add, **Then** a modal titled “Available Products” opens with one required “Product Code” dropdown whose options show product code, type, and description in that order.
+3. **Given** the employee selects a product and saves the modal, **When** the association is saved, **Then** its row appears in the table with the product code, type and description-based product name, and a Delete button in the Action column.
 4. **Given** a product code is already associated with the CCM, **When** the employee attempts to add that code again, **Then** the duplicate is rejected and only one association remains.
 5. **Given** a product association is shown in the table, **When** the employee chooses its Delete action and confirms, **Then** that product-to-CCM association is removed while the CCM and other product associations remain.
 6. **Given** more than five product associations exist, **When** the Applicable Products table is viewed, **Then** it initially shows five rows per page and provides pagination; this page size does not apply to the product choices in the Add modal.
@@ -90,12 +92,12 @@ As a master-data employee, I want to deactivate and reactivate a CCM so that its
 
 ### Session 2026-11-09
 
-- Q: Should the CCM feature follow the UI and API conventions of the Vehicle Make Master and Premium Adjustment Master? → A: Yes. Reuse the same UI and API conventions as those two features.
-- Q: Which CCM settings should use dropdown choices from existing master lists? → A: All code/type settings use dropdowns. The source list for each setting still needs to be identified.
-- Q: Should the dropdowns use active entries from `STD_LIST_ITEM`, with the specific list type for each field confirmed separately? → A: Yes. Use active `STD_LIST_ITEM` entries; the specific list type for each field remains to be confirmed.
+- Q: Should the CCM feature follow the interaction conventions of the Vehicle Make Master and Premium Adjustment Master? → A: Yes. Reuse their established master-data interaction conventions.
+- Q: Which CCM settings should use dropdown choices from existing master lists? → A: All code/type settings use dropdowns. The source and field mapping for each setting still need to be confirmed.
+- Q: Should dropdowns use active entries from the approved choice sources? → A: Yes. Use active choices; confirm the source and field mapping during read-only planning review.
 - Q: How should an existing inactive dropdown value behave during edit? → A: Keep and display the current inactive value when it has not changed, but do not offer it for new selections.
-- Q: Which page-size behavior should the CCM list API use? → A: Default to 10 and allow 10, 25, or 50.
-- Q: Should the dropdown field-to-`LI_TYPE` mappings be left for read-only lookup-data review during planning? → A: Yes. Confirm them during planning before implementation.
+- Q: Which page sizes should the CCM list offer? → A: Default to 10 and allow 10, 25, or 50.
+- Q: Should the setting-to-choice mappings be left for read-only lookup-data review during planning? → A: Yes. Confirm them during planning before implementation.
 - Q: How should the specification handle field rules that have not yet been provided? → A: Provide per-field rules where known. The supplied dropdown codes and descriptions are recorded below; unspecified business validation is not inferred.
 - Q: Do A (Average), S (Selling), and B (Buying) belong to Accounting Exchange-Rate Type? → A: Yes. They are Accounting Exchange-Rate Type choices (`CCM_ACNT_EXCH_RATE_TYPE`).
 - Q: What values should the print, reprint, and claim accounting document flags accept? → A: They accept `Y` or `N`; their create-time default is `Y`.
@@ -112,7 +114,7 @@ As a master-data employee, I want to deactivate and reactivate a CCM so that its
 - Q: Does the initial five-item page size apply to the linked-products table, the available-products choices, or both? → A: The linked-products table only.
 - Q: What should happen if an employee closes the Available Products modal after selecting a product but before saving? → A: Ask for confirmation; cancelling the close keeps the modal open and retains the selection, while confirming discards the unsaved selection.
 
-- **Deferred for planning — Lookup source mappings**: Read-only lookup-data review must identify which `STD_LIST_ITEM.LI_TYPE` supplies each CCM code/type setting before implementation.
+- **Deferred for planning — Choice source mappings**: Read-only data review must identify the approved choice source and field mapping for each CCM setting before implementation.
 - Transaction behavior for missing product mappings, inactive CCMs, and multiple linked CCMs is explicitly deferred to the later transaction discussion; this feature does not resolve those cases.
 
 ## Edge Cases
@@ -132,10 +134,10 @@ As a master-data employee, I want to deactivate and reactivate a CCM so that its
 ### Functional Requirements
 
 - **FR-001**: The system MUST allow an employee to create, view and update CCM records.
-- **FR-002**: The system MUST identify a CCM by the combination of company code and CCM code, MUST prevent duplicate composite keys, and MUST enforce CCM Code uniqueness across all Company Codes. Because `BRM_CCM_PROD` identifies configurations using CCM Code only, planning MUST verify that the database can enforce this global uniqueness rule.
+- **FR-002**: The system MUST identify a CCM by the combination of company code and CCM code and MUST prevent duplicate composite keys. Global CCM Code uniqueness is specified by FR-038.
 - **FR-003**: The system MUST require employees to enter CCM Code and Claim Config Name when creating a CCM. When user identity is available, the system MUST derive Company Code from the logged-in user's company and MUST NOT ask employees to enter it. In the current test environment, where no user identity exists, the application MUST use the fixed configured Company Code `ASRTEST`.
 - **FR-004**: The system MUST prevent either company code or CCM code from being changed after the CCM is created. See FR-029 for how these keys are supplied and formatted.
-- **FR-005**: The system MUST maintain the following CCM data fields with the supplied database types and limits: company code (`VARCHAR2(12 BYTE)`), CCM code (`VARCHAR2(12 BYTE)`), CCM name (`VARCHAR2(100 BYTE)`), short name (`VARCHAR2(30 BYTE)`), second-language name (`VARCHAR2(100 BYTE)`), second-language short name (`VARCHAR2(30 BYTE)`), module (`VARCHAR2(2 BYTE)`), accounting posting type (`VARCHAR2(1 BYTE)`), accounting exchange-rate type (`VARCHAR2(1 BYTE)`), rounding type (`VARCHAR2(2 BYTE)`), rounding value (`NUMBER(8,5)`), applicable currency type (`VARCHAR2(2 BYTE)`), default estimated closure reason code (`VARCHAR2(12 BYTE)`), default recovery deduction code (`VARCHAR2(12 BYTE)`), print-before-approval flag (`VARCHAR2(1 BYTE)`), reprint flag (`VARCHAR2(1 BYTE)`), claim accounting document generation flag (`VARCHAR2(1 BYTE)`), claim coinsurance accounting document generation flag (`VARCHAR2(1 BYTE)`), active status (`VARCHAR2(1 BYTE)`), and creation/update user (`VARCHAR2(12 BYTE)`) and date (`DATE`) audit fields.
+- **FR-005**: The system MUST maintain the CCM identity, names, optional configuration settings, active status, and creation/update audit information described in the CCM data model. Field names and supplied storage types and capacities are recorded in `data-model.md` and MUST NOT by themselves be treated as user-facing validation rules.
 - **FR-006**: The system MUST allow maintenance of the additional CCM fields listed in FR-005 as optional fields. Field-specific limits and validation MUST follow confirmed rules in this specification; column types and sizes constrain storage but MUST NOT be used alone to infer user-facing validation. Lookup-type mappings are a planning review gate.
 - **FR-007**: The system MUST allow an employee to create, view and remove a product-to-CCM association as part of master-data maintenance.
 - **FR-008**: Each product-to-CCM association MUST be unique by product ID and CCM code; duplicate associations MUST be rejected. This is the normative duplicate-link rule; see FR-033 for the UI behavior.
@@ -149,62 +151,63 @@ As a master-data employee, I want to deactivate and reactivate a CCM so that its
 - **FR-016**: The feature MUST NOT implement policy-specific claim rules, claim transaction behavior, or payout calculation.
 - **FR-017**: The system MUST validate required fields and values according to confirmed rules. Where no business rule is defined, the system MUST NOT infer one from field names alone.
 - **FR-018**: The CCM list and maintenance interactions MUST follow the established UI conventions of the Vehicle Make Master and Premium Adjustment Master, including paged lists, column-based filtering, consistent notifications, breadcrumbs, accessible action labels, and unsaved-change confirmation.
-- **FR-019**: The CCM API MUST follow the established API conventions of the Vehicle Make Master and Premium Adjustment Master, including paginated list results, consistent validation and error responses, and server-side validation. CCM-specific data and behavior MUST follow this specification.
-- **FR-020**: The module, accounting posting type, accounting exchange-rate type, rounding type, applicable currency type, default estimated closure reason code, and default recovery deduction code MUST be selected from dropdown choices containing active entries from `STD_LIST_ITEM`. Each dropdown item MUST show its code and description; the selected code is stored. Each field MUST use its confirmed `LI_TYPE`; the field-to-list-type mapping MUST be confirmed through read-only lookup-data review during planning, before implementation. When editing a CCM whose current value is now inactive, the UI MUST retain and display that value if unchanged, but MUST NOT offer it as a new selection. Dropdown pagination follows FR-037. Company code and CCM code identify the CCM and are not setting dropdowns.
+- **FR-019**: When a user submits invalid information, the system MUST identify the affected field and explain how to correct it. When a save fails, the system MUST show a clear message and keep entered values available for correction or retry.
+- **FR-020**: The module, accounting posting type, accounting exchange-rate type, rounding type, applicable currency type, default estimated closure reason code, and default recovery deduction code MUST be selected from approved active choices. Each choice MUST show its code and description, and the selected code MUST be saved. The source and field mapping for each choice MUST be confirmed by read-only review before implementation. When editing a CCM whose current choice is no longer active, the UI MUST retain and display that choice if unchanged, but MUST NOT offer it for a new selection. Choice pagination follows FR-037. Company Code and CCM Code identify the CCM and are not setting choices.
 - **FR-021**: The CCM list MUST be paged, default to 10 records per page, and allow page sizes of 10, 25, or 50 records, following the Vehicle Make list convention.
 - **FR-022**: The print-before-approval, reprint, claim accounting document generation, and claim coinsurance accounting document generation flags MUST accept only `Y` or `N`. Each flag MUST default to `Y` when a CCM is created.
-- **FR-023**: `CCM_ROUND_VALUE` MUST be maintained as a numeric value within the supplied `NUMBER(8,5)` column capacity. The example `2.000` is valid. No additional business range or interaction rule with the rounding type is specified.
+- **FR-023**: The rounding value MUST accept numeric values, including `2.000`. No additional business range or interaction rule with the rounding type is specified; storage capacity is documented in `data-model.md`.
 - **FR-024**: The UI MUST label `CCM_NAME` as “Claim Config Name” and `CCM_SHORT_NAME` as “Short Name”. The system MUST convert both values to uppercase regardless of input casing and MUST display and save them in uppercase.
 - **FR-025**: The CCM list MUST NOT offer a global search box. Each visible data column (Company Code, CCM Code, Claim Config Name, Short Name, Status) MUST have its own filter; the Actions column MUST NOT have a filter. Text filters MUST offer starts with, ends with, contains (default), equals, and not equals. Status MUST offer Active or Inactive with equals and not equals.
 - **FR-026**: CCM filters MUST ignore letter case, combine so a record must match all supplied filters, apply across all records before pagination, treat typed characters literally, ignore blank filter values, include empty values for not equals, and update 500 ms after typing stops. Changing a filter or sort MUST return the list to page 1.
 - **FR-027**: The CCM list MUST allow sorting by Company Code, CCM Code, Claim Config Name, and Short Name across all filtered records, ignoring letter case. Initial order MUST be Company Code ascending then CCM Code ascending, and ties MUST resolve consistently by Company Code then CCM Code.
 - **FR-028**: `CCM_NAME_L2` and `CCM_SHORT_NAME_L2` MUST be displayed right-to-left and preserved exactly, including their spacing; the system MUST NOT uppercase or otherwise normalize these values.
-- **FR-029**: Employee-entered CCM Code MUST contain 1–12 letters, digits, or hyphens and MUST be saved in uppercase. Company Code MUST be supplied by the application context, not entered or edited by the employee, as specified in FR-003. Key immutability is specified in FR-004 and global CCM Code uniqueness in FR-002.
+- **FR-029**: Employee-entered CCM Code MUST contain 1–12 letters, digits, or hyphens and MUST be saved in uppercase. Company Code MUST be supplied by the application context, not entered or edited by the employee, as specified in FR-003. Key immutability is specified in FR-004 and global CCM Code uniqueness in FR-038.
 - **FR-030**: After a CCM is saved, its view and edit page MUST show an Applicable Products section at the bottom of the page with an Add button and a table with Product Code, Product Name, and Action columns.
-- **FR-031**: The Add action MUST open a modal titled “Available Products” containing one required dropdown labeled “Product Code”. Each option MUST display `LI_CODE - LI_TYPE - LI_DESC`. Product choices MUST be retrieved through the paginated endpoint in FR-037, and employees MUST be able to retrieve choices on subsequent pages.
-- **FR-032**: Each saved product association MUST appear in the Applicable Products table with Product Code displayed as `LI_CODE`, Product Name displayed as `LI_TYPE - LI_DESC`, and a Delete button in the Action column.
+- **FR-031**: The Add action MUST open a modal titled “Available Products” containing one required dropdown labeled “Product Code”. Each option MUST show the product code, type, and description in that order. Choice pagination follows FR-037.
+- **FR-032**: Each saved product association MUST appear in the Applicable Products table with its product code, product name formed from its type and description, and a Delete button in the Action column.
 - **FR-033**: The Applicable Products UI MUST communicate duplicate-link rejection and show no duplicate row; the normative uniqueness and rejection rule is FR-008.
 - **FR-034**: The Delete action MUST remove only the selected product-to-CCM association after employee confirmation; it MUST NOT delete the CCM or other product associations.
 - **FR-035**: The Applicable Products table MUST show five associations per page initially and provide pagination when more rows exist. This page size applies only to the linked-products table, not the product choices in the Add modal. No other page-size options are specified.
-- **FR-036**: The product choice source and the applicable `LI_TYPE` values for product code/name display MUST be confirmed through read-only lookup-data review during planning; this specification does not infer the source from the example field names.
-- **FR-037**: The CCM lookup-choice endpoints and available-product choice endpoint MUST return the shared `PaginatedResult<T>` response with `items`, `page`, `pageSize`, and `totalCount`; the default page size MUST be 10.
+- **FR-036**: Before implementing product or setting choices, the read-only review MUST record the authoritative source and code, type, description, active-item rule, and eligible item count for product choices, plus the source and active code-description set for each of the seven setting-choice fields in FR-020. A mapping is confirmed only when the reviewed source contains the required choices or the owner records an approved replacement set. Missing or conflicting choices MUST remain unresolved and block the dependent implementation; mappings MUST NOT be inferred from example labels or unrelated lists. Record evidence and unresolved decisions in `research.md` and `data-model.md`.
+- **FR-037**: The CCM setting-choice control and Available Products choice control MUST each show 10 choices per page initially and let employees retrieve choices on subsequent pages until the full available result set can be reached.
+- **FR-038**: The system MUST enforce global uniqueness of CCM Code across Company Codes because the association identifies a configuration by CCM Code. The pasted Oracle evidence does not establish this guarantee; CCM write behavior remains blocked until database enforcement or an owner-approved alternative is available, as recorded in `data-model.md`.
 
-The following code-description pairs are confirmed for dropdowns:
+The following code-description pairs are confirmed for setting choices:
 
 | Field | Code | Description |
 |---|---|---|
-| Module Name (`CCM_MODULE`) | `AV` | Aviation |
-| Module Name (`CCM_MODULE`) | `MC` | Marine Cargo |
-| Module Name (`CCM_MODULE`) | `LI` | Life |
-| Module Name (`CCM_MODULE`) | `LG` | Life Group |
-| Accounting Posting Type (`CCM_ACNT_POSTING_TYPE`) | `B` | Batch |
-| Accounting Posting Type (`CCM_ACNT_POSTING_TYPE`) | `O` | Online |
-| Accounting Exchange-Rate Type (`CCM_ACNT_EXCH_RATE_TYPE`) | `A` | Average |
-| Accounting Exchange-Rate Type (`CCM_ACNT_EXCH_RATE_TYPE`) | `S` | Selling |
-| Accounting Exchange-Rate Type (`CCM_ACNT_EXCH_RATE_TYPE`) | `B` | Buying |
-| Rounding Type (`CCM_ROUND_TYPE`) | `CL` | Ceiling |
-| Rounding Type (`CCM_ROUND_TYPE`) | `RD` | Round |
-| Rounding Type (`CCM_ROUND_TYPE`) | `NN` | None |
-| Rounding Type (`CCM_ROUND_TYPE`) | `NI` | Next Integer |
-| Rounding Type (`CCM_ROUND_TYPE`) | `FR` | Floor |
-| Applicable Currency Type (`CCM_APPL_CURR_TYPE`) | `10` | All |
-| Applicable Currency Type (`CCM_APPL_CURR_TYPE`) | `20` | Risk Currencies |
-| Default Estimated Closure Reason (`CCM_DFLT_EST_CLO_REASON_CODE`) | `100` | Claim closed successfully |
-| Default Estimated Closure Reason (`CCM_DFLT_EST_CLO_REASON_CODE`) | `200` | Additional payment requested |
-| Default Estimated Closure Reason (`CCM_DFLT_EST_CLO_REASON_CODE`) | `300` | Wrongly closed by mistake |
-| Default Estimated Closure Reason (`CCM_DFLT_EST_CLO_REASON_CODE`) | `400` | Duplicated Claim Entry |
-| Default Estimated Closure Reason (`CCM_DFLT_EST_CLO_REASON_CODE`) | `500` | Claim Closed unsuccessfully |
-| Default Estimated Closure Reason (`CCM_DFLT_EST_CLO_REASON_CODE`) | `600` | Others |
-| Print-before-approval (`CCM_PRNT_BEF_APPR_YN`), reprint (`CCM_RE_PRNT_YN`), claim accounting document generation (`CCM_CLM_ACNT_DOC_GEN_YN`), and claim coinsurance accounting document generation (`CCM_CLM_COINS_ACNT_DOC_GEN_YN`) flags | `Y` | Yes (create-time default) |
+| Module Name | `AV` | Aviation |
+| Module Name | `MC` | Marine Cargo |
+| Module Name | `LI` | Life |
+| Module Name | `LG` | Life Group |
+| Accounting Posting Type | `B` | Batch |
+| Accounting Posting Type | `O` | Online |
+| Accounting Exchange-Rate Type | `A` | Average |
+| Accounting Exchange-Rate Type | `S` | Selling |
+| Accounting Exchange-Rate Type | `B` | Buying |
+| Rounding Type | `CL` | Ceiling |
+| Rounding Type | `RD` | Round |
+| Rounding Type | `NN` | None |
+| Rounding Type | `NI` | Next Integer |
+| Rounding Type | `FR` | Floor |
+| Applicable Currency Type | `10` | All |
+| Applicable Currency Type | `20` | Risk Currencies |
+| Default Estimated Closure Reason | `100` | Claim closed successfully |
+| Default Estimated Closure Reason | `200` | Additional payment requested |
+| Default Estimated Closure Reason | `300` | Wrongly closed by mistake |
+| Default Estimated Closure Reason | `400` | Duplicated Claim Entry |
+| Default Estimated Closure Reason | `500` | Claim Closed unsuccessfully |
+| Default Estimated Closure Reason | `600` | Others |
+| Print-before-approval, reprint, claim accounting document generation, and claim coinsurance accounting document generation | `Y` | Yes (create-time default) |
 | Print-before-approval, reprint, and both claim accounting document generation flags | `N` | No |
 
 Claim Config Name and Short Name values are stored and displayed in uppercase, regardless of the case entered by the user.
 
-The module choices above are examples and not a complete list. Full active choice lists are supplied by `STD_LIST_ITEM`.
+The module choices above are examples and not a complete list. The full active choice lists and their field mappings must be confirmed by read-only review before implementation.
 
 ### Key Entities *(include if data involved)*
 
-- **Claim Configuration (CCM)**: A configuration identified by company code and CCM code, containing the claim setup fields, supplied column sizes/types, active status and audit information in FR-005. The supplied `VARCHAR2` sizes use BYTE semantics and do not establish equivalent character limits for multi-byte text.
+- **Claim Configuration (CCM)**: A configuration identified by company code and CCM code, containing the claim setup fields, active status, and audit information in FR-005. Its physical column definitions and storage capacities are recorded in `data-model.md`.
 - **Product**: An existing product identified by product ID. Products may be associated with multiple CCM configurations.
 - **Product-to-CCM Association**: A link between one product ID and one globally unique CCM code, with creation and update audit information. Each product/CCM pair is unique.
 
@@ -212,29 +215,31 @@ The module choices above are examples and not a complete list. Full active choic
 
 ### Measurable Outcomes
 
-- **SC-001**: Employees can create, view and update CCM configurations while preserving both primary-key fields after creation.
-- **SC-002**: 100% of duplicate CCM Codes are rejected across all Company Codes without creating a second CCM.
-- **SC-003**: Employees can maintain distinct product-to-CCM links in both directions, with duplicate pairs rejected.
-- **SC-004**: For any product ID with stored links, the associated CCM code or codes can be identified and each code resolves to its CCM configuration.
-- **SC-005**: Employees can deactivate and reactivate a CCM without losing its settings or product associations.
-- **SC-006**: For each confirmed dropdown choice, the employee sees its code and description, and the selected code is the value stored for the CCM field.
+- **SC-001**: All create, view, and update acceptance scenarios pass, and neither identity field changes after creation.
+- **SC-002**: Every tested duplicate CCM Code across different Company Codes is rejected, and the persisted CCM count for that code remains one.
+- **SC-003**: Every tested distinct product/CCM pair can be linked in both directions, and every tested duplicate pair is rejected.
+- **SC-004**: For every tested product ID with stored links, retrieval returns each linked CCM Code and each returned code resolves to its configuration.
+- **SC-005**: After each tested deactivate/reactivate cycle, the CCM settings and all associated product links remain unchanged.
+- **SC-006**: For every confirmed setting choice, its code and description are displayed, the selected code is saved, and employees can reach all choices across pages of 10.
 - **SC-007**: 100% of saved and displayed Claim Config Name and Short Name values are uppercase, regardless of input casing.
-- **SC-008**: Employees can filter every visible CCM data column and sort the full filtered result set, with no global search box and with page sizes of 10, 25, and 50.
+- **SC-008**: All specified list acceptance scenarios pass: each visible data column is filterable, supported sort orders apply to the full filtered result set, no global search box is shown, and page sizes 10, 25, and 50 are available.
 - **SC-009**: 100% of saved second-language name and short-name values retain their original text and spacing, and are displayed right-to-left.
 - **SC-010**: 100% of employee-entered CCM Codes meet the stated format and casing rules; Company Code is assigned from application context, and neither key changes after creation.
-- **SC-011**: Employees can view the Product Code, Product Name, and Delete action for every linked product in the Applicable Products table, with five rows per page initially.
+- **SC-011**: Traversing all Applicable Products pages exposes every linked product exactly once with its Product Code, Product Name, and Delete action; the initial page contains five rows.
 - **SC-012**: Duplicate product links are rejected, and deleting a link removes only that association while retaining the CCM and all other links.
+- **SC-013**: Before choice implementation starts, the review record covers 100% of the seven setting-choice fields and the product choice source; each record includes source, display fields, active rule, and the required code-description choices. If any required source, choice, or product count is not confirmed, the related implementation remains blocked and the unresolved item is recorded.
+- **SC-014**: For every created or updated CCM and product association in the acceptance tests, all applicable creation and update user/date audit fields contain the expected values; creation values remain unchanged on update and update values reflect the latest change.
+- **SC-015**: All 32 acceptance scenarios across the four user stories pass verification.
 
 ## Assumptions
 
 - The CCM database primary key is `(company code, CCM code)`. Company Code is sourced from application context (session company when available; configured fixed value `ASRTEST` until login/session support exists), while employees enter CCM Code.
 - The product-to-CCM pair is unique, as stated by the known mapping-table primary key `(CCM code, product ID)`; the relationship is many-to-many.
 - The field names in the known database structure are represented in stakeholder language in the requirements; they do not, by themselves, establish field validation or dropdown behavior.
-- Supplied column sizes are Oracle BYTE lengths where shown. They are storage constraints, not user-facing character limits; text validation and multi-byte storage behavior require confirmation before claiming character-length guarantees.
-- All listed code/type setting fields are dropdowns from active `STD_LIST_ITEM` entries, per the owner's clarifications. Their individual `LI_TYPE` mappings must be confirmed by read-only lookup-data review during planning.
-- Product rows and dropdown labels use the supplied examples `LI_CODE` and `LI_TYPE - LI_DESC`; the backing product list and its exact active-item rules remain to be confirmed during planning.
+- Supplied storage capacities are recorded in `data-model.md`; they are not user-facing character limits. Do not infer text validation from capacity, and confirm multi-byte behavior before claiming character-length guarantees.
+- All listed code/type setting fields are dropdowns from active approved choices, per the owner's clarifications. Their individual sources and field mappings must be confirmed by read-only review during planning.
+- Product rows and dropdown labels show product code, type, and description. The backing product source and its active-item rules remain to be confirmed during planning.
 - Creation and update user/date audit data are recorded for both CCM records and product associations. The user identity source and audit date display rules are not specified here.
 - Deactivation/reactivation is in scope. Permanent deletion is not specified as a user capability for this feature.
-- The UI and API follow the conventions established by the vehicle-make and premium-adjustment master features; this does not supply unresolved CCM field rules or dropdown mappings.
-- Common UI and API ground rules for master-data features are maintained in [Master Data Common Ground Rules](../master-data-common.md). This specification defines CCM-specific fields and behavior.
+- The employee experience follows conventions established by the vehicle-make and premium-adjustment master features; this does not supply unresolved CCM field rules or choice mappings.
 - Authentication and permissions follow the project constitution and are not specified as part of this feature.

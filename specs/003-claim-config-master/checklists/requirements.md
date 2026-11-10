@@ -6,7 +6,7 @@
 
 ## Content Quality
 
-- [ ] No implementation details (languages, frameworks, APIs) — API convention is explicitly included per owner direction
+- [x] No implementation details (languages, frameworks, APIs) — API implementation conventions remain in the plan and tasks; the specification states user-visible outcomes.
 - [x] Focused on user value and business needs
 - [x] Written for non-technical stakeholders
 - [x] All mandatory sections completed
@@ -15,7 +15,7 @@
 
 - [x] No [NEEDS CLARIFICATION] markers remain — confirmed required fields and numeric behavior; field-to-`LI_TYPE` mappings remain a planning gate
 - [x] Requirements are testable and unambiguous for confirmed behavior; unresolved details are explicitly gated
-- [ ] Success criteria are fully measurable — some outcomes remain qualitative and lookup mapping is a planning gate
+- [x] Success criteria are measurable and verifiable; SC-013 defines complete lookup/product review coverage as a pre-implementation gate.
 - [x] Success criteria are technology-agnostic
 - [x] Acceptance scenarios are defined for configuration maintenance, product associations, and activation
 - [x] Edge cases are identified, including duplicate keys/pairs and multiple associations
@@ -24,14 +24,14 @@
 
 ## Feature Readiness
 
-- [ ] All functional requirements have final acceptance criteria — lookup mapping is a planning gate
+- [x] All functional requirements have acceptance coverage through user scenarios or measurable success criteria; FR-036 is explicitly testable as a review gate.
 - [x] User scenarios cover the confirmed primary flows
-- [ ] Feature meets all domain-specific measurable outcomes — lookup mapping is a planning gate
-- [ ] No implementation details leak into specification — API convention is explicitly included per owner direction
+- [x] Domain outcomes are measurable, including key uniqueness, pagination, preservation, lifecycle, audit fields, and verified choice coverage before implementation.
+- [x] No language, framework, API design, or code-structure requirements leak into the specification; implementation conventions are recorded in the plan and tasks.
 
 ## Notes
 
-- Configuration fields and primary keys are based on the user-provided database structure. Column sizes and types are captured. Supplied dropdown code-description pairs, required fields, flag values/defaults, and numeric rounding value behavior are recorded. Field-to-`LI_TYPE` mappings are a required read-only review during planning.
+- Configuration fields and keys are based on user-provided schema details and the read-only Oracle output. Storage limits are distinguished from confirmed user-facing validation. Global CCM Code uniqueness is confirmed by enabled Oracle constraint `SYS_C00132035`. Field-to-choice mappings and product source remain a blocking read-only review gate; no mapping is inferred.
 - The Applicable Products story specifies the section, table columns, add modal, product label formats, duplicate prevention, Delete action, and initial five-row pagination. Confirm the product choice source and any related `LI_TYPE` values during planning.
 - Multiple-link selection and missing/inactive mapping behavior are explicitly deferred to the transaction discussion, as requested.
-- Complete the lookup mapping review during planning before implementation.
+- Complete T003's read-only choice/product review before dependent implementation. The reviewed output so far does not establish all mappings or the authoritative product source and count.

@@ -54,6 +54,8 @@ builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
 builder.Services.AddDbContext<SddDbContext>(options => options.UseOracle(oracleConnectionString));
 builder.Services.AddScoped<PremiumAdjustmentService>();
+builder.Services.AddScoped<ClaimConfigurationService>();
+builder.Services.AddScoped<ClaimConfigurationOptionsService>();
 builder.Services.AddScoped<VehicleMakeService>();
 builder.Services.AddScoped<VehicleModelService>();
 builder.Services.AddScoped<VehicleModelOptionsImportService>();
@@ -65,6 +67,12 @@ builder.Services.AddCors(options =>
 // Checked at start-up, so a bad setting stops the API with a clear message instead of failing on the first save.
 builder.Services.AddOptions<AuditOptions>()
     .BindConfiguration(AuditOptions.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+// Until sign-in provides a company context, CCM writes require the configured test company.
+builder.Services.AddOptions<ClaimConfigurationOptions>()
+    .BindConfiguration(ClaimConfigurationOptions.SectionName)
     .ValidateDataAnnotations()
     .ValidateOnStart();
 

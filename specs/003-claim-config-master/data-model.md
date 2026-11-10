@@ -1,47 +1,49 @@
 # Data Model: Claim Configuration Master
 
-This document translates the owner-supplied Oracle column information and feature rules into the logical entities used by CCM. It does not assert unverified foreign keys, defaults, indexes, or database column metadata beyond the supplied structure.
+This document translates the owner-supplied Oracle column information, the read-only Oracle review pasted by the owner on 2026-11-09, and feature rules into CCM entities. The review inspected metadata only; it did not read or change business rows.
 
 ## Claim Configuration — `BRM_CLM_CONFIG`
 
-**Identity**: Database primary key `(CCM_COMP_CODE, CCM_CODE)`. Business rule: `CCM_CODE` is globally unique across Company Codes because the product mapping stores only CCM Code. Read-only Oracle review must confirm current enforcement; any needed DDL requires separate owner approval.
+**Identity**: The screenshots supplied by the owner on 2026-11-10 show primary key `PK_BRM_CLM_CONFIG` on `(CCM_COMP_CODE, CCM_CODE)`. They also show `SYS_C00132035` as a Check constraint enforcing `CCM_CODE IS NOT NULL`, not a single-column unique key. The owner-pasted index report lists only the composite primary-key index. These constraints guarantee uniqueness of the company/code pair, but do not establish global uniqueness of `CCM_CODE`. T004 is not passed. No CCM writes are authorized until a single-column unique constraint/index is verified or an alternative schema decision is approved.
 
-| Field | Oracle type/size | Required / rule |
-|---|---|---|
-| `CCM_COMP_CODE` | `VARCHAR2(12 BYTE)` | Required key. Supplied by application context; not entered or edited by employee. Fixed required configuration value `ASRTEST` until session company is available. |
-| `CCM_CODE` | `VARCHAR2(12 BYTE)` | Required key; employee-entered; 1–12 letters, digits, or hyphens; saved uppercase; immutable; globally unique. |
-| `CCM_NAME` | `VARCHAR2(100 BYTE)` | Required; UI label “Claim Config Name”; saved/displayed uppercase. |
-| `CCM_SHORT_NAME` | `VARCHAR2(30 BYTE)` | Optional; UI label “Short Name”; saved/displayed uppercase. |
-| `CCM_NAME_L2` | `VARCHAR2(100 BYTE)` | Optional second-language/Arabic field; display RTL; preserve text and spaces exactly. |
-| `CCM_SHORT_NAME_L2` | `VARCHAR2(30 BYTE)` | Optional second-language/Arabic field; display RTL; preserve text and spaces exactly. |
-| `CCM_MODULE` | `VARCHAR2(2 BYTE)` | Optional dropdown from active standard items; examples AV, MC, LI, LG; full list and `LI_TYPE` mapping need review. |
-| `CCM_ACNT_POSTING_TYPE` | `VARCHAR2(1 BYTE)` | Optional dropdown; B Batch, O Online; source `LI_TYPE` needs review. |
-| `CCM_ACNT_EXCH_RATE_TYPE` | `VARCHAR2(1 BYTE)` | Optional dropdown; A Average, S Selling, B Buying; source `LI_TYPE` needs review. |
-| `CCM_ROUND_TYPE` | `VARCHAR2(2 BYTE)` | Optional dropdown; CL Ceiling, RD Round, NN None, NI Next Integer, FR Floor; source `LI_TYPE` needs review. |
-| `CCM_ROUND_VALUE` | `NUMBER(8,5)` | Optional numeric value; `2.000` is an example. No additional range or interaction rule is established. |
-| `CCM_APPL_CURR_TYPE` | `VARCHAR2(2 BYTE)` | Optional dropdown; 10 All, 20 Risk Currencies; source `LI_TYPE` needs review. |
-| `CCM_DFLT_EST_CLO_REASON_CODE` | `VARCHAR2(12 BYTE)` | Optional dropdown; supplied codes 100–600; source `LI_TYPE` needs review. |
-| `CCM_DFLT_RECV_DEDU_CODE` | `VARCHAR2(12 BYTE)` | Optional dropdown; source and choice list need review. |
-| `CCM_PRNT_BEF_APPR_YN` | `VARCHAR2(1 BYTE)` | Optional Y/N flag; create-time default Y. |
-| `CCM_RE_PRNT_YN` | `VARCHAR2(1 BYTE)` | Optional Y/N flag; create-time default Y. |
-| `CCM_CLM_ACNT_DOC_GEN_YN` | `VARCHAR2(1 BYTE)` | Optional Y/N flag; create-time default Y. |
-| `CCM_CLM_COINS_ACNT_DOC_GEN_YN` | `VARCHAR2(1 BYTE)` | Optional Y/N flag; create-time default Y. |
-| `CCM_ACTIVE_YN` | `VARCHAR2(1 BYTE)` | Active/inactive lifecycle; use shared master-data convention Y/N, default active for a new record. Confirm deployed defaults during Oracle review. |
-| `CCM_CR_BY`, `CCM_UP_BY` | `VARCHAR2(12 BYTE)` each | Creation/update audit usernames; current no-login master convention uses `admin`. |
-| `CCM_CR_DT`, `CCM_UP_DT` | `DATE` each | Creation/update audit timestamps; current project convention uses GST. |
+| Field | Oracle type/size | Oracle nullable | Oracle default seen in review | Required / rule |
+|---|---|---|---|---|
+| `CCM_COMP_CODE` | `VARCHAR2(12)` | N | none shown | Required key. Supplied by application context; not entered or edited by employee. Fixed required configuration value `ASRTEST` until session company is available. |
+| `CCM_CODE` | `VARCHAR2(12)` | N | none shown | Required key; employee-entered; 1–12 letters, digits, or hyphens; saved uppercase; immutable; globally unique (enabled unique constraint). |
+| `CCM_NAME` | `VARCHAR2(100)` | N | none shown | Required; UI label “Claim Config Name”; saved/displayed uppercase. |
+| `CCM_SHORT_NAME` | `VARCHAR2(30)` | Y | none shown | Optional; UI label “Short Name”; saved/displayed uppercase. |
+| `CCM_NAME_L2` | `VARCHAR2(100)` | Y | none shown | Optional second-language/Arabic field; display RTL; preserve text and spaces exactly. |
+| `CCM_SHORT_NAME_L2` | `VARCHAR2(30)` | Y | none shown | Optional second-language/Arabic field; display RTL; preserve text and spaces exactly. |
+| `CCM_MODULE` | `VARCHAR2(2)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
+| `CCM_ACNT_POSTING_TYPE` | `VARCHAR2(1)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
+| `CCM_ACNT_EXCH_RATE_TYPE` | `VARCHAR2(1)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
+| `CCM_ROUND_TYPE` | `VARCHAR2(2)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
+| `CCM_ROUND_VALUE` | `NUMBER(8,5)` | Y | none shown | Optional numeric value; `2.000` is an example. No additional range or interaction rule is established. |
+| `CCM_APPL_CURR_TYPE` | `VARCHAR2(2)` | Y | none shown | Optional dropdown; values/source `LI_TYPE` remain unverified. |
+| `CCM_DFLT_EST_CLO_REASON_CODE` | `VARCHAR2(12)` | Y | none shown | Optional dropdown; codes/source `LI_TYPE` remain unverified. |
+| `CCM_DFLT_RECV_DEDU_CODE` | `VARCHAR2(12)` | Y | none shown | Optional dropdown; source and choice list remain unverified. |
+| `CCM_PRNT_BEF_APPR_YN` | `VARCHAR2(1)` | Y | none shown | Optional Y/N flag; create-time default Y is an application rule, not a confirmed column default. |
+| `CCM_RE_PRNT_YN` | `VARCHAR2(1)` | Y | none shown | Optional Y/N flag; create-time default Y is an application rule, not a confirmed column default. |
+| `CCM_CLM_ACNT_DOC_GEN_YN` | `VARCHAR2(1)` | Y | none shown | Optional Y/N flag; create-time default Y is an application rule, not a confirmed column default. |
+| `CCM_CLM_COINS_ACNT_DOC_GEN_YN` | `VARCHAR2(1)` | Y | none shown | Optional Y/N flag; create-time default Y is an application rule, not a confirmed column default. |
+| `CCM_ACTIVE_YN` | `VARCHAR2(1)` | Y | none shown | Active/inactive lifecycle; Y/N and default-active are application rules, not confirmed column defaults. |
+| `CCM_CR_BY`, `CCM_UP_BY` | `VARCHAR2(12)` each | Y | none shown | Creation/update audit usernames; implementation must explicitly set and test audit values per the shared convention. |
+| `CCM_CR_DT`, `CCM_UP_DT` | `DATE` each | Y | none shown | Creation/update audit timestamps; implementation must explicitly set and test audit values per the shared convention. |
+
+Oracle reports `CHAR_USED = B` and matching `CHAR_LENGTH`/`DATA_LENGTH` for character columns in the latest read-only output, confirming BYTE semantics. These are storage limits, not confirmation of user-facing character-count validation. Confirmed UI/business validation remains only what the feature requirements specify; do not infer it from storage lengths or nullability. All 23 CCM columns were present in the report; none showed a default expression.
 
 **Lifecycle**: Create active by default under the common master-data convention. Update settings without changing either key. Deactivate/reactivate by status while preserving all fields and product links. Permanent CCM deletion is not a user action in this feature.
 
 ## Product-to-CCM Association — `BRM_CCM_PROD`
 
-| Field | Oracle type/size | Meaning |
-|---|---|---|
-| `CCMP_CCM_CODE` | `VARCHAR2(12 BYTE)` | CCM Code; links to the globally unique `CCM_CODE` business identifier. |
-| `CCMP_CODE` | `VARCHAR2(12 BYTE)` | Product ID / Product Code. The UI examples use `LI_CODE`; confirm the authoritative source and physical data mapping. |
-| `CCMP_CR_BY`, `CCMP_UP_BY` | `VARCHAR2(12 BYTE)` each | Creation/update audit usernames. |
-| `CCMP_CR_DT`, `CCMP_UP_DT` | `DATE` each | Creation/update audit dates. |
+| Field | Oracle type/size | Oracle nullable / default seen | Meaning |
+|---|---|---|---|
+| `CCMP_CCM_CODE` | `VARCHAR2(12)` | N / none shown | CCM Code; links to the globally unique `CCM_CODE` business identifier. |
+| `CCMP_CODE` | `VARCHAR2(12)` | N / none shown | Product ID / Product Code. Authoritative source and physical product mapping remain unresolved. |
+| `CCMP_CR_BY`, `CCMP_UP_BY` | `VARCHAR2(12)` each | Y / none shown | Creation/update audit usernames. |
+| `CCMP_CR_DT`, `CCMP_UP_DT` | `DATE` each | Y / none shown | Creation/update audit dates. |
 
-**Identity**: Primary key `(CCMP_CCM_CODE, CCMP_CODE)` as supplied. A given product can be linked once to a given CCM. The relationship is many-to-many: one CCM may link to multiple products and one product may link to multiple CCMs.
+**Identity**: The owner's screenshot confirms primary key `PK_BRM_CCM_PROD` on `(CCMP_CCM_CODE, CCMP_CODE)`. The separate `C` constraints on each column are `IS NOT NULL` checks; they are not single-column unique keys. This pair key permits one product link per CCM/product pair. The relationship is many-to-many: one CCM may link to multiple products and one product may link to multiple CCMs.
 
 **Operations**: Add an association from a saved CCM’s Available Products modal; remove only the association from its Delete action after confirmation. Association deletion does not remove the CCM or other product links.
 
@@ -55,6 +57,22 @@ The requested option presentation is `LI_CODE - LI_TYPE - LI_DESC`; the linked r
 - product count/volume, to decide whether dropdown lookup needs pagination or other navigation.
 
 Do not treat product rows as `STD_LIST_ITEM` choices until this review confirms it.
+
+## CCM setting lookup mapping status
+
+The owner approved these proposed `LI_TYPE` names for the supplied CCM choices when requesting the seed SQL file. The mapping does not establish that the lists are complete or that the corresponding rows have been inserted. The four Module values are examples only. No values or mapping were supplied for Default Recovery Deduction Code.
+
+| CCM field | Approved proposed `LI_TYPE` | Seed values in proposal | Status |
+|---|---|---|---|
+| `CCM_MODULE` | `CCM_MODULE` | AV, MC, LI, LG | Incomplete: module examples only |
+| `CCM_ACNT_POSTING_TYPE` | `CCM_POST_TYPE` | B, O | Values supplied |
+| `CCM_ACNT_EXCH_RATE_TYPE` | `CCM_EXCH_RATE` | A, S, B | Values supplied |
+| `CCM_ROUND_TYPE` | `CCM_ROUND_TYPE` | CL, RD, NN, NI, FR | Values supplied |
+| `CCM_APPL_CURR_TYPE` | `CCM_CURR_TYPE` | 10, 20 | Values supplied |
+| `CCM_DFLT_EST_CLO_REASON_CODE` | `CCM_CLO_REASON` | 100, 200, 300, 400, 500, 600 | Values supplied |
+| `CCM_DFLT_RECV_DEDU_CODE` | Unresolved | None supplied | Blocked pending approved source and values |
+
+The read-only review output contained no rows for these CCM-specific types. The owner subsequently reported that the six supplied choice sets were inserted using the seed file; that insertion has not been independently re-queried. The script does not seed recovery-deduction values.
 
 ## Validation and persistence notes
 

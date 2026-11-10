@@ -433,6 +433,7 @@ FodyWeavers.xsd
 
 # Compiled output
 /dist
+Spec-Driven-Development/sdd-ui/dist/
 /tmp
 /out-tsc
 /bazel-out

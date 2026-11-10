@@ -29,6 +29,7 @@ public sealed class OracleApiFactory : WebApplicationFactory<Program>, IAsyncLif
         }
 
         Environment.SetEnvironmentVariable("ConnectionStrings__SddOracle", connectionString);
+        Environment.SetEnvironmentVariable("ClaimConfiguration__CompanyCode", "ASRTEST");
     }
 
     public string Track(string makeCode)

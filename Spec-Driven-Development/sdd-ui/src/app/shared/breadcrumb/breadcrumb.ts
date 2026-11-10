@@ -15,6 +15,8 @@ export type BreadcrumbPage =
   | 'model-new'
   | 'model-edit'
   | 'premium-adjustments'
+  | 'claim-configurations'
+  | 'claim-configuration-view'
   | 'premium-adjustment-new'
   | 'premium-adjustment-view'
   | 'vehicle-model-options-import'
@@ -35,6 +37,8 @@ const PAGES: readonly string[] = [
   'model-new',
   'model-edit',
   'premium-adjustments',
+  'claim-configurations',
+  'claim-configuration-view',
   'premium-adjustment-new',
   'premium-adjustment-view',
   'vehicle-model-options-import',
@@ -77,6 +81,10 @@ export function buildTrail(page: BreadcrumbPage, context: BreadcrumbContext): re
       ];
     case 'premium-adjustments':
       return [MASTER_DATA, { label: 'Premium Adjustments' }];
+    case 'claim-configurations':
+      return [MASTER_DATA, { label: 'Claim Configurations' }];
+    case 'claim-configuration-view':
+      return [MASTER_DATA, { label: 'Claim Configurations', link: ['/claim-configurations'] }, { label: 'Claim Configuration Details' }];
     case 'premium-adjustment-new':
       return [
         MASTER_DATA,

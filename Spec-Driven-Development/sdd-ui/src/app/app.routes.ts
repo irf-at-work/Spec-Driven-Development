@@ -62,6 +62,25 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'claim-configurations',
+    pathMatch: 'full',
+    title: 'Claim Configuration Master',
+    data: { breadcrumb: 'claim-configurations' },
+    loadComponent: () =>
+      import('./features/claim-configurations/claim-configuration-list.component').then(
+        (module) => module.ClaimConfigurationListComponent,
+      ),
+  },
+  {
+    path: 'claim-configurations/:ccmCode',
+    title: 'Claim Configuration Details',
+    data: { breadcrumb: 'claim-configuration-view' },
+    loadComponent: () =>
+      import('./features/claim-configurations/claim-configuration-detail.component').then(
+        (module) => module.ClaimConfigurationDetailComponent,
+      ),
+  },
+  {
     path: 'vehicle-makes',
     title: 'Vehicle Make Master',
     data: { breadcrumb: 'makes' },

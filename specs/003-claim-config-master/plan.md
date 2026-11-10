@@ -28,7 +28,7 @@ In plain English: an employee saves a CCM, then uses its Applicable Products sec
 
 **Constraints**: CCM identity is stored with composite primary key `(CCM_COMP_CODE, CCM_CODE)`, while product mapping stores only CCM Code. The agreed business rule makes CCM Code globally unique, which must be verified in Oracle metadata and supported by a database uniqueness guarantee before writes are implemented. `CCM_COMP_CODE` comes from session context when available; until sign-in exists, the required configured fixed Company Code is `ASRTEST`. Applicable Products UI starts at five rows per page; the API retains the shared default of ten when no page size is supplied, and the UI requests five. Use existing shared filter/sort/page behavior, typed OpenAPI response shapes, `ProblemDetails`, and cancellation tokens. No transaction selection, missing-mapping, inactive-CCM, or payout behavior is designed here.
 
-**Scale/Scope**: One CCM configuration master, its list/detail maintenance flow, and product association management. Product-choice volume is unknown because its source has not been located; lookup paging or unpaged loading cannot be finalized until the source and size are verified.
+**Scale/Scope**: One CCM configuration master, its list/detail maintenance flow, and product association management. Product-choice volume and source remain unknown and must be verified during the read-only data review. Pagination is settled: choice controls retrieve 10 items per page by default and allow later pages, consistent with constitution B8.
 
 ## Constitution Check
 
@@ -49,13 +49,18 @@ In plain English: an employee saves a CCM, then uses its Applicable Products sec
 - [x] CCM association table UI requests page size five; API default remains ten to comply with B8.
 - [x] CCM lookup-choice and available-product listing endpoints use shared paginated responses with default page size ten; no unpaged lookup exception is assumed (B8).
 
-**Pre-implementation gates (blocking)**:
+**Owner-directed implementation exception (2026-11-09)**: The owner directed implementation to skip T003, continue the remaining tasks, and avoid tests and database connections in this session. Use the owner-pasted CCM schema metadata and approved six proposed lookup types. Product catalog source, complete module choices, and recovery-deduction choices remain unverified; do not invent them. Add application-owned mappings outside the generated entity directory rather than connecting for scaffolding. The implementation agent must not change database objects or rows.
 
-1. Before any CCM write implementation, complete and record the read-only Oracle review in `research.md` and `data-model.md`: identify the authoritative product source, product code/name fields, active rule and row count; identify each CCM dropdown's `STD_LIST_ITEM.LI_TYPE`; and record keys, nullability, defaults, triggers, indexes and audit behavior. Do not start dependent implementation while a required mapping or source decision remains unresolved.
-2. The schema review MUST include a field-to-column map for every field in FR-005 across `BRM_CLM_CONFIG` and `BRM_CCM_PROD`, including database type/size, nullability, key membership, defaults, and audit columns. Record storage capacity separately from confirmed user-facing validation; do not infer UI rules from column types or names.
-3. Verify and record evidence that Oracle enforces global uniqueness of `BRM_CLM_CONFIG.CCM_CODE`. If no database constraint/index guarantees it, stop all CCM write implementation and obtain explicit owner approval for a database change or alternative schema decision; do not proceed on application-only validation. No DDL or data changes are authorized by this plan.
-4. Every CCM lookup-choice and product-choice listing endpoint returns the shared `PaginatedResult<T>` with default page size 10, as required by constitution B8. The corresponding controls must let employees retrieve choices across pages; no unpaged lookup exception is assumed.
-5. Configure Company Code as `ASRTEST` for the no-login setup; validate the required setting at startup and do not hard-code it into source.
+**Implementation review (2026-11-10)**: Added application-owned mappings, read-only CCM list/detail APIs, paginated choices for the six owner-approved `STD_LIST_ITEM` types, and a read-only Angular CCM list/detail flow. The Angular production build succeeded. No tests were run. The owner confirmed Oracle connection configuration exists in local user secrets; the implementation agent did not read or use the secret and did not connect to Oracle. `sdd-ui/src/app/generated/api-client.ts` was not changed. No database objects or rows were changed by the implementation agent. The composite primary keys are recorded from the owner's screenshots; T004 remains unresolved. CCM writes, product lookup, full recovery/module choices, client regeneration, and remaining tests/UI work are not complete.
+
+**Pre-implementation gates and constraints**:
+
+1. Use the supplied complete CCM table field map, including BYTE storage limits, nullability, keys, defaults, and audit fields. Do not infer additional UI validation from storage limits.
+2. T004 is **not passed**: `SYS_C00132035` is type `C` (check), and the pasted index report shows only the composite primary key. Do not implement CCM writes unless global uniqueness is verified or an alternative schema decision is approved by the owner.
+3. Six lookup type names have owner approval. The full module list and recovery-deduction mapping remain incomplete.
+4. Product source, display columns, active rule, and volume remain unknown. Do not implement a guessed product lookup.
+5. Keep lookup endpoints paginated with the shared `PaginatedResult<T>` default page size ten; choices must be reachable across pages.
+6. Configure Company Code as `ASRTEST`, validate it at startup, and do not hard-code it into source.
 
 No database changes or test runs were performed during planning.
 

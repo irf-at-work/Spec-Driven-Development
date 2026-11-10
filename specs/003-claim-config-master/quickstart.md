@@ -1,14 +1,24 @@
 # CCM Quickstart and Validation Guide
 
-This guide is for validating the implemented CCM workflow locally. It does not change the database. Use an approved local Oracle schema and non-production test records only.
+## Current implementation status
+
+The current delivery is limited to read-only CCM browsing and approved lookup choices. The CCM list API and UI support paging, per-column filters, sorting, and status display. A detail GET API is present. CCM create/update, lifecycle changes, product associations, and end-to-end validation are not ready.
+
+The owner directed that T003 be skipped and that no tests or database connections be performed in this session. T004 remains unresolved: the confirmed primary key is composite `(CCM_COMP_CODE, CCM_CODE)`, and the supplied evidence does not establish global uniqueness of `CCM_CODE`. Therefore CCM writes must remain disabled until database enforcement is verified or the owner approves an alternative schema decision. The product source and full choice review also remain unresolved. Do not treat the read-only UI as approval to run CCM writes.
+
+No tests were run and no database connection was attempted while implementing this increment.
+
+## Future local validation prerequisites
+
+The following steps are for a later owner-approved validation session. Use an approved local Oracle schema and non-production records only.
 
 ## Prerequisites
 
 - .NET 10 SDK and the repository's pinned Node/npm versions.
 - Oracle 19c connectivity configured through the existing safe settings mechanism (user-secrets or environment variables; never commit credentials).
 - Before running CCM create flows, set the fixed Company Code configuration to `ASRTEST` while login/session support is out of scope.
-- Before testing dropdowns, planning has confirmed the CCM `STD_LIST_ITEM.LI_TYPE` mappings and authoritative product-choice source.
-- The database has been verified to enforce globally unique `CCM_CODE`. If not, do not run write scenarios until an approved schema change supplies that guarantee.
+- Before testing dropdowns, the complete CCM `STD_LIST_ITEM.LI_TYPE` mappings and authoritative product-choice source must be confirmed.
+- Before running write scenarios, verify database enforcement of globally unique `CCM_CODE`, or obtain owner approval for an alternative schema decision.
 
 ## Start the application
 
@@ -27,20 +37,13 @@ npm start
 
 Open the local URL reported by Angular (normally `http://localhost:4200/`).
 
-## Validate the CCM workflow
+## Validate the read-only CCM list
 
-Use an approved local test schema and verify each outcome:
+After the prerequisites are met, open Claim Configuration Master. Confirm the list has no global search, supports per-column filters and sorting, initially shows 10 records, offers page sizes 10/25/50, and displays active/inactive state. Write scenarios remain gated and are intentionally omitted from this current read-only walkthrough.
 
-1. Open Claim Configuration Master. Confirm the list has no global search, supports per-column filters/sorting, initially shows 10 records, and offers the shared 10/25/50 page sizes.
-2. Create a CCM with a unique employee-entered CCM Code, Claim Config Name, and confirmed setting values. Confirm Company Code is supplied by application configuration and is not an editable form field. Confirm English names and short names display uppercase, Arabic values remain unchanged and RTL, and flags default to Y.
-3. Open the saved CCM. In Applicable Products, confirm the table columns are Product Code, Product Name, and Action. Add a product through the Available Products modal and verify option and row labels match the approved product source.
-4. Attempt to add the same product to the CCM twice; confirm the duplicate is rejected and only one association remains.
-5. Add more than five distinct products. Confirm the linked-products table paginates from five rows, while this page size is not imposed on the Available Products choices.
-6. Delete one product association after confirmation. Confirm only that link is removed and the CCM plus its other product links remain.
-7. Open another CCM and confirm a product can link to it as well. Deactivate/reactivate a CCM and confirm its settings and product associations remain stored.
-8. Verify that a product ID can retrieve its linked CCM codes/configuration references without selecting one when multiple links exist.
+## Automated validation commands (later session)
 
-## Automated validation commands
+These commands are recorded for a future owner-approved validation session. They were not run in this implementation session. Do not run database-backed checks until the prerequisites above are resolved.
 
 Run the repository's existing checks after implementation:
 
