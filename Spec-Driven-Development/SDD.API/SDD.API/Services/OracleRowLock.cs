@@ -29,6 +29,28 @@ internal static class OracleRowLock
             ("damodUid", damodUid),
             cancellationToken);
 
+    public static Task<bool> LockClaimConfigurationAsync(
+        CodesMasterContext context,
+        string ccmCode,
+        CancellationToken cancellationToken) =>
+        LockAsync(
+            context,
+            "SELECT CCM_CODE FROM IIRIS_RD_DEVP.BRM_CLM_CONFIG WHERE CCM_COMP_CODE = 'CCM001' AND CCM_CODE = :ccmCode FOR UPDATE",
+            ("ccmCode", ccmCode),
+            cancellationToken);
+
+    public static Task<bool> LockApplicableProductAsync(
+        CodesMasterContext context,
+        string ccmCode,
+        string productCode,
+        CancellationToken cancellationToken) =>
+        LockAsync(
+            context,
+            "SELECT CCMP_CODE FROM IIRIS_RD_DEVP.BRM_CCM_PROD WHERE CCMP_CCM_CODE = :ccmCode AND CCMP_CODE = :productCode FOR UPDATE",
+            ("ccmCode", ccmCode),
+            ("productCode", productCode),
+            cancellationToken);
+
     private static async Task<bool> LockAsync(
         CodesMasterContext context,
         string commandText,

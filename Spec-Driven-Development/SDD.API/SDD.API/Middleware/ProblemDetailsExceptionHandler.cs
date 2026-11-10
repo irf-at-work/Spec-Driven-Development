@@ -57,6 +57,7 @@ public sealed class ProblemDetailsExceptionHandler(
                 validationProblem.Errors.Add(field, messages);
             }
 
+            validationProblem.Extensions["errors"] = validationException.Errors;
             problemDetails = validationProblem;
         }
         else

@@ -509,6 +509,262 @@ paths:
           $ref: "#/components/responses/Problem"
         "500":
           $ref: "#/components/responses/Problem"
+  /claim-configurations:
+    get:
+      operationId: listClaimConfigurations
+      summary: List claim configurations
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: sortBy
+          in: query
+          schema:
+            $ref: "#/components/schemas/ClaimConfigurationSortColumn"
+        - name: sortDirection
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeSortDirection"
+        - name: ccmCodeOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: ccmCodeValue
+          in: query
+          schema:
+            type: string
+        - name: ccmNameOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: ccmNameValue
+          in: query
+          schema:
+            type: string
+        - name: shortNameOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: shortNameValue
+          in: query
+          schema:
+            type: string
+        - name: moduleNameOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: moduleNameValue
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A page of claim configurations.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedClaimConfigurationResult"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    post:
+      operationId: createClaimConfiguration
+      summary: Create a claim configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimConfigurationWrite"
+      responses:
+        "201":
+          description: The claim configuration was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClaimConfigurationRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+  /claim-configurations/lookups/{liType}:
+    get:
+      operationId: getClaimConfigurationLookups
+      summary: Get active lookup values for a CCM field
+      parameters:
+        - name: liType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [CCM_MODULE, CCM_POST_TYPE, CCM_EXCH_RATE, CCM_ROUND_TYPE, CCM_CURR_TYPE, CCM_CLO_REASON, CCM_DFLT_RECV_DEDU, CCM_PRODUCT]
+      responses:
+        "200":
+          description: Active values and display descriptions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClaimConfigurationLookupOption"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+  /claim-configurations/{ccmCode}:
+    parameters:
+      - $ref: "#/components/parameters/ClaimConfigurationCode"
+    get:
+      operationId: getClaimConfiguration
+      summary: Retrieve a claim configuration
+      responses:
+        "200":
+          description: The requested claim configuration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClaimConfigurationRecord"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    put:
+      operationId: updateClaimConfiguration
+      summary: Update a claim configuration without changing its code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimConfigurationUpdate"
+      responses:
+        "200":
+          description: The updated claim configuration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClaimConfigurationRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    delete:
+      operationId: deleteClaimConfiguration
+      summary: Delete a claim configuration only when it has no Applicable Products
+      responses:
+        "204":
+          description: The claim configuration was deleted.
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+  /claim-configurations/{ccmCode}/products:
+    parameters:
+      - $ref: "#/components/parameters/ClaimConfigurationCode"
+    get:
+      operationId: listApplicableProducts
+      summary: List Applicable Products for a claim configuration
+      responses:
+        "200":
+          description: Applicable Product mappings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApplicableProductSummary"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    post:
+      operationId: createApplicableProduct
+      summary: Add a product mapping
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicableProductWrite"
+      responses:
+        "201":
+          description: The Applicable Product mapping was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicableProductRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+  /claim-configurations/{ccmCode}/products/{productCode}:
+    parameters:
+      - $ref: "#/components/parameters/ClaimConfigurationCode"
+      - name: productCode
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getApplicableProduct
+      summary: Retrieve one Applicable Product mapping
+      responses:
+        "200":
+          description: The requested mapping.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicableProductRecord"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    put:
+      operationId: updateApplicableProduct
+      summary: Change the product code for an existing mapping
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicableProductUpdate"
+      responses:
+        "200":
+          description: The updated mapping.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicableProductRecord"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "404":
+          $ref: "#/components/responses/Problem"
+        "409":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
+    delete:
+      operationId: deleteApplicableProduct
+      summary: Delete one Applicable Product mapping
+      responses:
+        "204":
+          description: The mapping was deleted.
+        "404":
+          $ref: "#/components/responses/Problem"
+        "500":
+          $ref: "#/components/responses/Problem"
 components:
   parameters:
     Page:
@@ -535,6 +791,13 @@ components:
         type: string
         maxLength: 12
       description: Immutable document code; maximum 12 Oracle database-encoded bytes.
+    ClaimConfigurationCode:
+      name: ccmCode
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Immutable Claim Config Code; validated against the existing Oracle column metadata.
     ApplicableModuleUid:
       name: damodUid
       in: path
@@ -596,6 +859,222 @@ components:
         - DoesNotContain
         - EqualTo
         - NotEqualTo
+    ClaimConfigurationSortColumn:
+      type: string
+      enum: [Code, Name, ShortName, ModuleName]
+      description: Data column to sort; Actions is not sortable.
+    ClaimConfigurationWrite:
+      type: object
+      required: [ccmCode, ccmName]
+      properties:
+        ccmCode:
+          type: string
+          description: Immutable after creation; length follows the existing Oracle column semantics.
+        ccmName:
+          type: string
+          description: Required claim configuration name.
+        ccmShortName:
+          type: [string, "null"]
+        nameInArabic:
+          type: [string, "null"]
+        shortNameInArabic:
+          type: [string, "null"]
+        module:
+          type: [string, "null"]
+        postingType:
+          type: [string, "null"]
+        exchangeRateType:
+          type: [string, "null"]
+        roundingType:
+          type: [string, "null"]
+        roundingValue:
+          type: [number, "null"]
+          description: Must fit NUMBER(8,5) without rounding.
+        applicableCurrencies:
+          type: [string, "null"]
+        defaultEstimateCloseReasonCode:
+          type: [string, "null"]
+        defaultRecoveryCodeForDedl:
+          type: [string, "null"]
+        printBeforeApprovalYn:
+          type: [string, "null"]
+          enum: [Y, N, null]
+        rePrintAllowedYn:
+          type: [string, "null"]
+          enum: [Y, N, null]
+        claimAccountDocumentGenerationYn:
+          type: [string, "null"]
+          enum: [Y, N, null]
+        sharingClaimsAccountDocumentGenerationYn:
+          type: [string, "null"]
+          enum: [Y, N, null]
+        activeYn:
+          type: [string, "null"]
+          enum: [Y, N, null]
+      description: Company and audit values are API-managed. Add defaults are N for the four standard toggles and Y for Active.
+    ClaimConfigurationUpdate:
+      allOf:
+        - $ref: "#/components/schemas/ClaimConfigurationWrite"
+        - type: object
+          required: [expectedVersion]
+          properties:
+            expectedVersion:
+              type: string
+              description: Opaque version token returned by the record read.
+    ClaimConfigurationSummary:
+      type: object
+      required: [ccmCode, ccmName]
+      properties:
+        ccmCode:
+          type: string
+        ccmName:
+          type: string
+        ccmShortName:
+          type: [string, "null"]
+        moduleName:
+          type: [string, "null"]
+    ClaimConfigurationRecord:
+      type: object
+      required: [ccmCode, ccmName, version]
+      properties:
+        ccmCode:
+          type: string
+        ccmName:
+          type: string
+        ccmShortName:
+          type: [string, "null"]
+        nameInArabic:
+          type: [string, "null"]
+        shortNameInArabic:
+          type: [string, "null"]
+        module:
+          type: [string, "null"]
+        moduleDescription:
+          type: [string, "null"]
+        postingType:
+          type: [string, "null"]
+        postingTypeDescription:
+          type: [string, "null"]
+        exchangeRateType:
+          type: [string, "null"]
+        exchangeRateTypeDescription:
+          type: [string, "null"]
+        roundingType:
+          type: [string, "null"]
+        roundingTypeDescription:
+          type: [string, "null"]
+        roundingValue:
+          type: [number, "null"]
+        applicableCurrencies:
+          type: [string, "null"]
+        applicableCurrenciesDescription:
+          type: [string, "null"]
+        defaultEstimateCloseReasonCode:
+          type: [string, "null"]
+        defaultEstimateCloseReasonDescription:
+          type: [string, "null"]
+        defaultRecoveryCodeForDedl:
+          type: [string, "null"]
+        defaultRecoveryCodeForDedlDescription:
+          type: [string, "null"]
+        printBeforeApprovalYn:
+          type: [string, "null"]
+        rePrintAllowedYn:
+          type: [string, "null"]
+        claimAccountDocumentGenerationYn:
+          type: [string, "null"]
+        sharingClaimsAccountDocumentGenerationYn:
+          type: [string, "null"]
+        activeYn:
+          type: [string, "null"]
+        createdBy:
+          type: [string, "null"]
+          readOnly: true
+        createdDate:
+          type: [string, "null"]
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: [string, "null"]
+          readOnly: true
+        updatedDate:
+          type: [string, "null"]
+          format: date-time
+          readOnly: true
+        version:
+          type: string
+    PaginatedClaimConfigurationResult:
+      type: object
+      required: [items, page, pageSize, totalCount]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClaimConfigurationSummary"
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+    ClaimConfigurationLookupOption:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+        description:
+          type: [string, "null"]
+    ApplicableProductWrite:
+      type: object
+      required: [productCode]
+      properties:
+        productCode:
+          type: string
+          description: Must be an active LI_CODE for LI_TYPE CCM_PRODUCT.
+    ApplicableProductUpdate:
+      allOf:
+        - $ref: "#/components/schemas/ApplicableProductWrite"
+        - type: object
+          required: [expectedVersion]
+          properties:
+            expectedVersion:
+              type: string
+              description: Opaque version token returned by the mapping read.
+    ApplicableProductSummary:
+      type: object
+      required: [productCode]
+      properties:
+        productCode:
+          type: string
+        productName:
+          type: [string, "null"]
+    ApplicableProductRecord:
+      type: object
+      required: [parentCcmCode, productCode, version]
+      properties:
+        parentCcmCode:
+          type: string
+        productCode:
+          type: string
+        productName:
+          type: [string, "null"]
+        createdBy:
+          type: [string, "null"]
+          readOnly: true
+        createdDate:
+          type: [string, "null"]
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: [string, "null"]
+          readOnly: true
+        updatedDate:
+          type: [string, "null"]
+          format: date-time
+          readOnly: true
+        version:
+          type: string
     DocumentSetupWrite:
       type: object
       required:

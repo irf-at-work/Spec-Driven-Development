@@ -1,0 +1,48 @@
+<section class="product-dialog" aria-labelledby="product-dialog-heading">
+  <h2 mat-dialog-title id="product-dialog-heading">
+    {{ data.selectedProductCode ? 'Edit' : 'Add' }} Applicable Product
+  </h2>
+  <div mat-dialog-content>
+    <p>{{ data.selectedProductCode ? 'Update' : 'Select' }} the Product Code for this claim configuration.</p>
+    @if (errorMessage()) {
+      <p class="error-message" role="alert">
+        {{ errorMessage() }}
+        @if (errorMessage().includes('could not be loaded')) {
+          <button mat-button type="button" (click)="loadOptions()">Retry</button>
+        }
+      </p>
+    }
+    <mat-form-field class="product-code-field" appearance="outline">
+      <mat-label>Product Code</mat-label>
+      <mat-select
+        [formControl]="productCode"
+        [disabled]="isLoading() || isSaving()"
+        panelClass="applicable-product-options-panel"
+      >
+        <mat-option value="" disabled>Select</mat-option>
+        @for (option of options(); track option.code) {
+          <mat-option [value]="option.code">
+            {{ option.code }} — {{ option.description || 'No description' }}
+          </mat-option>
+        }
+      </mat-select>
+      @if (productCode.touched && productCode.hasError('required')) {
+        <mat-error>Product Code is required.</mat-error>
+      }
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions align="center">
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="isLoading() || isSaving() || options().length === 0"
+      (click)="save()"
+    >
+      Save
+    </button>
+    <button mat-flat-button color="primary" type="button" [disabled]="isSaving()" (click)="reset()">
+      Reset
+    </button>
+  </div>
+</section>

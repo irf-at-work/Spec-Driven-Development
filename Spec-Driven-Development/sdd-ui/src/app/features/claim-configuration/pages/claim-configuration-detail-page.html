@@ -1,0 +1,358 @@
+<nav class="page-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a routerLink="/claim-configurations">Claim Configuration Master</a></li>
+    <li aria-current="page">{{ isEditMode() ? 'Edit' : 'Add' }}</li>
+  </ol>
+</nav>
+
+<section class="ccm-detail-page" aria-labelledby="ccm-detail-heading">
+  <header class="page-header">
+    <h1 id="ccm-detail-heading">Claim Configuration</h1>
+    <div class="page-header-actions">
+      @if (isEditMode()) {
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          routerLink="/claim-configurations/add"
+          [disabled]="isSubmitting()"
+        >Add</button>
+      } @else {
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="isSubmitting()"
+          (click)="resetForm()"
+        >Add</button>
+      }
+      <button mat-flat-button color="primary" type="button" (click)="leavePage()">Back</button>
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <p class="error-message" role="alert">{{ errorMessage() }}</p>
+    @if (errorMessage().includes('could not be loaded')) {
+      <button mat-button type="button" (click)="initialize(ccmCode())">Retry</button>
+    }
+  }
+  @if (lookupsError()) {
+    <p class="error-message" role="alert">
+      {{ lookupsError() }}
+      <button mat-button type="button" (click)="retryLoadLookups()">Retry</button>
+    </p>
+  }
+
+  @if (isLoading()) {
+    <p class="state-message" role="status">Loading claim configuration…</p>
+  } @else if (record() || !isEditMode()) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid primary-fields">
+        <mat-form-field appearance="outline">
+          <mat-label>Claim Config Code</mat-label>
+          <input matInput formControlName="ccmCode" maxlength="12" autocomplete="off" required [readonly]="isEditMode()" />
+          @if (fieldError('ccmCode'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Claim Config Name</mat-label>
+          <input matInput formControlName="ccmName" maxlength="100" required />
+          @if (fieldError('ccmName'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Short Name</mat-label>
+          <input matInput formControlName="ccmShortName" maxlength="30" />
+          @if (fieldError('ccmShortName'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Module Name</mat-label>
+          <mat-select formControlName="module" [disabled]="isLoadingLookups()">
+            @for (option of lookupOptions('CCM_MODULE', form.controls.module.value); track option.code) {
+              <mat-option [value]="option.code">{{ option.code }} — {{ option.description || 'No description' }}</mat-option>
+            }
+          </mat-select>
+          @if (fieldError('module'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Posting Type</mat-label>
+          <mat-select formControlName="postingType" [disabled]="isLoadingLookups()">
+            @for (option of lookupOptions('CCM_POST_TYPE', form.controls.postingType.value); track option.code) {
+              <mat-option [value]="option.code">{{ option.code }} — {{ option.description || 'No description' }}</mat-option>
+            }
+          </mat-select>
+          @if (fieldError('postingType'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Exchange Rate Type</mat-label>
+          <mat-select formControlName="exchangeRateType" [disabled]="isLoadingLookups()">
+            @for (option of lookupOptions('CCM_EXCH_RATE', form.controls.exchangeRateType.value); track option.code) {
+              <mat-option [value]="option.code">{{ option.code }} — {{ option.description || 'No description' }}</mat-option>
+            }
+          </mat-select>
+          @if (fieldError('exchangeRateType'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rounding Type</mat-label>
+          <mat-select formControlName="roundingType" [disabled]="isLoadingLookups()">
+            @for (option of lookupOptions('CCM_ROUND_TYPE', form.controls.roundingType.value); track option.code) {
+              <mat-option [value]="option.code">{{ option.code }} — {{ option.description || 'No description' }}</mat-option>
+            }
+          </mat-select>
+          @if (fieldError('roundingType'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rounding Value</mat-label>
+          <input matInput type="number" step="any" formControlName="roundingValue" />
+          @if (fieldError('roundingValue'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Applicable Currencies</mat-label>
+          <mat-select formControlName="applicableCurrencies" [disabled]="isLoadingLookups()">
+            @for (option of lookupOptions('CCM_CURR_TYPE', form.controls.applicableCurrencies.value); track option.code) {
+              <mat-option [value]="option.code">{{ option.code }} — {{ option.description || 'No description' }}</mat-option>
+            }
+          </mat-select>
+          @if (fieldError('applicableCurrencies'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Dflt Estimate Close Reason</mat-label>
+          <mat-select formControlName="defaultEstimateCloseReasonCode" [disabled]="isLoadingLookups()">
+            @for (option of lookupOptions('CCM_CLO_REASON', form.controls.defaultEstimateCloseReasonCode.value); track option.code) {
+              <mat-option [value]="option.code">{{ option.code }} — {{ option.description || 'No description' }}</mat-option>
+            }
+          </mat-select>
+          @if (fieldError('defaultEstimateCloseReasonCode'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Dflt Recovery Code for Dedl</mat-label>
+          <mat-select formControlName="defaultRecoveryCodeForDedl" [disabled]="isLoadingLookups()">
+            @for (option of lookupOptions('CCM_DFLT_RECV_DEDU', form.controls.defaultRecoveryCodeForDedl.value); track option.code) {
+              <mat-option [value]="option.code">{{ option.code }} — {{ option.description || 'No description' }}</mat-option>
+            }
+          </mat-select>
+          @if (fieldError('defaultRecoveryCodeForDedl'); as error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <section class="toggle-grid" aria-label="Claim configuration options">
+        <div class="toggle-field">
+          <mat-slide-toggle
+            [checked]="form.controls.printBeforeApprovalYn.value === 'Y'"
+            (change)="setToggle('printBeforeApprovalYn', $event.checked)"
+          >Print Before Approval Y/N</mat-slide-toggle>
+          @if (fieldError('printBeforeApprovalYn'); as error) {
+            <p class="field-error" role="alert">{{ error }}</p>
+          }
+        </div>
+        <div class="toggle-field">
+          <mat-slide-toggle
+            [checked]="form.controls.rePrintAllowedYn.value === 'Y'"
+            (change)="setToggle('rePrintAllowedYn', $event.checked)"
+          >RePrint Allowed Y/N</mat-slide-toggle>
+          @if (fieldError('rePrintAllowedYn'); as error) {
+            <p class="field-error" role="alert">{{ error }}</p>
+          }
+        </div>
+        <div class="toggle-field">
+          <mat-slide-toggle
+            [checked]="form.controls.claimAccountDocumentGenerationYn.value === 'Y'"
+            (change)="setToggle('claimAccountDocumentGenerationYn', $event.checked)"
+          >Claim A/c Doc Gen Y/N</mat-slide-toggle>
+          @if (fieldError('claimAccountDocumentGenerationYn'); as error) {
+            <p class="field-error" role="alert">{{ error }}</p>
+          }
+        </div>
+        <div class="toggle-field">
+          <mat-slide-toggle
+            [checked]="form.controls.sharingClaimsAccountDocumentGenerationYn.value === 'Y'"
+            (change)="setToggle('sharingClaimsAccountDocumentGenerationYn', $event.checked)"
+          >Sharing Clms A/c Doc Gen Y/N</mat-slide-toggle>
+          @if (fieldError('sharingClaimsAccountDocumentGenerationYn'); as error) {
+            <p class="field-error" role="alert">{{ error }}</p>
+          }
+        </div>
+      </section>
+
+      <section class="more-section">
+        <button
+          mat-button
+          class="more-toggle"
+          type="button"
+          [attr.aria-expanded]="moreExpanded()"
+          aria-controls="ccm-more-fields"
+          (click)="toggleMore()"
+        >More</button>
+        @if (moreExpanded()) {
+          <div id="ccm-more-fields" class="form-grid more-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Name in Arabic</mat-label>
+              <input matInput formControlName="nameInArabic" maxlength="100" dir="rtl" />
+              @if (fieldError('nameInArabic'); as error) {
+                <mat-error>{{ error }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Short Name in Arabic</mat-label>
+              <input matInput formControlName="shortNameInArabic" maxlength="30" dir="rtl" />
+              @if (fieldError('shortNameInArabic'); as error) {
+                <mat-error>{{ error }}</mat-error>
+              }
+            </mat-form-field>
+            <div class="toggle-field">
+              <mat-slide-toggle
+                [checked]="form.controls.activeYn.value === 'Y'"
+                (change)="setToggle('activeYn', $event.checked)"
+              >Active Y/N</mat-slide-toggle>
+              @if (fieldError('activeYn'); as error) {
+                <p class="field-error" role="alert">{{ error }}</p>
+              }
+            </div>
+          </div>
+        }
+      </section>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting() || isLoadingLookups() || !!lookupsError()">
+          {{ isSubmitting() ? 'Saving…' : 'Save' }}
+        </button>
+        <button mat-flat-button color="primary" type="button" [disabled]="isSubmitting()" (click)="resetForm()">
+          Reset
+        </button>
+      </div>
+    </form>
+
+    @if (ccmCode()) {
+      <section class="products-section" aria-labelledby="applicable-products-heading">
+        <header class="products-header">
+          <h2 id="applicable-products-heading">Applicable Products</h2>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            [disabled]="productMutationInProgress() || productsLoading()"
+            (click)="addProduct()"
+          >Add</button>
+        </header>
+        @if (productsError()) {
+          <p class="error-message" role="alert">
+            {{ productsError() }}
+            <button mat-button type="button" (click)="loadProducts()">Retry</button>
+          </p>
+        } @else if (productsLoading()) {
+          <p class="state-message" role="status">Loading Applicable Products…</p>
+        } @else if (products().length === 0) {
+          <p class="state-message" role="status">No Applicable Products are mapped to this claim configuration.</p>
+        } @else {
+          @if (hasProductFilters()) {
+            <button mat-button type="button" (click)="clearProductFilters()">Clear product filters</button>
+          }
+          <div class="table-container">
+            <table mat-table [dataSource]="filteredProducts()" aria-label="Applicable Products">
+              <ng-container matColumnDef="productCode">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading">Product Code</span>
+                    <app-column-filter-control
+                      [column]="'productCode'"
+                      [label]="'Product Code'"
+                      [filter]="productFilters().productCode ?? null"
+                      [draftValue]="productFilterDraftValues().productCode ?? ''"
+                      (filterChange)="onProductFilterChange('productCode', $event)"
+                      (draftValueChange)="onProductFilterDraftChange('productCode', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let product">{{ product.productCode }}</td>
+              </ng-container>
+              <ng-container matColumnDef="productName">
+                <th mat-header-cell *matHeaderCellDef>
+                  <div class="column-header-content">
+                    <span class="column-heading">Product Name</span>
+                    <app-column-filter-control
+                      [column]="'productName'"
+                      [label]="'Product Name'"
+                      [filter]="productFilters().productName ?? null"
+                      [draftValue]="productFilterDraftValues().productName ?? ''"
+                      (filterChange)="onProductFilterChange('productName', $event)"
+                      (draftValueChange)="onProductFilterDraftChange('productName', $event)"
+                    />
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let product">{{ product.productName || '' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let product" class="actions-cell">
+                  <button
+                    class="icon-action"
+                    type="button"
+                    [disabled]="productMutationInProgress()"
+                    [attr.aria-label]="'Edit product ' + product.productCode"
+                    title="Edit"
+                    (click)="editProduct(product)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="icon-action delete-action"
+                    type="button"
+                    [disabled]="productMutationInProgress()"
+                    [attr.aria-label]="'Delete product ' + product.productCode"
+                    title="Delete"
+                    (click)="deleteProduct(product)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="productColumns"></tr>
+              <tr mat-row *matRowDef="let product; columns: productColumns"></tr>
+            </table>
+          </div>
+          @if (filteredProducts().length === 0) {
+            <p class="state-message" role="status">No Applicable Products match the applied filters.</p>
+          }
+        }
+      </section>
+    }
+  }
+</section>

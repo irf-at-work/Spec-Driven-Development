@@ -22,14 +22,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // CORS
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularPolicy", policy =>
     {
-        policy
-            .WithOrigins("http://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins);
+        }
+
+        policy.AllowAnyHeader().AllowAnyMethod();
     });
 });
 
@@ -47,6 +53,10 @@ builder.Services.AddScoped<IApplicableModulesRepository, ApplicableModulesReposi
 builder.Services.AddScoped<IApplicableModulesService, ApplicableModulesService>();
 builder.Services.AddSingleton<ApplicableModuleValidator>();
 builder.Services.AddSingleton<DocumentSetupValidator>();
+builder.Services.AddScoped<IClaimConfigurationsRepository, ClaimConfigurationsRepository>();
+builder.Services.AddScoped<IClaimConfigurationsService, ClaimConfigurationsService>();
+builder.Services.AddScoped<OracleColumnLengthValidator>();
+builder.Services.AddSingleton<ClaimConfigurationValidator>();
 
 // Exception Handling
 builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();

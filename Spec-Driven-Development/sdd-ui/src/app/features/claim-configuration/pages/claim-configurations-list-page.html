@@ -1,0 +1,170 @@
+<section class="ccm-page" aria-labelledby="ccm-heading">
+  <header class="page-header">
+    <h1 id="ccm-heading">Claim Configuration Master</h1>
+    <div class="page-actions">
+      @if (hasActiveFilters()) {
+        <button mat-button type="button" (click)="clearAllFilters()">Clear all filters</button>
+      }
+      <a mat-flat-button color="primary" routerLink="/claim-configurations/add">Add</a>
+    </div>
+  </header>
+
+  @if (deleteError()) {
+    <p class="error-message" role="alert">{{ deleteError() }}</p>
+  }
+  @if (isLoading() && records().length === 0) {
+    <p class="state-message" role="status">Loading claim configurations…</p>
+  } @else if (hasError()) {
+    <div class="state-message error-message" role="alert">
+      <p>The claim configurations could not be loaded. Please try again.</p>
+      <button mat-button type="button" (click)="loadPage(page())">Retry</button>
+    </div>
+  } @else if (records().length === 0 && !hasActiveFilters()) {
+    <p class="state-message" role="status">No claim configurations are available.</p>
+  } @else {
+    <div class="table-container">
+      <table
+        mat-table
+        [dataSource]="records()"
+        matSort
+        matSortDisableClear
+        [matSortActive]="sortActive()"
+        [matSortDirection]="sortDirection()"
+        (matSortChange)="onSortChange($event)"
+        aria-label="Claim Configuration Master records"
+      >
+        <colgroup>
+          <col class="code-column" />
+          <col class="name-column" />
+          <col class="short-name-column" />
+          <col class="module-column" />
+          <col class="actions-column" />
+        </colgroup>
+        <ng-container matColumnDef="ccmCode">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="ccmCode">Claim Config Code</div>
+              <app-column-filter-control
+                [column]="'ccmCode'"
+                [label]="'Claim Config Code'"
+                [filter]="filters().ccmCode ?? null"
+                [draftValue]="filterDraftValues().ccmCode ?? filters().ccmCode?.value ?? ''"
+                (filterChange)="onFilterChange('ccmCode', $event)"
+                (draftValueChange)="onFilterDraftChange('ccmCode', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">
+            <a [routerLink]="['/claim-configurations', record.ccmCode, 'edit']">{{ record.ccmCode }}</a>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="ccmName">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="ccmName">Claim Config Name</div>
+              <app-column-filter-control
+                [column]="'ccmName'"
+                [label]="'Claim Config Name'"
+                [filter]="filters().ccmName ?? null"
+                [draftValue]="filterDraftValues().ccmName ?? filters().ccmName?.value ?? ''"
+                (filterChange)="onFilterChange('ccmName', $event)"
+                (draftValueChange)="onFilterDraftChange('ccmName', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ record.ccmName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="shortName">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="shortName">Short Name</div>
+              <app-column-filter-control
+                [column]="'shortName'"
+                [label]="'Short Name'"
+                [filter]="filters().shortName ?? null"
+                [draftValue]="filterDraftValues().shortName ?? filters().shortName?.value ?? ''"
+                (filterChange)="onFilterChange('shortName', $event)"
+                (draftValueChange)="onFilterDraftChange('shortName', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ record.ccmShortName ?? '' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="moduleName">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="moduleName">Module Name</div>
+              <app-column-filter-control
+                [column]="'moduleName'"
+                [label]="'Module Name'"
+                [filter]="filters().moduleName ?? null"
+                [draftValue]="filterDraftValues().moduleName ?? filters().moduleName?.value ?? ''"
+                (filterChange)="onFilterChange('moduleName', $event)"
+                (draftValueChange)="onFilterDraftChange('moduleName', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ record.moduleName ?? '' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="column-heading">Actions</span></th>
+          <td mat-cell *matCellDef="let record" class="actions-cell">
+            <a
+              class="icon-action"
+              [routerLink]="['/claim-configurations', record.ccmCode, 'edit']"
+              [attr.aria-label]="'Edit ' + record.ccmCode"
+              title="Edit"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66z"
+                />
+              </svg>
+            </a>
+            <button
+              class="icon-action delete-action"
+              type="button"
+              [attr.aria-label]="'Delete ' + record.ccmCode"
+              title="Delete"
+              [disabled]="isDeleting()"
+              (click)="deleteRecord(record)"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                />
+              </svg>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let record; columns: columns"></tr>
+      </table>
+    </div>
+
+    @if (records().length === 0) {
+      <p class="state-message" role="status">No claim configurations match the applied filters.</p>
+    }
+    @if (totalCount() > 0) {
+      <div class="pagination-row">
+        <label>
+          Page size
+          <mat-form-field appearance="outline">
+            <mat-select [value]="pageSize()" (selectionChange)="onPageSizeChange($event.value)">
+              @for (size of pageSizes; track size) {
+                <mat-option [value]="size">{{ size }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </label>
+        <app-page-number-navigation
+          [page]="page()"
+          [totalPages]="totalPages()"
+          [label]="'Claim Configuration Master page selection'"
+          [disabled]="isLoading()"
+          (pageChange)="onPageNumberChange($event)"
+        />
+      </div>
+    }
+  }
+</section>

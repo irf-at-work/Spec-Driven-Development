@@ -3,6 +3,27 @@ import { unsavedChangesGuard } from './features/document-setup/guards/unsaved-ch
 
 export const routes: Routes = [
   {
+    path: 'claim-configurations/add',
+    loadComponent: () =>
+      import('./features/claim-configuration/pages/claim-configuration-detail-page').then(
+        (page) => page.ClaimConfigurationDetailPage,
+      ),
+  },
+  {
+    path: 'claim-configurations/:ccmCode/edit',
+    loadComponent: () =>
+      import('./features/claim-configuration/pages/claim-configuration-detail-page').then(
+        (page) => page.ClaimConfigurationDetailPage,
+      ),
+  },
+  {
+    path: 'claim-configurations',
+    loadComponent: () =>
+      import('./features/claim-configuration/pages/claim-configurations-list-page').then(
+        (page) => page.ClaimConfigurationsListPage,
+      ),
+  },
+  {
     path: 'document-setups/add/applicable-modules/add',
     loadComponent: () =>
       import('./features/document-setup/pages/applicable-module-form-page').then(

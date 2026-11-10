@@ -20,7 +20,13 @@ export type CodeFilterColumn =
   | 'ccmFrom'
   | 'ccmTo'
   | 'mandatoryYn'
-  | 'activeYn';
+  | 'activeYn'
+  | 'ccmCode'
+  | 'ccmName'
+  | 'shortName'
+  | 'moduleName'
+  | 'productCode'
+  | 'productName';
 
 export interface CodeColumnFilterValue {
   operator: CodeFilterOperator;

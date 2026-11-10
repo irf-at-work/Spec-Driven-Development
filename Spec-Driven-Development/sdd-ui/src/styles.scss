@@ -59,6 +59,11 @@ html {
   --app-error-border: #efc7c1;
 }
 
+.applicable-product-options-panel {
+  --mat-option-selected-state-layer-color: var(--app-surface-subtle);
+  --mat-option-hover-state-layer-color: var(--app-surface-subtle);
+}
+
 body {
   margin: 0;
   color: var(--app-text);

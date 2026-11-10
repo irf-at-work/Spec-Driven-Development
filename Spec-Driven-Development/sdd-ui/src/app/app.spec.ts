@@ -22,7 +22,11 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h2')?.textContent).toContain('Master');
-    expect(compiled.querySelector('a')?.textContent).toContain('Codes Master');
+    expect(compiled.querySelector('.master-navigation-toggle')?.textContent).toContain('Masters');
+    const navigationLabels = Array.from(compiled.querySelectorAll('#master-navigation-links a')).map(
+      (link) => link.textContent?.trim(),
+    );
+    expect(navigationLabels).toContain('Codes Master');
+    expect(navigationLabels).toContain('Claim Configuration Master');
   });
 });
