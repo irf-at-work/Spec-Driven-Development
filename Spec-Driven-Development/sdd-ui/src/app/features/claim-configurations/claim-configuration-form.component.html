@@ -82,7 +82,8 @@
         </label>
         <label class="field">
           <span>Rounding Value</span>
-          <input type="number" step="0.00001" formControlName="roundingValue" />
+          <input type="number" min="0" step="0.00001" formControlName="roundingValue" />
+          @if (form.controls.roundingValue.hasError('min')) { <span class="field-error">Rounding Value cannot be negative.</span> }
           @if (fieldErrors()['roundingValue']) { <span class="field-error">{{ fieldErrors()['roundingValue'] }}</span> }
         </label>
         <label class="field">
@@ -137,20 +138,7 @@
       </footer>
     </form>
   }
-  @if (mode !== 'create' && current()) {
-    <section class="product-section" aria-labelledby="applicable-products-heading">
-      <header class="product-header">
-        <div>
-          <h2 id="applicable-products-heading">Applicable Products</h2>
-        </div>
-        <button type="button" class="add-product" disabled aria-describedby="product-source-status">Add Product</button>
-      </header>
-      <div class="product-table-wrap">
-        <table class="product-table">
-          <thead><tr><th>Product Code</th><th>Product Name</th><th>Action</th></tr></thead>
-          <tbody><tr><td colspan="3" id="product-source-status">Product selection is unavailable until its approved source and mapping are verified.</td></tr></tbody>
-        </table>
-      </div>
-    </section>
+  @if (mode !== 'create' && current(); as item) {
+    <app-claim-configuration-products [ccmCode]="item.ccmCode" [writesEnabled]="writeEnabled()" />
   }
 </section>

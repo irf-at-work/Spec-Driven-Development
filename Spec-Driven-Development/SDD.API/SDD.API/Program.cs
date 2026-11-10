@@ -63,6 +63,7 @@ builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
 builder.Services.AddDbContext<SddDbContext>(options => options.UseOracle(oracleConnectionString));
 builder.Services.AddScoped<PremiumAdjustmentService>();
 builder.Services.AddScoped<ClaimConfigurationService>();
+builder.Services.AddScoped<ClaimConfigurationProductService>();
 builder.Services.AddScoped<ClaimConfigurationOptionsService>();
 builder.Services.AddScoped<VehicleMakeService>();
 builder.Services.AddScoped<VehicleModelService>();

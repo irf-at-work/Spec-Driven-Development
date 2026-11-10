@@ -4,6 +4,7 @@ using SDD.API.Configuration;
 using SDD.API.Contracts;
 using SDD.API.DTOs;
 using SDD.API.Services;
+using SDD.API.Infrastructure;
 
 namespace SDD.API.Controllers;
 
@@ -11,8 +12,98 @@ namespace SDD.API.Controllers;
 [Route("api/claim-configurations")]
 public sealed class ClaimConfigurationsController(
     ClaimConfigurationService configurations,
+    ClaimConfigurationProductService products,
     IOptions<ClaimConfigurationOptions> companyOptions) : ControllerBase
 {
+    [HttpGet("available-products")]
+    public async Task<ActionResult<PaginatedResult<AvailableProductDto>>> AvailableProducts(
+        int page = 1,
+        int pageSize = ClaimConfigurationListQuery.PageSize,
+        CancellationToken cancellationToken = default)
+    {
+        if (!ValidateProductPage(page, pageSize, out var errors))
+        {
+            return ValidationProblem(new ValidationProblemDetails(errors));
+        }
+
+        return await products.GetAvailableAsync(page, pageSize, cancellationToken);
+    }
+
+    [HttpGet("{ccmCode}/products")]
+    public async Task<ActionResult<PaginatedResult<AssociatedProductDto>>> ProductsForCcm(
+        string ccmCode,
+        int page = 1,
+        int pageSize = ClaimConfigurationListQuery.PageSize,
+        CancellationToken cancellationToken = default)
+    {
+        if (!ValidateProductPage(page, pageSize, out var errors, allowFiveRowPage: true))
+        {
+            return ValidationProblem(new ValidationProblemDetails(errors));
+        }
+
+        var configuration = await configurations.GetAsync(
+            companyOptions.Value.CompanyCode,
+            ccmCode,
+            cancellationToken);
+        if (configuration is null)
+        {
+            return Problem(statusCode: StatusCodes.Status404NotFound, title: "Claim configuration not found");
+        }
+
+        return await products.GetAssociatedAsync(ccmCode, page, pageSize, cancellationToken);
+    }
+
+    [HttpPost("{ccmCode}/products")]
+    public async Task<IActionResult> AddProduct(
+        string ccmCode,
+        AddClaimConfigurationProductRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!companyOptions.Value.WritesEnabled) return WritesDisabledProblem();
+        if (string.IsNullOrWhiteSpace(request.ProductCode))
+        {
+            return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]>
+            {
+                ["productCode"] = ["Product Code is required."]
+            }));
+        }
+
+        var result = await products.AddAsync(
+            companyOptions.Value.CompanyCode,
+            ccmCode,
+            request.ProductCode,
+            cancellationToken);
+        return result.Outcome switch
+        {
+            ProductAssociationOutcome.Added => NoContent(),
+            ProductAssociationOutcome.NotFound => Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Claim configuration not found"),
+            ProductAssociationOutcome.Duplicate => Conflict(new ProblemDetails
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = "Product already linked",
+                Detail = "This product is already linked to the claim configuration."
+            }),
+            ProductAssociationOutcome.ChoiceUnavailable => ValidationProblem(new ValidationProblemDetails(
+                new Dictionary<string, string[]> { ["productCode"] = ["Choose an active product from the available list."] })),
+            _ => throw new InvalidOperationException("Unexpected product association outcome.")
+        };
+    }
+
+    [HttpDelete("{ccmCode}/products/{productCode}")]
+    public async Task<IActionResult> DeleteProduct(
+        string ccmCode,
+        string productCode,
+        CancellationToken cancellationToken)
+    {
+        if (!companyOptions.Value.WritesEnabled) return WritesDisabledProblem();
+        var result = await products.DeleteAsync(ccmCode, productCode, cancellationToken);
+        return result.Outcome == ProductAssociationOutcome.Deleted
+            ? NoContent()
+            : Problem(statusCode: StatusCodes.Status404NotFound, title: "Product association not found");
+    }
+
     [HttpGet("write-status")]
     public ActionResult<ClaimConfigurationWriteStatusDto> WriteStatus()
     {
@@ -21,7 +112,7 @@ public sealed class ClaimConfigurationsController(
             enabled,
             enabled
                 ? "CCM writes are enabled."
-                : "Apply and verify the global CCM_CODE unique index, then enable ClaimConfiguration:WritesEnabled.",
+                : "The global CCM_CODE unique index is verified. Enable ClaimConfiguration:WritesEnabled when ready to allow writes.",
             companyOptions.Value.CompanyCode);
     }
 
@@ -191,7 +282,7 @@ public sealed class ClaimConfigurationsController(
     private ObjectResult WritesDisabledProblem() => Problem(
         statusCode: StatusCodes.Status503ServiceUnavailable,
         title: "Claim configuration writes are disabled",
-        detail: "Apply and verify the global CCM_CODE unique index before enabling ClaimConfiguration:WritesEnabled.");
+        detail: "The global CCM_CODE unique index is verified. Enable ClaimConfiguration:WritesEnabled when ready to allow writes.");
 
     private ObjectResult DuplicateProblem() => Conflict(new ValidationProblemDetails(
         new Dictionary<string, string[]>
@@ -202,4 +293,19 @@ public sealed class ClaimConfigurationsController(
         Status = StatusCodes.Status409Conflict,
         Title = "Duplicate CCM Code"
     });
+
+    private static bool ValidateProductPage(
+        int page,
+        int pageSize,
+        out Dictionary<string, string[]> errors,
+        bool allowFiveRowPage = false)
+    {
+        errors = new Dictionary<string, string[]>();
+        ColumnFilterQuery.ValidatePage(page, errors);
+        if (!allowFiveRowPage || pageSize != 5)
+        {
+            ColumnFilterQuery.ValidatePageSize(pageSize, errors);
+        }
+        return errors.Count == 0;
+    }
 }

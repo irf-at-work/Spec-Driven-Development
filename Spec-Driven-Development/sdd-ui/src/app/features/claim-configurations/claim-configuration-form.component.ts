@@ -11,6 +11,7 @@ import { IconButtonComponent } from '../../shared/icon-button/icon-button.compon
 import { HasUnsavedChanges } from '../../shared/unsaved-changes.guard';
 import { LimitedTextFieldComponent } from '../../shared/limited-text-field/limited-text-field.component';
 import { NotificationService } from '../../shared/notifications/notification.service';
+import { ClaimConfigurationProductsComponent } from './claim-configuration-products.component';
 import {
   ClaimConfigurationChoice,
   ClaimConfigurationDetail,
@@ -39,7 +40,7 @@ const CHOICE_FIELDS: readonly ChoiceField[] = [
 
 @Component({
   selector: 'app-claim-configuration-form',
-  imports: [IconButtonComponent, LimitedTextFieldComponent, MatCheckboxModule, MatExpansionModule, MatSlideToggle, ReactiveFormsModule],
+  imports: [IconButtonComponent, LimitedTextFieldComponent, MatCheckboxModule, MatExpansionModule, MatSlideToggle, ReactiveFormsModule, ClaimConfigurationProductsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './claim-configuration-form.component.html',
   styleUrl: './claim-configuration-form.component.css',
@@ -77,7 +78,7 @@ export class ClaimConfigurationFormComponent implements HasUnsavedChanges {
     accountingPostingType: new FormControl(''),
     accountingExchangeRateType: new FormControl(''),
     roundingType: new FormControl(''),
-    roundingValue: new FormControl<number | null>(null),
+    roundingValue: new FormControl<number | null>(0, [Validators.min(0)]),
     applicableCurrencyType: new FormControl(''),
     defaultEstimatedClosureReasonCode: new FormControl(''),
     defaultRecoveryDeductionCode: new FormControl(''),

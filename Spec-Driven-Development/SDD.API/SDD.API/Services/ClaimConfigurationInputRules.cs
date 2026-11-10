@@ -34,7 +34,7 @@ public static class ClaimConfigurationInputRules
         NormaliseOptionalCode(request.AccountingPostingType),
         NormaliseOptionalCode(request.AccountingExchangeRateType),
         NormaliseOptionalCode(request.RoundingType),
-        request.RoundingValue,
+        request.RoundingValue ?? 0m,
         NormaliseOptionalCode(request.ApplicableCurrencyType),
         NormaliseOptionalCode(request.DefaultEstimatedClosureReasonCode),
         NormaliseOptionalCode(request.DefaultRecoveryDeductionCode),
@@ -76,7 +76,12 @@ public static class ClaimConfigurationInputRules
         {
             errors["name"] = ["Claim Config Name is required."];
         }
-        if (values.RoundingValue is { } rounding && (rounding <= -1000m || rounding >= 1000m || decimal.Round(rounding, 5) != rounding))
+        if (values.RoundingValue is { } rounding && rounding < 0m)
+        {
+            errors["roundingValue"] = ["Rounding Value cannot be negative."];
+        }
+        else if (values.RoundingValue is { } nonNegativeRounding &&
+                 (nonNegativeRounding >= 1000m || decimal.Round(nonNegativeRounding, 5) != nonNegativeRounding))
         {
             errors["roundingValue"] = ["Rounding Value exceeds the storage capacity of NUMBER(8,5)."];
         }

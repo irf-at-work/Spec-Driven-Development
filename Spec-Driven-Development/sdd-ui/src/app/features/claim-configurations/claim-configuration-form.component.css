@@ -24,14 +24,6 @@ h1 { margin: 0 0 4px; font-size: 1.5rem; font-weight: 600; color: var(--sdd-text
 .field input:focus, .field select:focus { outline: 2px solid var(--sdd-accent); outline-offset: 1px; }
 .field small { color: var(--sdd-muted); font-size: 0.8125rem; }
 .readonly output { display: flex; align-items: center; background: var(--sdd-page, #f6f7f9); }
-.product-section { margin-top: 24px; padding: 20px; border: 1px solid var(--sdd-border); border-radius: 8px; background: var(--sdd-surface); }
-.product-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
-.product-header h2 { margin: 0; font-size: 1.2rem; font-weight: 600; color: var(--sdd-text); }
-.add-product { min-height: 40px; padding: 8px 18px; border: 1px solid var(--sdd-border); border-radius: 4px; background: var(--sdd-page, #f6f7f9); color: var(--sdd-muted); font: inherit; cursor: not-allowed; }
-.product-table-wrap { overflow-x: auto; }
-.product-table { width: 100%; border-collapse: collapse; }
-.product-table th, .product-table td { padding: 12px; border-bottom: 1px solid var(--sdd-border); text-align: start; }
-.product-table th { font-weight: 600; }
 .gate, .error-banner { margin-bottom: 16px; padding: 12px 16px; border-radius: 6px; }
 .gate { border: 1px solid #b7791f; background: #fff8e7; color: #633f0b; }
 .error-banner, .field-error { color: var(--sdd-danger, #b3261e); }

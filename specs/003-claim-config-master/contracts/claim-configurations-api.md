@@ -59,8 +59,8 @@ The API derives Company Code from the logged-in user's company when user identit
 `GET /api/claim-configurations/{ccmCode}/products?page={page}&pageSize={pageSize}`
 
 - `200 OK`: `PaginatedResult<AssociatedProductDto>`.
-- The Applicable Products UI requests `pageSize=5` initially. The API's shared default remains 10 when no size is supplied.
-- Each item contains `productCode` and `productName` in the specified display forms (`LI_CODE`, `LI_TYPE - LI_DESC`) plus the association key needed for removal.
+- The Applicable Products UI requests `pageSize=5` initially; this endpoint accepts five for that table. The API's shared default remains 10 when no size is supplied. Other shared page sizes remain available.
+- Each item contains `productCode`, `productType`, and `description` mapped from `LI_CODE`, `LI_TYPE`, and `LI_DESC`; product-name display is `LI_TYPE - LI_DESC`. If a choice row is later removed, the association remains visible with an unavailable-choice label.
 - No CCM match returns `404 ProblemDetails`.
 
 ## Add a product association
@@ -69,9 +69,9 @@ The API derives Company Code from the logged-in user's company when user identit
 
 Request: `{ "productCode": "..." }`.
 
-- `200 OK`: saved `AssociatedProductDto`.
+- `204 No Content`: association created; the API stamps the association creation and update user/date audit fields.
 - Existing product/CCM pair: `409 ProblemDetails`; no duplicate association is created.
-- Invalid or unavailable product choice: `400 ProblemDetails` (final availability validation depends on verified product source).
+- Inactive or missing `CCM_PRODUCT` choice: `400 ProblemDetails`.
 - Missing CCM: `404 ProblemDetails`.
 
 ## Remove a product association
@@ -92,14 +92,14 @@ Request: `{ "productCode": "..." }`.
 
 ## Lookup choices — implementation gate
 
-The CCM settings require active `STD_LIST_ITEM` choices (FR-020), and the Add modal requires product choices labelled `LI_CODE - LI_TYPE - LI_DESC` (FR-031). The repository does not establish the relevant `LI_TYPE` mappings or authoritative product source. Before fixing the lookup contract, perform the read-only Oracle review identified in [research.md](../research.md).
+The CCM settings require active `STD_LIST_ITEM` choices (FR-020) and remain gated on their own confirmed mappings. The owner has approved product choices from `STD_LIST_ITEM` with `LI_TYPE = 'CCM_PRODUCT'`; `LI_CODE` is product code, `LI_DESC` is description, and only `LI_ACTIVE_YN = 'Y'` rows are offered (FR-036). The product-choice count is calculated at request time; pagination does not assume a fixed list size.
 
 Every lookup-choice and product-choice listing endpoint MUST return the shared `PaginatedResult<T>` (`items`, `page`, `pageSize`, `totalCount`) with default page size 10, as required by constitution B8 and FR-037. Use a field/list-type selector for CCM choices so each dropdown can retrieve its own pages. The product-choice endpoint returns pages of available products; the modal lets employees retrieve subsequent pages. Do not introduce an unpaged endpoint based on an assumed small result set.
 
 Proposed routes:
 
 - `GET /api/claim-configuration-options/{field}?page={page}&pageSize={pageSize}` returns `PaginatedResult<LookupChoiceDto>` for the confirmed CCM field/list mapping. Only active choices are returned for new selections.
-- `GET /api/claim-configurations/available-products?page={page}&pageSize={pageSize}` returns `PaginatedResult<AvailableProductDto>` for the verified product source.
+- `GET /api/claim-configurations/available-products?page={page}&pageSize={pageSize}` returns `PaginatedResult<AvailableProductDto>` from active `CCM_PRODUCT` rows in `STD_LIST_ITEM`. `AvailableProductDto` maps `LI_CODE`, `LI_TYPE`, and `LI_DESC` to productCode, productType, and description.
 
 When a CCM currently stores a lookup value that is now inactive, its detail response retains that value. While editing, the UI displays it as the current value if unchanged, but the paginated choices endpoint offers active entries only for new selections.
 

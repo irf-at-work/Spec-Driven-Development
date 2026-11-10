@@ -49,14 +49,9 @@ Oracle reports `CHAR_USED = B` and matching `CHAR_LENGTH`/`DATA_LENGTH` for char
 
 ## Product choice and display data
 
-The requested option presentation is `LI_CODE - LI_TYPE - LI_DESC`; the linked row shows Product Code as `LI_CODE` and Product Name as `LI_TYPE - LI_DESC`. The checked-in source does not establish that these columns represent a product catalog. During read-only Oracle review, verify:
+**Owner-approved mapping**: Product choices are stored as rows in the existing `STD_LIST_ITEM` table with dedicated `LI_TYPE = 'CCM_PRODUCT'`. `LI_CODE` maps to Product Code / `BRM_CCM_PROD.CCMP_CODE`; `LI_DESC` maps to Product Description; `LI_ACTIVE_YN = 'Y'` marks a choice available for new links. The dropdown label is `LI_CODE - LI_TYPE - LI_DESC`; linked rows show `LI_CODE` as Product Code and `LI_TYPE - LI_DESC` as Product Name. The owner explicitly directed using `STD_LIST_ITEM` because no product master is available. This is an application/data convention and does not add a table, column, or constraint.
 
-- authoritative table/view and columns for product code and name;
-- whether the display strings map to the supplied `LI_CODE`, `LI_TYPE`, and `LI_DESC` values;
-- whether inactive products are excluded;
-- product count/volume, to decide whether dropdown lookup needs pagination or other navigation.
-
-Do not treat product rows as `STD_LIST_ITEM` choices until this review confirms it.
+The pasted lookup output did not establish any product rows or an eligible count, and the implementation agent has not queried Oracle. The paginated endpoint reports the current count dynamically. The list will remain empty until the owner seeds `CCM_PRODUCT` rows with [ccm-product-choice-insert.sql](ccm-product-choice-insert.sql). The number of rows is not assumed.
 
 ## CCM setting lookup mapping status
 
