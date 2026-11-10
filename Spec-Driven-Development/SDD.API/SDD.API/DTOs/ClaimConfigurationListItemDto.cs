@@ -5,4 +5,5 @@ public sealed record ClaimConfigurationListItemDto(
     string CcmCode,
     string Name,
     string ShortName,
+    string? Module,
     bool Active);

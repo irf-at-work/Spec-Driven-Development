@@ -15,10 +15,24 @@ public sealed class ClaimConfigurationOptionsService(SddDbContext database)
             ["exchangeRateType"] = "CCM_EXCH_RATE",
             ["roundType"] = "CCM_ROUND_TYPE",
             ["applicableCurrencyType"] = "CCM_CURR_TYPE",
-            ["estimatedClosureReason"] = "CCM_CLO_REASON"
+            ["estimatedClosureReason"] = "CCM_CLO_REASON",
+            ["recoveryDeduction"] = "CCM_DFLT_RECV_DEDU"
         };
 
     public static bool IsSupportedField(string field) => ListTypes.ContainsKey(field);
+
+    public async Task<bool> IsActiveChoiceAsync(string field, string code, CancellationToken cancellationToken)
+    {
+        if (!ListTypes.TryGetValue(field, out var type))
+        {
+            return false;
+        }
+
+        var count = await database.StdListItems.AsNoTracking()
+            .Where(item => item.LiType == type && item.LiCode == code && item.LiActiveYn == "Y")
+            .CountAsync(cancellationToken);
+        return count > 0;
+    }
 
     public async Task<PaginatedResult<LookupChoiceDto>> GetAsync(
         string field,

@@ -72,12 +72,33 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'claim-configurations/new',
+    title: 'Add Claim Configuration',
+    data: { mode: 'create', breadcrumb: 'claim-configuration-new' },
+    canDeactivate: [unsavedChangesGuard],
+    loadComponent: () =>
+      import('./features/claim-configurations/claim-configuration-form.component').then(
+        (module) => module.ClaimConfigurationFormComponent,
+      ),
+  },
+  {
+    path: 'claim-configurations/:ccmCode/edit',
+    title: 'Edit Claim Configuration',
+    data: { mode: 'edit', breadcrumb: 'claim-configuration-edit' },
+    canDeactivate: [unsavedChangesGuard],
+    loadComponent: () =>
+      import('./features/claim-configurations/claim-configuration-form.component').then(
+        (module) => module.ClaimConfigurationFormComponent,
+      ),
+  },
+  {
     path: 'claim-configurations/:ccmCode',
     title: 'Claim Configuration Details',
-    data: { breadcrumb: 'claim-configuration-view' },
+    data: { mode: 'view', breadcrumb: 'claim-configuration-view' },
+    canDeactivate: [unsavedChangesGuard],
     loadComponent: () =>
-      import('./features/claim-configurations/claim-configuration-detail.component').then(
-        (module) => module.ClaimConfigurationDetailComponent,
+      import('./features/claim-configurations/claim-configuration-form.component').then(
+        (module) => module.ClaimConfigurationFormComponent,
       ),
   },
   {

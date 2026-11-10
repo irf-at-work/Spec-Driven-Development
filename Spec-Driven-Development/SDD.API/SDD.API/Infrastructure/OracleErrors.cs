@@ -8,6 +8,9 @@ public static class OracleErrors
     /// <summary>ORA-00001: a unique or primary key value already exists.</summary>
     public const int UniqueConstraintViolation = 1;
 
+    /// <summary>ORA-12899: a value exceeds the storage capacity of a column.</summary>
+    public const int ValueTooLarge = 12899;
+
     /// <summary>ORA-02292: a parent row cannot be deleted because child rows still point to it.</summary>
     public const int ChildRecordFound = 2292;
 

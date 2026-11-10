@@ -8,33 +8,33 @@ public static class ClaimConfigurationListQuery
     public const int PageSize = 10;
     public static readonly int[] PageSizeOptions = [10, 25, 50];
 
-    private const string DefaultSortColumn = "companyCode";
+    private const string DefaultSortColumn = "ccmCode";
 
     private static readonly IReadOnlyDictionary<string, Expression<Func<BrmClmConfig, string?>>> TextColumns =
         new Dictionary<string, Expression<Func<BrmClmConfig, string?>>>(StringComparer.OrdinalIgnoreCase)
         {
-            ["companyCode"] = row => row.CcmCompCode,
             ["ccmCode"] = row => row.CcmCode,
             ["name"] = row => row.CcmName,
-            ["shortName"] = row => row.CcmShortName
+            ["shortName"] = row => row.CcmShortName,
+            ["module"] = row => row.CcmModule
         };
 
     private static readonly IReadOnlyDictionary<string, Expression<Func<BrmClmConfig, string?>>> SortColumns =
         new Dictionary<string, Expression<Func<BrmClmConfig, string?>>>(StringComparer.OrdinalIgnoreCase)
         {
-            ["companyCode"] = row => row.CcmCompCode.ToUpper(),
             ["ccmCode"] = row => row.CcmCode.ToUpper(),
             ["name"] = row => (row.CcmName ?? string.Empty).ToUpper(),
-            ["shortName"] = row => (row.CcmShortName ?? string.Empty).ToUpper()
+            ["shortName"] = row => (row.CcmShortName ?? string.Empty).ToUpper(),
+            ["module"] = row => (row.CcmModule ?? string.Empty).ToUpper()
         };
 
     private static readonly IReadOnlyDictionary<string, string> FilterableFields =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            ["companyCode"] = "companyCode",
             ["ccmCode"] = "ccmCode",
             ["name"] = "name",
-            ["shortName"] = "shortName"
+            ["shortName"] = "shortName",
+            ["module"] = "module"
         };
 
     public static IReadOnlyDictionary<string, string[]> Validate(
@@ -51,7 +51,7 @@ public static class ClaimConfigurationListQuery
 
         if (!string.IsNullOrWhiteSpace(sortBy) && !SortColumns.ContainsKey(sortBy.Trim()))
         {
-            errors["sortBy"] = ["Sort by must be companyCode, ccmCode, name or shortName."];
+            errors["sortBy"] = ["Sort by must be ccmCode, name, shortName or module."];
         }
 
         if (!string.IsNullOrWhiteSpace(sortDirection)

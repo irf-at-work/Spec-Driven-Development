@@ -1,0 +1,45 @@
+.page { margin: 0 auto; padding: 24px 24px 48px; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+h1 { margin: 0 0 4px; font-size: 1.5rem; font-weight: 600; color: var(--sdd-text); }
+.subtitle { margin: 0; color: var(--sdd-muted); }
+.card { padding: 24px; border: 1px solid var(--sdd-border); border-radius: 8px; background: var(--sdd-surface); }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 20px; }
+.full-span { grid-column: 1 / -1; }
+.additional { margin-bottom: 4px; }
+.additional-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px 0 4px; }
+.field { display: flex; min-width: 0; flex-direction: column; gap: 6px; font-size: 0.9375rem; }
+.field > span:first-child { font-weight: 600; }
+.toggle-field { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.toggle-field legend { margin-bottom: 6px; font-weight: 600; }
+.toggle-group { display: inline-flex; width: fit-content; min-height: 42px; overflow: hidden; border: 1px solid var(--sdd-border); border-radius: 5px; }
+.toggle-group label { position: relative; display: flex; align-items: center; cursor: pointer; }
+.toggle-group input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.toggle-group span { display: flex; min-height: 42px; align-items: center; padding: 0 16px; color: var(--sdd-text); }
+.toggle-group label + label { border-inline-start: 1px solid var(--sdd-border); }
+.toggle-group input:checked + span { background: var(--sdd-accent); color: white; }
+.toggle-group input:focus-visible + span { outline: 2px solid var(--sdd-accent); outline-offset: -3px; }
+.active-toggle { align-self: start; padding-top: 8px; }
+.flag-checkbox { align-self: center; }
+.field input, .field select, .field output { box-sizing: border-box; width: 100%; min-height: 42px; padding: 8px 10px; border: 1px solid var(--sdd-border); border-radius: 4px; background: var(--sdd-surface); color: var(--sdd-text); font: inherit; }
+.field input:focus, .field select:focus { outline: 2px solid var(--sdd-accent); outline-offset: 1px; }
+.field small { color: var(--sdd-muted); font-size: 0.8125rem; }
+.readonly output { display: flex; align-items: center; background: var(--sdd-page, #f6f7f9); }
+.product-section { margin-top: 24px; padding: 20px; border: 1px solid var(--sdd-border); border-radius: 8px; background: var(--sdd-surface); }
+.product-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.product-header h2 { margin: 0; font-size: 1.2rem; font-weight: 600; color: var(--sdd-text); }
+.add-product { min-height: 40px; padding: 8px 18px; border: 1px solid var(--sdd-border); border-radius: 4px; background: var(--sdd-page, #f6f7f9); color: var(--sdd-muted); font: inherit; cursor: not-allowed; }
+.product-table-wrap { overflow-x: auto; }
+.product-table { width: 100%; border-collapse: collapse; }
+.product-table th, .product-table td { padding: 12px; border-bottom: 1px solid var(--sdd-border); text-align: start; }
+.product-table th { font-weight: 600; }
+.gate, .error-banner { margin-bottom: 16px; padding: 12px 16px; border-radius: 6px; }
+.gate { border: 1px solid #b7791f; background: #fff8e7; color: #633f0b; }
+.error-banner, .field-error { color: var(--sdd-danger, #b3261e); }
+.error-banner { border: 1px solid currentColor; padding: 12px 16px; }
+.field-error { font-size: 0.8125rem; }
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+.form-actions button { min-height: 40px; padding: 8px 18px; border: 1px solid var(--sdd-accent); border-radius: 4px; background: var(--sdd-accent); color: white; font: inherit; cursor: pointer; }
+.form-actions button.secondary { background: transparent; color: var(--sdd-accent); }
+.form-actions button:disabled { cursor: not-allowed; opacity: 0.55; }
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .card { padding: 16px; } .grid, .additional-grid { grid-template-columns: 1fr; } .full-span { grid-column: auto; } }

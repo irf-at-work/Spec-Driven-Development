@@ -13,4 +13,7 @@ public sealed class ClaimConfigurationOptions
     [Required]
     [MaxLength(12)]
     public string CompanyCode { get; init; } = string.Empty;
+
+    /// <summary>Must be enabled only after the owner applies and verifies the global CCM_CODE unique index.</summary>
+    public bool WritesEnabled { get; init; }
 }

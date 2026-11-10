@@ -6,11 +6,11 @@ Shared filtering, sorting, pagination, error, and response behavior follows [Mas
 
 ## List CCM configurations
 
-`GET /api/claim-configurations?page={page}&pageSize={pageSize}&companyCode={text}&companyCodeOperator={operator}&ccmCode={text}&ccmCodeOperator={operator}&name={text}&nameOperator={operator}&shortName={text}&shortNameOperator={operator}&active={true|false}&activeOperator={operator}&sortBy={field}&sortDirection={asc|desc}`
+`GET /api/claim-configurations?page={page}&pageSize={pageSize}&ccmCode={text}&ccmCodeOperator={operator}&name={text}&nameOperator={operator}&shortName={text}&shortNameOperator={operator}&module={text}&moduleOperator={operator}&active={true|false}&activeOperator={operator}&sortBy={field}&sortDirection={asc|desc}`
 
-- Filter and sort fields follow FR-025–FR-027: Company Code, CCM Code, Claim Config Name, Short Name, and Status; no global search.
+- Filter and sort fields follow FR-025–FR-027: CCM Code, Claim Config Name, Short Name, Module Name, and Status; Company Code is never returned for display by the frontend, and there is no global search.
 - `page` defaults to 1; API `pageSize` defaults to 10 and supports 10, 25, and 50.
-- Return `PaginatedResult<ClaimConfigurationListItemDto>` (`items`, `page`, `pageSize`, `totalCount`). Initial order is Company Code ascending then CCM Code ascending.
+- Return `PaginatedResult<ClaimConfigurationListItemDto>` (`items`, `page`, `pageSize`, `totalCount`), including the module code for display-name resolution. Initial order is CCM Code ascending.
 - Invalid page, filter operator, sort field, or direction returns `400 ProblemDetails`.
 
 ## Read a CCM
@@ -36,13 +36,23 @@ Shared filtering, sorting, pagination, error, and response behavior follows [Mas
 
 `PUT /api/claim-configurations/{ccmCode}`
 
-`UpdateClaimConfigurationRequest` contains editable values only. It omits both key fields. Company Code and CCM Code cannot be changed. Active/inactive status is maintained through this update; a separate permanent CCM delete route is not defined.
+`UpdateClaimConfigurationRequest` contains editable values only. It omits both key fields. Company Code and CCM Code cannot be changed. Active/inactive status is maintained through this update.
 
 The API derives Company Code from the logged-in user's company when user identity is available. In the current no-identity test environment, it uses configured `ASRTEST`; callers cannot select another Company Code in the route or request body.
 
 - `200 OK`: updated `ClaimConfigurationDto`.
 - Invalid request: `400 ProblemDetails`; no update occurs.
 - No matching CCM: `404 ProblemDetails`.
+
+## Delete a CCM
+
+`DELETE /api/claim-configurations/{ccmCode}`
+
+- The UI obtains explicit confirmation before sending this request.
+- `204 No Content`: only the selected CCM record is deleted.
+- `404 ProblemDetails`: no matching CCM exists.
+- `409 ProblemDetails`: at least one `BRM_CCM_PROD` row references the CCM Code. The API leaves the CCM and all association rows unchanged; it never cascades or deletes associated products.
+- Writes remain disabled unless the configured write gate is enabled.
 
 ## List products associated with a CCM
 

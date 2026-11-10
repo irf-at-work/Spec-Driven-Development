@@ -14,6 +14,7 @@ public static class ClaimConfigurationMapping
         row.CcmCode,
         row.CcmName,
         row.CcmShortName ?? string.Empty,
+        row.CcmModule,
         IsActive(row.CcmActiveYn));
 
     public static ClaimConfigurationDto ToDto(BrmClmConfig row) => new(

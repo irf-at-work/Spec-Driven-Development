@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
+using Oracle.ManagedDataAccess.Client;
 using SDD.API.Configuration;
 using SDD.API.Data.Scaffolded;
 using SDD.API.Infrastructure;
@@ -22,6 +23,13 @@ if (string.IsNullOrWhiteSpace(oracleConnectionString))
         "The Oracle connection string 'ConnectionStrings:SddOracle' is not set. "
         + "Store it with: dotnet user-secrets set \"ConnectionStrings:SddOracle\" \"<your connection string>\". "
         + "appsettings.Example.json shows the expected format.");
+}
+
+// Keep TNS alias resolution consistent with SQL*Plus when the Oracle client directory is supplied by the host.
+var tnsAdmin = builder.Configuration["Oracle:TnsAdmin"] ?? Environment.GetEnvironmentVariable("TNS_ADMIN");
+if (!string.IsNullOrWhiteSpace(tnsAdmin))
+{
+    OracleConfiguration.TnsAdmin = tnsAdmin;
 }
 
 // The Angular page runs on its own address, so the browser only lets it call this API if that address is listed here.

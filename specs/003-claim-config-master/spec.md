@@ -22,12 +22,12 @@ As a master-data employee, I want to filter and sort the CCM list so that I can 
 
 **Acceptance Scenarios**:
 
-1. **Given** CCM records exist, **When** an employee opens the list, **Then** it shows 10 records by default, offers page sizes of 10, 25, and 50, initially sorts by Company Code then CCM Code, and provides page navigation.
-2. **Given** the CCM list is open, **When** it appears, **Then** there is no global search box; every visible data column (Company Code, CCM Code, Claim Config Name, Short Name, and Status) has its own filter, while the Actions column has none.
+1. **Given** CCM records exist, **When** an employee opens the list, **Then** it shows 10 records by default, offers page sizes of 10, 25, and 50, initially sorts by CCM Code, and provides page navigation.
+2. **Given** the CCM list is open, **When** it appears, **Then** there is no global search box or Company Code display; every visible data column (CCM Code, Claim Config Name, Short Name, Module Name, and Status) has its own filter, while the Actions column has none.
 3. **Given** a text-column filter is used, **When** the employee selects an operator, **Then** the available operators are starts with, ends with, contains (default), equals, and not equals. Status offers Active or Inactive with equals and not equals.
 4. **Given** matching records exist across pages, **When** the employee applies filters, **Then** all filters combine, ignore letter case, match typed characters literally, and apply to the full result set before paging. A blank filter is ignored, and not equals also includes records with an empty value.
 5. **Given** the employee changes a filter or sort order, **When** the change is applied (filters refresh 500 ms after typing stops), **Then** the list returns to page 1 and reflects the updated full result set.
-6. **Given** records span multiple pages, **When** the employee sorts by Company Code, CCM Code, Claim Config Name, or Short Name, **Then** the full filtered result set is sorted without regard to letter case, with Company Code and CCM Code as deterministic tie-breakers.
+6. **Given** records span multiple pages, **When** the employee sorts by CCM Code, Claim Config Name, Short Name, or Module Name, **Then** the full filtered result set is sorted without regard to letter case, with Company Code and CCM Code as deterministic tie-breakers.
 7. **Given** active and inactive CCM records exist, **When** the list is viewed, **Then** both remain visible with their status shown unless a Status filter excludes one.
 
 ### User Story 2 - Maintain claim configurations (Priority: P1)
@@ -100,7 +100,7 @@ As a master-data employee, I want to deactivate and reactivate a CCM so that its
 - Q: Should the setting-to-choice mappings be left for read-only lookup-data review during planning? → A: Yes. Confirm them during planning before implementation.
 - Q: How should the specification handle field rules that have not yet been provided? → A: Provide per-field rules where known. The supplied dropdown codes and descriptions are recorded below; unspecified business validation is not inferred.
 - Q: Do A (Average), S (Selling), and B (Buying) belong to Accounting Exchange-Rate Type? → A: Yes. They are Accounting Exchange-Rate Type choices (`CCM_ACNT_EXCH_RATE_TYPE`).
-- Q: What values should the print, reprint, and claim accounting document flags accept? → A: They accept `Y` or `N`; their create-time default is `Y`.
+- Q: What values and defaults apply to print-before-approval, reprint, and the accounting document flags? → A: They accept `Y` or `N`; Print Before Approval Yn and RePrint Allowed default to `N`; both accounting-document flags default to `Y`.
 - Q: What numeric behavior does `CCM_ROUND_VALUE` control? → A: It is a numeric value, for example `2.000`.
 - Q: Are any fields besides company code, CCM code, and CCM name mandatory? → A: No. Those are the only required database fields; the employee supplies CCM Code and Claim Config Name, while Company Code is assigned from application context. All other configuration fields are optional.
 - Q: Should `CCM_NAME` and `CCM_SHORT_NAME` use the same English text normalization as the other two master features? → A: They must be uppercase regardless of whether the user enters lowercase, mixed case, or uppercase text.
@@ -154,15 +154,15 @@ As a master-data employee, I want to deactivate and reactivate a CCM so that its
 - **FR-019**: When a user submits invalid information, the system MUST identify the affected field and explain how to correct it. When a save fails, the system MUST show a clear message and keep entered values available for correction or retry.
 - **FR-020**: The module, accounting posting type, accounting exchange-rate type, rounding type, applicable currency type, default estimated closure reason code, and default recovery deduction code MUST be selected from approved active choices. Each choice MUST show its code and description, and the selected code MUST be saved. The source and field mapping for each choice MUST be confirmed by read-only review before implementation. When editing a CCM whose current choice is no longer active, the UI MUST retain and display that choice if unchanged, but MUST NOT offer it for a new selection. Choice pagination follows FR-037. Company Code and CCM Code identify the CCM and are not setting choices.
 - **FR-021**: The CCM list MUST be paged, default to 10 records per page, and allow page sizes of 10, 25, or 50 records, following the Vehicle Make list convention.
-- **FR-022**: The print-before-approval, reprint, claim accounting document generation, and claim coinsurance accounting document generation flags MUST accept only `Y` or `N`. Each flag MUST default to `Y` when a CCM is created.
+- **FR-022**: The print-before-approval, reprint, claim accounting document generation, and claim coinsurance accounting document generation flags MUST accept only `Y` or `N` and MUST be presented as checkboxes. Print-before-approval and reprint MUST default to `N`; the two accounting document generation flags MUST default to `Y` when a CCM is created.
 - **FR-023**: The rounding value MUST accept numeric values, including `2.000`. No additional business range or interaction rule with the rounding type is specified; storage capacity is documented in `data-model.md`.
 - **FR-024**: The UI MUST label `CCM_NAME` as “Claim Config Name” and `CCM_SHORT_NAME` as “Short Name”. The system MUST convert both values to uppercase regardless of input casing and MUST display and save them in uppercase.
-- **FR-025**: The CCM list MUST NOT offer a global search box. Each visible data column (Company Code, CCM Code, Claim Config Name, Short Name, Status) MUST have its own filter; the Actions column MUST NOT have a filter. Text filters MUST offer starts with, ends with, contains (default), equals, and not equals. Status MUST offer Active or Inactive with equals and not equals.
+- **FR-025**: The CCM list MUST NOT offer a global search box or display Company Code. Each visible data column (CCM Code, Claim Config Name, Short Name, Module Name, Status) MUST have its own filter; the Actions column MUST NOT have a filter. Text filters MUST offer starts with, ends with, contains (default), equals, and not equals. Status MUST offer Active or Inactive with equals and not equals.
 - **FR-026**: CCM filters MUST ignore letter case, combine so a record must match all supplied filters, apply across all records before pagination, treat typed characters literally, ignore blank filter values, include empty values for not equals, and update 500 ms after typing stops. Changing a filter or sort MUST return the list to page 1.
-- **FR-027**: The CCM list MUST allow sorting by Company Code, CCM Code, Claim Config Name, and Short Name across all filtered records, ignoring letter case. Initial order MUST be Company Code ascending then CCM Code ascending, and ties MUST resolve consistently by Company Code then CCM Code.
+- **FR-027**: The CCM list MUST allow sorting by CCM Code, Claim Config Name, Short Name, and Module Name across all filtered records, ignoring letter case. Initial order MUST be CCM Code ascending; ties MUST resolve consistently by Company Code then CCM Code.
 - **FR-028**: `CCM_NAME_L2` and `CCM_SHORT_NAME_L2` MUST be displayed right-to-left and preserved exactly, including their spacing; the system MUST NOT uppercase or otherwise normalize these values.
 - **FR-029**: Employee-entered CCM Code MUST contain 1–12 letters, digits, or hyphens and MUST be saved in uppercase. Company Code MUST be supplied by the application context, not entered or edited by the employee, as specified in FR-003. Key immutability is specified in FR-004 and global CCM Code uniqueness in FR-038.
-- **FR-030**: After a CCM is saved, its view and edit page MUST show an Applicable Products section at the bottom of the page with an Add button and a table with Product Code, Product Name, and Action columns.
+- **FR-030**: After a CCM is saved, its view and edit page MUST show an Applicable Products section at the bottom of the page with an Add button and a table with Product Code, Product Name, and Action columns. The Add action remains unavailable until the product source review gate in FR-036 is satisfied.
 - **FR-031**: The Add action MUST open a modal titled “Available Products” containing one required dropdown labeled “Product Code”. Each option MUST show the product code, type, and description in that order. Choice pagination follows FR-037.
 - **FR-032**: Each saved product association MUST appear in the Applicable Products table with its product code, product name formed from its type and description, and a Delete button in the Action column.
 - **FR-033**: The Applicable Products UI MUST communicate duplicate-link rejection and show no duplicate row; the normative uniqueness and rejection rule is FR-008.
@@ -171,6 +171,9 @@ As a master-data employee, I want to deactivate and reactivate a CCM so that its
 - **FR-036**: Before implementing product or setting choices, the read-only review MUST record the authoritative source and code, type, description, active-item rule, and eligible item count for product choices, plus the source and active code-description set for each of the seven setting-choice fields in FR-020. A mapping is confirmed only when the reviewed source contains the required choices or the owner records an approved replacement set. Missing or conflicting choices MUST remain unresolved and block the dependent implementation; mappings MUST NOT be inferred from example labels or unrelated lists. Record evidence and unresolved decisions in `research.md` and `data-model.md`.
 - **FR-037**: The CCM setting-choice control and Available Products choice control MUST each show 10 choices per page initially and let employees retrieve choices on subsequent pages until the full available result set can be reached.
 - **FR-038**: The system MUST enforce global uniqueness of CCM Code across Company Codes because the association identifies a configuration by CCM Code. The pasted Oracle evidence does not establish this guarantee; CCM write behavior remains blocked until database enforcement or an owner-approved alternative is available, as recorded in `data-model.md`.
+- **FR-039**: Selecting the list's open/eye action for a saved CCM MUST open the established CCM maintenance form in an editable state, where the employee can review and update the record and save changes. The Active field MUST use the established slide-toggle control. Arabic name fields MUST use the established right-to-left text-field presentation and preservation rule in FR-028. This is the CCM-specific view/edit behavior referenced by FR-018.
+- **FR-040**: CCM create, view, and edit forms MUST NOT display Company Code or a company name to the employee. The list-screen rule is specified by FR-025; Company Code remains supplied by application context under FR-003 and stored as part of the record identity.
+- **FR-041**: The employee MUST confirm before deleting a CCM. The system MUST delete only the selected CCM record and MUST reject deletion while any product association references its CCM Code; it MUST NOT cascade-delete or modify product association rows. This guard is independent of the product-link deletion rule in FR-034.
 
 The following code-description pairs are confirmed for setting choices:
 
@@ -198,8 +201,9 @@ The following code-description pairs are confirmed for setting choices:
 | Default Estimated Closure Reason | `400` | Duplicated Claim Entry |
 | Default Estimated Closure Reason | `500` | Claim Closed unsuccessfully |
 | Default Estimated Closure Reason | `600` | Others |
-| Print-before-approval, reprint, claim accounting document generation, and claim coinsurance accounting document generation | `Y` | Yes (create-time default) |
-| Print-before-approval, reprint, and both claim accounting document generation flags | `N` | No |
+| Print-before-approval and reprint | `N` | No (create-time default) |
+| Claim accounting document generation and claim coinsurance accounting document generation | `Y` | Yes (create-time default) |
+| All four flags | `Y` or `N` | Yes or No |
 
 Claim Config Name and Short Name values are stored and displayed in uppercase, regardless of the case entered by the user.
 
@@ -230,6 +234,8 @@ The module choices above are examples and not a complete list. The full active c
 - **SC-013**: Before choice implementation starts, the review record covers 100% of the seven setting-choice fields and the product choice source; each record includes source, display fields, active rule, and the required code-description choices. If any required source, choice, or product count is not confirmed, the related implementation remains blocked and the unresolved item is recorded.
 - **SC-014**: For every created or updated CCM and product association in the acceptance tests, all applicable creation and update user/date audit fields contain the expected values; creation values remain unchanged on update and update values reflect the latest change.
 - **SC-015**: All 32 acceptance scenarios across the four user stories pass verification.
+- **SC-016**: The eye action opens the editable CCM form; its Arabic fields render right-to-left, Active uses the standard slide toggle, and no company code or company name appears on any CCM screen.
+- **SC-017**: Deleting a CCM requires confirmation, removes only that CCM when no product link references it, and leaves linked product rows untouched when deletion is blocked.
 
 ## Assumptions
 
@@ -240,6 +246,6 @@ The module choices above are examples and not a complete list. The full active c
 - All listed code/type setting fields are dropdowns from active approved choices, per the owner's clarifications. Their individual sources and field mappings must be confirmed by read-only review during planning.
 - Product rows and dropdown labels show product code, type, and description. The backing product source and its active-item rules remain to be confirmed during planning.
 - Creation and update user/date audit data are recorded for both CCM records and product associations. The user identity source and audit date display rules are not specified here.
-- Deactivation/reactivation is in scope. Permanent deletion is not specified as a user capability for this feature.
+- Deactivation/reactivation is in scope. Permanent deletion is allowed only when the CCM has no product associations; product links are never deleted as a side effect.
 - The employee experience follows conventions established by the vehicle-make and premium-adjustment master features; this does not supply unresolved CCM field rules or choice mappings.
 - Authentication and permissions follow the project constitution and are not specified as part of this feature.

@@ -13,6 +13,8 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Subject, debounceTime } from 'rxjs';
+import { isApiProblemError } from '../../core/api-problem';
+import { NotificationService } from '../../shared/notifications/notification.service';
 import {
   ClaimConfigurationListItem,
   ClaimConfigurationListService,
@@ -23,11 +25,11 @@ import {
 } from '../../shared/column-filter/column-filter.component';
 import { IconButtonComponent } from '../../shared/icon-button/icon-button.component';
 
-type TextColumn = 'companyCode' | 'ccmCode' | 'name' | 'shortName';
+type TextColumn = 'ccmCode' | 'name' | 'shortName' | 'module';
 type Filter = { value: string; operator: string };
 
 function isTextColumn(value: string): value is TextColumn {
-  return ['companyCode', 'ccmCode', 'name', 'shortName'].includes(value);
+  return ['ccmCode', 'name', 'shortName', 'module'].includes(value);
 }
 
 @Component({
@@ -48,22 +50,25 @@ export class ClaimConfigurationListComponent {
   private readonly service = inject(ClaimConfigurationListService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly notifications = inject(NotificationService);
   private readonly textFilterChanges = new Subject<{ column: TextColumn; change: ColumnFilterChange }>();
 
   protected readonly pageSizeOptions = [10, 25, 50];
   protected readonly pageSize = signal(10);
-  protected readonly columns = ['companyCode', 'ccmCode', 'name', 'shortName', 'status', 'actions'];
+  protected readonly columns = ['ccmCode', 'name', 'shortName', 'module', 'status', 'actions'];
   protected readonly items = signal<ClaimConfigurationListItem[]>([]);
+  protected readonly moduleNames = signal<Record<string, string>>({});
+  protected readonly writesEnabled = signal(false);
   protected readonly totalCount = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly filters = signal<Record<TextColumn, Filter>>({
-    companyCode: { value: '', operator: 'contains' },
     ccmCode: { value: '', operator: 'contains' },
     name: { value: '', operator: 'contains' },
     shortName: { value: '', operator: 'contains' },
+    module: { value: '', operator: 'contains' },
   });
   protected readonly activeFilter = signal<Filter>({ value: '', operator: 'equals' });
-  protected readonly sortColumn = signal<TextColumn>('companyCode');
+  protected readonly sortColumn = signal<TextColumn>('ccmCode');
   protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
   protected readonly loading = signal(false);
   protected readonly loadFailed = signal(false);
@@ -80,6 +85,14 @@ export class ClaimConfigurationListComponent {
     this.textFilterChanges
       .pipe(debounceTime(200), takeUntilDestroyed(this.destroyRef))
       .subscribe(({ column, change }) => this.applyTextFilter(column, change));
+    this.service.writeStatus().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (status) => this.writesEnabled.set(status.enabled),
+      error: () => this.writesEnabled.set(false),
+    });
+    this.service.choices('module').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (choices) => this.moduleNames.set(Object.fromEntries(choices.map((choice) => [choice.code, choice.description]))),
+      error: () => this.moduleNames.set({}),
+    });
     this.load();
   }
 
@@ -121,7 +134,7 @@ export class ClaimConfigurationListComponent {
 
   protected onSort(sort: Sort): void {
     if (!sort.direction || !isTextColumn(sort.active)) {
-      this.sortColumn.set('companyCode');
+      this.sortColumn.set('ccmCode');
       this.sortDirection.set('asc');
     } else {
       this.sortColumn.set(sort.active);
@@ -140,6 +153,45 @@ export class ClaimConfigurationListComponent {
   protected open(item: ClaimConfigurationListItem): void {
     void this.router.navigate(['/claim-configurations', item.ccmCode], {
       state: { ccmCode: item.ccmCode },
+    });
+  }
+
+  protected add(): void {
+    void this.router.navigate(['/claim-configurations/new']);
+  }
+
+  protected moduleName(item: ClaimConfigurationListItem): string {
+    return item.module ? this.moduleNames()[item.module] ?? item.module : '—';
+  }
+
+  protected async delete(item: ClaimConfigurationListItem): Promise<void> {
+    const confirmed = await this.notifications.confirm({
+      title: `Delete claim configuration ${item.ccmCode}?`,
+      text: 'This permanently deletes the configuration. Linked products must be removed first; their records will not be changed.',
+      confirmButtonText: 'Delete permanently',
+      cancelButtonText: 'Cancel',
+      isDanger: true,
+    });
+    if (!confirmed) return;
+
+    this.service.delete(item.ccmCode).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.notifications.success('Claim configuration deleted.');
+        if (this.items().length === 1 && this.pageIndex() > 0) this.pageIndex.update((page) => page - 1);
+        this.load();
+      },
+      error: (error: unknown) => {
+        if (isApiProblemError(error) && error.problem.status === 404) {
+          this.notifications.info('This claim configuration was already deleted. The list has been refreshed.');
+          this.load();
+        } else if (isApiProblemError(error) && error.problem.status === 409) {
+          this.notifications.error('Remove the linked products before deleting this claim configuration.', 'Cannot delete configuration');
+        } else if (isApiProblemError(error) && error.problem.status === 503) {
+          this.notifications.error('Deletes are disabled until claim configuration writes are enabled.', 'Delete unavailable');
+        } else {
+          this.notifications.error('The claim configuration could not be deleted. Please refresh the list and try again.', 'Delete failed');
+        }
+      },
     });
   }
 

@@ -19,6 +19,8 @@ import { IconButtonComponent } from '../../shared/icon-button/icon-button.compon
         </div>
         <app-icon-button action="back" tooltip="Back to claim configurations"
           accessibleName="Back to claim configurations" (clicked)="back()" />
+        <app-icon-button action="edit" tooltip="Edit claim configuration"
+          accessibleName="Edit claim configuration" (clicked)="edit()" />
       </header>
 
       @if (loading()) {
@@ -27,7 +29,6 @@ import { IconButtonComponent } from '../../shared/icon-button/icon-button.compon
         <p role="alert">The claim configuration could not be loaded. Return to the list and try again.</p>
       } @else if (configuration(); as item) {
         <dl class="details">
-          <dt>Company Code</dt><dd>{{ item.companyCode }}</dd>
           <dt>CCM Code</dt><dd>{{ item.ccmCode }}</dd>
           <dt>Claim Config Name</dt><dd>{{ item.name }}</dd>
           <dt>Short Name</dt><dd>{{ item.shortName || '—' }}</dd>
@@ -40,7 +41,7 @@ import { IconButtonComponent } from '../../shared/icon-button/icon-button.compon
           <dt>Rounding Value</dt><dd>{{ item.roundingValue ?? '—' }}</dd>
           <dt>Applicable Currency Type</dt><dd>{{ item.applicableCurrencyType || '—' }}</dd>
           <dt>Default Estimated Closure Reason</dt><dd>{{ item.defaultEstimatedClosureReasonCode || '—' }}</dd>
-          <dt>Default Recovery Deduction</dt><dd>{{ item.defaultRecoveryDeductionCode || '—' }}</dd>
+          <dt>Recovery Code for Deduction</dt><dd>{{ item.defaultRecoveryDeductionCode || '—' }}</dd>
           <dt>Print Before Approval</dt><dd>{{ item.printBeforeApproval ? 'Yes' : 'No' }}</dd>
           <dt>Reprint</dt><dd>{{ item.reprint ? 'Yes' : 'No' }}</dd>
           <dt>Claim Accounting Document Generation</dt><dd>{{ item.claimAccountingDocumentGeneration ? 'Yes' : 'No' }}</dd>
@@ -90,5 +91,10 @@ export class ClaimConfigurationDetailComponent {
 
   protected back(): void {
     void this.router.navigate(['/claim-configurations']);
+  }
+
+  protected edit(): void {
+    const code = this.configuration()?.ccmCode;
+    if (code) void this.router.navigate(['/claim-configurations', code, 'edit']);
   }
 }

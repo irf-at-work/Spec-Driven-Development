@@ -73,7 +73,7 @@ import { map, merge, startWith, switchMap } from 'rxjs';
 export class LimitedTextFieldComponent {
   readonly label = input.required<string>();
   readonly control = input.required<FormControl<string>>();
-  readonly maxLength = input.required<number>();
+  readonly maxLength = input<number | null>(null);
   readonly patternMessage = input('This value is not in the expected format.');
   readonly rtl = input(false);
   readonly multiline = input(false);
@@ -100,7 +100,7 @@ export class LimitedTextFieldComponent {
 
   // Only while the box can be edited: a full read-only value is not a warning.
   protected readonly limitReached = computed(
-    () => this.state().enabled && this.state().length >= this.maxLength(),
+    () => this.maxLength() !== null && this.state().enabled && this.state().length >= this.maxLength()!,
   );
 
   protected serverMessage(): string | null {
