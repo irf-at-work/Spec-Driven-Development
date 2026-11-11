@@ -30,6 +30,13 @@
           },
           "configurations": {
             "production": {
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public",
+                  "ignore": ["runtime-config.development.json"]
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",

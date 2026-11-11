@@ -24,7 +24,7 @@ public sealed class ClaimConfigurationImportService(
         var linkRows = request?.ProductLinks ?? [];
         var globalErrors = new List<string>();
         if (configurationRows.Count + linkRows.Count > MaximumRows)
-            globalErrors.Add($"Workbook cannot contain more than {MaximumRows} data rows across both sheets.");
+            globalErrors.Add($"Workbook cannot contain more than {MaximumRows.ToString("N0", CultureInfo.InvariantCulture)} data rows across both sheets.");
         if (configurationRows.Count == 0 && linkRows.Count == 0)
             globalErrors.Add("Workbook contains no data rows.");
 
@@ -102,12 +102,14 @@ public sealed class ClaimConfigurationImportService(
                 errors.Add("CCM Code must identify an existing configuration or a valid new CCM row in this workbook.");
 
             var choiceExists = productCode.Length > 0 && await database.StdListItems.AsNoTracking()
-                .AnyAsync(item => item.LiType == ClaimConfigurationProductService.ProductListType
-                    && item.LiCode == productCode && item.LiActiveYn == "Y", cancellationToken);
+                .Where(item => item.LiType == ClaimConfigurationProductService.ProductListType
+                    && item.LiCode == productCode && item.LiActiveYn == "Y")
+                .CountAsync(cancellationToken) > 0;
             if (productCode.Length > 0 && !choiceExists) errors.Add("Product Code must be an active approved product choice.");
 
             var alreadyExists = ccmCode.Length > 0 && productCode.Length > 0 && await database.BrmCcmProds.AsNoTracking()
-                .AnyAsync(link => link.CcmpCcmCode == ccmCode && link.CcmpCode == productCode, cancellationToken);
+                .Where(link => link.CcmpCcmCode == ccmCode && link.CcmpCode == productCode)
+                .CountAsync(cancellationToken) > 0;
             linkStatuses.Add(new ClaimConfigurationImportRowStatus(
                 index + 2,
                 key,

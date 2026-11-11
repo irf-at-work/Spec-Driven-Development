@@ -54,10 +54,10 @@ public sealed class ClaimConfigurationService(
         string ccmCode,
         CancellationToken cancellationToken)
     {
-        var company = companyCode.Trim().ToUpperInvariant();
+        // CCM_CODE is globally unique, so the app and portal can share rows across company codes.
         var code = ccmCode.Trim().ToUpperInvariant();
         var row = await database.BrmClmConfigs.AsNoTracking()
-            .FirstOrDefaultAsync(item => item.CcmCompCode == company && item.CcmCode == code, cancellationToken);
+            .FirstOrDefaultAsync(item => item.CcmCode == code, cancellationToken);
         return row is null ? null : ClaimConfigurationMapping.ToDto(row);
     }
 
@@ -179,10 +179,9 @@ public sealed class ClaimConfigurationService(
         ClaimConfigurationValues values,
         CancellationToken cancellationToken)
     {
-        var company = companyCode.Trim().ToUpperInvariant();
         var code = ccmCode.Trim().ToUpperInvariant();
         var entity = await database.BrmClmConfigs.FirstOrDefaultAsync(
-            row => row.CcmCompCode == company && row.CcmCode == code,
+            row => row.CcmCode == code,
             cancellationToken);
         if (entity is null)
         {
@@ -233,7 +232,7 @@ public sealed class ClaimConfigurationService(
             return StorageCapacityError();
         }
 
-        logger.LogInformation("Updated CCM {CcmCode} for company {CompanyCode}", code, company);
+        logger.LogInformation("Updated CCM {CcmCode} (row company {CompanyCode})", code, entity.CcmCompCode);
         return new ClaimConfigurationSaveResult(
             ClaimConfigurationSaveOutcome.Saved,
             ClaimConfigurationMapping.ToDto(entity));
@@ -244,10 +243,9 @@ public sealed class ClaimConfigurationService(
         string ccmCode,
         CancellationToken cancellationToken)
     {
-        var company = companyCode.Trim().ToUpperInvariant();
         var code = ccmCode.Trim().ToUpperInvariant();
         var entity = await database.BrmClmConfigs.FirstOrDefaultAsync(
-            row => row.CcmCompCode == company && row.CcmCode == code,
+            row => row.CcmCode == code,
             cancellationToken);
         if (entity is null)
         {
@@ -272,7 +270,7 @@ public sealed class ClaimConfigurationService(
             return new ClaimConfigurationDeleteResult(ClaimConfigurationDeleteOutcome.HasProductLinks);
         }
 
-        logger.LogInformation("Deleted CCM {CcmCode} for company {CompanyCode}", code, company);
+        logger.LogInformation("Deleted CCM {CcmCode} (row company {CompanyCode})", code, entity.CcmCompCode);
         return new ClaimConfigurationDeleteResult(ClaimConfigurationDeleteOutcome.Deleted);
     }
 
@@ -315,7 +313,8 @@ public sealed class ClaimConfigurationService(
 
             if (!await choices.IsActiveChoiceAsync(field, code, cancellationToken))
             {
-                errors[property!] = ["Choose an active value from the available list."];
+                errors[field] = ["Choose an active value from the available list."];
+                //errors[property!] = ["Choose an active value from the available list."];
             }
         }
 

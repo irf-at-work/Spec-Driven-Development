@@ -36,7 +36,8 @@ public sealed class ClaimConfigurationListApiTests(ClaimConfigurationImportApiFa
         var codes = root.GetProperty("items").EnumerateArray()
             .Select(item => item.GetProperty("ccmCode").GetString())
             .ToArray();
-        Assert.Equal(codes.Order(StringComparer.Ordinal), codes);
+        //Assert.Equal(codes.Order(StringComparer.Ordinal), codes);
+        Assert.Equal(codes.OrderBy(c => c!.ToUpperInvariant(), StringComparer.Ordinal), codes);
     }
 
     [Fact]

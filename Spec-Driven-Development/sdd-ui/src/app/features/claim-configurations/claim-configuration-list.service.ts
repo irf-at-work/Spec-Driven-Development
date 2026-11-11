@@ -114,7 +114,9 @@ export class ClaimConfigurationListService {
         .set('activeOperator', query.active.operator);
     }
 
-    return this.http.get<ClaimConfigurationPage>(this.apiUrl('/api/claim-configurations'), { params });
+    return this.http.get<ClaimConfigurationPage>(this.apiUrl('/api/claim-configurations'), {
+      params,
+    });
   }
 
   get(ccmCode: string): Observable<ClaimConfigurationDetail> {
@@ -124,7 +126,9 @@ export class ClaimConfigurationListService {
   }
 
   writeStatus(): Observable<ClaimConfigurationWriteStatus> {
-    return this.http.get<ClaimConfigurationWriteStatus>(this.apiUrl('/api/claim-configurations/write-status'));
+    return this.http.get<ClaimConfigurationWriteStatus>(
+      this.apiUrl('/api/claim-configurations/write-status'),
+    );
   }
 
   choices(field: string): Observable<ClaimConfigurationChoice[]> {
@@ -139,7 +143,10 @@ export class ClaimConfigurationListService {
   }
 
   create(request: ClaimConfigurationSaveRequest): Observable<ClaimConfigurationDetail> {
-    return this.http.post<ClaimConfigurationDetail>(this.apiUrl('/api/claim-configurations'), request);
+    return this.http.post<ClaimConfigurationDetail>(
+      this.apiUrl('/api/claim-configurations'),
+      request,
+    );
   }
 
   update(
@@ -153,7 +160,9 @@ export class ClaimConfigurationListService {
   }
 
   delete(ccmCode: string): Observable<void> {
-    return this.http.delete<void>(this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}`));
+    return this.http.delete<void>(
+      this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}`),
+    );
   }
 
   availableProducts(
@@ -188,7 +197,9 @@ export class ClaimConfigurationListService {
 
   deleteProduct(ccmCode: string, productCode: string): Observable<void> {
     return this.http.delete<void>(
-      this.apiUrl(`/api/claim-configurations/${encodeURIComponent(ccmCode)}/products/${encodeURIComponent(productCode)}`),
+      this.apiUrl(
+        `/api/claim-configurations/${encodeURIComponent(ccmCode)}/products/${encodeURIComponent(productCode)}`,
+      ),
     );
   }
 

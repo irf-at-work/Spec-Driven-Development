@@ -80,11 +80,10 @@ public sealed class ClaimConfigurationProductService(
         string productCode,
         CancellationToken cancellationToken)
     {
-        var company = companyCode.Trim().ToUpperInvariant();
         var ccm = ccmCode.Trim().ToUpperInvariant();
         var product = productCode.Trim();
         var ccmCount = await database.BrmClmConfigs.AsNoTracking()
-            .Where(row => row.CcmCompCode == company && row.CcmCode == ccm)
+            .Where(row => row.CcmCode == ccm)
             .CountAsync(cancellationToken);
         if (ccmCount == 0) return new ProductAssociationResult(ProductAssociationOutcome.NotFound);
 
