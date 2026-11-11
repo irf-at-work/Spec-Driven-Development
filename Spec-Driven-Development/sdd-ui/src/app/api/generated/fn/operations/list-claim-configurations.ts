@@ -17,6 +17,8 @@ export interface ListClaimConfigurations$Params {
   pageSize?: 10 | 15 | 20 | 50;
   sortBy?: ClaimConfigurationSortColumn;
   sortDirection?: CodeSortDirection;
+  companyCodeOperator?: CodeFilterOperator;
+  companyCodeValue?: string;
   ccmCodeOperator?: CodeFilterOperator;
   ccmCodeValue?: string;
   ccmNameOperator?: CodeFilterOperator;
@@ -34,6 +36,8 @@ export function listClaimConfigurations(http: HttpClient, rootUrl: string, param
     rb.query('pageSize', params.pageSize, {});
     rb.query('sortBy', params.sortBy, {});
     rb.query('sortDirection', params.sortDirection, {});
+    rb.query('companyCodeOperator', params.companyCodeOperator, {});
+    rb.query('companyCodeValue', params.companyCodeValue, {});
     rb.query('ccmCodeOperator', params.ccmCodeOperator, {});
     rb.query('ccmCodeValue', params.ccmCodeValue, {});
     rb.query('ccmNameOperator', params.ccmNameOperator, {});

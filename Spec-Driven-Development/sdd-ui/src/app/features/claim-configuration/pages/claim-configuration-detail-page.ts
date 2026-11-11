@@ -11,12 +11,12 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -25,6 +25,7 @@ import {
   CodeFilterColumn,
   ColumnFilterControl,
 } from '../../codes-master/components/column-filter-control';
+import { CreationAuditDetails } from '../../codes-master/components/creation-audit-details';
 import { ClaimConfigurationRecord } from '../../../api/generated/models/claim-configuration-record';
 import { ClaimConfigurationLookupOption } from '../../../api/generated/models/claim-configuration-lookup-option';
 import { ApplicableProductSummary } from '../../../api/generated/models/applicable-product-summary';
@@ -58,16 +59,17 @@ type ProductFilterColumn = Extract<CodeFilterColumn, 'productCode' | 'productNam
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatOptionModule,
     MatSelectModule,
-    MatSlideToggleModule,
     MatTableModule,
     ReactiveFormsModule,
     RouterLink,
     ColumnFilterControl,
+    CreationAuditDetails,
   ],
   styleUrl: './claim-configuration-detail-page.css',
   templateUrl: './claim-configuration-detail-page.html',
@@ -238,7 +240,7 @@ export class ClaimConfigurationDetailPage implements OnInit {
             : `${this.fieldLabel(field)} exceeds the maximum length.`;
     }
     if (control.hasError('roundingValueRange')) {
-      return 'Rounding Value must fit NUMBER(8,5), from -999.99999 to 999.99999.';
+      return 'Rounding Value must be between 0 and 999.99999.';
     }
     if (control.hasError('roundingValuePrecision')) {
       return 'Rounding Value cannot have more than 5 decimal places.';
@@ -271,7 +273,7 @@ export class ClaimConfigurationDetailPage implements OnInit {
     return labels[field];
   }
 
-  protected setToggle(field: keyof Pick<
+  protected setBooleanValue(field: keyof Pick<
     ClaimConfigurationFormGroup['controls'],
     | 'printBeforeApprovalYn'
     | 'rePrintAllowedYn'
@@ -279,7 +281,7 @@ export class ClaimConfigurationDetailPage implements OnInit {
     | 'sharingClaimsAccountDocumentGenerationYn'
     | 'activeYn'
   >, checked: boolean): void {
-    this.form.controls[field].setValue(checked ? 'Y' : 'N' as YesNoValue);
+    this.form.controls[field].setValue((checked ? 'Y' : 'N') as YesNoValue);
   }
 
   protected toggleMore(): void {

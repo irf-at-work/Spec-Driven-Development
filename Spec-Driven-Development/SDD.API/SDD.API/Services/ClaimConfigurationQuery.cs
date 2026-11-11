@@ -6,10 +6,15 @@ namespace SDD.API.Services;
 
 public sealed record ClaimConfigurationListRow
 {
+    public required string CcmCompCode { get; init; }
     public required string CcmCode { get; init; }
     public required string CcmName { get; init; }
     public string? CcmShortName { get; init; }
     public string? ModuleName { get; init; }
+    public string? CreatedBy { get; init; }
+    public DateTime? CreatedDate { get; init; }
+    public string? UpdatedBy { get; init; }
+    public DateTime? UpdatedDate { get; init; }
 }
 
 internal static class ClaimConfigurationQuery
@@ -19,9 +24,14 @@ internal static class ClaimConfigurationQuery
         IQueryable<STD_LIST_ITEM> lookups) =>
         records.Select(record => new ClaimConfigurationListRow
         {
+            CcmCompCode = record.CCM_COMP_CODE,
             CcmCode = record.CCM_CODE,
             CcmName = record.CCM_NAME,
             CcmShortName = record.CCM_SHORT_NAME,
+            CreatedBy = record.CCM_CR_BY,
+            CreatedDate = record.CCM_CR_DT,
+            UpdatedBy = record.CCM_UP_BY,
+            UpdatedDate = record.CCM_UP_DT,
             ModuleName = lookups
                 .Where(item => item.LI_TYPE == "CCM_MODULE" && item.LI_CODE == record.CCM_MODULE)
                 .Select(item => item.LI_DESC)
@@ -66,6 +76,7 @@ internal static class ClaimConfigurationQuery
         var descending = direction == CodeSortDirection.Descending;
         var ordered = sortBy switch
         {
+            ClaimConfigurationSortColumn.CompanyCode => Order(query, row => row.CcmCompCode, descending),
             ClaimConfigurationSortColumn.Code => Order(query, row => row.CcmCode, descending),
             ClaimConfigurationSortColumn.Name => Order(query, row => row.CcmName, descending),
             ClaimConfigurationSortColumn.ShortName => Order(query, row => row.CcmShortName, descending),
@@ -73,7 +84,9 @@ internal static class ClaimConfigurationQuery
             _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, "Unsupported sort column.")
         };
 
-        return sortBy == ClaimConfigurationSortColumn.Code
+        return sortBy == ClaimConfigurationSortColumn.CompanyCode
+            ? ordered.ThenBy(row => row.CcmCode)
+            : sortBy == ClaimConfigurationSortColumn.Code
             ? ordered
             : ordered.ThenBy(row => row.CcmCode);
     }
@@ -87,6 +100,7 @@ internal static class ClaimConfigurationQuery
     private static string GetPropertyName(ClaimConfigurationFilterColumn column) =>
         column switch
         {
+            ClaimConfigurationFilterColumn.CompanyCode => nameof(ClaimConfigurationListRow.CcmCompCode),
             ClaimConfigurationFilterColumn.CcmCode => nameof(ClaimConfigurationListRow.CcmCode),
             ClaimConfigurationFilterColumn.CcmName => nameof(ClaimConfigurationListRow.CcmName),
             ClaimConfigurationFilterColumn.ShortName => nameof(ClaimConfigurationListRow.CcmShortName),

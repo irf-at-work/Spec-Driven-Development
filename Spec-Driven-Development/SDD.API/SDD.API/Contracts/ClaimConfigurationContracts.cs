@@ -28,10 +28,15 @@ public sealed record ClaimConfigurationUpdate : ClaimConfigurationWrite
 }
 
 public sealed record ClaimConfigurationSummary(
+    string CcmCompCode,
     string CcmCode,
     string CcmName,
     string? CcmShortName,
-    string? ModuleName);
+    string? ModuleName,
+    string? CreatedBy,
+    DateTime? CreatedDate,
+    string? UpdatedBy,
+    DateTime? UpdatedDate);
 
 public sealed record ClaimConfigurationRecord
 {
@@ -69,6 +74,7 @@ public sealed record ClaimConfigurationRecord
 
 public enum ClaimConfigurationSortColumn
 {
+    CompanyCode,
     Code,
     Name,
     ShortName,
@@ -77,6 +83,7 @@ public enum ClaimConfigurationSortColumn
 
 public enum ClaimConfigurationFilterColumn
 {
+    CompanyCode,
     CcmCode,
     CcmName,
     ShortName,

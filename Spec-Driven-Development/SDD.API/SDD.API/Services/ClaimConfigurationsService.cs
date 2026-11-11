@@ -78,10 +78,15 @@ public sealed class ClaimConfigurationsService(
             cancellationToken);
         return new PaginatedResult<ClaimConfigurationSummary>(
             rows.Select(row => new ClaimConfigurationSummary(
+                row.CcmCompCode,
                 row.CcmCode,
                 row.CcmName,
                 row.CcmShortName,
-                row.ModuleName)).ToArray(),
+                row.ModuleName,
+                row.CreatedBy,
+                row.CreatedDate,
+                row.UpdatedBy,
+                row.UpdatedDate)).ToArray(),
             page,
             pageSize,
             totalCount);

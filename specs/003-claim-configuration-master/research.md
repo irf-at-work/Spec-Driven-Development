@@ -50,7 +50,7 @@
 
 ## Decision: Enforce identity and duplicate rules at both layers
 
-**Decision**: Identify parents by fixed company code `CCM001` and `CCM_CODE`, while also honoring the unique `CCM_CODE` index. Identify child mappings by `(CCMP_CCM_CODE, CCMP_CODE)`. Validate duplicate mappings in the UI for feedback and in persistence for correctness, including concurrent insert conflicts.
+**Decision**: Create new parents under fixed company code `CCM001`. The CCM listing includes both `CCM001` and `ASRTEST` records and displays the stored company code. Resolve existing parent rows by `CCM_CODE`, whose unique index is database-wide, and preserve each row's company code during update. Identify child mappings by `(CCMP_CCM_CODE, CCMP_CODE)`. Validate duplicate mappings in the UI for feedback and in persistence for correctness, including concurrent insert conflicts.
 
 **Rationale**: The supplied database keys/indexes define identity. Frontend checks alone cannot prevent races.
 

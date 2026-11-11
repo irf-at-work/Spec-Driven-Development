@@ -8,10 +8,15 @@ import { ClaimConfigurationsListPage } from './claim-configurations-list-page';
 
 describe('Claim Configurations list page', () => {
   const record = {
+    ccmCompCode: 'CCM001',
     ccmCode: 'CCM-A',
     ccmName: 'Claims',
     ccmShortName: 'CLM',
     moduleName: 'Claims',
+    createdBy: 'ADMIN',
+    createdDate: '2026-11-11T09:00:00',
+    updatedBy: 'EDITOR',
+    updatedDate: '2026-11-11T10:00:00',
   };
   let list: ReturnType<typeof vi.fn>;
 
@@ -60,6 +65,7 @@ describe('Claim Configurations list page', () => {
     expect(rendered.textContent).toContain('CCM-A');
     expect(rendered.querySelector('a[aria-label="Edit CCM-A"] svg path')).not.toBeNull();
     expect(rendered.querySelector('button[aria-label="Delete CCM-A"] svg path')).not.toBeNull();
+    expect(rendered.querySelector('button[aria-label="Audit details for CCM-A"]')).not.toBeNull();
     expect(rendered.querySelector('[aria-label="Page 2"]')).not.toBeNull();
   });
 

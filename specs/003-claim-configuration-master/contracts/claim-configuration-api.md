@@ -6,9 +6,9 @@ This contract describes the CCM operations to add to the existing API. All route
 
 | Method and path | Purpose | Success result |
 |---|---|---|
-| `GET /api/claim-configurations` | List parent records with filters, sort, and server-side paging | `200 PaginatedResult<ClaimConfigurationSummary>` |
+| `GET /api/claim-configurations` | List parent records for company codes `CCM001` and `ASRTEST` with company-code/data filters, sort, and server-side paging | `200 PaginatedResult<ClaimConfigurationSummary>` |
 | `POST /api/claim-configurations` | Create a parent with fixed server-side company code `CCM001` | `201 ClaimConfigurationRecord` |
-| `GET /api/claim-configurations/{ccmCode}` | Retrieve a parent within company `CCM001` | `200 ClaimConfigurationRecord` |
+| `GET /api/claim-configurations/{ccmCode}` | Retrieve a parent by database-wide unique `CCM_CODE` | `200 ClaimConfigurationRecord` |
 | `PUT /api/claim-configurations/{ccmCode}` | Update a parent without changing its code or company identity; requires its expected version | `200 ClaimConfigurationRecord` |
 | `DELETE /api/claim-configurations/{ccmCode}` | Delete a parent only when no product mappings exist | `204` |
 
@@ -44,11 +44,11 @@ The endpoint accepts only these exact `liType` values: `CCM_MODULE`, `CCM_POST_T
 
 `ClaimConfigurationWrite` includes `ccmCode`, `ccmName`, `ccmShortName`, `nameInArabic`, `shortNameInArabic`, `module`, `postingType`, `exchangeRateType`, `roundingType`, nullable `roundingValue`, `applicableCurrencies`, `defaultEstimateCloseReasonCode`, `defaultRecoveryCodeForDedl`, `printBeforeApprovalYn`, `rePrintAllowedYn`, `claimAccountDocumentGenerationYn`, `sharingClaimsAccountDocumentGenerationYn`, and `activeYn`.
 
-`ccmCode` and `ccmName` are required. No company code, audit property, or key-changing field is accepted. Toggle values are represented as `Y`/`N` strings; Add defaults are N for the four ordinary toggles and Y for Active. `roundingValue` must fit `NUMBER(8,5)` without rounding. Parent update requests include an `expectedVersion` token from the record read for editing.
+`ccmCode` and `ccmName` are required. No company code, audit property, or key-changing field is accepted. Toggle values are represented as `Y`/`N` strings; Add defaults are N for the four ordinary toggles and Y for Active. `roundingValue` must be between 0 and 999.99999 with no more than five fractional digits. Parent update requests include an `expectedVersion` token from the record read for editing.
 
 ### Parent responses
 
-- `ClaimConfigurationSummary`: `ccmCode`, `ccmName`, `shortName`, `moduleName`.
+- `ClaimConfigurationSummary`: `ccmCompCode`, `ccmCode`, `ccmName`, `ccmShortName`, `moduleName`, `createdBy`, `createdDate`, `updatedBy`, `updatedDate`.
 - `ClaimConfigurationRecord`: all editable parent business fields, each saved dropdown field's display description (including inactive saved options), its immutable `ccmCode`, and opaque `version` token. The fixed company code and audit values remain server-managed.
 - Listing: the shared `PaginatedResult<T>` shape (`items`, `page`, `pageSize`, `totalCount`).
 

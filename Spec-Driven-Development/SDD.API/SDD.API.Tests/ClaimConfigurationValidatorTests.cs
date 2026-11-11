@@ -26,10 +26,10 @@ public sealed class ClaimConfigurationValidatorTests
     }
 
     [Theory]
-    [InlineData(-999.99999)]
     [InlineData(0)]
+    [InlineData(0.00001)]
     [InlineData(999.99999)]
-    public void Validate_accepts_rounding_values_in_number_eight_five_range(decimal value)
+    public void Validate_accepts_nonnegative_rounding_values_with_up_to_five_fractional_digits(decimal value)
     {
         var errors = new ClaimConfigurationValidator().Validate(ValidRequest() with { RoundingValue = value });
 
@@ -37,14 +37,15 @@ public sealed class ClaimConfigurationValidatorTests
     }
 
     [Theory]
-    [InlineData(-1000)]
+    [InlineData(-0.00001)]
     [InlineData(1000)]
     [InlineData(1.000001)]
-    public void Validate_rejects_rounding_values_outside_number_eight_five(decimal value)
+    public void Validate_rejects_negative_or_out_of_range_rounding_values(decimal value)
     {
         var errors = new ClaimConfigurationValidator().Validate(ValidRequest() with { RoundingValue = value });
 
         Assert.Contains("roundingValue", errors.Keys);
+        Assert.DoesNotContain("NUMBER", Assert.Single(errors["roundingValue"]));
     }
 
     [Fact]

@@ -32,7 +32,7 @@ describe('Claim Configuration form', () => {
     expect(form.controls.sharingClaimsAccountDocumentGenerationYn.value).toBe('N');
   });
 
-  it('enforces field lengths and NUMBER(8,5) limits', () => {
+  it('enforces field lengths and rounding value limits', () => {
     const form = createClaimConfigurationForm();
     form.controls.ccmCode.setValue('C'.repeat(13));
     form.controls.ccmName.setValue('N'.repeat(101));
@@ -44,7 +44,13 @@ describe('Claim Configuration form', () => {
     form.controls.roundingValue.setValue(1.000001);
     expect(form.controls.roundingValue.hasError('roundingValuePrecision')).toBe(true);
 
-    form.controls.roundingValue.setValue(-999.99999);
+    form.controls.roundingValue.setValue(-0.00001);
+    expect(form.controls.roundingValue.hasError('roundingValueRange')).toBe(true);
+
+    form.controls.roundingValue.setValue(0);
+    expect(form.controls.roundingValue.valid).toBe(true);
+
+    form.controls.roundingValue.setValue(999.99999);
     expect(form.controls.roundingValue.valid).toBe(true);
   });
 

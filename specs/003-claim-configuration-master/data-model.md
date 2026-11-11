@@ -6,11 +6,11 @@ All records are persisted to existing Oracle objects in schema `IIRIS_RD_DEVP`. 
 
 **Identity**: Primary key `(CCM_COMP_CODE, CCM_CODE)`; unique index on `CCM_CODE`.
 
-**Application rule**: `CCM_COMP_CODE` is the server-fixed literal `CCM001`. It is not a form field or request field.
+**Application rule**: New parent records use the server-fixed literal `CCM001`; the listing retrieves existing records for both `CCM001` and `ASRTEST` and displays their stored company code. `CCM_COMP_CODE` is not a form field or request field. Key-based operations resolve rows by `CCM_CODE`, whose unique index is database-wide, and preserve the stored company code.
 
 | Field | Oracle column | Type | Required by form/table | Source/default |
 |---|---|---|---|---|
-| Company code | `CCM_COMP_CODE` | `VARCHAR2(12)` | Table NOT NULL | Fixed `CCM001` |
+| Company code | `CCM_COMP_CODE` | `VARCHAR2(12)` | Table NOT NULL | New records: `CCM001`; listing includes `CCM001` and `ASRTEST` |
 | Claim Config Code | `CCM_CODE` | `VARCHAR2(12)` | Table NOT NULL; form required | User input; unique index |
 | Claims Config Name | `CCM_NAME` | `VARCHAR2(100)` | Table NOT NULL; form required | User input |
 | Short Name | `CCM_SHORT_NAME` | `VARCHAR2(30)` | Optional | User input |
@@ -20,7 +20,7 @@ All records are persisted to existing Oracle objects in schema `IIRIS_RD_DEVP`. 
 | Posting Type | `CCM_ACNT_POSTING_TYPE` | `VARCHAR2(1)` | Optional | Lookup `LI_TYPE = CCM_POST_TYPE`; value `LI_CODE` |
 | Exchange Rate Type | `CCM_ACNT_EXCH_RATE_TYPE` | `VARCHAR2(1)` | Optional | Lookup `LI_TYPE = CCM_EXCH_RATE`; value `LI_CODE` |
 | Rounding Type | `CCM_ROUND_TYPE` | `VARCHAR2(2)` | Optional | Lookup `LI_TYPE = CCM_ROUND_TYPE`; value `LI_CODE` |
-| Rounding Value | `CCM_ROUND_VALUE` | `NUMBER(8,5)` | Optional | Numeric input; up to 5 fractional digits, magnitude ≤ 999.99999 |
+| Rounding Value | `CCM_ROUND_VALUE` | `NUMBER(8,5)` | Optional | Numeric input; from 0 to 999.99999 with up to 5 fractional digits |
 | Applicable Currencies | `CCM_APPL_CURR_TYPE` | `VARCHAR2(2)` | Optional | Lookup `LI_TYPE = CCM_CURR_TYPE`; value `LI_CODE` |
 | Dflt Estimate Close Reason | `CCM_DFLT_EST_CLO_REASON_CODE` | `VARCHAR2(12)` | Optional | Lookup `LI_TYPE = CCM_CLO_REASON`; value `LI_CODE` |
 | Dflt Recovery Code for Dedl | `CCM_DFLT_RECV_DEDU_CODE` | `VARCHAR2(12)` | Optional | Lookup `LI_TYPE = CCM_DFLT_RECV_DEDU`; value `LI_CODE` |
@@ -40,7 +40,7 @@ All records are persisted to existing Oracle objects in schema `IIRIS_RD_DEVP`. 
 - The application reads each target column's `CHAR_USED`, `DATA_LENGTH`, and `CHAR_LENGTH` from Oracle metadata and validates candidate values with Oracle `LENGTHB` or `LENGTH` as appropriate; it must not guess BYTE/CHAR semantics.
 - `CCM_CODE` uniqueness is enforced across the unique index, not only within a single page or company-code filter.
 - All nullable string inputs must not be silently truncated. Validate lookup values against the target column width as well as against the lookup source.
-- `CCM_ROUND_VALUE` may be null; when present it must be numeric, have at most five fractional digits, and fit `NUMBER(8,5)` without rounding.
+- `CCM_ROUND_VALUE` may be null; when present it must be nonnegative, no greater than 999.99999, and have at most five fractional digits.
 - Every toggle request must resolve to `Y` or `N`. Add form defaults are N for the four standard toggles and Y for Active.
 - Edit preserves `CCM_COMP_CODE`, `CCM_CODE`, and original creation audit values.
 - Parent responses used for editing include an opaque version derived from the loaded values. An update submits that expected version; a mismatch is rejected without changing the current row.

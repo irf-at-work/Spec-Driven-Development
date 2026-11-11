@@ -65,6 +65,7 @@
       <mat-form-field appearance="outline">
         <mat-label>Doc Setup For</mat-label>
         <mat-select formControlName="docSetupFor" [disabled]="isLoadingSetupForCodes()">
+          <mat-option value="" disabled>Select</mat-option>
           @for (code of setupForCodes(); track code.code) {
             <mat-option [value]="code.code">
               {{ code.code }} — {{ code.codeDescription || 'No description' }}

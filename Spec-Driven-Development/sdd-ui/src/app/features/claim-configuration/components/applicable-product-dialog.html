@@ -17,7 +17,6 @@
       <mat-select
         [formControl]="productCode"
         [disabled]="isLoading() || isSaving()"
-        panelClass="applicable-product-options-panel"
       >
         <mat-option value="" disabled>Select</mat-option>
         @for (option of options(); track option.code) {
@@ -33,7 +32,7 @@
   </div>
   <div mat-dialog-actions align="center">
     <button
-      mat-flat-button
+      mat-stroked-button
       color="primary"
       type="button"
       [disabled]="isLoading() || isSaving() || options().length === 0"
@@ -41,7 +40,7 @@
     >
       Save
     </button>
-    <button mat-flat-button color="primary" type="button" [disabled]="isSaving()" (click)="reset()">
+    <button mat-stroked-button color="primary" type="button" [disabled]="isSaving()" (click)="reset()">
       Reset
     </button>
   </div>

@@ -57,11 +57,70 @@ html {
   --app-error: #9e3434;
   --app-error-soft: #fff1ef;
   --app-error-border: #efc7c1;
+  --mat-dialog-container-color: #fff;
+  --mat-select-panel-background-color: #fff;
+  --mat-select-enabled-trigger-text-color: var(--app-text);
+  --mat-select-enabled-arrow-color: var(--app-text);
+  --mat-select-focused-arrow-color: var(--app-accent);
+  --mat-option-selected-state-label-text-color: var(--app-text);
+  --mat-option-label-text-color: var(--app-text);
+  --mat-option-hover-state-layer-color: #fff;
+  --mat-option-focus-state-layer-color: #fff;
+  --mat-option-selected-state-layer-color: #fff;
 }
 
-.applicable-product-options-panel {
-  --mat-option-selected-state-layer-color: var(--app-surface-subtle);
-  --mat-option-hover-state-layer-color: var(--app-surface-subtle);
+.mat-mdc-form-field-type-mat-select {
+  --mdc-outlined-text-field-container-color: #fff;
+  --mat-select-panel-background-color: #fff;
+  --mat-select-enabled-trigger-text-color: var(--app-text);
+  --mat-select-enabled-arrow-color: var(--app-text);
+  --mat-select-focused-arrow-color: var(--app-accent);
+}
+
+.mat-mdc-select-panel {
+  --mat-select-panel-background-color: #fff;
+  --mat-option-selected-state-label-text-color: var(--app-text);
+  --mat-option-label-text-color: var(--app-text);
+  --mat-option-hover-state-layer-color: #fff;
+  --mat-option-focus-state-layer-color: #fff;
+  --mat-option-selected-state-layer-color: #fff;
+}
+
+.mat-mdc-option {
+  --mat-option-selected-state-label-text-color: var(--app-text);
+  --mat-option-label-text-color: var(--app-text);
+  --mat-option-hover-state-layer-color: #fff;
+  --mat-option-focus-state-layer-color: #fff;
+  --mat-option-selected-state-layer-color: #fff;
+}
+
+.mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.mat-mdc-option:focus.mdc-list-item,
+.mat-mdc-option.mat-mdc-option-active.mdc-list-item,
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background-color: #fff;
+}
+
+.mat-mdc-select-panel {
+  background-color: #fff;
+}
+
+.mat-mdc-select-panel .mat-mdc-option {
+  background-color: #fff;
+}
+
+.ccm-feedback-button {
+  margin: 0.25rem !important;
+  padding: 0.625rem 1rem !important;
+  border: 1px solid var(--app-accent) !important;
+  border-radius: 0.25rem !important;
+  color: var(--app-accent-strong) !important;
+  background: transparent !important;
+  cursor: pointer;
+}
+
+.ccm-feedback-button:hover {
+  background: var(--app-surface-accent) !important;
 }
 
 body {

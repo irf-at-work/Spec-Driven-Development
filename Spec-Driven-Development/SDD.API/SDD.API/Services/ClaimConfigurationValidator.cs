@@ -29,13 +29,13 @@ public sealed class ClaimConfigurationValidator
         }
 
         if (request.RoundingValue is decimal roundingValue &&
-            (roundingValue < -999.99999m || roundingValue > 999.99999m ||
+            (roundingValue < 0m || roundingValue > 999.99999m ||
              decimal.Round(roundingValue, 5) != roundingValue))
         {
             AddError(
                 errors,
                 nameof(request.RoundingValue),
-                "Enter a number no greater than 999.99999 in magnitude and with at most five fractional digits.");
+                "Enter a value between 0 and 999.99999 with no more than five decimal places.");
         }
 
         return errors.ToDictionary(

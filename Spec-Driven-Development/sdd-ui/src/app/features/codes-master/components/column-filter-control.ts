@@ -21,6 +21,7 @@ export type CodeFilterColumn =
   | 'ccmTo'
   | 'mandatoryYn'
   | 'activeYn'
+  | 'companyCode'
   | 'ccmCode'
   | 'ccmName'
   | 'shortName'
@@ -69,6 +70,9 @@ export class ColumnFilterControl {
   ];
   protected readonly canApply = computed(
     () => this.selectedOperator() === 'NoFilter' || this.draftValue().trim().length > 0,
+  );
+  protected readonly isCcmListingColumn = computed(() =>
+    ['companyCode', 'ccmCode', 'ccmName', 'shortName', 'moduleName'].includes(this.column()),
   );
   protected get panelId(): string {
     return `filter-panel-${this.column()}`;

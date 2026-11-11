@@ -35,7 +35,13 @@
     [cdkConnectedOverlayPush]="true"
     (overlayOutsideClick)="closePanel()"
   >
-    <div class="filter-panel" [id]="panelId" role="dialog" [attr.aria-label]="'Filter ' + label()">
+    <div
+      class="filter-panel"
+      [class.ccm-filter-panel]="isCcmListingColumn()"
+      [id]="panelId"
+      role="dialog"
+      [attr.aria-label]="'Filter ' + label()"
+    >
       <div
         class="operator-options"
         role="group"

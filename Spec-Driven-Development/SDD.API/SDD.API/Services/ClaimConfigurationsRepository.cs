@@ -9,12 +9,15 @@ namespace SDD.API.Services;
 public sealed class ClaimConfigurationsRepository(CodesMasterContext context)
     : IClaimConfigurationsRepository
 {
+    private static readonly string[] ListingCompanyCodes = ["CCM001", "ASRTEST"];
+
     public Task<int> CountAsync(
         IReadOnlyList<ClaimConfigurationFilter> filters,
         CancellationToken cancellationToken) =>
         ClaimConfigurationQuery.ApplyFilters(
                 ClaimConfigurationQuery.Create(
-                    context.BRM_CLM_CONFIG.AsNoTracking().Where(record => record.CCM_COMP_CODE == "CCM001"),
+                    context.BRM_CLM_CONFIG.AsNoTracking()
+                        .Where(record => ListingCompanyCodes.Contains(record.CCM_COMP_CODE)),
                     context.STD_LIST_ITEM.AsNoTracking()),
                 filters)
             .CountAsync(cancellationToken);
@@ -30,7 +33,7 @@ public sealed class ClaimConfigurationsRepository(CodesMasterContext context)
                 ClaimConfigurationQuery.ApplyFilters(
                     ClaimConfigurationQuery.Create(
                         context.BRM_CLM_CONFIG.AsNoTracking()
-                            .Where(record => record.CCM_COMP_CODE == "CCM001"),
+                            .Where(record => ListingCompanyCodes.Contains(record.CCM_COMP_CODE)),
                         context.STD_LIST_ITEM.AsNoTracking()),
                     filters),
                 sortBy,
@@ -48,7 +51,7 @@ public sealed class ClaimConfigurationsRepository(CodesMasterContext context)
     public Task<BRM_CLM_CONFIG?> FindAsync(string ccmCode, CancellationToken cancellationToken) =>
         context.BRM_CLM_CONFIG.AsNoTracking()
             .SingleOrDefaultAsync(
-                record => record.CCM_COMP_CODE == "CCM001" && record.CCM_CODE == ccmCode,
+                record => record.CCM_CODE == ccmCode,
                 cancellationToken);
 
     public async Task AddAsync(BRM_CLM_CONFIG record, CancellationToken cancellationToken) =>
@@ -73,7 +76,7 @@ public sealed class ClaimConfigurationsRepository(CodesMasterContext context)
         }
 
         var record = await context.BRM_CLM_CONFIG.SingleOrDefaultAsync(
-            item => item.CCM_COMP_CODE == "CCM001" && item.CCM_CODE == ccmCode,
+            item => item.CCM_CODE == ccmCode,
             cancellationToken);
         if (record is null)
         {
@@ -98,7 +101,7 @@ public sealed class ClaimConfigurationsRepository(CodesMasterContext context)
         }
 
         var record = await context.BRM_CLM_CONFIG.SingleOrDefaultAsync(
-            item => item.CCM_COMP_CODE == "CCM001" && item.CCM_CODE == ccmCode,
+            item => item.CCM_CODE == ccmCode,
             cancellationToken);
         if (record is null)
         {

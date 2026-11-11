@@ -56,7 +56,7 @@ const roundingValueValidator = (control: AbstractControl<number | null>): Valida
     return null;
   }
 
-  if (!Number.isFinite(value) || value < -999.99999 || value > 999.99999) {
+  if (!Number.isFinite(value) || value < 0 || value > 999.99999) {
     return { roundingValueRange: true };
   }
 

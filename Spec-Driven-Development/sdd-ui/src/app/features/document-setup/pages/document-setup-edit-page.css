@@ -221,6 +221,17 @@ th {
   white-space: nowrap;
 }
 
+.actions-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  width: max-content;
+}
+
+.actions-inline > .icon-action {
+  flex: 0 0 2.25rem;
+}
+
 .icon-action {
   display: inline-grid;
   width: 2.25rem;

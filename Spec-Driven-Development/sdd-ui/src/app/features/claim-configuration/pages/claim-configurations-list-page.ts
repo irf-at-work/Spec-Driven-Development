@@ -18,6 +18,7 @@ import {
 import { ClaimConfigurationApiService } from '../services/claim-configuration-api.service';
 import { ClaimConfigurationFeedbackService } from '../services/claim-configuration-feedback.service';
 import { ListClaimConfigurations$Params } from '../../../api/generated/fn/operations/list-claim-configurations';
+import { CreationAuditDetails } from '../../codes-master/components/creation-audit-details';
 
 type ClaimConfigurationPageSize = 10 | 15 | 20 | 50;
 
@@ -27,6 +28,7 @@ type ClaimConfigurationPageSize = 10 | 15 | 20 | 50;
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ColumnFilterControl,
+    CreationAuditDetails,
     MatButtonModule,
     MatFormFieldModule,
     MatOptionModule,
@@ -43,7 +45,7 @@ export class ClaimConfigurationsListPage implements OnInit {
   private readonly api = inject(ClaimConfigurationApiService);
   private readonly feedback = inject(ClaimConfigurationFeedbackService);
 
-  protected readonly columns = ['ccmCode', 'ccmName', 'shortName', 'moduleName', 'actions'];
+  protected readonly columns = ['companyCode', 'ccmCode', 'ccmName', 'shortName', 'moduleName', 'actions'];
   protected readonly filters = signal<Partial<Record<CodeFilterColumn, CodeColumnFilterValue>>>({});
   protected readonly filterDraftValues = signal<Partial<Record<CodeFilterColumn, string>>>({});
   protected readonly hasActiveFilters = computed(() => Object.keys(this.filters()).length > 0);
@@ -170,6 +172,8 @@ export class ClaimConfigurationsListPage implements OnInit {
   private filterParams(): ListClaimConfigurations$Params {
     const activeFilters = this.filters();
     return {
+      companyCodeOperator: activeFilters.companyCode?.operator,
+      companyCodeValue: activeFilters.companyCode?.value,
       ccmCodeOperator: activeFilters.ccmCode?.operator,
       ccmCodeValue: activeFilters.ccmCode?.value,
       ccmNameOperator: activeFilters.ccmName?.operator,
@@ -185,6 +189,8 @@ export class ClaimConfigurationsListPage implements OnInit {
 
   private toSortColumn(active: string): ClaimConfigurationSortColumn | null {
     switch (active) {
+      case 'companyCode':
+        return 'CompanyCode';
       case 'ccmCode':
         return 'Code';
       case 'ccmName':

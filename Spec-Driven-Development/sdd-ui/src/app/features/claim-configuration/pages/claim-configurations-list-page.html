@@ -5,7 +5,7 @@
       @if (hasActiveFilters()) {
         <button mat-button type="button" (click)="clearAllFilters()">Clear all filters</button>
       }
-      <a mat-flat-button color="primary" routerLink="/claim-configurations/add">Add</a>
+      <a mat-stroked-button color="primary" routerLink="/claim-configurations/add">Add</a>
     </div>
   </header>
 
@@ -34,12 +34,29 @@
         aria-label="Claim Configuration Master records"
       >
         <colgroup>
+          <col class="company-code-column" />
           <col class="code-column" />
           <col class="name-column" />
           <col class="short-name-column" />
           <col class="module-column" />
           <col class="actions-column" />
         </colgroup>
+        <ng-container matColumnDef="companyCode">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header-content">
+              <div class="column-heading" mat-sort-header="companyCode">Company Code</div>
+              <app-column-filter-control
+                [column]="'companyCode'"
+                [label]="'Company Code'"
+                [filter]="filters().companyCode ?? null"
+                [draftValue]="filterDraftValues().companyCode ?? filters().companyCode?.value ?? ''"
+                (filterChange)="onFilterChange('companyCode', $event)"
+                (draftValueChange)="onFilterDraftChange('companyCode', $event)"
+              />
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let record">{{ record.ccmCompCode }}</td>
+        </ng-container>
         <ng-container matColumnDef="ccmCode">
           <th mat-header-cell *matHeaderCellDef>
             <div class="column-header-content">
@@ -109,6 +126,7 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef><span class="column-heading">Actions</span></th>
           <td mat-cell *matCellDef="let record" class="actions-cell">
+            <app-creation-audit-details [record]="record" />
             <a
               class="icon-action"
               [routerLink]="['/claim-configurations', record.ccmCode, 'edit']"

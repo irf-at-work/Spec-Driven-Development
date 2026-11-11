@@ -40,8 +40,9 @@ The Playwright configuration starts the Angular development server. The API and 
 
 1. Open Claim Configuration Master from Master navigation. Confirm the four data columns, Add/Edit/Delete controls, empty/error states, case-insensitive filters, AND combination, sorting, and page sizes 10, 15, 20, and 50.
 2. Open Add. Confirm company code is not shown and every dropdown loads only active options for its exact `LI_TYPE` using `LI_CODE`/`LI_DESC`.
-3. Confirm Claim Config Code and Claims Config Name are required; test string column limits and `NUMBER(8,5)` bounds. Confirm the four standard toggles default to N and Active defaults to Y. Use Reset to restore these values.
+3. Confirm Claim Config Code and Claims Config Name are required; test string column limits and Rounding Value from 0 through 999.99999 with at most five decimal places, including rejection of negative values. Confirm the four standard toggles default to N and Active defaults to Y. Use Reset to restore these values.
 4. Save a unique configuration. Verify the parent persists under `CCM001`, creation audit is `ADMIN`/Oracle `SYSDATE`, and Applicable Products appears on the same detail page.
+5. Open the CCM listing and verify records with `CCM_COMP_CODE` `CCM001` and `ASRTEST` appear with their company code; use the company-code filter and sorting to locate each.
 5. Add a product mapping. Confirm its code and `LI_DESC` name appear in the child list. Attempt to add the same product again and verify the duplicate is rejected.
 6. Edit the mapping to another allowed product. Verify the same mapping is updated, the child list refreshes, and its creation audit remains unchanged. Try changing it to a product already mapped to the same parent and verify conflict feedback.
 7. Cancel a child-delete confirmation and verify no change; confirm another child delete and verify only that mapping is removed.

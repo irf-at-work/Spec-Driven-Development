@@ -52,6 +52,7 @@
             formControlName="applicableFor"
             [disabled]="isLoadingApplicableForCodes() || applicableForCodes().length === 0"
           >
+            <mat-option value="" disabled>Select</mat-option>
             @for (option of applicableForCodes(); track option.code) {
               <mat-option [value]="option.code">
                 {{ option.code }}{{ option.codeDescription ? ' — ' + option.codeDescription : '' }}
@@ -83,6 +84,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Product From</mat-label>
               <mat-select formControlName="productFrom" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="" disabled>Select</mat-option>
                 <mat-option value="ALL">ALL</mat-option>
                 @for (option of productCodes(); track option.code) {
                   <mat-option [value]="option.code">{{
@@ -94,6 +96,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Product To</mat-label>
               <mat-select formControlName="productTo" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="" disabled>Select</mat-option>
                 <mat-option value="ALL">ALL</mat-option>
                 @for (option of productCodes(); track option.code) {
                   <mat-option [value]="option.code">{{
@@ -105,6 +108,7 @@
             <mat-form-field appearance="outline">
               <mat-label>PCM From</mat-label>
               <mat-select formControlName="pcmFrom" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="" disabled>Select</mat-option>
                 <mat-option value="ALL">ALL</mat-option>
                 @for (option of pcmCodes(); track option.code) {
                   <mat-option [value]="option.code">{{
@@ -116,6 +120,7 @@
             <mat-form-field appearance="outline">
               <mat-label>PCM To</mat-label>
               <mat-select formControlName="pcmTo" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="" disabled>Select</mat-option>
                 <mat-option value="ALL">ALL</mat-option>
                 @for (option of pcmCodes(); track option.code) {
                   <mat-option [value]="option.code">{{
@@ -127,6 +132,7 @@
             <mat-form-field appearance="outline">
               <mat-label>CCM From</mat-label>
               <mat-select formControlName="ccmFrom" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="" disabled>Select</mat-option>
                 <mat-option value="ALL">ALL</mat-option>
                 @for (option of ccmCodes(); track option.code) {
                   <mat-option [value]="option.code">{{
@@ -138,6 +144,7 @@
             <mat-form-field appearance="outline">
               <mat-label>CCM To</mat-label>
               <mat-select formControlName="ccmTo" [disabled]="isLoadingRangeCodes()">
+                <mat-option value="" disabled>Select</mat-option>
                 <mat-option value="ALL">ALL</mat-option>
                 @for (option of ccmCodes(); track option.code) {
                   <mat-option [value]="option.code">{{

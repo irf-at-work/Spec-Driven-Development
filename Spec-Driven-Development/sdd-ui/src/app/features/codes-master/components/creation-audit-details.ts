@@ -3,6 +3,7 @@ import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 
 interface AuditRecord {
   code?: string;
+  ccmCode?: string;
   docCode?: string;
   createdBy?: string | null;
   createdDate?: string | null;
@@ -33,7 +34,10 @@ export class CreationAuditDetails {
     return `Created By: ${creator}; Created Date: ${createdDate}; Updated By: ${updater}; Updated Date: ${updatedDate}`;
   });
   protected readonly ariaLabel = computed(
-    () => `Audit details for ${this.record().code ?? this.record().docCode ?? 'record'}`,
+    () =>
+      `Audit details for ${
+        this.record().code ?? this.record().ccmCode ?? this.record().docCode ?? 'record'
+      }`,
   );
 
   private closeTimer: ReturnType<typeof setTimeout> | null = null;

@@ -35,7 +35,7 @@ internal static class OracleRowLock
         CancellationToken cancellationToken) =>
         LockAsync(
             context,
-            "SELECT CCM_CODE FROM IIRIS_RD_DEVP.BRM_CLM_CONFIG WHERE CCM_COMP_CODE = 'CCM001' AND CCM_CODE = :ccmCode FOR UPDATE",
+            "SELECT CCM_CODE FROM IIRIS_RD_DEVP.BRM_CLM_CONFIG WHERE CCM_CODE = :ccmCode FOR UPDATE",
             ("ccmCode", ccmCode),
             cancellationToken);
 

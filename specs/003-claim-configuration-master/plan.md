@@ -6,7 +6,7 @@
 
 ## Summary
 
-Add a Claim Configuration Master listing and parent detail page with lookup-backed fields, plus Applicable Products mappings managed from the saved parent's detail page. Use the existing Angular/.NET/Oracle architecture, fixed company code `CCM001`, the existing CCM tables, and lookup values from `STD_LIST_ITEM`. Preserve existing Codes Master and Document Setup behavior.
+Add a Claim Configuration Master listing and parent detail page with lookup-backed fields, plus Applicable Products mappings managed from the saved parent's detail page. Use the existing Angular/.NET/Oracle architecture, create new records under fixed company code `CCM001`, list existing records for `CCM001` and `ASRTEST`, use the existing CCM tables, and source lookup values from `STD_LIST_ITEM`. Preserve existing Codes Master and Document Setup behavior.
 
 ## Technical Context
 
@@ -102,7 +102,7 @@ specs/001-codes-master/contracts/
 
 ## Implementation Boundaries
 
-- Keep `CCM_COMP_CODE` fixed to `CCM001` in server-side persistence; never accept it from a request.
+- Keep `CCM_COMP_CODE` fixed to `CCM001` when creating records; list `CCM001` and `ASRTEST` records with their company code displayed. Resolve existing parent operations by the database-wide unique `CCM_CODE` and preserve the stored company code.
 - Use `LI_CODE` and `LI_DESC` for dropdown value and description respectively. Query each exact `LI_TYPE`, including `CCM_DFLT_RECV_DEDU` for Dflt Recovery Code for Dedl and `CCM_PRODUCT` for Applicable Products. New choices include only active lookup rows; edits retain and display a saved inactive value without offering it as a new choice.
 - Parent and child update requests include an expected-version token. Reject stale updates without overwriting newer values and ask the user to reload.
 - Honor the primary and unique keys already supplied. Use database conflict handling for races; do not add DDL.

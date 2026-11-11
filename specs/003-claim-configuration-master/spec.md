@@ -22,6 +22,7 @@ Claim Configuration Master lets application users create, find, and maintain cla
 - Q: If another user changes a parent or product mapping after you open it for editing, should CCM reject your save and ask you to reload, or allow your save to overwrite their changes? → A: Reject the stale save without overwriting newer values; tell the user to reload.
 - Q: Which fields should be mandatory, and how should optional CCM values be persisted given current Oracle nullability? → A: Only Claim Config Code and Claim Config Name are mandatory. Persist blank optional values as NULL; the connected development schema already permits NULL for the specified optional columns, so no DDL change is needed.
 - Q: Which lookup types should supply Dflt Recovery Code for Dedl and Applicable Products, and what filtering should the child list provide? → A: Use `CCM_DFLT_RECV_DEDU` for Dflt Recovery Code for Dedl and `CCM_PRODUCT` for Applicable Products. Add the existing six operators as filters for Product Code and Product Name.
+- Q: Which company codes should appear in the CCM listing, and should the company code be visible? → A: List records for both `CCM001` and `ASRTEST`, and display `CCM_COMP_CODE` as a listing column. New records continue to use `CCM001`.
 
 ## Scope
 
@@ -64,7 +65,7 @@ As an application user, I can open Claim Configuration Master and find a configu
 **Acceptance Scenarios**:
 
 1. **Given** Master navigation is available, **When** the user selects Claim Configuration Master, **Then** the CCM listing opens.
-2. **Given** CCM records exist, **When** the listing loads, **Then** it shows Claim Config Code, Claim Config Name, Short Name, Module Name, and the conventional row actions.
+2. **Given** CCM records exist under `CCM001` or `ASRTEST`, **When** the listing loads, **Then** it shows Company Code, Claim Config Code, Claim Config Name, Short Name, Module Name, and the conventional row actions.
 3. **Given** the user applies one or more column filters, **When** results load, **Then** matching is case-insensitive, all active filters are combined with AND, and filtering occurs before pagination.
 4. **Given** more records match than fit on one page, **When** the user changes page or page size, **Then** the requested server-side page is shown and the total matching record count is retained.
 5. **Given** no CCM records match, **When** the listing loads, **Then** a clear empty or no-results state is shown.
@@ -119,7 +120,7 @@ As an application user, I can add, edit, and delete products on a saved claim co
 - A CCM code conflicts with the existing unique index, including a concurrent insert.
 - A required name is empty or whitespace-only.
 - Any string exceeds its declared Oracle column length, including multi-byte input where the column uses byte semantics.
-- A rounding value is not numeric, exceeds the `NUMBER(8,5)` representable range, or has more fractional precision than allowed.
+- A rounding value is negative, exceeds the supported maximum, or has more fractional precision than allowed.
 - A persisted Y/N value is NULL or is neither Y nor N.
 - A lookup has no matching rows, contains a NULL display value, or cannot be loaded.
 - A lookup value selected in an open form is no longer available when the record is saved.
@@ -138,9 +139,9 @@ As an application user, I can add, edit, and delete products on a saved claim co
 #### Navigation and parent listing
 
 - **FR-001**: The application MUST provide a Claim Configuration Master entry using the existing Master navigation and page-navigation conventions.
-- **FR-002**: The CCM listing MUST display these data columns in order: Claim Config Code, Claim Config Name, Short Name, and Module Name. It MUST use the existing Codes Master table styling and responsive behavior and provide the conventional Actions column.
+- **FR-002**: The CCM listing MUST display these data columns in order: Company Code, Claim Config Code, Claim Config Name, Short Name, and Module Name. It MUST use the existing Codes Master table styling and responsive behavior and provide the conventional Actions column.
 - **FR-003**: The listing MUST provide a top-right Add button and Edit and Delete actions for each parent using the existing navigation and confirmation conventions.
-- **FR-004**: The listing MUST provide server-side filtering for Claim Config Code, Claim Config Name, Short Name, and Module Name. Each filter MUST support Starts With, Ends With, Contains, Does Not Contain, Equal To, and Not Equal To; matching MUST ignore case and combine active filters with AND across the complete dataset before pagination.
+- **FR-004**: The listing MUST provide server-side filtering for Company Code, Claim Config Code, Claim Config Name, Short Name, and Module Name. Each filter MUST support Starts With, Ends With, Contains, Does Not Contain, Equal To, and Not Equal To; matching MUST ignore case and combine active filters with AND across the complete dataset before pagination.
 - **FR-005**: The listing MUST follow the existing Codes Master sorting convention for displayed data columns, applying sort before pagination with a stable tie-breaker.
 - **FR-006**: The listing MUST use server-side pagination, default to 10 records per page, and offer page sizes 10, 15, 20, and 50 with the existing pagination controls.
 - **FR-007**: The listing MUST distinguish loading, empty/no-results, and retrieval-error states and MUST provide clear user feedback for failed operations.
@@ -176,11 +177,11 @@ As an application user, I can add, edit, and delete products on a saved claim co
 - **FR-011**: The form MUST provide a collapsed-by-default More section containing Name in Arabic (`CCM_NAME_L2`, `VARCHAR2(100)`), Short Name in Arabic (`CCM_SHORT_NAME_L2`, `VARCHAR2(30)`), and Active Y/N (`CCM_ACTIVE_YN`, `VARCHAR2(1)`). Active Y/N MUST default to Y for a new record.
 - **FR-012**: Only `CCM_CODE` and `CCM_NAME` are required inputs. Blank values for `CCM_SHORT_NAME`, `CCM_NAME_L2`, `CCM_SHORT_NAME_L2`, `CCM_MODULE`, `CCM_ACNT_POSTING_TYPE`, `CCM_ACNT_EXCH_RATE_TYPE`, `CCM_ROUND_TYPE`, `CCM_ROUND_VALUE`, `CCM_APPL_CURR_TYPE`, `CCM_DFLT_EST_CLO_REASON_CODE`, and `CCM_DFLT_RECV_DEDU_CODE` MUST persist as NULL. These columns are nullable in the verified development schema; no DDL change is required. Toggles retain their Y/N defaults.
 - **FR-013**: String input MUST be validated against its corresponding Oracle column limit before persistence. Validation MUST use the actual column length semantics, MUST identify the affected field, and MUST NOT silently truncate.
-- **FR-014**: `CCM_ROUND_VALUE` MUST accept only a numeric value representable by Oracle `NUMBER(8,5)`: no more than five fractional digits and an absolute value no greater than `999.99999`. Input MUST be rejected with a field-level message rather than silently rounded. No additional business range or sign restriction is assumed.
+- **FR-014**: `CCM_ROUND_VALUE` MUST accept only a nonnegative numeric value no greater than `999.99999` and with no more than five fractional digits. Negative values and values outside these limits MUST be rejected with a user-friendly field-level message rather than silently rounded.
 - **FR-015**: Every toggle MUST persist only `Y` or `N`. On Add, the four toggles in FR-010 MUST default to N and Active Y/N MUST default to Y. Edit MUST show each persisted state. Reset MUST restore the initial values on Add and the originally loaded values on Edit.
 - **FR-016**: The detail page MUST show Add and Back actions at the top-right, with Add immediately to the left of Back, and Save and Reset actions centered at the bottom of the form. In Edit mode, Add MUST open a fresh Add page. In Add mode, Add MUST clear the current form and restore its initial defaults. Repeated Save activation MUST NOT submit duplicate requests. A failed operation MUST leave the saved record unchanged and show actionable feedback.
-- **FR-017**: The company code MUST be the literal `CCM001` for every applicable parent database operation. It MUST NOT be displayed, accepted from user input, or derived from another source.
-- **FR-018**: Parent retrieval, update, and other key-based operations MUST use the fixed company code and `CCM_CODE`. Edit MUST preserve record identity. The unique `CCM_CODE` index MUST be enforced; a duplicate insert MUST produce a clear conflict message without changing an existing record.
+- **FR-017**: The CCM listing MUST retrieve parent records whose `CCM_COMP_CODE` is `CCM001` or `ASRTEST` and display the stored company code. New parent records MUST continue to be created with `CCM_COMP_CODE = 'CCM001'`; the company code MUST NOT be user-editable in the form.
+- **FR-018**: Parent retrieval, update, and other key-based operations MUST resolve the existing row by `CCM_CODE`, which is protected by a database-wide unique index, and MUST preserve the row's stored `CCM_COMP_CODE`. Edit MUST preserve record identity. A duplicate insert MUST produce a clear conflict message without changing an existing record.
 - **FR-019**: After a parent Add save succeeds, the Applicable Products child section MUST appear on the same detail page. Parent success feedback MUST be distinct from child lookup or child persistence failures.
 - **FR-020**: The page MUST follow existing form validation, user feedback, unsaved-change, keyboard, focus, and responsive-layout conventions. Lookup and persistence errors MUST be visible and MUST NOT be converted to successful empty results.
 
@@ -226,7 +227,7 @@ Primary key: `(CCM_COMP_CODE, CCM_CODE)`. Unique index: `CCM_CODE`.
 
 | Database column | Oracle type | Nullability | Source / behavior |
 |---|---|---|---|
-| `CCM_COMP_CODE` | `VARCHAR2(12)` | NOT NULL | Fixed literal `CCM001`; never shown in the UI |
+| `CCM_COMP_CODE` | `VARCHAR2(12)` | NOT NULL | New records use `CCM001`; listing displays rows for `CCM001` and `ASRTEST` |
 | `CCM_CODE` | `VARCHAR2(12)` | NOT NULL | Claim Config Code user input; unique index applies |
 | `CCM_NAME` | `VARCHAR2(100)` | NOT NULL | Claims Config Name user input |
 | `CCM_SHORT_NAME` | `VARCHAR2(30)` | Nullable | Short Name user input |
@@ -282,7 +283,7 @@ For each applicable `LI_TYPE`, `STD_LIST_ITEM.LI_CODE` is the option value persi
 
 ### Acceptance Criteria
 
-- **AC-001**: Given Master navigation is available, when the user selects Claim Configuration Master, then the listing displays the four required CCM columns and conventional actions.
+- **AC-001**: Given Master navigation is available, when the user selects Claim Configuration Master, then the listing displays Company Code, the four CCM data columns, and conventional actions for rows belonging to `CCM001` and `ASRTEST`.
 - **AC-002**: Given the listing is open, when the user filters by one or more data columns, then all filters use the existing six operators, ignore case, combine with AND, and apply before server-side pagination.
 - **AC-003**: Given the listing is open, when the user pages or changes page size, then the default is 10 and the choices are 10, 15, 20, and 50.
 - **AC-004**: Given a user selects Add, when the Add page opens, then it is separate from the listing and does not show company code as a field.
@@ -348,7 +349,7 @@ For each applicable `LI_TYPE`, `STD_LIST_ITEM.LI_CODE` is the option value persi
 
 ### Key Entities
 
-- **Claim Configuration**: Parent record identified by `(CCM_COMP_CODE, CCM_CODE)`, with `CCM_COMP_CODE` fixed to `CCM001` and `CCM_CODE` additionally subject to a unique index.
+- **Claim Configuration**: Parent record identified by `(CCM_COMP_CODE, CCM_CODE)`, with new records assigned `CCM001`; the listing includes existing `CCM001` and `ASRTEST` rows, and `CCM_CODE` is additionally subject to a database-wide unique index.
 - **Applicable Product Mapping**: Child record linking a parent CCM code to a selected product code, identified by `(CCMP_CCM_CODE, CCMP_CODE)`.
 - **Standard List Item**: Existing lookup row selected by `LI_TYPE`, with `LI_CODE` as the option value and `LI_DESC` as its display description.
 
@@ -365,7 +366,7 @@ For each applicable `LI_TYPE`, `STD_LIST_ITEM.LI_CODE` is the option value persi
 
 - The existing Codes Master conventions are authoritative for filter operators, case handling, combined-filter logic, sorting, pagination defaults, page sizes, and visual behavior.
 - The user-provided column definitions and key/index declarations are authoritative; no additional database constraints or columns are assumed.
-- No extra business restriction is applied to Rounding Value beyond the representable Oracle `NUMBER(8,5)` limits.
+- Rounding Value is limited to nonnegative values up to `999.99999`, with no more than five fractional digits, to match the business input requirements and the Oracle column limits.
 - All four Y/N toggle values are stored as literal `Y` or `N` and default to N on Add; Active Y/N defaults to Y.
 - A child record can only be added after its parent has been successfully persisted.
 - Dflt Recovery Code for Dedl uses `LI_TYPE = 'CCM_DFLT_RECV_DEDU'`, and Applicable Products uses `LI_TYPE = 'CCM_PRODUCT'`, as supplied by the owner.

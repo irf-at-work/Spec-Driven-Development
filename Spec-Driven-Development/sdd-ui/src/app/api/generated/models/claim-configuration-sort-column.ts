@@ -5,5 +5,5 @@
 /**
  * Data column to sort; Actions is not sortable.
  */
-export type ClaimConfigurationSortColumn = 'Code' | 'Name' | 'ShortName' | 'ModuleName';
+export type ClaimConfigurationSortColumn = 'CompanyCode' | 'Code' | 'Name' | 'ShortName' | 'ModuleName';
 

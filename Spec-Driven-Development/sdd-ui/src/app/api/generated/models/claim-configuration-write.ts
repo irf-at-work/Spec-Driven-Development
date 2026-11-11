@@ -31,7 +31,7 @@ export interface ClaimConfigurationWrite {
   roundingType?: (string | null);
 
   /**
-   * Must fit NUMBER(8,5) without rounding.
+   * Must be between 0 and 999.99999 with no more than five decimal places.
    */
   roundingValue?: (number | null);
   sharingClaimsAccountDocumentGenerationYn?: ('Y' | 'N' | null);

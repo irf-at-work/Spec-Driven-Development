@@ -16,6 +16,8 @@ public sealed class ClaimConfigurationsController(IClaimConfigurationsService se
         [FromQuery] int pageSize = 10,
         [FromQuery] ClaimConfigurationSortColumn? sortBy = null,
         [FromQuery] CodeSortDirection? sortDirection = null,
+        [FromQuery] CodeFilterOperator? companyCodeOperator = null,
+        [FromQuery] string? companyCodeValue = null,
         [FromQuery] CodeFilterOperator? ccmCodeOperator = null,
         [FromQuery] string? ccmCodeValue = null,
         [FromQuery] CodeFilterOperator? ccmNameOperator = null,
@@ -27,7 +29,8 @@ public sealed class ClaimConfigurationsController(IClaimConfigurationsService se
         CancellationToken cancellationToken = default)
     {
         var errors = new Dictionary<string, string[]>();
-        var filters = new List<ClaimConfigurationFilter>(4);
+        var filters = new List<ClaimConfigurationFilter>(5);
+        AddFilter(errors, filters, "companyCode", ClaimConfigurationFilterColumn.CompanyCode, companyCodeOperator, companyCodeValue);
         AddFilter(errors, filters, "ccmCode", ClaimConfigurationFilterColumn.CcmCode, ccmCodeOperator, ccmCodeValue);
         AddFilter(errors, filters, "ccmName", ClaimConfigurationFilterColumn.CcmName, ccmNameOperator, ccmNameValue);
         AddFilter(errors, filters, "shortName", ClaimConfigurationFilterColumn.ShortName, shortNameOperator, shortNameValue);

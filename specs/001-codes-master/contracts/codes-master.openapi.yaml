@@ -524,6 +524,14 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/CodeSortDirection"
+        - name: companyCodeOperator
+          in: query
+          schema:
+            $ref: "#/components/schemas/CodeFilterOperator"
+        - name: companyCodeValue
+          in: query
+          schema:
+            type: string
         - name: ccmCodeOperator
           in: query
           schema:
@@ -861,7 +869,7 @@ components:
         - NotEqualTo
     ClaimConfigurationSortColumn:
       type: string
-      enum: [Code, Name, ShortName, ModuleName]
+      enum: [CompanyCode, Code, Name, ShortName, ModuleName]
       description: Data column to sort; Actions is not sortable.
     ClaimConfigurationWrite:
       type: object
@@ -889,7 +897,7 @@ components:
           type: [string, "null"]
         roundingValue:
           type: [number, "null"]
-          description: Must fit NUMBER(8,5) without rounding.
+          description: Must be between 0 and 999.99999 with no more than five decimal places.
         applicableCurrencies:
           type: [string, "null"]
         defaultEstimateCloseReasonCode:
@@ -923,8 +931,10 @@ components:
               description: Opaque version token returned by the record read.
     ClaimConfigurationSummary:
       type: object
-      required: [ccmCode, ccmName]
+      required: [ccmCompCode, ccmCode, ccmName]
       properties:
+        ccmCompCode:
+          type: string
         ccmCode:
           type: string
         ccmName:
@@ -933,6 +943,20 @@ components:
           type: [string, "null"]
         moduleName:
           type: [string, "null"]
+        createdBy:
+          type: [string, "null"]
+          description: Record creator.
+        createdDate:
+          type: [string, "null"]
+          format: date-time
+          description: Record creation date and time.
+        updatedBy:
+          type: [string, "null"]
+          description: Last record updater.
+        updatedDate:
+          type: [string, "null"]
+          format: date-time
+          description: Last record update date and time.
     ClaimConfigurationRecord:
       type: object
       required: [ccmCode, ccmName, version]

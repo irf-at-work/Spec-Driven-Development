@@ -7,8 +7,13 @@
   width: 100%;
 }
 
+.product-dialog [mat-dialog-actions] {
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+}
+
 .product-code-field {
-  --mdc-outlined-text-field-container-color: var(--app-surface);
+  --mdc-outlined-text-field-container-color: #fff;
   --mdc-outlined-text-field-outline-color: var(--app-border);
   --mdc-outlined-text-field-hover-outline-color: var(--app-border-strong);
   --mdc-outlined-text-field-focus-outline-color: var(--app-accent);

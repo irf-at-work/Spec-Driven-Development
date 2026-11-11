@@ -3,7 +3,28 @@
 
 export interface ClaimConfigurationSummary {
   ccmCode: string;
+  ccmCompCode: string;
   ccmName: string;
   ccmShortName?: (string | null);
+
+  /**
+   * Record creator.
+   */
+  createdBy?: (string | null);
+
+  /**
+   * Record creation date and time.
+   */
+  createdDate?: (string | null);
   moduleName?: (string | null);
+
+  /**
+   * Last record updater.
+   */
+  updatedBy?: (string | null);
+
+  /**
+   * Last record update date and time.
+   */
+  updatedDate?: (string | null);
 }

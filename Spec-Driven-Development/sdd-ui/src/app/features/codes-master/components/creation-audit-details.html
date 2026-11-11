@@ -24,6 +24,7 @@
   [cdkConnectedOverlayOpen]="isOpen()"
   [cdkConnectedOverlayPositions]="overlayPositions"
   [cdkConnectedOverlayPush]="true"
+  [cdkConnectedOverlayPanelClass]="record().ccmCode ? 'ccm-audit-overlay' : ''"
   (overlayOutsideClick)="close()"
 >
   <span class="audit-tooltip" role="tooltip" (mouseenter)="cancelClose()" (mouseleave)="close()">

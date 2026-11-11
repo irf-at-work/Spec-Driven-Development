@@ -7,6 +7,7 @@ import { ClaimConfigurationSortColumn } from './claim-configuration-sort-column'
  * Each possible value of `ClaimConfigurationSortColumn`
  */
 export const CLAIM_CONFIGURATION_SORT_COLUMN: ClaimConfigurationSortColumn[] = [
+  'CompanyCode',
   'Code',
   'Name',
   'ShortName',
