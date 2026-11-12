@@ -16,7 +16,7 @@
     <div class="page-header-actions">
       @if (isEditing || isParentDraft) {
         <button
-          mat-flat-button
+          mat-stroked-button
           color="primary"
           type="button"
           [disabled]="isSaving() || isLoading()"
@@ -26,7 +26,7 @@
         </button>
       }
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="button"
         [disabled]="isSaving()"
@@ -164,7 +164,7 @@
 
       <div class="form-actions">
         <button
-          mat-flat-button
+          mat-stroked-button
           color="primary"
           type="submit"
           [disabled]="
@@ -181,7 +181,7 @@
           {{ isSaving() ? 'Saving…' : 'Save' }}
         </button>
         <button
-          mat-flat-button
+          mat-stroked-button
           color="primary"
           type="button"
           [disabled]="isSaving() || isLoading()"

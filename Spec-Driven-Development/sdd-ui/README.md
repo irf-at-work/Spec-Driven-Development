@@ -4,17 +4,12 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## API and deployment configuration
 
-The UI loads `public/app-config.json` at startup. Set `apiBaseUrl` to the API base URL before deploying:
+The API base URL is selected automatically by Angular's build configuration:
 
-```json
-{
-  "apiBaseUrl": "/api"
-}
-```
+- `ng serve` uses `http://localhost:5114/api` from `src/environments/environment.ts`.
+- `ng build --configuration production` uses `http://10.0.0.125:5001/api` from `src/environments/environment.prod.ts`.
 
-Use `/api` when the UI and API are exposed on the same origin (for example, through a reverse proxy), or provide the full API base URL such as `https://api.example.com/api` when they are hosted separately. The file is copied into the built assets, so it can be changed for each deployment without rebuilding the UI. The UI displays a startup error if the file is missing or invalid.
-
-When hosting the UI and API on different origins, configure the UI origin in the API's `Cors:AllowedOrigins` setting. For local development, `appsettings.Development.json` allows `http://localhost:4200`. The development server proxies `/api` to the local API; update `proxy.conf.json` only if the local API address changes.
+All generated API services share this configured base URL. When hosting the UI and API on different origins, configure the UI origin in the API's `Cors:AllowedOrigins` setting.
 
 ## Development server
 

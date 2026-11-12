@@ -1,0 +1,17 @@
+{
+	"mcpServers": {
+		"sqlcl": {
+			"type": "stdio",
+			"command": "sql",
+			"args": [
+				"-mcp"
+			],
+			"tools": [
+				"*"
+			],
+			"env": {
+				"TNS_ADMIN": "D:\\app\\client\\ABSPC164\\product\\12.1.0\\client_1\\network\\admin"
+			}
+		}
+	}
+}

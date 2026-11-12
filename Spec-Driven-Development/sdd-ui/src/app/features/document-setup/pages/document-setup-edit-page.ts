@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
@@ -67,6 +68,7 @@ type ApplicableModuleFilterColumn = Extract<
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatOptionModule,
     MatSortModule,
     MatSelectModule,
     MatSlideToggleModule,
@@ -113,6 +115,7 @@ export class DocumentSetupEditPage implements OnInit, UnsavedChangesAware {
   ];
   protected readonly page = signal(1);
   protected readonly pageSize = signal<DocumentSetupPageSize>(10);
+  protected readonly pageSizes: DocumentSetupPageSize[] = [10, 15, 20, 50];
   protected readonly sortActive = signal('applicableFor');
   protected readonly sortDirection = signal<SortDirection>('asc');
   protected readonly moduleFilters = signal<
@@ -295,6 +298,10 @@ export class DocumentSetupEditPage implements OnInit, UnsavedChangesAware {
 
   protected onModulePageNumberChange(page: number): void {
     void this.loadModules(page);
+  }
+
+  protected onModulePageSizeChange(pageSize: DocumentSetupPageSize): void {
+    void this.loadModules(1, pageSize);
   }
 
   protected onModulesSortChange(sort: Sort): void {

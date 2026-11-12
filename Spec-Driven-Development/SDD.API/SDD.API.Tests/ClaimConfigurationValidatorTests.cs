@@ -45,7 +45,7 @@ public sealed class ClaimConfigurationValidatorTests
         var errors = new ClaimConfigurationValidator().Validate(ValidRequest() with { RoundingValue = value });
 
         Assert.Contains("roundingValue", errors.Keys);
-        Assert.DoesNotContain("NUMBER", Assert.Single(errors["roundingValue"]));
+        Assert.Contains("NUMBER(8,5)", Assert.Single(errors["roundingValue"]));
     }
 
     [Fact]

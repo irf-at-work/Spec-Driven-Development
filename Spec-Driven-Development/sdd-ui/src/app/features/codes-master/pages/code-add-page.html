@@ -11,7 +11,7 @@
     </div>
     <div class="page-header-actions">
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="button"
         [disabled]="isSubmitting()"
@@ -20,7 +20,7 @@
         Add
       </button>
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="button"
         [disabled]="isSubmitting()"
@@ -43,11 +43,11 @@
       (submitted)="save()"
     >
       <div class="form-actions">
-        <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
+        <button mat-stroked-button color="primary" type="submit" [disabled]="isSubmitting()">
           Save
         </button>
         <button
-          mat-flat-button
+          mat-stroked-button
           color="primary"
           type="button"
           [disabled]="isSubmitting()"

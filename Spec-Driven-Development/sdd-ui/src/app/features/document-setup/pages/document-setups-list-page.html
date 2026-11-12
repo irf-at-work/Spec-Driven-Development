@@ -10,7 +10,7 @@
       @if (hasActiveFilters()) {
         <button mat-button type="button" (click)="clearAllFilters()">Clear all filters</button>
       }
-      <a mat-flat-button color="primary" routerLink="/document-setups/add">Add</a>
+      <a mat-stroked-button color="primary" routerLink="/document-setups/add">Add</a>
     </div>
   </header>
 
@@ -158,6 +158,16 @@
 
     @if (totalCount() > 0) {
       <div class="pagination-row">
+        <label>
+          Page size
+          <mat-form-field appearance="outline">
+            <mat-select [value]="pageSize()" (selectionChange)="onPageSizeChange($event.value)">
+              @for (size of pageSizes; track size) {
+                <mat-option [value]="size">{{ size }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </label>
         <app-page-number-navigation
           [page]="page()"
           [totalPages]="totalPages()"

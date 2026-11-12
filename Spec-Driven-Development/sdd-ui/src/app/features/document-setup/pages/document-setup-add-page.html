@@ -12,7 +12,7 @@
     <h1 id="add-document-setup-heading"> Document Setup</h1>
     <div class="page-header-actions">
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="button"
         [disabled]="isSubmitting() || createdParent() !== null"
@@ -21,7 +21,7 @@
         Add
       </button>
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="button"
         [disabled]="isSubmitting()"
@@ -124,7 +124,7 @@
 
     <div class="form-actions">
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="submit"
         [disabled]="
@@ -138,7 +138,7 @@
         {{ isSubmitting() ? 'Saving…' : createdParent() ? 'Save Applicable Modules' : 'Save' }}
       </button>
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="button"
         [disabled]="isSubmitting() || createdParent() !== null"
@@ -165,7 +165,7 @@
         <button mat-button type="button" (click)="clearModuleFilters()">Clear all filters</button>
       }
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="button"
         [disabled]="isSubmitting()"

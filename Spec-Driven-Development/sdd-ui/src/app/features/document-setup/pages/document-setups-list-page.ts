@@ -11,6 +11,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
+import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { DocumentSetupSortColumn } from '../../../api/generated/models/document-setup-sort-column';
 import { DocumentSetupSummary } from '../../../api/generated/models/document-setup-summary';
 import { ListDocumentSetups$Params } from '../../../api/generated/fn/operations/list-document-setups';
@@ -39,6 +42,9 @@ function isDocumentSetupPageSize(value: number): value is DocumentSetupPageSize 
     ColumnFilterControl,
     CreationAuditDetails,
     MatButtonModule,
+    MatFormFieldModule,
+    MatOptionModule,
+    MatSelectModule,
     MatSortModule,
     MatTableModule,
     PageNumberNavigation,
@@ -65,6 +71,7 @@ export class DocumentSetupsListPage implements OnInit {
   protected readonly records = signal<DocumentSetupSummary[]>([]);
   protected readonly page = signal(1);
   protected readonly pageSize = signal<DocumentSetupPageSize>(10);
+  protected readonly pageSizes: DocumentSetupPageSize[] = [10, 15, 20, 50];
   protected readonly sortActive = signal('docCode');
   protected readonly sortDirection = signal<SortDirection>('asc');
   protected readonly totalCount = signal(0);
@@ -142,6 +149,10 @@ export class DocumentSetupsListPage implements OnInit {
 
   protected onPageNumberChange(page: number): void {
     void this.loadPage(page);
+  }
+
+  protected onPageSizeChange(pageSize: DocumentSetupPageSize): void {
+    void this.loadPage(1, pageSize);
   }
 
   protected onSortChange(sort: Sort): void {

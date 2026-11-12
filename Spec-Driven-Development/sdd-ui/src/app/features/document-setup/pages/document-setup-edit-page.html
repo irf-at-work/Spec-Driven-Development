@@ -21,9 +21,9 @@
       @if (loadedRecord(); as record) {
         <app-creation-audit-details [record]="record" />
       }
-      <a mat-flat-button color="primary" routerLink="/document-setups/add">Add</a>
+      <a mat-stroked-button color="primary" routerLink="/document-setups/add">Add</a>
       <button
-        mat-flat-button
+        mat-stroked-button
         color="primary"
         type="button"
         [disabled]="isSaving()"
@@ -129,7 +129,7 @@
 
         <div class="form-actions">
           <button
-            mat-flat-button
+            mat-stroked-button
             color="primary"
             type="submit"
             [disabled]="
@@ -142,7 +142,7 @@
             {{ isSaving() ? 'Saving…' : 'Save' }}
           </button>
           <button
-            mat-flat-button
+            mat-stroked-button
             color="primary"
             type="button"
             [disabled]="isSaving()"
@@ -162,7 +162,7 @@
                 Clear all filters
               </button>
             }
-            <button mat-flat-button color="primary" type="button" (click)="addModule()">Add</button>
+            <button mat-stroked-button color="primary" type="button" (click)="addModule()">Add</button>
           </div>
         </header>
 
@@ -376,6 +376,19 @@
           }
 
           <div class="pagination-row">
+            <label>
+              Page size
+              <mat-form-field appearance="outline">
+                <mat-select
+                  [value]="pageSize()"
+                  (selectionChange)="onModulePageSizeChange($event.value)"
+                >
+                  @for (size of pageSizes; track size) {
+                    <mat-option [value]="size">{{ size }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </label>
             <app-page-number-navigation
               [page]="page()"
               [totalPages]="totalPages()"

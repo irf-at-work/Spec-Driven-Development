@@ -35,7 +35,7 @@ public sealed class ClaimConfigurationValidator
             AddError(
                 errors,
                 nameof(request.RoundingValue),
-                "Enter a value between 0 and 999.99999 with no more than five decimal places.");
+                "Enter a nonnegative NUMBER(8,5) value with no more than five decimal places.");
         }
 
         return errors.ToDictionary(

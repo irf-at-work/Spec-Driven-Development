@@ -240,13 +240,19 @@ export class ClaimConfigurationDetailPage implements OnInit {
             : `${this.fieldLabel(field)} exceeds the maximum length.`;
     }
     if (control.hasError('roundingValueRange')) {
-      return 'Rounding Value must be between 0 and 999.99999.';
+      return 'Rounding Value must be a nonnegative NUMBER(8,5) value.';
     }
     if (control.hasError('roundingValuePrecision')) {
       return 'Rounding Value cannot have more than 5 decimal places.';
     }
 
     return null;
+  }
+
+  protected onRoundingValueKeydown(event: KeyboardEvent): void {
+    if (event.key === '-' || event.key === '−') {
+      event.preventDefault();
+    }
   }
 
   private fieldLabel(field: ClaimConfigurationField): string {

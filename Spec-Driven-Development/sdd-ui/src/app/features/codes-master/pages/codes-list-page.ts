@@ -1,6 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
@@ -17,6 +20,12 @@ import {
   ColumnFilterControl,
 } from '../components/column-filter-control';
 
+type CodesPageSize = 10 | 15 | 20 | 50;
+
+function isCodesPageSize(value: number): value is CodesPageSize {
+  return value === 10 || value === 15 || value === 20 || value === 50;
+}
+
 @Component({
   selector: 'app-codes-list-page',
   standalone: true,
@@ -24,6 +33,9 @@ import {
     ColumnFilterControl,
     CreationAuditDetails,
     MatButtonModule,
+    MatFormFieldModule,
+    MatOptionModule,
+    MatSelectModule,
     MatSortModule,
     MatTableModule,
     PageNumberNavigation,
@@ -42,7 +54,8 @@ export class CodesListPage implements OnInit {
   protected readonly hasActiveFilters = computed(() => Object.keys(this.filters()).length > 0);
   protected readonly records = signal<CodeRecord[]>([]);
   protected readonly page = signal(1);
-  protected readonly pageSize = signal(10);
+  protected readonly pageSize = signal<CodesPageSize>(10);
+  protected readonly pageSizes: CodesPageSize[] = [10, 15, 20, 50];
   protected readonly sortActive = signal('code');
   protected readonly sortDirection = signal<SortDirection>('asc');
   protected readonly totalCount = signal(0);
@@ -62,6 +75,10 @@ export class CodesListPage implements OnInit {
 
     try {
       const result = await this.codesApi.list(page, pageSize, this.filterParams());
+      if (!isCodesPageSize(result.pageSize)) {
+        throw new RangeError(`Unsupported page size in response: ${result.pageSize}.`);
+      }
+
       this.records.set(result.items);
       this.page.set(result.page);
       this.pageSize.set(result.pageSize);
@@ -81,6 +98,10 @@ export class CodesListPage implements OnInit {
 
   protected onPageNumberChange(page: number): void {
     void this.loadPage(page);
+  }
+
+  protected onPageSizeChange(pageSize: CodesPageSize): void {
+    void this.loadPage(1, pageSize);
   }
 
   protected onSortChange(sort: Sort): void {
